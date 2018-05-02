@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Objects;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
@@ -83,48 +82,39 @@ public class DefaultVocabularyTermsResource extends XWikiResource implements Voc
         }
         final Request request = this.container.getRequest();
         final List<Object> termIds = request.getProperties(TERM_ID);
+        // This may have nulls, so remove them.
+        termIds.removeIf(Objects::isNull);
+
         if (CollectionUtils.isEmpty(termIds)) {
-            this.slf4Jlogger.error("No content provided.");
+            this.slf4Jlogger.info("No content provided.");
             return Response.status(Response.Status.NO_CONTENT).build();
         }
 
         this.slf4Jlogger.debug("Retrieving terms with IDs: [{}]", termIds);
-        // The JSONArray that will contain the vocabulary terms as JSONObjects.
-        final JSONArray termsJson = new JSONArray();
-        termIds.stream()
-            // Remove any null identifiers
-            .filter(Objects::nonNull)
-            // Try to resolve each identifier to a vocabulary term
-            .map(termId -> this.getTerm(vocabulary, termId))
-            // Remove any nulls for terms that could not be resolved
-            .filter(Objects::nonNull)
-            // Get the term JSONObject with links
-            .map(this::getTermJsonWithLinks)
-            // And put each term in the terms JSONArray
-            .forEach(termsJson::put);
         final JSONObject rep = new JSONObject()
-            .put(ROWS, termsJson)
+            .put(ROWS, this.createRows(vocabulary, termIds))
             .put(LINKS, this.autolinker.get().forResource(getClass(), this.uriInfo).build());
         return Response.ok(rep, MediaType.APPLICATION_JSON_TYPE).build();
     }
 
     /**
-     * Tries to retrieve the provided {@code termId} from the desired {@code vocabulary}.
+     * Builds a {@link JSONArray} with the data retrieved for the provided {@code termIds}.
      *
-     * @param termId the identifier for the {@link VocabularyTerm} of interest
-     * @param vocabulary the {@link Vocabulary} from which the term should be retrieved
-     * @return the corresponding {@link VocabularyTerm}, or {@code null} if no such term exists
+     * @param vocabulary the {@link Vocabulary} from which term data will be queried
+     * @param termIds a {@link List} of term identifiers of interest
+     * @return a {@link JSONArray} with data for {@code termIds}
      */
-    @Nullable
-    private VocabularyTerm getTerm(@Nonnull final Vocabulary vocabulary, @Nonnull final Object termId)
+    @Nonnull
+    private JSONArray createRows(@Nonnull final Vocabulary vocabulary, @Nonnull final List<Object> termIds)
     {
-        final VocabularyTerm term = vocabulary.getTerm((String) termId);
-        if (term == null) {
-            // Since we're ignoring terms that cannot be retrieved, log a warning.
-            this.slf4Jlogger.warn("Could not retrieve term [{}] from vocabulary [{}]", termId,
-                vocabulary.getIdentifier());
-        }
-        return term;
+        final JSONArray termsJson = new JSONArray();
+        // Try to retrieve the vocabulary terms
+        vocabulary.getTerms((List<String>) (List<?>) termIds).stream()
+            // Get the JSONObject representation of each term
+            .map(this::getTermJsonWithLinks)
+            // Insert the term into the JSONArray
+            .forEach(termsJson::put);
+        return termsJson;
     }
 
     /**

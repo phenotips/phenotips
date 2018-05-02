@@ -34,13 +34,19 @@ import javax.ws.rs.core.Response;
  * @since 1.4
  */
 @Path("/vocabularies/terms/fetch")
-@Relation("https://phenotips.org/rel/patientRecords")
+@Relation("https://phenotips.org/rel/vocabularyTerm")
 @ParentResource(VocabulariesResource.class)
 public interface VocabularyTermsResolveResource
 {
     /**
      * Retrieves a JSON representation of the {@link org.phenotips.vocabulary.VocabularyTerm} objects by resolving the
-     * term identifiers using their prefix. The terms that cannot be resolved are ignored.
+     * term identifiers using their prefix. The terms that cannot be resolved are ignored. The following request
+     * parameters are used:
+     *
+     * <dl>
+     * <dt>term-id</dt>
+     * <dd>a list of term IDs that should be resolved</dd>
+     * </dl>
      *
      * @return the requested terms that were resolved successfully
      */

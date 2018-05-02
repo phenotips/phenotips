@@ -19,6 +19,7 @@ package org.phenotips.vocabularies.rest.internal;
 
 import org.phenotips.rest.Autolinker;
 import org.phenotips.vocabularies.rest.VocabularyTermsResolveResource;
+import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyManager;
 import org.phenotips.vocabulary.VocabularyTerm;
 
@@ -33,6 +34,8 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -53,6 +56,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -64,17 +68,23 @@ public class DefaultVocabularyTermsResolveResourceTest
 {
     private static final String ID_FIELD = "id";
 
-    private static final String TERM_1_ID = "term1";
+    private static final String TERM_1_ID = "HP:term1";
 
-    private static final String TERM_2_ID = "term2";
+    private static final String TERM_2_ID = "HP:term2";
 
-    private static final String TERM_3_ID = "term3";
+    private static final String TERM_3_ID = "OMIM:term3";
+
+    private static final String INVALID = "noprefix";
 
     private static final String TERM_ID = "term-id";
 
     private static final String LINKS_FIELD = "links";
 
     private static final String ROWS_FIELD = "rows";
+
+    private static final String OMIM_PREFIX = "OMIM";
+
+    private static final String HP_PREFIX = "HP";
 
     @Rule
     public MockitoComponentMockingRule<VocabularyTermsResolveResource> mocker =
@@ -94,6 +104,12 @@ public class DefaultVocabularyTermsResolveResourceTest
 
     @Mock
     private VocabularyTerm term3;
+
+    @Mock
+    private Vocabulary vocabularyHpo;
+
+    @Mock
+    private Vocabulary vocabularyOmim;
 
     private VocabularyTermsResolveResource component;
 
@@ -127,9 +143,25 @@ public class DefaultVocabularyTermsResolveResourceTest
         when(autolinker.withExtraParameters(anyString(), anyString())).thenReturn(autolinker);
         when(autolinker.build()).thenReturn(Collections.emptyList());
 
-        when(this.vm.resolveTerm(TERM_1_ID)).thenReturn(this.term1);
-        when(this.vm.resolveTerm(TERM_2_ID)).thenReturn(this.term2);
-        when(this.vm.resolveTerm(TERM_3_ID)).thenReturn(this.term3);
+        when(this.vm.getVocabulary(HP_PREFIX)).thenReturn(this.vocabularyHpo);
+        when(this.vm.getVocabulary(OMIM_PREFIX)).thenReturn(this.vocabularyOmim);
+
+        final Set<String> termIdsHpo = new HashSet<>();
+        termIdsHpo.add(TERM_1_ID);
+        termIdsHpo.add(TERM_2_ID);
+
+        final Set<VocabularyTerm> termsHpo = new HashSet<>();
+        termsHpo.add(this.term1);
+        termsHpo.add(this.term2);
+
+        final Set<VocabularyTerm> termsOmim = new HashSet<>();
+        termsOmim.add(this.term3);
+
+        final Set<String> termIdsOmim = new HashSet<>();
+        termIdsOmim.add(TERM_3_ID);
+
+        when(this.vocabularyHpo.getTerms(eq(termIdsHpo))).thenReturn(termsHpo);
+        when(this.vocabularyOmim.getTerms(eq(termIdsOmim))).thenReturn(termsOmim);
 
         when(this.term1.toJSON()).thenReturn(new JSONObject().put(ID_FIELD, TERM_1_ID));
         when(this.term2.toJSON()).thenReturn(new JSONObject().put(ID_FIELD, TERM_2_ID));
@@ -147,7 +179,8 @@ public class DefaultVocabularyTermsResolveResourceTest
         when(this.request.getProperties(TERM_ID)).thenReturn(Collections.emptyList());
         final Response response = this.component.resolveTerms();
         Assert.assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
-        verify(this.logger, times(1)).error("No content provided.");
+
+        verify(this.logger, times(1)).info("No content provided.");
     }
 
     @Test
@@ -167,7 +200,44 @@ public class DefaultVocabularyTermsResolveResourceTest
                     .put(LINKS_FIELD, new JSONArray())
                     .put(ID_FIELD, TERM_3_ID)));
 
-        Assert.assertTrue(expected.similar(response.getEntity()));
+        final JSONObject actual = (JSONObject) response.getEntity();
+        Assert.assertEquals(expected.length(), actual.length());
+        Assert.assertTrue(expected.getJSONArray(LINKS_FIELD).similar(actual.getJSONArray(LINKS_FIELD)));
+        // Rows are unordered since getTerms returns a set.
+        Assert.assertEquals(new HashSet<>(expected.getJSONArray(ROWS_FIELD).toList()),
+            new HashSet<>(actual.getJSONArray(ROWS_FIELD).toList()));
+
+        verify(this.logger, never()).info(anyString());
+        verify(this.logger, never()).warn(anyString());
+        verify(this.logger, never()).error(anyString());
+    }
+
+    @Test
+    public void resolveTermsIgnoresUnprefixedTerms()
+    {
+        when(this.request.getProperties(TERM_ID)).thenReturn(Arrays.asList(TERM_1_ID, INVALID, TERM_2_ID, TERM_3_ID));
+        final Response response = this.component.resolveTerms();
+        final JSONObject expected = new JSONObject()
+            .put(LINKS_FIELD, new JSONArray())
+            .put(ROWS_FIELD, new JSONArray()
+                .put(new JSONObject()
+                    .put(LINKS_FIELD, new JSONArray())
+                    .put(ID_FIELD, TERM_1_ID))
+                .put(new JSONObject()
+                    .put(LINKS_FIELD, new JSONArray())
+                    .put(ID_FIELD, TERM_2_ID))
+                .put(new JSONObject()
+                    .put(LINKS_FIELD, new JSONArray())
+                    .put(ID_FIELD, TERM_3_ID)));
+
+        final JSONObject actual = (JSONObject) response.getEntity();
+        Assert.assertEquals(expected.length(), actual.length());
+        Assert.assertTrue(expected.getJSONArray(LINKS_FIELD).similar(actual.getJSONArray(LINKS_FIELD)));
+        // Rows are unordered since getTerms returns a set.
+        Assert.assertEquals(new HashSet<>(expected.getJSONArray(ROWS_FIELD).toList()),
+            new HashSet<>(actual.getJSONArray(ROWS_FIELD).toList()));
+
+        verify(this.logger, times(1)).warn("Term [{}] does not begin with a valid prefix", INVALID);
     }
 
     @Test
@@ -188,13 +258,25 @@ public class DefaultVocabularyTermsResolveResourceTest
                     .put(LINKS_FIELD, new JSONArray())
                     .put(ID_FIELD, TERM_3_ID)));
 
-        Assert.assertTrue(expected.similar(response.getEntity()));
+        final JSONObject actual = (JSONObject) response.getEntity();
+        Assert.assertEquals(expected.length(), actual.length());
+        Assert.assertTrue(expected.getJSONArray(LINKS_FIELD).similar(actual.getJSONArray(LINKS_FIELD)));
+        // Rows are unordered since getTerms returns a set.
+        Assert.assertEquals(new HashSet<>(expected.getJSONArray(ROWS_FIELD).toList()),
+            new HashSet<>(actual.getJSONArray(ROWS_FIELD).toList()));
+
+        verify(this.logger, never()).info(anyString());
+        verify(this.logger, never()).warn(anyString());
+        verify(this.logger, never()).error(anyString());
     }
 
     @Test
-    public void resolveTermsIgnoresInvalidIds()
+    public void resolveTermsIgnoresInvalidVocabularies()
     {
-        when(this.vm.resolveTerm(TERM_2_ID)).thenReturn(null);
+        final Set<String> termIdsOmim = new HashSet<>();
+        termIdsOmim.add(TERM_3_ID);
+
+        when(this.vm.getVocabulary(OMIM_PREFIX)).thenReturn(null);
         final Response response = this.component.resolveTerms();
         final JSONObject expected = new JSONObject()
             .put(LINKS_FIELD, new JSONArray())
@@ -204,9 +286,15 @@ public class DefaultVocabularyTermsResolveResourceTest
                     .put(ID_FIELD, TERM_1_ID))
                 .put(new JSONObject()
                     .put(LINKS_FIELD, new JSONArray())
-                    .put(ID_FIELD, TERM_3_ID)));
+                    .put(ID_FIELD, TERM_2_ID)));
 
-        Assert.assertTrue(expected.similar(response.getEntity()));
-        verify(this.logger, times(1)).warn("Could not resolve vocabulary term: [{}]", TERM_2_ID);
+        final JSONObject actual = (JSONObject) response.getEntity();
+        Assert.assertEquals(expected.length(), actual.length());
+        Assert.assertTrue(expected.getJSONArray(LINKS_FIELD).similar(actual.getJSONArray(LINKS_FIELD)));
+        // Rows are unordered since getTerms returns a set.
+        Assert.assertEquals(new HashSet<>(expected.getJSONArray(ROWS_FIELD).toList()),
+            new HashSet<>(actual.getJSONArray(ROWS_FIELD).toList()));
+
+        verify(this.logger, times(1)).warn("Could not resolve terms [{}]. No matching vocabulary found.", termIdsOmim);
     }
 }

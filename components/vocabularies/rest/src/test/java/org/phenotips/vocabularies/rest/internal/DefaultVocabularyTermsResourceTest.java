@@ -32,8 +32,12 @@ import org.xwiki.context.Execution;
 import org.xwiki.context.ExecutionContext;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -54,6 +58,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -138,9 +143,13 @@ public class DefaultVocabularyTermsResourceTest
         when(this.term3.toJSON()).thenReturn(new JSONObject().put(ID_FIELD, TERM_3_ID));
 
         when(this.vm.getVocabulary(HPO_NAME)).thenReturn(this.vocabulary);
-        when(this.vocabulary.getTerm(TERM_1_ID)).thenReturn(this.term1);
-        when(this.vocabulary.getTerm(TERM_2_ID)).thenReturn(this.term2);
-        when(this.vocabulary.getTerm(TERM_3_ID)).thenReturn(this.term3);
+
+        final Set<VocabularyTerm> terms = new HashSet<>();
+        terms.add(this.term1);
+        terms.add(this.term2);
+        terms.add(this.term3);
+
+        when(this.vocabulary.getTerms(Arrays.asList(TERM_1_ID, TERM_2_ID, TERM_3_ID))).thenReturn(terms);
         when(this.vocabulary.getIdentifier()).thenReturn(HPO_NAME);
 
         final Container container = this.mocker.getInstance(Container.class);
@@ -155,6 +164,7 @@ public class DefaultVocabularyTermsResourceTest
         when(this.vm.getVocabulary(HPO_NAME)).thenReturn(null);
         final Response response = this.component.getTerms(HPO_NAME);
         Assert.assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+
         verify(this.logger, times(1)).error("The requested vocabulary [{}] was not found", HPO_NAME);
     }
 
@@ -164,7 +174,8 @@ public class DefaultVocabularyTermsResourceTest
         when(this.request.getProperties(TERM_ID)).thenReturn(Collections.emptyList());
         final Response response = this.component.getTerms(HPO_NAME);
         Assert.assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
-        verify(this.logger, times(1)).error("No content provided.");
+
+        verify(this.logger, times(1)).info("No content provided.");
     }
 
     @Test
@@ -184,13 +195,28 @@ public class DefaultVocabularyTermsResourceTest
                     .put(LINKS_FIELD, new JSONArray())
                     .put(ID_FIELD, TERM_3_ID)));
 
-        Assert.assertTrue(expected.similar(response.getEntity()));
+        final JSONObject actual = (JSONObject) response.getEntity();
+        Assert.assertEquals(expected.length(), actual.length());
+        Assert.assertTrue(expected.getJSONArray(LINKS_FIELD).similar(actual.getJSONArray(LINKS_FIELD)));
+        // Rows are unordered since getTerms returns a set.
+        Assert.assertEquals(new HashSet<>(expected.getJSONArray(ROWS_FIELD).toList()),
+            new HashSet<>(actual.getJSONArray(ROWS_FIELD).toList()));
+
+        verify(this.logger, never()).info(anyString());
+        verify(this.logger, never()).warn(anyString());
+        verify(this.logger, never()).error(anyString());
     }
 
     @Test
-    public void getTermsFiltersNullIds()
+    public void getTermsIgnoresNulls()
     {
-        when(this.request.getProperties(TERM_ID)).thenReturn(Arrays.asList(TERM_1_ID, null, TERM_2_ID, TERM_3_ID));
+        final List<Object> termIdList = new ArrayList<>();
+        termIdList.add(TERM_1_ID);
+        termIdList.add(null);
+        termIdList.add(TERM_2_ID);
+        termIdList.add(TERM_3_ID);
+
+        when(this.request.getProperties(TERM_ID)).thenReturn(termIdList);
         final Response response = this.component.getTerms(HPO_NAME);
         final JSONObject expected = new JSONObject()
             .put(LINKS_FIELD, new JSONArray())
@@ -205,25 +231,15 @@ public class DefaultVocabularyTermsResourceTest
                     .put(LINKS_FIELD, new JSONArray())
                     .put(ID_FIELD, TERM_3_ID)));
 
-        Assert.assertTrue(expected.similar(response.getEntity()));
-    }
+        final JSONObject actual = (JSONObject) response.getEntity();
+        Assert.assertEquals(expected.length(), actual.length());
+        Assert.assertTrue(expected.getJSONArray(LINKS_FIELD).similar(actual.getJSONArray(LINKS_FIELD)));
+        // Rows are unordered since getTerms returns a set.
+        Assert.assertEquals(new HashSet<>(expected.getJSONArray(ROWS_FIELD).toList()),
+            new HashSet<>(actual.getJSONArray(ROWS_FIELD).toList()));
 
-    @Test
-    public void getTermsIgnoresInvalidIds()
-    {
-        when(this.vocabulary.getTerm(TERM_2_ID)).thenReturn(null);
-        final Response response = this.component.getTerms(HPO_NAME);
-        final JSONObject expected = new JSONObject()
-            .put(LINKS_FIELD, new JSONArray())
-            .put(ROWS_FIELD, new JSONArray()
-                .put(new JSONObject()
-                    .put(LINKS_FIELD, new JSONArray())
-                    .put(ID_FIELD, TERM_1_ID))
-                .put(new JSONObject()
-                    .put(LINKS_FIELD, new JSONArray())
-                    .put(ID_FIELD, TERM_3_ID)));
-
-        Assert.assertTrue(expected.similar(response.getEntity()));
-        verify(this.logger, times(1)).warn("Could not retrieve term [{}] from vocabulary [{}]", TERM_2_ID, HPO_NAME);
+        verify(this.logger, never()).info(anyString());
+        verify(this.logger, never()).warn(anyString());
+        verify(this.logger, never()).error(anyString());
     }
 }
