@@ -625,7 +625,7 @@ define([
                             results.push(new HPOTerm(item.value, item.next('.value') && item.next('.value').firstChild.nodeValue || item.value));
                         });
                     }
-                    return results;
+                    return [results];
                 }.bind(cancersPicker);
                 return result;
             },
@@ -981,6 +981,12 @@ define([
                     'qualifierName': 'notes'});
             var qualifiers = qualifiersWidget.get();
             qualifiers._widget = qualifiersWidget;
+            var focus = qualifiersWidget._focus.bind(qualifiersWidget);
+            qualifiersWidget._focus = function(elem) {
+                if (!qualifiers.disabled) {
+                    focus(elem);
+                }
+            };
             return qualifiers;
         },
 
@@ -1526,13 +1532,9 @@ define([
                 this.__disableEnableSuggestModification(container, disabled);
             },
             'cancers-picker' : function (container, disabled) {
-                Element.select(container, 'input').forEach(function(element) {
-                    element.disabled = disabled;
-                    if (disabled) {
-                        element.addClassName('hidden');
-                    } else {
-                        element.removeClassName('hidden');
-                    }
+                container.select('input.suggest').each(function(item) {
+                    item.disabled = disabled;
+                    disabled && item.hide() || item.show();
                 });
             },
             'gene-picker' : function (container, disabled) {
@@ -1545,15 +1547,15 @@ define([
                 }
             },
             'cancerlist' : function (container, disabled) {
-                container.select('select').each(function(item) {
+                container.select('input[type=checkbox]').each(function(item) {
                     item.disabled = disabled;
                 });
-                container.select('.button-container').each(function(item) {
-                    if (disabled) {
-                        item.hide();
-                    } else {
-                        item.show();
-                    }
+                container.select('textarea').each(function(item) {
+                    item.disabled = disabled;
+                });
+                container.select('table.cancers-summary-group').each(function(qualifiers) {
+                    qualifiers.disabled = disabled;
+                    qualifiers.select(".action-edit", ".action-done", ".patient-details-add").invoke(disabled ? "hide" : "show");
                 });
             },
             'phenotipsid-picker' : function (container, disabled, inactive, value) {
