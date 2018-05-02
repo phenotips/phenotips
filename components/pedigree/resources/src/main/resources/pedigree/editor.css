@@ -1198,16 +1198,49 @@ table.summary-group tr.term-holder span.patient-term-delete {
 table.summary-group tr.term-holder span.term-data span.xHelpButton {
   margin-left: .5em;
 }
+
+table.summary-group div.summary-item.blurred dl {
+  display: inline-block;
+  margin: .2em;
+  vertical-align: middle;
+}
+table.summary-group div.summary-item.blurred dt {
+  margin: 0 0 0 .5em;
+  border-bottom-left-radius: .3em;
+  border-top-left-radius: .3em;
+}
+table.summary-group div.summary-item.blurred dl:first-child {
+  margin-left: 0;
+}
+table.summary-group div.summary-item.blurred dd {
+  margin: 0;
+  border-bottom-right-radius: .3em;
+  border-top-right-radius: .3em;
+}
+table.summary-group div.summary-item.blurred dt.hidden + dd + dd.preview {
+  margin: 0;
+  border-bottom-left-radius: .3em;
+  border-top-left-radius: .3em;
+}
+table.summary-group div.summary-item.blurred dt,
+table.summary-group div.summary-item.blurred dd {
+  display: inline-block;
+  background-color: $theme.pageContentBackgroundColor;
+  float: left;
+  padding: .3em;
+  clear: none;
+}
+table.summary-group div.summary-item dt,
+table.summary-group div.summary-item dd {
+  margin-top: .4em;
+  margin-bottom: .4em;
+}
 table.summary-group div.summary-item dt {
   float: left;
   clear: left;
 }
-table.summary-group div.summary-item.focused dt {
-  margin-top: .5em;
-  min-width: 30%;
-}
-table.summary-group div.summary-item.blurred dt {
-  margin-top: .5em;
+table.summary-group div.summary-item.focused dt:not(.inline) {
+  width: 100%;
 }
 table.summary-group div.summary-item.focused dt.collapsible span.selected-value {
   font-weight: normal;
@@ -1216,21 +1249,12 @@ table.summary-group div.summary-item.focused dt.collapsible span.selected-value 
 table.summary-group div.summary-item.focused dt.collapsible span.collapse-button {
   margin-right: .5em;
 }
-table.summary-group div.summary-item.focused dd span {
-  display: block;
-  clear: left;
-}
 table.summary-group div.summary-item.focused dd.comments textarea {
   min-height: 50px;
 }
-table.summary-group div.summary-item.blurred dd,
-table.summary-group div.summary-item.focused dd.inline {
-  float: left;
-  margin-top: .5em;
-  margin-left: .5em;
-}
 table.summary-group div.summary-item.focused dd.inline select {
   padding: 0;
+  margin-left: .5em;
 }
 table.summary-group div.summary-item ul {
   list-style-type: none;
