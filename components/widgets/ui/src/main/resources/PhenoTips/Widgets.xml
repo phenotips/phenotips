@@ -4218,7 +4218,7 @@ document.observe("xwiki:dom:updated", init);
   var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
 
   widgets.HelpButton = Class.create({
-
+    ADVANCED_INFO_MAX_ITEMS : 5,
     infoServices : {
       'xHelpButton' : {
          'hint'     : "$services.localization.render('phenotips.widgets.helpButtons.xHelpButton.hint')",
@@ -4326,23 +4326,35 @@ document.observe("xwiki:dom:updated", init);
                                        .insert(elt('span', 'value').update(json.name_translated))
                   );
 
-          var labels = {'short_name' : '',
-            'synonym': "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.synonym')",
-            'included_name': "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.included')"};
-            'actual_symptom' : "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.symptoms')",
-            'actual_not_symptom' : "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.notSymptoms')"};
-          var advancedInfo = elt('dl');
-          for (var l in labels) {
-            if (json[l] &amp;&amp; json[l].length &gt; 0) {
-              advancedInfo.insert(elt('dt', '', labels[l]));
-              json[l].each(function (item) {
-                advancedInfo.insert(elt('dd', '', item.label || item));
-              })
+          var labels = {
+            'short_name' : {
+              "name" : '',
+              "display" : helpButton._insertAdvancedInfo.bind(helpButton)
+            },
+            'synonym': {
+              "name" : "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.synonym')",
+              "display" : helpButton._insertAdvancedInfo.bind(helpButton)
+            },
+            'included_name' : {
+              "name" : "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.included')",
+              "display" : helpButton._insertAdvancedInfo.bind(helpButton)
+            },
+            'actual_symptom' : {
+              "name" : "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.symptoms')",
+              "display" : helpButton._insertFormattedAdvancedInfo.bind(helpButton)
+            },
+            'actual_not_symptom' : {
+              "name" : "$services.localization.render('phenotips.widgets.helpButtons.omimDisease.notSymptoms')",
+              "display" : helpButton._insertFormattedAdvancedInfo.bind(helpButton)
             }
+          };
+          var advancedInfo = elt('div', 'advanced-info');
+          advancedInfo.hide();
+          for (var l in labels) {
+            labels[l].display(advancedInfo, labels[l].name, json[l]);
           }
-          if (advancedInfo.firstDescendant()) {
-            c.insert(advancedInfo);
-          }
+          c.insert(advancedInfo);
+
           var viewButton = new Element('a', {'class' : 'button', href : 'http://www.omim.org/entry/' + json.id, 'target' : '_blank'}).update("$services.localization.render('phenotips.widgets.helpButtons.omimDisease.linkToOmim')");
           c.insert(elt('div', 'term-tools').insert(viewButton.wrap('span', {'class' : 'buttonwrapper'})));
           viewButton.observe('click', function(event) {
@@ -4393,27 +4405,50 @@ document.observe("xwiki:dom:updated", init);
                   );
           json.def_translated &amp;&amp; c.insert(elt('p').update(json.def_translated.replace(/\s*\n\s*/, ' ')));
 
-          var labels = {'synonym' : "$escapetool.javascript($services.localization.render('phenotips.widgets.helpButtons.ordoDisease.synonym'))",
-            'parents' : "$escapetool.javascript($services.localization.render('phenotips.widgets.helpButtons.ordoDisease.parents'))",
-            'actual_symptom' : "$services.localization.render('phenotips.widgets.helpButtons.ordoDisease.symptoms')",
-            'actual_not_symptom' : "$services.localization.render('phenotips.widgets.helpButtons.ordoDisease.notSymptoms')",
-            'age_of_onset' : "$escapetool.javascript($services.localization.render('phenotips.widgets.helpButtons.ordoDisease.age_of_onset'))",
-            'inheritance' : "$escapetool.javascript($services.localization.render('phenotips.widgets.helpButtons.ordoDisease.inheritance'))",
-            'birth_prevalence' : "$escapetool.javascript($services.localization.render('phenotips.widgets.helpButtons.ordoDisease.birth_prevalence'))",
-            'lifetime_prevalence' : "$escapetool.javascript($services.localization.render('phenotips.widgets.helpButtons.ordoDisease.lifetime_prevalence'))",
-            'point_prevalence' : "$escapetool.javascript($services.localization.render('phenotips.widgets.helpButtons.ordoDisease.point_prevalence'))"};
-          var advancedInfo = elt('dl');
-          for (var l in labels) {
-            if (json[l]) {
-              advancedInfo.insert(elt('dt', '', labels[l]));
-              json[l].each(function (item) {
-                advancedInfo.insert(elt('dd', '', item.name_translated || item));
-              })
+          var labels = {
+            'synonym': {
+              "name" : "$services.localization.render('phenotips.widgets.helpButtons.ordoDisease.synonym')",
+              "display" : helpButton._insertAdvancedInfo.bind(helpButton)
+            },
+            'parents' : {
+              "name" : "$escapetool.javascript($services.localization.render('phenotips.widgets.helpButtons.ordoDisease.parents'))",
+              "display" : helpButton._insertAdvancedInfo.bind(helpButton)
+            },
+            'actual_symptom' : {
+              "name" : "$services.localization.render('phenotips.widgets.helpButtons.ordoDisease.symptoms')",
+              "display" : helpButton._insertFormattedAdvancedInfo.bind(helpButton)
+            },
+            'actual_not_symptom' : {
+              "name" : "$services.localization.render('phenotips.widgets.helpButtons.ordoDisease.notSymptoms')",
+              "display" : helpButton._insertFormattedAdvancedInfo.bind(helpButton)
+            },
+            'age_of_onset' : {
+              "name" : "$services.localization.render('phenotips.widgets.helpButtons.ordoDisease.age_of_onset')",
+              "display" : helpButton._insertAdvancedInfo.bind(helpButton)
+            },
+            'inheritance' : {
+              "name" : "$services.localization.render('phenotips.widgets.helpButtons.ordoDisease.inheritance')",
+              "display" : helpButton._insertAdvancedInfo.bind(helpButton)
+            },
+            'birth_prevalence' : {
+              "name" : "$services.localization.render('phenotips.widgets.helpButtons.ordoDisease.birth_prevalence')",
+              "display" : helpButton._insertAdvancedInfo.bind(helpButton)
+            },
+            'lifetime_prevalence' : {
+              "name" : "$services.localization.render('phenotips.widgets.helpButtons.ordoDisease.lifetime_prevalence')",
+              "display" : helpButton._insertAdvancedInfo.bind(helpButton)
+            },
+            'point_prevalence' : {
+              "name" : "$services.localization.render('phenotips.widgets.helpButtons.ordoDisease.point_prevalence')",
+              "display" : helpButton._insertAdvancedInfo.bind(helpButton)
             }
+          };
+          var advancedInfo = elt('div', 'advanced-info');
+          advancedInfo.hide();
+          for (var l in labels) {
+            labels[l].display(advancedInfo, labels[l].name, json[l]);
           }
-          if (advancedInfo.firstDescendant()) {
-            c.insert(advancedInfo);
-          }
+          c.insert(advancedInfo);
 
           var tools = elt('div', 'term-tools');
           this.externalDBs.each(function (item) {
@@ -4531,6 +4566,73 @@ document.observe("xwiki:dom:updated", init);
       }
       this.icon.observe("click", this.toggleHelp.bindAsEventListener(this));
       this.hideAllHelpOnOutsideClick = this.hideAllHelpOnOutsideClick.bindAsEventListener(this);
+    },
+
+    _insertAdvancedInfo : function(container, label, values) {
+      var elt = function(type, cssClass, content) {
+        return new Element(type, cssClass &amp;&amp; {'class' : cssClass} || {}).update(content || '');
+      };
+      if (values &amp;&amp; values.length &gt; 0) {
+        var expandableContainer = elt('dl');
+        container.insert(expandableContainer);
+        container.show();
+        expandableContainer.insert(elt('dt', '', label));
+        values.each(function (item) {
+          expandableContainer.insert(elt('dd', '', item.label || item));
+        });
+        this._limitDefListSize(expandableContainer);
+      }
+    },
+
+    _insertFormattedAdvancedInfo : function(container, label, values) {
+      if (!values || !values.length) { return; }
+      var _this = this;
+      new Ajax.Request(XWiki.contextPath + "/rest/vocabularies/terms/fetch", {
+        parameters : {"term-id" : values},
+        method: "GET",
+        onSuccess: function(response) {
+          var json = response &amp;&amp; response.responseJSON;
+          var formattedValues = json &amp;&amp; json.rows &amp;&amp; json.rows.map(function(item) {
+            return item.name_translated || item.name;
+          });
+          _this._insertAdvancedInfo(container, label, formattedValues);
+        }
+      });
+    },
+
+    _limitDefListSize : function(container) {
+      var elements = container.select("dd");
+      // If one over ADVANCED_INFO_MAX_ITEMS, display all, since "show more" and the extra item will occupy same amount of space.
+      if (elements.length &lt;= this.ADVANCED_INFO_MAX_ITEMS + 1) { return; };
+      var hiddenElems = elements.slice(this.ADVANCED_INFO_MAX_ITEMS);
+      var expandButton = new Element("div", {"class" : "expand-button"});
+      this._toggleAdvancedInfoExpand(container, expandButton, hiddenElems);
+      container.insert({"after" : expandButton});
+      var _this = this;
+      expandButton.observe("click", function(event) {
+        _this._toggleAdvancedInfoExpand(container, expandButton, hiddenElems);
+      });
+    },
+
+    _toggleAdvancedInfoExpand : function(container, expandButton, hiddenElems) {
+      var minifiedLabel = "minified";
+      if (container.hasClassName(minifiedLabel)) {
+        this._expandAdvancedInfo(container, expandButton, hiddenElems, minifiedLabel, "$escapetool.javascript($services.localization.render('phenotips.widgets.helpButtons.advancedInfo.less'))");
+      } else {
+        this._collapseAdvancedInfo(container, expandButton, hiddenElems, minifiedLabel, "$escapetool.javascript($services.localization.render('phenotips.widgets.helpButtons.advancedInfo.more'))".replace("___numItems___", hiddenElems.length));
+      }
+    },
+
+    _expandAdvancedInfo : function(container, expandButton, displayedElems, minifiedMarker, buttonLabel) {
+      container.removeClassName(minifiedMarker);
+      expandButton.update(buttonLabel);
+      displayedElems.invoke("show");
+    },
+
+    _collapseAdvancedInfo : function(container, expandButton, hiddenElems, minifiedMarker, buttonLabel) {
+      container.addClassName(minifiedMarker);
+      expandButton.update(buttonLabel);
+      hiddenElems.invoke("hide");
     },
 
     toggleHelp : function() {
@@ -8916,9 +9018,19 @@ input.xwiki-free-multiselect-value {
 .xTooltip dl {
   margin: .3em 0;
 }
+.xTooltip dl.minified {
+  overflow-y: hidden;
+}
+.xTooltip div.expand-button {
+  cursor: pointer;
+  color: $theme.linkColor;
+}
+.xTooltip div.expand-button:last-child {
+  margin-bottom: 1.5em;
+}
 .xTooltip dt {
   font-style: italic;
-  margin: .4em 0 0.2em;
+  margin: 1em 0 0.2em;
 }
 .xTooltip .term-tools {
   margin: .4em 0;
