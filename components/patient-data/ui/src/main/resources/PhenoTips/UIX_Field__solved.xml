@@ -166,7 +166,8 @@
         // Response handlers.
         xhr.onload = function() {
             var response = JSON.parse(xhr.responseText);
-            if (response &amp;&amp; response.result  &amp;&amp; response.result.uids &amp;&amp; response.result.uids.size() &gt; 0) {
+            if (response &amp;&amp; response.result &amp;&amp; response.result.uids &amp;&amp; response.result.uids.size() &gt; 0
+                &amp;&amp; response.result[response.result.uids[0]] &amp;&amp; !response.result[response.result.uids[0]].error) {
                 var data = response.result[response.result.uids[0]];
                 var title = data.title || '';
                 var source = data.source ? data.source + '. ' : '';
