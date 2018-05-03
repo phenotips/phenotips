@@ -125,11 +125,13 @@ $xwiki.jsx.use($displayDocName)##
 {{velocity}}
 ## Extensions making up the main content, the actual information about the patient
 #set ($recordConfiguration = $services.recordConfiguration.getConfiguration("patient"))
+#set($customPrerequisites = {'PhenoTips.GeneClass':{'requireName': 'gene-variants'}})
 #foreach ($section in $recordConfiguration.enabledSections)
  #set ($sectionContent = '')
  #foreach ($element in $section.enabledElements)
    #if ($element.extension.parameters.get('fields') || $element.extension.parameters.get('pt_class'))
-     #set ($itemContent = "&lt;li&gt;&lt;label&gt;&lt;input type=""checkbox"" name=""$!{prefix}$!{name}"" value=""$element.extension.id"" #if ($value.contains(""$element.extension.id"")) checked=""checked"" #end/&gt; $element.name&lt;/label&gt;&lt;/li&gt;")
+     #set ($eCMeta = $customPrerequisites.get($element.extension.parameters.get('pt_class')))
+     #set ($itemContent = "&lt;li&gt;&lt;label&gt;&lt;input type=""checkbox"" name=""$!{prefix}$!{name}"" value=""$element.extension.id"" #if($eCMeta.requireName) class=""prerequisite_$eCMeta.requireName""#end #if ($value.contains(""$element.extension.id"")) checked=""checked"" #end/&gt; $element.name&lt;/label&gt;&lt;/li&gt;")
      #set ($sectionContent = $sectionContent.concat($itemContent))
    #end
  #end
@@ -543,6 +545,23 @@ $xwiki.jsx.use($displayDocName)##
       __consent_toggleFields(elt, toggleTarget);
       elt.addClassName('initialized');
     })
+
+    //============================================================================
+    // Control consent checkboxes that have to check pre-requisite controller checkboxes with them when checked
+    var checkboxes = $$('input[type=checkbox][class^="prerequisite_"]');
+    checkboxes.each(function(elt) {
+      var controlledValue = elt.className.replace("prerequisite_", '');
+      var controller = $$('input[type=checkbox][value$="' + controlledValue + '"]')[0];
+      if (!controller) { return; }
+      // for example, if genes checkbox is checked, variants should be checked
+      elt.observe('click', function(event) {
+        controller.checked = elt.checked || controller.checked;
+      });
+      // if variants are unchecked - uncheck genes too
+      controller.observe('click', function(event) {
+        elt.checked = elt.checked &amp;&amp; controller.checked;
+      });
+    });
     return true;
   };
 
