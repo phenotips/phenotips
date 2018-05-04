@@ -4455,8 +4455,7 @@ document.observe("xwiki:dom:updated", init);
                         { name : 'OMIM',         url : 'http://www.omim.org/entry/',                                  field : 'omim_id'},
                         { name : 'Entrez',       url : 'http://www.ncbi.nlm.nih.gov/gene/?term=',                     field : 'entrez_id'},
                         { name : 'RefSeq',       url : 'http://www.ncbi.nlm.nih.gov/nuccore/',                        field : 'refseq_accession'},
-                        { name : 'Ensembl',      url : 'http://useast.ensembl.org/Homo_sapiens/Gene/Compara_Tree?g=', field : 'ensembl_gene_id'},
-                        { name : 'Gene panels',  url : 'https://www.ncbi.nlm.nih.gov/gtr/all/tests/?term=',           field : 'genecards_id'}
+                        { name : 'Ensembl',      url : 'http://useast.ensembl.org/Homo_sapiens/Gene/Compara_Tree?g=', field : 'ensembl_gene_id'}
             ],
         'callback' : function (helpButton, json) {
           var c = helpButton.helpBox.content;
