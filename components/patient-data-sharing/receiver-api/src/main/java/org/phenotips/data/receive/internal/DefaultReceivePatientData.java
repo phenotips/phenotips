@@ -545,6 +545,8 @@ public class DefaultReceivePatientData implements ReceivePatientData
                 this.logger.warn("Created new patient successfully");
             }
 
+            // get updated saved instance of patient document
+            affectedPatient = this.patientRepository.get(affectedPatient.getDocument());
             JSONObject patientData = new JSONObject(patientJSON);
             affectedPatient.updateFromJSON(patientData);
 
