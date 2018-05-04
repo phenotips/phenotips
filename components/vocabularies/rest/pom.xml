@@ -29,7 +29,7 @@
   <name>PhenoTips - Vocabularies - REST services</name>
 
   <properties>
-    <coverage.instructionRatio>0.40</coverage.instructionRatio>
+    <coverage.instructionRatio>0.39</coverage.instructionRatio>
   </properties>
 
   <dependencies>
