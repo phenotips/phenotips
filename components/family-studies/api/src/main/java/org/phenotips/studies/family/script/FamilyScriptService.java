@@ -17,12 +17,18 @@
  */
 package org.phenotips.studies.family.script;
 
+import org.phenotips.data.Patient;
+import org.phenotips.data.PatientRepository;
+import org.phenotips.entities.PrimaryEntityConnectionsManager;
 import org.phenotips.studies.family.Family;
-import org.phenotips.studies.family.FamilyTools;
+import org.phenotips.studies.family.FamilyRepository;
 import org.phenotips.studies.family.Pedigree;
+import org.phenotips.studies.family.groupManagers.DefaultPatientsInFamilyManager;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.script.service.ScriptService;
+import org.xwiki.users.User;
+import org.xwiki.users.UserManager;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -42,7 +48,18 @@ public class FamilyScriptService implements ScriptService
 {
     @Inject
     @Named("secure")
-    private FamilyTools familyTools;
+    private FamilyRepository familyRepository;
+
+    @Inject
+    @Named("secure")
+    private PatientRepository patientRepository;
+
+    @Inject
+    @Named(DefaultPatientsInFamilyManager.NAME)
+    private PrimaryEntityConnectionsManager<Family, Patient> pifManager;
+
+    @Inject
+    private UserManager userManager;
 
     /**
      * Creates an empty family.
@@ -51,17 +68,7 @@ public class FamilyScriptService implements ScriptService
      */
     public Family create()
     {
-        return this.familyTools.createFamily();
-    }
-
-    /**
-     * Creates an empty family.
-     *
-     * @return Family object corresponding to the newly created family.
-     */
-    public Family createFamily()
-    {
-        return create();
+        return this.familyRepository.create();
     }
 
     /**
@@ -73,7 +80,7 @@ public class FamilyScriptService implements ScriptService
      */
     public Family get(String id)
     {
-        return this.familyTools.getFamilyById(id);
+        return this.familyRepository.get(id);
     }
 
     /**
@@ -97,7 +104,11 @@ public class FamilyScriptService implements ScriptService
      */
     public Pedigree getPedigreeForFamily(String familyId)
     {
-        return this.familyTools.getPedigreeForFamily(familyId);
+        Family family = this.familyRepository.get(familyId);
+        if (family != null) {
+            return family.getPedigree();
+        }
+        return null;
     }
 
     /**
@@ -109,7 +120,11 @@ public class FamilyScriptService implements ScriptService
      */
     public Family getFamilyForPatient(String patientId)
     {
-        return this.familyTools.getFamilyForPatient(patientId);
+        Patient patient = this.patientRepository.get(patientId);
+        if (patient != null) {
+            return this.familyRepository.getFamilyForPatient(patient);
+        }
+        return null;
     }
 
     /**
@@ -121,7 +136,11 @@ public class FamilyScriptService implements ScriptService
      */
     public Pedigree getPedigreeForPatient(String patientId)
     {
-        return this.familyTools.getPedigreeForPatient(patientId);
+        Family family = this.getFamilyForPatient(patientId);
+        if (family != null) {
+            return family.getPedigree();
+        }
+        return null;
     }
 
     /**
@@ -133,7 +152,12 @@ public class FamilyScriptService implements ScriptService
      */
     public boolean removeMember(String patientId)
     {
-        return this.familyTools.removeMember(patientId);
+        Family family = this.getFamilyForPatient(patientId);
+        Patient patient = this.patientRepository.get(patientId);
+        if (family == null || patient == null) {
+            return false;
+        }
+        return this.pifManager.disconnect(family, patient);
     }
 
     /**
@@ -146,7 +170,19 @@ public class FamilyScriptService implements ScriptService
      */
     public boolean delete(Family family)
     {
-        return deleteFamily(family.getId(), false);
+        return delete(family, false);
+    }
+
+    /**
+     * Delete a family record, modifying the both the family and patient records to reflect the change.
+     *
+     * @param family the family to delete
+     * @param deleteAllMembers indicator whether to delete all family member documents as well
+     * @return true if successful; false if deletion failed or current user has not enough rights
+     */
+    public boolean delete(Family family, boolean deleteAllMembers)
+    {
+        return this.familyRepository.delete(family, deleteAllMembers);
     }
 
     /**
@@ -156,9 +192,10 @@ public class FamilyScriptService implements ScriptService
      * @param deleteAllMembers indicator whether to delete all family member documents as well
      * @return true if successful; false if deletion failed or current user has not enough rights
      */
-    public boolean deleteFamily(String familyId, boolean deleteAllMembers)
+    public boolean delete(String familyId, boolean deleteAllMembers)
     {
-        return this.familyTools.deleteFamily(familyId, deleteAllMembers);
+        Family family = this.get(familyId);
+        return this.delete(family, deleteAllMembers);
     }
 
     /**
@@ -170,6 +207,8 @@ public class FamilyScriptService implements ScriptService
      */
     public boolean canDeleteFamily(String familyId, boolean deleteAllMembers)
     {
-        return this.familyTools.currentUserCanDeleteFamily(familyId, deleteAllMembers);
+        Family family = this.get(familyId);
+        User user = this.userManager.getCurrentUser();
+        return this.familyRepository.canDeleteFamily(family, user, deleteAllMembers, false);
     }
 }

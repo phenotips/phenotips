@@ -19,6 +19,7 @@ package org.phenotips.entities.internal;
 
 import org.phenotips.entities.PrimaryEntityManager;
 import org.phenotips.entities.PrimaryEntityResolver;
+import org.phenotips.entities.spi.AbstractPrimaryEntityResolver;
 
 import org.xwiki.component.annotation.Component;
 
@@ -40,7 +41,7 @@ public class SecurePrimaryEntityResolver extends AbstractPrimaryEntityResolver
     private static final String SECURE = "secure";
 
     @Override
-    boolean isValidManager(@Nonnull final PrimaryEntityManager<?> manager)
+    protected boolean isValidManager(@Nonnull final PrimaryEntityManager<?> manager)
     {
         return manager.getClass().getAnnotation(Named.class).value().endsWith(SECURE);
     }

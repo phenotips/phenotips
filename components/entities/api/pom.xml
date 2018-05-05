@@ -29,7 +29,7 @@
   <name>PhenoTips - Entities - Java APIs</name>
 
   <properties>
-    <coverage.instructionRatio>0.12</coverage.instructionRatio>
+    <coverage.instructionRatio>0.012</coverage.instructionRatio>
   </properties>
 
   <dependencies>
@@ -57,6 +57,11 @@
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-query-manager</artifactId>
       <version>${xwiki.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-authorization</artifactId>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>

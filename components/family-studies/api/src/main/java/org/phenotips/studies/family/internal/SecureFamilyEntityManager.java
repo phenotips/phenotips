@@ -18,10 +18,11 @@
 package org.phenotips.studies.family.internal;
 
 import org.phenotips.entities.PrimaryEntityManager;
-import org.phenotips.entities.internal.AbstractPrimaryEntityManager;
+import org.phenotips.entities.spi.AbstractSecurePrimaryEntityManager;
 import org.phenotips.studies.family.Family;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
 
 import javax.inject.Named;
@@ -34,20 +35,14 @@ import javax.inject.Singleton;
  * @since 1.4
  */
 @Named("Family/secure")
-@Component(roles = {PrimaryEntityManager.class})
+@Component(roles = { PrimaryEntityManager.class })
 @Singleton
-public class SecureFamilyEntityManager extends AbstractPrimaryEntityManager<Family>
+public class SecureFamilyEntityManager extends AbstractSecurePrimaryEntityManager<Family>
 {
     @Override
     public EntityReference getEntityType()
     {
         return Family.CLASS_REFERENCE;
-    }
-
-    @Override
-    protected Class<? extends Family> getEntityClass()
-    {
-        return PhenotipsFamily.class;
     }
 
     @Override
@@ -57,8 +52,32 @@ public class SecureFamilyEntityManager extends AbstractPrimaryEntityManager<Fami
     }
 
     @Override
+    public String getIdPrefix()
+    {
+        return "FAM";
+    }
+
+    @Override
     public String getType()
     {
         return "families";
+    }
+
+    @Override
+    protected DocumentReference getEntityXClassReference()
+    {
+        return this.referenceResolver.resolve(Family.CLASS_REFERENCE);
+    }
+
+    @Override
+    protected Class<? extends Family> getEntityClass()
+    {
+        return PhenotipsFamily.class;
+    }
+
+    @Override
+    protected Class<? extends Family> getSecureEntityClass()
+    {
+        return SecureFamily.class;
     }
 }

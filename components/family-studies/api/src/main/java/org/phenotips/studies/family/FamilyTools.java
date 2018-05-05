@@ -19,18 +19,23 @@ package org.phenotips.studies.family;
 
 import org.phenotips.data.Patient;
 import org.phenotips.studies.family.exceptions.PTException;
+import org.phenotips.studies.family.internal.SecureFamilyRepository;
 
 import org.xwiki.component.annotation.Role;
 import org.xwiki.security.authorization.Right;
 
 /**
+ * Utility methods for manipulating families using the permissions of the current user.
+ * <p>
  * TODO: instead of interface make a SecureFamilyRepository extending FamilyRepository (similar to
- * PatientRepository/SecurepatientRepository) Utility methods for manipulating families using the permissions of the
- * current user.
+ * PatientRepository/SecurepatientRepository)
+ * </p>
  *
  * @version $Id$
  * @since 1.3
+ * @deprecated since 1.4, use the {@link SecureFamilyRepository} instead
  */
+@Deprecated
 @Role
 public interface FamilyTools
 {
@@ -146,8 +151,7 @@ public interface FamilyTools
     boolean canAddToFamily(Family family, Patient patient, boolean throwException) throws PTException;
 
     /**
-     * Sets the pedigree for the family, and updates all the corresponding other documents. TODO: it is questionable
-     * where this method should be located, given new entities API.
+     * Sets the pedigree for the family, and updates all the corresponding other documents.
      *
      * @param family the family
      * @param pedigree to set

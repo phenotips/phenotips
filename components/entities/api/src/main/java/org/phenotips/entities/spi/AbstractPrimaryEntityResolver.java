@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.entities.internal;
+package org.phenotips.entities.spi;
 
 import org.phenotips.entities.PrimaryEntity;
 import org.phenotips.entities.PrimaryEntityManager;
@@ -119,8 +119,7 @@ public abstract class AbstractPrimaryEntityResolver implements PrimaryEntityReso
             .map(manager -> manager.get(entityId))
             .filter(Objects::nonNull)
             .findFirst().orElseGet(
-                () -> this.performSecondarySearch(managers, prefix, entityId)
-            );
+                () -> this.performSecondarySearch(managers, prefix, entityId));
     }
 
     /**
@@ -172,5 +171,5 @@ public abstract class AbstractPrimaryEntityResolver implements PrimaryEntityReso
      *
      * @return true iff {@code manager} should be used to resolve entities, false otherwise
      */
-    abstract boolean isValidManager(@Nonnull PrimaryEntityManager<?> manager);
+    protected abstract boolean isValidManager(@Nonnull PrimaryEntityManager<?> manager);
 }

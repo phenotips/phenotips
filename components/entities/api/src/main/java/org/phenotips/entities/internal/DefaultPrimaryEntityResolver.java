@@ -19,6 +19,7 @@ package org.phenotips.entities.internal;
 
 import org.phenotips.entities.PrimaryEntityManager;
 import org.phenotips.entities.PrimaryEntityResolver;
+import org.phenotips.entities.spi.AbstractPrimaryEntityResolver;
 
 import org.xwiki.component.annotation.Component;
 
@@ -27,8 +28,8 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
- * Default implementation of the {@link PrimaryEntityResolver} component, which uses all the
- * {@link PrimaryEntityManager entity managers} registered in the component manager.
+ * Default implementation of the {@link PrimaryEntityResolver} component, which uses all the {@link PrimaryEntityManager
+ * entity managers} registered in the component manager.
  *
  * @version $Id$
  * @since 1.4
@@ -40,7 +41,7 @@ public class DefaultPrimaryEntityResolver extends AbstractPrimaryEntityResolver
     private static final String SECURE = "secure";
 
     @Override
-    boolean isValidManager(@Nonnull final PrimaryEntityManager manager)
+    protected boolean isValidManager(@Nonnull final PrimaryEntityManager<?> manager)
     {
         return !manager.getClass().getAnnotation(Named.class).value().endsWith(SECURE);
     }

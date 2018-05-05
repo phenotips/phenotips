@@ -69,6 +69,7 @@ import org.slf4j.Logger;
  * @version $Id$
  * @since 1.2RC1
  */
+@SuppressWarnings({ "checkstyle:ClassFanOutComplexity", "checkstyle:ClassDataAbstractionCoupling" })
 @Component
 @Singleton
 @Named("pedigrees")
@@ -96,6 +97,7 @@ public class PedigreeScriptService implements ScriptService
      * @param documentId PhenoTips family id or PhenoTips patient id
      * @return JSONResponse with information about the family. Returns null if no family is defined.
      */
+    @SuppressWarnings("checkstyle:ReturnCount")
     public JSONResponse getFamilyAndPedigree(String documentId)
     {
         try {
@@ -197,6 +199,7 @@ public class PedigreeScriptService implements ScriptService
         }
     }
 
+    @SuppressWarnings("checkstyle:ReturnCount")
     private JSONResponse convertExceptionIntoJSONResponse(Exception ex)
     {
         if (ex instanceof PTException) {

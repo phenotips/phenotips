@@ -15,11 +15,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.entities.internal;
+package org.phenotips.entities.spi;
 
 import org.phenotips.Constants;
 import org.phenotips.entities.PrimaryEntity;
 import org.phenotips.entities.PrimaryEntityManager;
+import org.phenotips.entities.internal.LazyPrimaryEntityIterator;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.bridge.DocumentModelBridge;

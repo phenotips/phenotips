@@ -21,14 +21,14 @@ import org.phenotips.configuration.RecordConfigurationManager;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientRepository;
+import org.phenotips.entities.PrimaryEntityConnectionsManager;
 import org.phenotips.security.authorization.AuthorizationService;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
-import org.phenotips.studies.family.PatientsInFamilyManager;
+import org.phenotips.studies.family.groupManagers.DefaultPatientsInFamilyManager;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.query.Query;
-import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
@@ -117,8 +117,8 @@ public class PhenotipsFamilyExport
     private RecordConfigurationManager configuration;
 
     @Inject
-    @Named("Family:Patient")
-    private PatientsInFamilyManager pifManager;
+    @Named(DefaultPatientsInFamilyManager.NAME)
+    private PrimaryEntityConnectionsManager<Family, Patient> pifManager;
 
     @Inject
     private Provider<XWikiContext> provider;
@@ -157,7 +157,7 @@ public class PhenotipsFamilyExport
         familyJSON.put(FAMILY_WARNING, family.getWarningMessage());
 
         JSONArray patientsJSONArray = new JSONArray();
-        for (Patient patient : this.pifManager.getMembers(family)) {
+        for (Patient patient : this.pifManager.getAllConnections(family)) {
             JSONObject patientJSON = getPatientInformationAsJSON(patient);
             patientsJSONArray.put(patientJSON);
         }
@@ -305,7 +305,7 @@ public class PhenotipsFamilyExport
             query = this.qm.createQuery(queryString, Query.XWQL);
             query.bindValue(PhenotipsFamilyExport.INPUT_PARAMETER, formattedInput);
             queryResults = query.execute();
-        } catch (QueryException e) {
+        } catch (Exception e) {
             this.logger.error("Error while performing patients/families query: [{}] ", e.getMessage());
             return Collections.emptyList();
         }
@@ -335,8 +335,8 @@ public class PhenotipsFamilyExport
                 familyJson.put("textSummary", searchResult.getDescription());
                 familyArray.put(familyJson);
             } else {
-                String escapedReference = XMLUtils.escapeXMLComment(searchResult.getReference());
-                String escapedDescription = XMLUtils.escapeXMLComment(searchResult.getDescription());
+                String escapedReference = XMLUtils.escapeAttributeValue(searchResult.getReference());
+                String escapedDescription = XMLUtils.escapeElementContent(searchResult.getDescription());
 
                 xmlResult.append("<rs id=\"").append(searchResult.getUrl()).append("\" ");
                 xmlResult.append("info=\"").append(escapedReference).append("\">");

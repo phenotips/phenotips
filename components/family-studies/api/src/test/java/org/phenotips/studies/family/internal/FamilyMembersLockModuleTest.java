@@ -18,8 +18,10 @@
 package org.phenotips.studies.family.internal;
 
 import org.phenotips.data.Patient;
+import org.phenotips.entities.PrimaryEntityConnectionsManager;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
+import org.phenotips.studies.family.groupManagers.DefaultPatientsInFamilyManager;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.locks.LockModule;
@@ -105,6 +107,8 @@ public class FamilyMembersLockModuleTest
 
     private FamilyRepository familyRepository;
 
+    private PrimaryEntityConnectionsManager<Family, Patient> pifm;
+
     @Before
     public void setup() throws ComponentLookupException, XWikiException
     {
@@ -117,7 +121,7 @@ public class FamilyMembersLockModuleTest
         when(this.familyDoc.getDocumentReference()).thenReturn(this.currentDocumentReference);
 
         this.familyRepository = this.mocker.getInstance(FamilyRepository.class);
-        when(this.familyRepository.get(this.currentDocumentReference.getName())).thenReturn(this.family);
+        when(this.familyRepository.get(this.currentDocumentReference)).thenReturn(this.family);
 
         when(this.notLockedPatient.getXDocument()).thenReturn(this.notLockedPatientDoc);
         when(this.notLockedPatientDoc.getLock(this.context)).thenReturn(null);
@@ -132,12 +136,15 @@ public class FamilyMembersLockModuleTest
         when(this.lockingUser.getId()).thenReturn("lockerUser");
         when(this.userManager.getUser("otherUser")).thenReturn(this.otherUser);
         when(this.otherUser.getId()).thenReturn("otherUser");
+
+        this.pifm = this.mocker.getInstance(DefaultPatientsInFamilyManager.TYPE, DefaultPatientsInFamilyManager.NAME);
     }
 
     @Test
     public void lockedWhenAMemberPatientIsLockedByDifferentUser() throws ComponentLookupException, XWikiException
     {
-        when(this.family.getMembers()).thenReturn(Arrays.asList(this.notLockedPatient, this.lockedPatient));
+        when(this.pifm.getAllConnections(this.family))
+            .thenReturn(Arrays.asList(this.notLockedPatient, this.lockedPatient));
         when(this.userManager.getCurrentUser()).thenReturn(this.otherUser);
 
         Assert.assertNotNull(this.mocker.getComponentUnderTest().getLock(this.currentDocumentReference));
@@ -146,7 +153,8 @@ public class FamilyMembersLockModuleTest
     @Test
     public void lockedWhenAMemberPatientIsLockedBySameUser() throws ComponentLookupException, XWikiException
     {
-        when(this.family.getMembers()).thenReturn(Arrays.asList(this.notLockedPatient, this.lockedPatient));
+        when(this.pifm.getAllConnections(this.family))
+            .thenReturn(Arrays.asList(this.notLockedPatient, this.lockedPatient));
         when(this.userManager.getCurrentUser()).thenReturn(this.lockingUser);
 
         Assert.assertNotNull(this.mocker.getComponentUnderTest().getLock(this.currentDocumentReference));
@@ -155,7 +163,7 @@ public class FamilyMembersLockModuleTest
     @Test
     public void noLockIfNoMemberIsLocked() throws ComponentLookupException, XWikiException
     {
-        when(this.family.getMembers()).thenReturn(Collections.singletonList(this.notLockedPatient));
+        when(this.pifm.getAllConnections(this.family)).thenReturn(Collections.singletonList(this.notLockedPatient));
         when(this.userManager.getCurrentUser()).thenReturn(this.otherUser);
 
         Assert.assertNull(this.mocker.getComponentUnderTest().getLock(this.currentDocumentReference));
@@ -177,7 +185,7 @@ public class FamilyMembersLockModuleTest
     @Test
     public void noLockForFamilyWithNoMembers() throws ComponentLookupException, XWikiException
     {
-        when(this.family.getMembers()).thenReturn(Collections.emptyList());
+        when(this.pifm.getAllConnections(this.family)).thenReturn(Collections.emptyList());
 
         Assert.assertNull(this.mocker.getComponentUnderTest().getLock(this.currentDocumentReference));
     }

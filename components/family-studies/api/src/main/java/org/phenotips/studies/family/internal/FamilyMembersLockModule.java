@@ -18,9 +18,10 @@
 package org.phenotips.studies.family.internal;
 
 import org.phenotips.data.Patient;
+import org.phenotips.entities.PrimaryEntityConnectionsManager;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
-import org.phenotips.studies.family.PatientsInFamilyManager;
+import org.phenotips.studies.family.groupManagers.DefaultPatientsInFamilyManager;
 import org.phenotips.translation.TranslationManager;
 
 import org.xwiki.component.annotation.Component;
@@ -74,8 +75,8 @@ public class FamilyMembersLockModule implements LockModule
     private Logger logger;
 
     @Inject
-    @Named("Family:Patient")
-    private PatientsInFamilyManager pifManager;
+    @Named(DefaultPatientsInFamilyManager.NAME)
+    private PrimaryEntityConnectionsManager<Family, Patient> pifManager;
 
     @Override
     public int getPriority()

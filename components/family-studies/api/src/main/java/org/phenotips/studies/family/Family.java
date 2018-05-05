@@ -20,6 +20,7 @@ package org.phenotips.studies.family;
 import org.phenotips.Constants;
 import org.phenotips.data.Patient;
 import org.phenotips.entities.PrimaryEntity;
+import org.phenotips.entities.PrimaryEntityConnectionsManager;
 
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
@@ -46,14 +47,14 @@ public interface Family extends PrimaryEntity
 
     /**
      * @return list of family members
-     * @deprecated use {@link PatientsInFamilyManager#getMembers(Family)}.
+     * @deprecated use {@link PrimaryEntityConnectionsManager#getAllConnections}.
      */
     @Deprecated
     List<Patient> getMembers();
 
     /**
      * @return list of family members ids
-     * @deprecated use {@link PatientsInFamilyManager#getMembers(Family)} and work with patients and not ids.
+     * @deprecated use {@link PrimaryEntityConnectionsManager#getAllConnections} and work with patients and not ids.
      */
     @Deprecated
     List<String> getMembersIds();
@@ -67,7 +68,7 @@ public interface Family extends PrimaryEntity
     /**
      * @param patient check if the patient belongs to this family
      * @return true if a patient is a member of the family
-     * @deprecated user {@link PatientsInFamilyManager#isMember(Family, Patient)}.
+     * @deprecated user {@link PrimaryEntityConnectionsManager#isConnected}.
      */
     @Deprecated
     boolean isMember(Patient patient);

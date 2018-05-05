@@ -87,7 +87,7 @@
   #if ($services.csrf.isTokenValid($request.form_token))
     #set($familyId = $request.get("family_id"))
     #set($removemembers = $request.get("removemembers"))
-    $services.families.deleteFamily($familyId, $removemembers))
+    $services.families.delete($familyId, $removemembers))
   #else
     $response.setStatus(400)
     Unauthorized action: invalid token
@@ -97,7 +97,7 @@
   #set($deleteallmembers = $request.get("deleteallmembers"))
   $services.families.canDeleteFamily($familyId, $deleteallmembers)
 #elseif ("$!request.action" == "createfamily")
-  #set($family = $services.families.createFamily())
+  #set($family = $services.families.create())
   #if ($family)
     { "newFamilyID": "$family.getId()" }
   #else
@@ -105,7 +105,7 @@
   #end
 #elseif ("$!request.action" == "removefamily")
   #set($familyId = $request.get("family_id"))
-  #set($success = $services.families.deleteFamily($familyId, false))
+  #set($success = $services.families.delete($familyId, false))
   { "success": $success }
 #else
   Unknown action

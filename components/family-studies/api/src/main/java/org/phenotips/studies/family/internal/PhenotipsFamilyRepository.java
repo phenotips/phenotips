@@ -20,17 +20,18 @@ package org.phenotips.studies.family.internal;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.permissions.Owner;
+import org.phenotips.entities.PrimaryEntityConnectionsManager;
 import org.phenotips.entities.PrimaryEntityManager;
 import org.phenotips.security.authorization.AuthorizationService;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.FamilyRepository;
-import org.phenotips.studies.family.PatientsInFamilyManager;
 import org.phenotips.studies.family.exceptions.PTException;
 import org.phenotips.studies.family.exceptions.PTInvalidFamilyIdException;
 import org.phenotips.studies.family.exceptions.PTInvalidPatientIdException;
 import org.phenotips.studies.family.exceptions.PTNotEnoughPermissionsOnFamilyException;
 import org.phenotips.studies.family.exceptions.PTNotEnoughPermissionsOnPatientException;
 import org.phenotips.studies.family.exceptions.PTPatientAlreadyInAnotherFamilyException;
+import org.phenotips.studies.family.groupManagers.DefaultPatientsInFamilyManager;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
@@ -53,7 +54,6 @@ import javax.inject.Singleton;
 import org.apache.commons.lang3.StringUtils;
 
 import com.xpn.xwiki.XWikiContext;
-import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
@@ -65,6 +65,7 @@ import com.xpn.xwiki.doc.XWikiDocument;
 @Component(roles = { FamilyRepository.class, PrimaryEntityManager.class })
 @Named("Family")
 @Singleton
+@SuppressWarnings("checkstyle:ClassFanOutComplexity")
 public class PhenotipsFamilyRepository extends FamilyEntityManager implements FamilyRepository
 {
     private static final String FAMILY_REFERENCE_FIELD = "reference";
@@ -77,8 +78,8 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
     private PatientRepository patientRepository;
 
     @Inject
-    @Named("Family:Patient")
-    private PatientsInFamilyManager pifManager;
+    @Named(DefaultPatientsInFamilyManager.NAME)
+    private PrimaryEntityConnectionsManager<Family, Patient> pifManager;
 
     @Inject
     private AuthorizationService authorizationService;
@@ -151,7 +152,7 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
                     return false;
                 }
             }
-        } else if (!this.pifManager.forceRemoveAllMembers(family, currentUser)) {
+        } else if (!this.pifManager.disconnectAll(family)) {
             return false;
         }
 
@@ -248,25 +249,6 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
         if (familyForLinkedPatient != null && !familyForLinkedPatient.getId().equals(family.getId())) {
             throw new PTPatientAlreadyInAnotherFamilyException(patient.getId(), familyForLinkedPatient.getId());
         }
-    }
-
-    private synchronized boolean saveFamilyDocument(Family family, String documentHistoryComment, XWikiContext context)
-    {
-        try {
-            family.getXDocument().setAuthorReference(context.getUserReference());
-            context.getWiki().saveDocument(family.getXDocument(), documentHistoryComment, context);
-        } catch (XWikiException e) {
-            this.logger.error("Error saving family [{}] document for commit {}: [{}]",
-                family.getId(), documentHistoryComment, e.getMessage());
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public Family create()
-    {
-        return this.create(this.userManager.getCurrentUser().getProfileDocument());
     }
 
     /*

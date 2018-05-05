@@ -18,7 +18,7 @@
 package org.phenotips.studies.family.script;
 
 import org.phenotips.studies.family.Family;
-import org.phenotips.studies.family.FamilyTools;
+import org.phenotips.studies.family.FamilyRepository;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
@@ -46,55 +46,34 @@ public class FamilyScriptServiceTest
     @Mock
     private Family family;
 
-    private FamilyTools tools;
+    private FamilyRepository repo;
 
     @Before
     public void setup() throws ComponentLookupException
     {
         MockitoAnnotations.initMocks(this);
-        this.tools = this.mocker.getInstance(FamilyTools.class, "secure");
+        this.repo = this.mocker.getInstance(FamilyRepository.class, "secure");
         when(this.family.getId()).thenReturn("FAM0123456");
     }
 
     @Test
     public void getForwardsCalls() throws ComponentLookupException
     {
-        when(this.tools.getFamilyById("FAM0123456")).thenReturn(this.family);
+        when(this.repo.get("FAM0123456")).thenReturn(this.family);
         Assert.assertSame(this.family, this.mocker.getComponentUnderTest().get("FAM0123456"));
-    }
-
-    @Test
-    public void getFamilyByIdForwardsCalls() throws ComponentLookupException
-    {
-        when(this.tools.getFamilyById("FAM0123456")).thenReturn(this.family);
-        Assert.assertSame(this.family, this.mocker.getComponentUnderTest().getFamilyById("FAM0123456"));
     }
 
     @Test
     public void createForwardsCalls() throws ComponentLookupException
     {
-        when(this.tools.createFamily()).thenReturn(this.family);
+        when(this.repo.create()).thenReturn(this.family);
         Assert.assertSame(this.family, this.mocker.getComponentUnderTest().create());
-    }
-
-    @Test
-    public void createFamilyCalls() throws ComponentLookupException
-    {
-        when(this.tools.createFamily()).thenReturn(this.family);
-        Assert.assertSame(this.family, this.mocker.getComponentUnderTest().createFamily());
     }
 
     @Test
     public void deleteForwardsCalls() throws ComponentLookupException
     {
-        when(this.tools.deleteFamily("FAM0123456", false)).thenReturn(true);
+        when(this.repo.delete(this.family, false)).thenReturn(true);
         Assert.assertTrue(this.mocker.getComponentUnderTest().delete(this.family));
-    }
-
-    @Test
-    public void deleteFamilyForwardsCalls() throws ComponentLookupException
-    {
-        when(this.tools.deleteFamily("FAM0123456", true)).thenReturn(true);
-        Assert.assertTrue(this.mocker.getComponentUnderTest().deleteFamily(this.family.getId(), true));
     }
 }

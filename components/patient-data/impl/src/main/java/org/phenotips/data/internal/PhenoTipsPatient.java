@@ -25,7 +25,7 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.phenotips.data.PatientWritePolicy;
-import org.phenotips.entities.internal.AbstractPrimaryEntity;
+import org.phenotips.entities.spi.AbstractPrimaryEntity;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.EntityType;

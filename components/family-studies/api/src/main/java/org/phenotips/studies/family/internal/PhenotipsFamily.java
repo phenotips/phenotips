@@ -20,10 +20,11 @@ package org.phenotips.studies.family.internal;
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Patient;
 import org.phenotips.data.internal.PhenoTipsPatient;
-import org.phenotips.entities.internal.AbstractPrimaryEntity;
+import org.phenotips.entities.PrimaryEntityConnectionsManager;
+import org.phenotips.entities.spi.AbstractPrimaryEntity;
 import org.phenotips.studies.family.Family;
-import org.phenotips.studies.family.PatientsInFamilyManager;
 import org.phenotips.studies.family.Pedigree;
+import org.phenotips.studies.family.groupManagers.DefaultPatientsInFamilyManager;
 import org.phenotips.studies.family.internal.export.PhenotipsFamilyExport;
 
 import org.xwiki.component.manager.ComponentLookupException;
@@ -62,7 +63,7 @@ public class PhenotipsFamily extends AbstractPrimaryEntity implements Family
 
     private static PhenotipsFamilyExport familyExport;
 
-    private static PatientsInFamilyManager pifManager;
+    private static PrimaryEntityConnectionsManager<Family, Patient> pifManager;
 
     /** Logging helper object. */
     private Logger logger = LoggerFactory.getLogger(PhenoTipsPatient.class);
@@ -71,7 +72,8 @@ public class PhenotipsFamily extends AbstractPrimaryEntity implements Family
         try {
             ComponentManager cm = ComponentManagerRegistry.getContextComponentManager();
             PhenotipsFamily.familyExport = cm.getInstance(PhenotipsFamilyExport.class);
-            PhenotipsFamily.pifManager = cm.getInstance(PatientsInFamilyManager.class, "Family:Patient");
+            PhenotipsFamily.pifManager =
+                cm.getInstance(PrimaryEntityConnectionsManager.class, DefaultPatientsInFamilyManager.NAME);
         } catch (ComponentLookupException e) {
             e.printStackTrace();
         }
