@@ -47,9 +47,11 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.validator.routines.UrlValidator;
+import org.json.JSONObject;
 
 /**
  * Default implementation of {@link VocabularyResource} using XWiki's support for REST resources.
@@ -63,6 +65,8 @@ import org.apache.commons.validator.routines.UrlValidator;
 @Unstable
 public class DefaultVocabularyResource extends XWikiResource implements VocabularyResource
 {
+    private static final String VERSION = "version";
+
     @Inject
     private VocabularyManager vm;
 
@@ -155,7 +159,8 @@ public class DefaultVocabularyResource extends XWikiResource implements Vocabula
             int reindexStatus = vocabulary.reindex(url);
 
             if (reindexStatus == 0) {
-                result = Response.ok().build();
+                final JSONObject responseMeta = new JSONObject().put(VERSION, vocabulary.getVersion());
+                result = Response.ok(responseMeta, MediaType.APPLICATION_JSON_TYPE).build();
             } else if (reindexStatus == 1) {
                 result = Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
             } else {

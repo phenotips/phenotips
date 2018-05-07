@@ -446,7 +446,11 @@ $xwiki.ssx.use('PhenoTips.Widgets')##
         new Ajax.Request(vocabularyIndexURL, {
             method: 'post',
             onSuccess : function (response) {
-              form._x_notification.replace(new XWiki.widgets.Notification(response.responseText, "done"));
+              var version = response.responseJSON &amp;&amp; response.responseJSON.version || null;
+              var versionStr = version ? "$!escapetool.javascript($services.localization.render('phenotips.indexVocabulary.version'))".replace("{0}", version) : "$!escapetool.javascript($services.localization.render('phenotips.indexVocabulary.noVersion'))";
+              var versionElem = form.down('span.vocabulary-version');
+              versionElem &amp;&amp; versionElem.update(versionStr);
+              form._x_notification.replace(new XWiki.widgets.Notification("$!escapetool.javascript($services.localization.render('phenotips.indexVocabulary.success'))", "done"));
             }.bind(this),
             onFailure : function (response) {
               var failureReason = response.statusText;
