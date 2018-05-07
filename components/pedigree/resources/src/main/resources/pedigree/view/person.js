@@ -1265,6 +1265,7 @@ define([
                 hpo_positive:    {value : hpoTerms, disabled: false },
                 nocontact:       {value : this.getLostContact(), inactive: inactiveLostContact },
                 cancers:         {value : this.getCancers() },
+                cancers_picker:  {value : {} },
                 phenotipsid:     {value : this.getPhenotipsPatientId() },
                 setproband:      {value : "allow", inactive: this.isProband() }
             };
