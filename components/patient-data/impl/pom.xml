@@ -30,7 +30,7 @@
 
   <properties>
     <checkstyle.suppressions.location>${basedir}/src/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.location>
-    <coverage.instructionRatio>0.70</coverage.instructionRatio>
+    <coverage.instructionRatio>0.69</coverage.instructionRatio>
   </properties>
 
   <dependencies>
@@ -190,6 +190,11 @@
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-utils</artifactId>
+      <version>3.0.22</version>
     </dependency>
     <!-- Test dependencies -->
     <dependency>

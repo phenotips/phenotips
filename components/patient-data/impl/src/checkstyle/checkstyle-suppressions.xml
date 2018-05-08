@@ -25,6 +25,7 @@
 <suppressions>
   <suppress checks=".*" files="VariantListController.java"/>
   <suppress checks="CyclomaticComplexity" files="SolvedController.java"/>
+  <suppress checks="CyclomaticComplexity" files="SolvedControllerV1.java"/>
   <suppress checks="CyclomaticComplexity" files="ParentalAgeController.java"/>
   <suppress checks="ClassFanOutComplexity" files="AbstractComplexController.java"/>
   <suppress checks="ClassFanOutComplexity" files="GlobalQualifiersController.java"/>
