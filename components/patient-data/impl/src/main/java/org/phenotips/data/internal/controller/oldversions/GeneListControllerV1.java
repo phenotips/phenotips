@@ -38,10 +38,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
- * Handles the patients genes in pre-1.4M1.
+ * Handles the patients genes in pre-1.4.
  *
  * @version $Id$
- * @since 1.4M1
+ * @since 1.4
  */
 @Component(roles = { PatientDataController.class })
 @Named("genes_v1")
