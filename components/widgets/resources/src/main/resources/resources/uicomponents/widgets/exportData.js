@@ -293,8 +293,8 @@ document.observe('xwiki:dom:loading', function() {
 
     //============================================================================
     // Control Push dialog checkboxes that have to check pre-requisite controller checkboxes with them when checked
-    var checkboxes = content.select('.checkbox_tree_container input[type=checkbox][class^="prerequisite-"]');
-    checkboxes.each(function(elt) {
+    var controlledCheckboxes = content.select('.checkbox_tree_container input[type=checkbox][class^="prerequisite-"]');
+    controlledCheckboxes.each(function(elt) {
         var controller = $(elt.className.replace("prerequisite-", ''));
         if (!controller) { return; }
         // if genes checkbox is unchecked, variants should be unchecked
@@ -326,10 +326,17 @@ document.observe('xwiki:dom:loading', function() {
         checkboxList.each(function(elt) { elt.checked = true; elt.indeterminate = false; });
       });
       none.observe('click', function(event) {
-        checkboxList.each(function(elt) {elt.checked = false; elt.indeterminate = false;});
+        checkboxList.each(function(elt) { elt.checked = false; elt.indeterminate = false; });
       });
       invert.observe('click', function(event) {
-        checkboxList.each(function(elt) {if (!elt.indeterminate) { elt.checked = !elt.checked; } });
+        checkboxList.each(function(elt) { if (!elt.indeterminate) { elt.checked = !elt.checked; } });
+        // uncheck controlled checkboxes when controller is unchecked
+        // for example, if genes checkbox is unchecked, variants should be unchecked
+        controlledCheckboxes.each(function(elt) {
+            var controller = $(elt.className.replace("prerequisite-", ''));
+            if (!controller) { return; }
+            elt.checked = elt.checked && controller.checked;
+        });
       });
       restore.observe('click', function(event) {
         checkboxList.each(function(elt) {

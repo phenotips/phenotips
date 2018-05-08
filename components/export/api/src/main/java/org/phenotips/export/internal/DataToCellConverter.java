@@ -296,6 +296,7 @@ public class DataToCellConverter
     {
         String sectionName = "variants";
         Set<String> present = this.enabledHeaderIdsBySection.get("genes");
+        // if genes are not included or variants are not enabled
         if (present == null || present.isEmpty() || !enabledFields.remove(sectionName)) {
             return;
         }
@@ -303,13 +304,13 @@ public class DataToCellConverter
             Arrays.asList("gene", "cdna", "protein", "transcript", "dbsnp", "zygosity", "effect", "interpretation",
                 "inheritance", "evidence", "segregation", "sanger", "chromosome", "start_position",
                 "end_position", "reference_genome");
-        this.enabledHeaderIdsBySection.put(sectionName + "_variants", new LinkedHashSet<>(columns));
+        this.enabledHeaderIdsBySection.put(sectionName, new LinkedHashSet<>(columns));
     }
 
     public DataSection variantsHeader() throws Exception
     {
-        String sectionName = "genes";
-        Set<String> present = this.enabledHeaderIdsBySection.get(sectionName + "_variants");
+        String sectionName = "variants";
+        Set<String> present = this.enabledHeaderIdsBySection.get(sectionName);
         if (present == null || present.isEmpty()) {
             return null;
         }
@@ -333,8 +334,8 @@ public class DataToCellConverter
 
     public DataSection variantsBody(Patient patient) throws Exception
     {
-        String sectionName = "genes";
-        Set<String> present = this.enabledHeaderIdsBySection.get(sectionName + "_variants");
+        String sectionName = "variants";
+        Set<String> present = this.enabledHeaderIdsBySection.get(sectionName);
         if (present == null || present.isEmpty()) {
             return null;
         }
