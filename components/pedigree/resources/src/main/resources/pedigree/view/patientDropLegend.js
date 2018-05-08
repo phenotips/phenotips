@@ -31,12 +31,6 @@ define([
                 this._dragInfo.addClassName("legend-hidden");
             }
 
-            // only need this for 1.3.x
-            this._legendInfo = new Element('div', {'class' : 'legend-box legend-info', id: 'legend-info'}).insert(
-                    new Element('div', {'class' : 'warningmessage legend-warning'}).insert(
-                      "All patients listed here will be removed from the pedigree when pedigree is saved")
-                 );
-
             this._legendBoxControls = new Element('div', {'class' : 'legend-box-controls-open', id: 'patient-legend-box-controls'});
             var minimizedLegendTitle = new Element('div', {'class': 'legend-minimized-title field-no-user-select'}).update("Other Patients").hide();
             minimizedLegendTitle.hide();
@@ -80,7 +74,6 @@ define([
 
             this.legendContainer = new Element('div', {'class' : 'patient-assign-legend generic-legend', id: 'patient-assign'})
                                    .insert(this._legendBoxControls)
-                                   .insert(this._legendInfo)
                                    .insert(this._dragInfo);
             this.legendContainer.hide();
 
@@ -105,7 +98,14 @@ define([
 
             // add patient to a legend on unlink patient from node event
             document.observe('pedigree:patient:unlinked', function (event) {
-                    this.addCase(event.memo.phenotipsID, event.memo.type, event.memo.gender, event.memo.firstName, event.memo.lastName, event.memo.externalID);
+                    var pedigreeProperties = event.memo.pedigreeProperties;
+                    this.addCase(event.memo.phenotipsID,
+                                 event.memo.type,
+                                 pedigreeProperties.gender,
+                                 pedigreeProperties.fName,
+                                 pedigreeProperties.lName,
+                                 pedigreeProperties.externalID,
+                                 pedigreeProperties);
             }.bind(this));
 
             var removeCase = this.removeCase.bind(this);
@@ -160,7 +160,7 @@ define([
                     return;
                 }
 
-                var name = firstName + " " + lastName;
+                var name = (firstName ? firstName : "") + ((firstName && lastName) ? " " : "") + (lastName ? lastName : "");
 
                 this._notLinkedPatients[phenotipsPatientID] = {"type" : type,
                                                                "phenotipsID": phenotipsPatientID,
@@ -389,10 +389,17 @@ define([
                 return;
             }
             editor.getView().unmarkAll();
-            var properties = { "setPhenotipsPatientId": patient.phenotipsID };
-            document.fire("pedigree:node:modify", { 'nodeID': node.getID(),
-                                                    'modifications': {'trySetPhenotipsPatientId': patient.phenotipsID},
-                                                    'details': {'skipConfirmDialogue': true} });
+
+            var event = { 'nodeID': node.getID(),
+                          'details': {'skipConfirmDialogue': true } };
+
+            if (patient.pedigreeProperties) {
+                event.modifications = {'trySetPhenotipsProperties': patient.pedigreeProperties};
+            } else {
+                event.modifications = {'trySetPhenotipsPatientId': patient.phenotipsID};
+            }
+
+            document.fire("pedigree:node:modify", event);
         },
 
         /**

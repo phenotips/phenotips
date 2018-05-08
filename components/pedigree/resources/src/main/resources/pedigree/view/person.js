@@ -150,7 +150,8 @@ define([
 
             if (this._phenotipsId != "") {
                 // fire patient this._phenotipsId is no longer in family
-                var event = {"phenotipsID": this._phenotipsId, "gender": this.getGender(), "firstName":  this._firstName, "lastName": this._lastName, "externalID": this._externalID};
+                var event = { "phenotipsID": this._phenotipsId,
+                              "pedigreeProperties": this.getProperties() };
                 document.fire("pedigree:patient:unlinked", event);
             } else {
                 document.fire("pedigree:patient:linked", {"phenotipsID": phenotipsId});
@@ -1358,10 +1359,10 @@ define([
             info['nonstandard_features'] = phenotipsFeatures.nonstandard_features;
 
             // convert pedigree genes to PhenoTips gene format
-            info['genes'] = this.getGenes();
+            info['genes'] = this.getGenes().slice();
 
             if (this.getEthnicities().length > 0)
-                info['ethnicities'] = this.getEthnicities();
+                info['ethnicities'] = this.getEthnicities().slice();
             if (this._twinGroup !== null)
                 info['twinGroup'] = this._twinGroup;
             if (this._monozygotic)

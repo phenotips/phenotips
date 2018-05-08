@@ -670,6 +670,17 @@ define([
                         }
                     }
                     else
+                        if (modificationType == "trySetPhenotipsProperties") {
+
+                            node.assignProperties(modValue);
+
+                            editor.getGraph().setProperties( nodeID, node.getProperties() );
+
+                            if (!event.memo.noUndoRedo) {
+                                editor.getUndoRedoManager().addState( event );
+                            }
+                        }
+                    else
                     if (modificationType == "trySetPhenotipsPatientId") {
 
                         var setLink = function(clearOldData, loadPatientProperties) {

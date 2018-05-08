@@ -93,6 +93,7 @@ define([
         _onTemplateSelected: function(event, pictureBox) {
             //console.log("observe onTemplateSelected");
             this.close();
+            document.fire("pedigree:template:selected");
             var updatedJSONData = pictureBox.pedigreeData;
             editor.getSaveLoadEngine().createGraphFromStoredData(updatedJSONData, "template" /* data source */);
         },
