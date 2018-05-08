@@ -119,20 +119,23 @@
     </property>
     <property>
       <code>document.observe('xwiki:dom:loaded', function() {
+    // The National Center for Biotechnology Information (NSBI) article validation service provided by Entrez Programming Utilities
+    // allows PMID (Pubmed ID) validation returning article meta info if ID is valid and error if not
     var pubmedArticleServiceURL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&amp;retmode=json&amp;method=get&amp;id=";
-    var pubmedIdInput = $$('.solved__pubmed_id input')[0];
 
-    if (XWiki.contextaction == "edit" &amp;&amp; pubmedIdInput) {
+    // Pubmed ID container el in edit mode, if (XWiki.contextaction == "edit"):
+    var pubmedIdInput = $$('.solved__pubmed_id input')[0];
+    // in view mode:
+    var pubmedIdDisplayedValue = $$('.solved__pubmed_id .displayed-value p')[0];
+
+    if (pubmedIdInput) {
         pubmedIdInput.placeholder = "$!escapetool.javascript($services.localization.render('phenotips.UIXField.solved.pubmedId'))";
         pubmedIdInput.observe('blur', function () {
-            var pubmedId = pubmedIdInput.value;
-            if (pubmedId.length &lt; 1) {
-                return;
-            }
-            makeCorsRequest(pubmedId);
+            makeCorsRequest(pubmedIdInput);
         });
         pubmedIdInput.observe('focus', function () {
-            pubmedIdInput.next()  &amp;&amp; pubmedIdInput.next().remove();
+            pubmedIdInput.next('.invalid') &amp;&amp; pubmedIdInput.next('.invalid').remove();
+            pubmedIdInput.next('.article-info') &amp;&amp; pubmedIdInput.next('.article-info').remove();
         });
     };
 
@@ -152,33 +155,44 @@
         return xhr;
     };
 
-    // Make the actual CORS request
-    var makeCorsRequest = function (pubmedId) {
-        var url = pubmedArticleServiceURL + pubmedId;
+    // Make the actual NSBI CORS request
+    // el - DOM element that is either Pubmed ID input element if edit mode,
+    //      or display element that contains Pubmed ID as inner HTML in view mode
+    // pubmedId - actual Pubmed ID value
+    var makeCorsRequest = function (el, pubmedId) {
+        if (!el) { return; }
+
+        var pubmedEl = el;
+        var id = pubmedId ? pubmedId : el.value;
+
+        // may be other input validation would be useful, but that is the question whether Pubmed ID is/will stay numeric only
+        // 1. NSBI's API can change
+        // 2. because NSBI can parse numerical ID out from input if numeric part comes first and letters are entered last, ex. "123qwe"
+        //    but it will reply that input is invalid if we send "qwe123"
+        // so for now only length validation
+        if (id.length &lt; 1) { return; }
+
+        var url = pubmedArticleServiceURL + id;
 
         var xhr = createCORSRequest('GET', url);
-        if (!xhr) {
-            // CORS not supported
-            return;
-        }
-        //xhr.setRequestHeader('Content-Type', 'application/json');
+        if (!xhr) { return; } // CORS not supported
 
-        // Response handlers.
+        // Response handlers
         xhr.onload = function() {
             var response = JSON.parse(xhr.responseText);
             if (response &amp;&amp; response.result &amp;&amp; response.result.uids &amp;&amp; response.result.uids.size() &gt; 0
                 &amp;&amp; response.result[response.result.uids[0]] &amp;&amp; !response.result[response.result.uids[0]].error) {
-                var data = response.result[response.result.uids[0]];
-                var title = data.title || '';
-                var source = data.source ? data.source + '. ' : '';
+                var data    = response.result[response.result.uids[0]];
+                var title   = data.title || '';
+                var source  = data.source ? data.source + '. ' : '';
                 var pubdate = data.pubdate ? data.pubdate + '; ' : '';
                 var authors = data.authors || [];
-                var pages = data.pages ? data.pages + '. ' : ' ';
-                var volume = data.volume || '';
-                var issue = data.issue ? '(' + data.issue + ')' : '';
-                var elocationid = data.elocationid ? data.elocationid + '. ' : '';
+                var pages   = data.pages ? data.pages + '. ' : ' ';
+                var volume  = data.volume || '';
+                var issue   = data.issue ? '(' + data.issue + ')' : '';
+                var elocid  = data.elocationid ? data.elocationid + '. ' : '';
                 var epubdate = data.epubdate ? 'Epub ' + data.epubdate + '. ': '';
-                var meta = source + pubdate + volume + issue + ':' + pages + elocationid + epubdate;
+                var meta     = source + pubdate + volume + issue + ':' + pages + elocid + epubdate;
 
                 var container = new Element("div", {"class" : "article-info"});
                 if (XWiki.contextaction == "view") {
@@ -188,15 +202,14 @@
                 if (XWiki.contextaction == "edit") {
                     var deleteEl = new Element("div", {"class" : "delete", "title": "$!escapetool.javascript($services.localization.render('phenotips.UIXField.solved.pubmedInfo.deleteButton'))"}).update('×');
                     deleteEl.observe('click', function () {
-                        pubmedIdInput.value = '';
-                        pubmedIdInput.show();
+                        pubmedEl.value = '';
                         container.remove();
                     });
                     container.insert(deleteEl);
                 }
 
                 var summary = new Element("p", {"class" : "article-summary"}).update(meta);
-                var titleEl = new Element("div", {"class" : "article-title"}).update(new Element("a", {"href" : "https://www.ncbi.nlm.nih.gov/pubmed/?term=" + pubmedId, "target" : "_blank"}).insert(title));
+                var titleEl = new Element("div", {"class" : "article-title"}).update(new Element("a", {"href" : "https://www.ncbi.nlm.nih.gov/pubmed/?term=" + id, "target" : "_blank"}).insert(title));
 
                 var idsEl = new Element("div", {"class" : "article-ids"});
                 if (data.articleids &amp;&amp; data.articleids.length &gt; 0) {
@@ -220,15 +233,13 @@
                 }
                 container.insert(summary).insert(titleEl).insert(authorsEl).insert(idsEl);
                 if (XWiki.contextaction == "view") {
-                    pubmedIdValue.hide();
-                    pubmedIdValue.up().insert(container);
+                    pubmedEl.hide();
                 }
-                if (XWiki.contextaction == "edit") {
-                    pubmedIdInput.up().insert(container);
-                }
+
+                pubmedEl.up().insert(container);
             } else {
                 if (XWiki.contextaction == "edit") {
-                    pubmedIdInput.up().insert(new Element("div", {"class" : "invalid"}).update("$!escapetool.javascript($services.localization.render('phenotips.UIXField.solved.pubmedId.Invalid'))"));
+                    pubmedEl.up().insert(new Element("div", {"class" : "invalid"}).update("$!escapetool.javascript($services.localization.render('phenotips.UIXField.solved.pubmedId.Invalid'))"));
                 }
             }
         };
@@ -240,10 +251,11 @@
         xhr.send();
     };
 
-    var pubmedIdValue = $$('.solved__pubmed_id .displayed-value p')[0];
-    if (XWiki.contextaction == "view" &amp;&amp; pubmedIdValue &amp;&amp; pubmedIdValue.innerHTML.length &gt; 0) {
-        makeCorsRequest(pubmedIdValue.innerHTML);
-    };
+    var el = pubmedIdInput || pubmedIdDisplayedValue;
+    if (el) {
+        var value = pubmedIdDisplayedValue ? pubmedIdDisplayedValue.innerHTML : el.value;
+        makeCorsRequest(el, value);
+    }
 });</code>
     </property>
     <property>
