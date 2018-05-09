@@ -119,7 +119,7 @@
     </property>
     <property>
       <code>document.observe('xwiki:dom:loaded', function() {
-    // The National Center for Biotechnology Information (NSBI) article validation service provided by Entrez Programming Utilities
+    // The National Center for Biotechnology Information (NCBI) article validation service provided by Entrez Programming Utilities
     // allows PMID (Pubmed ID) validation returning article meta info if ID is valid and error if not
     var pubmedArticleServiceURL = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&amp;retmode=json&amp;method=get&amp;id=";
 
@@ -155,7 +155,7 @@
         return xhr;
     };
 
-    // Make the actual NSBI CORS request
+    // Make the actual NCBI CORS request
     // el - DOM element that is either Pubmed ID input element if edit mode,
     //      or display element that contains Pubmed ID as inner HTML in view mode
     // pubmedId - actual Pubmed ID value
@@ -166,8 +166,8 @@
         var id = pubmedId ? pubmedId : el.value;
 
         // may be other input validation would be useful, but that is the question whether Pubmed ID is/will stay numeric only
-        // 1. NSBI's API can change
-        // 2. because NSBI can parse numerical ID out from input if numeric part comes first and letters are entered last, ex. "123qwe"
+        // 1. NCBI's API can change
+        // 2. because NCBI can parse numerical ID out from input if numeric part comes first and letters are entered last, ex. "123qwe"
         //    but it will reply that input is invalid if we send "qwe123"
         // so for now only length validation
         if (id.length &lt; 1) { return; }
