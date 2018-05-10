@@ -193,7 +193,7 @@ document.observe('xwiki:dom:loading', function() {
     //============================================================================
     // Push dialog check boxes and expand tools
     var titles = content.select('.push-fields.section.columns > div h5');
-      if (titles) {
+    if (titles) {
         titles.each(function(item, index) {
           var sectionList = item.next('ul');
           var showIcon = '<span class="fa fa-plus-square-o fa-lg"></span>';
@@ -292,6 +292,22 @@ document.observe('xwiki:dom:loading', function() {
     }
 
     //============================================================================
+    // Control Push dialog checkboxes that have to check pre-requisite controller checkboxes with them when checked
+    var controlledCheckboxes = content.select('.checkbox_tree_container input[type=checkbox][class^="prerequisite-"]');
+    controlledCheckboxes.each(function(elt) {
+        var controller = $(elt.className.replace("prerequisite-", ''));
+        if (!controller) { return; }
+        // if genes checkbox is unchecked, variants should be unchecked
+        controller.observe('click', function(event) {
+            elt.checked = elt.checked && controller.checked;
+        });
+        // if variants checkbox is checked, genes controller checkbox should be checked
+        elt.observe('click', function(event) {
+            controller.checked = elt.checked || controller.checked;
+        });
+    });
+
+    //============================================================================
     // Column selection "select all" tools
     var checkboxList = content.select('.section.columns input[type=checkbox]');
     var columnList = content.down('.section.columns h3');
@@ -310,10 +326,17 @@ document.observe('xwiki:dom:loading', function() {
         checkboxList.each(function(elt) { elt.checked = true; elt.indeterminate = false; });
       });
       none.observe('click', function(event) {
-        checkboxList.each(function(elt) {elt.checked = false; elt.indeterminate = false;});
+        checkboxList.each(function(elt) { elt.checked = false; elt.indeterminate = false; });
       });
       invert.observe('click', function(event) {
-        checkboxList.each(function(elt) {if (!elt.indeterminate) { elt.checked = !elt.checked; } });
+        checkboxList.each(function(elt) { if (!elt.indeterminate) { elt.checked = !elt.checked; } });
+        // uncheck controlled checkboxes when controller is unchecked
+        // for example, if genes checkbox is unchecked, variants should be unchecked
+        controlledCheckboxes.each(function(elt) {
+            var controller = $(elt.className.replace("prerequisite-", ''));
+            if (!controller) { return; }
+            elt.checked = elt.checked && controller.checked;
+        });
       });
       restore.observe('click', function(event) {
         checkboxList.each(function(elt) {

@@ -158,13 +158,15 @@
         el.next().remove();
 
     //Hide/show variant add button if empty/non-empty genesymbol
-    if (value != "" ) {
-      if (el.__Gene_validator &amp;&amp; el.__Gene_validator.valid)
-        el.up('tr').next().toggleClassName('v-collapsed', false);
-      else
+    if (el.up('tr').next() &amp;&amp; el.up('tr').next().hasClassName('variant-footer')) {
+      if (value != "") {
+        if (el.__Gene_validator &amp;&amp; el.__Gene_validator.valid)
+          el.up('tr').next().toggleClassName('v-collapsed', false);
+        else
+          el.up('tr').next().toggleClassName('v-collapsed', true);
+      } else {
         el.up('tr').next().toggleClassName('v-collapsed', true);
-    } else {
-      el.up('tr').next().toggleClassName('v-collapsed', true);
+      }
     }
     //update genesymbol label for input field
     el.previous().innerHTML = value;
@@ -204,7 +206,7 @@
           fetchGeneDetails(elt.select('input.gene-name'), false);
           var inputGene = elt.select('input.gene-name');
           inputGene.invoke('observe', "ms:suggest:selected", function (event) {
-            updateInfo(event.element(), event.memo.id, event.memo.value, true);
+            updateInfo(event.element(), event.memo.id, event.memo.value, !event.memo.custom);
           });
           inputGene.invoke('observe', "ms:suggest:not-selected", function (event) {
             updateInfo(event.element(), null, null, false);
@@ -430,7 +432,7 @@ $xwiki.ssfx.use('uicomponents/widgets/extraGeneVariantData.css', true)##
 #set ($variantClassName = 'PhenoTips.GeneVariantClass')
 #if ($xcontext.action == 'edit' || $doc.getObject($geneClassName))
 === $services.localization.render('phenotips.UIXField.genes.sheetTitle')===
-  #__gene_table($geneClassName, $variantClassName, {'mode' : $xcontext.action, 'defaultProperties' : ['cdna', 'interpretation', 'zygosity'], 'inputStrings' : ['cdna','protein','transcript','dbsnp','start_position','end_position']})
+  #__gene_table($geneClassName, $variantClassName, {'mode' : $xcontext.action, 'defaultProperties' : ['cdna', 'interpretation', 'zygosity'], 'inputStrings' : ['cdna','protein','transcript','dbsnp','start_position','end_position'], 'hasVariants' : true})
 #end
 {{/velocity}}</content>
     </property>
@@ -445,8 +447,8 @@ $xwiki.ssfx.use('uicomponents/widgets/extraGeneVariantData.css', true)##
 enabled=true
 required=
 order=1
-fields=genes
-pt_class=PhenoTips.GeneClass
+fields=genes,variants
+pt_class=PhenoTips.GeneClass,PhenoTips.GeneVariantClass
 pt_class_usage=multiple
 </parameters>
     </property>

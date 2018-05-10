@@ -70,7 +70,22 @@ public class DefaultPushServerConfigurationResponse extends DefaultPushServerRes
     @Override
     public Set<String> getRemoteAcceptedPatientFields(String groupName)
     {
-        return getSetFromJSONList(ShareProtocol.SERVER_JSON_GETINFO_KEY_NAME_ACCEPTEDFIELDS);
+        Set<String> remoteAcceptedPatientFields =
+            getSetFromJSONList(ShareProtocol.SERVER_JSON_GETINFO_KEY_NAME_ACCEPTEDFIELDS);
+        String serverProtocolVersion = getServerProtocolVersion();
+        // if genes are enabled for push, manually add variants to the list of enabled fields to generate push dialog
+        // when pushing from the new instance where pushing genes and variants are enabled to push separately
+        // to the older version where they are still grouped together
+        if (remoteAcceptedPatientFields != null && !remoteAcceptedPatientFields.contains("variants")
+            && ShareProtocol.INCOMPATIBILITIES_IN_OLD_PROTOCOL_VERSIONS.containsKey(serverProtocolVersion)
+            && ShareProtocol.INCOMPATIBILITIES_IN_OLD_PROTOCOL_VERSIONS.get(serverProtocolVersion).contains(
+                ShareProtocol.GENE_STATUS_INCOMPAT)
+            && remoteAcceptedPatientFields.contains("genes")) {
+            Set<String> result = new TreeSet<>(remoteAcceptedPatientFields);
+            result.add("variants");
+            return Collections.unmodifiableSet(result);
+        }
+        return remoteAcceptedPatientFields;
     }
 
     @Override

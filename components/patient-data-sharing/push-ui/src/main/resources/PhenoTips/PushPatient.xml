@@ -1269,11 +1269,6 @@
                     }
                 });
 
-                // explicitly manually add variants if genes are enabled
-                if (selectedFields.indexOf("genes") > -1) {
-                  selectedFields.push("variants");
-                }
-
                 if (!pushMulti) {
                   dialog.closeDialog();
                   callbackOK(selectedFields);
