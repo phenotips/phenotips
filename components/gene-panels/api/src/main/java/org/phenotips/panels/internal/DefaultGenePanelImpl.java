@@ -142,7 +142,7 @@ public class DefaultGenePanelImpl implements GenePanel
      *
      * @param presentTerms a collection of {@link VocabularyTerm feature identifiers} that are present
      * @param absentTerms a collection of {@link VocabularyTerm feature identifiers} that are absent
-     * @param rejectedGenes a collection of genes that were tested to be negative
+     * @param rejectedGenes a collection of genes that were tested to be negative or rejected as candidate
      * @param generateMatchCount iff true, generate a term to number of associated genes mapping
      * @param vocabularyManager the {@link VocabularyManager} for accessing the required vocabularies
      */
@@ -244,6 +244,7 @@ public class DefaultGenePanelImpl implements GenePanel
     /**
      * For each gene in a list of {@code genes}, adds the gene as key and {@code term} as value to the provided
      * {@code termsForGeneBuilder}.
+     *
      * @param term the {@link VocabularyTerm HPO vocabulary term} associated with the provided list of {@code genes}
      * @param genes a list of gene symbols associated with {@code term}
      * @param termsForGeneBuilder a builder for creating and updating {@link TermsForGene} objects for each gene

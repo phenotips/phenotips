@@ -80,11 +80,14 @@ public class PatientDataAdapterTest
 
     private static final String REJECTED_LABEL = "rejected";
 
+    private static final String REJECTED_CANDIDATE_LABEL = "rejected_candidate";
+
     private static final String STATUS_KEY = "status";
 
     private static final String STRATEGY_KEY = "strategy";
 
-    private static final List<String> STATUS_VALUES = Arrays.asList("candidate", "rejected", "solved", "carrier");
+    private static final List<String> STATUS_VALUES = Arrays.asList("candidate", "rejected", "rejected_candidate",
+        "solved", "carrier");
 
     private static final List<String> STRATEGY_VALUES = Arrays.asList("sequencing", "deletion", "familial_mutation",
         "common_mutations");
@@ -176,7 +179,7 @@ public class PatientDataAdapterTest
         when(this.hgnc.getTerm(GENE_2_ID)).thenReturn(null);
 
         final Gene geneDatum1 = mockGene(GENE_1_ID, REJECTED_LABEL);
-        final Gene geneDatum2 = mockGene(GENE_2_ID, REJECTED_LABEL);
+        final Gene geneDatum2 = mockGene(GENE_2_ID, REJECTED_CANDIDATE_LABEL);
         final Gene geneDatum3 = mockGene(GENE_3_ID, "aa");
 
         this.geneData =

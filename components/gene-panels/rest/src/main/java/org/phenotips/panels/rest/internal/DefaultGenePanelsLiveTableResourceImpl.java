@@ -107,7 +107,7 @@ public class DefaultGenePanelsLiveTableResourceImpl extends XWikiResource implem
      *
      * @param present a set of term identifiers observed to be present
      * @param absent a set of term identifiers observed to be absent
-     * @param rejected a set of gene identifiers that were marked as rejected
+     * @param rejected a set of gene identifiers that were marked as rejected candidate or tested negative
      * @param withMatchCount set to true iff the number of genes available for term should be counted
      * @param offset the offset for the returned data
      * @param limit the limit on the number of results to return

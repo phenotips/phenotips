@@ -81,7 +81,7 @@ public class VariantListControllerTest
 
     private static final String CONTROLLER_NAME = VARIANTS_STRING;
 
-    private static final String VARIANTS_ENABLING_FIELD_NAME = "genes";
+    private static final String VARIANTS_ENABLING_FIELD_NAME = "variants";
 
     private static final String VARIANT_KEY = "cdna";
 

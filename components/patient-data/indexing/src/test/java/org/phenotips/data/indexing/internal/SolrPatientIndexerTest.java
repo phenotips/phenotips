@@ -91,7 +91,8 @@ public class SolrPatientIndexerTest
 {
     private static final String STATUS_KEY = "status";
 
-    private static final List<String> STATUS_VALUES = Arrays.asList("candidate", "rejected", "solved", "carrier");
+    private static final List<String> STATUS_VALUES = Arrays.asList("candidate", "rejected", "rejected_candidate",
+        "solved", "carrier");
 
     @Rule
     public MockitoComponentMockingRule<PatientIndexer> mocker =
@@ -254,6 +255,7 @@ public class SolrPatientIndexerTest
         List<Gene> fakeGenes = new LinkedList<>();
         fakeGenes.add(mockGene("CANDIDATE1", "candidate"));
         fakeGenes.add(mockGene("REJECTED1", "rejected"));
+        fakeGenes.add(mockGene("REJECTEDC1", "rejected_candidate"));
         fakeGenes.add(mockGene("CARRIER1", "carrier"));
         fakeGenes.add(mockGene("SOLVED1", "solved"));
 
@@ -280,6 +282,10 @@ public class SolrPatientIndexerTest
         indexedGenes = inputDoc.getFieldValues("rejected_genes");
         Assert.assertEquals(1, indexedGenes.size());
         Assert.assertEquals("REJECTED1", indexedGenes.iterator().next());
+
+        indexedGenes = inputDoc.getFieldValues("rejected_candidate_genes");
+        Assert.assertEquals(1, indexedGenes.size());
+        Assert.assertEquals("REJECTEDC1", indexedGenes.iterator().next());
 
         indexedGenes = inputDoc.getFieldValues("carrier_genes");
         Assert.assertEquals(1, indexedGenes.size());

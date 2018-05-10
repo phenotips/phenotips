@@ -64,6 +64,7 @@ import com.xpn.xwiki.objects.StringListProperty;
 import com.xpn.xwiki.objects.classes.BaseClass;
 import com.xpn.xwiki.objects.classes.StaticListClass;
 import com.xpn.xwiki.web.Utils;
+
 import net.jcip.annotations.NotThreadSafe;
 
 import static org.mockito.Matchers.any;
@@ -118,7 +119,8 @@ public class GeneListControllerTest
 
     private static final String JSON_OLD_CANDIDATE_GENE_KEY = "candidate";
 
-    private static final List<String> STATUS_VALUES = Arrays.asList("candidate", "rejected", "solved", "carrier");
+    private static final List<String> STATUS_VALUES = Arrays.asList("candidate", "rejected", "rejected_candidate",
+        "solved", "carrier");
 
     private static final List<String> STRATEGY_VALUES = Arrays.asList("sequencing", "deletion", "familial_mutation",
         "common_mutations");
@@ -498,6 +500,10 @@ public class GeneListControllerTest
         item.put(JSON_STATUS_KEY, "rejected");
         data.put(item);
         item = new JSONObject();
+        item.put(JSON_GENE_SYMBOL, "GENE3");
+        item.put(JSON_STATUS_KEY, "rejected_candidate");
+        data.put(item);
+        item = new JSONObject();
         item.put(JSON_GENE_ID, "ENSG00000123456");
         data.put(item);
         item = new JSONObject();
@@ -510,7 +516,7 @@ public class GeneListControllerTest
         PatientData<Gene> result = this.component.readJSON(json);
 
         Assert.assertNotNull(result);
-        Assert.assertEquals(4, result.size());
+        Assert.assertEquals(5, result.size());
         Gene gene = result.get(0);
         Assert.assertEquals("GENE1", gene.getName());
         Assert.assertEquals("Notes1", gene.getComment());
@@ -521,11 +527,16 @@ public class GeneListControllerTest
         Assert.assertNull(gene.getComment());
         Assert.assertTrue(gene.getStrategy().isEmpty());
         gene = result.get(2);
+        Assert.assertEquals("GENE3", gene.getName());
+        Assert.assertEquals("rejected_candidate", gene.getStatus());
+        Assert.assertNull(gene.getComment());
+        Assert.assertTrue(gene.getStrategy().isEmpty());
+        gene = result.get(3);
         Assert.assertEquals("ENSG00000123456", gene.getId());
         Assert.assertNull(gene.getStatus());
         Assert.assertNull(gene.getComment());
         Assert.assertTrue(gene.getStrategy().isEmpty());
-        gene = result.get(3);
+        gene = result.get(4);
         Assert.assertEquals("ENSG00000098765", gene.getId());
         // any incorrect status should be replaced with "candidate"
         Assert.assertNull(gene.getStatus());

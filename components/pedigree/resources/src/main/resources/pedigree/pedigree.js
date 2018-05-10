@@ -26,6 +26,7 @@ define([
         "pedigree/view/candidateGeneLegend",
         "pedigree/view/causalGeneLegend",
         "pedigree/view/rejectedGeneLegend",
+        "pedigree/view/rejectedCandidateGeneLegend",
         "pedigree/view/carrierGeneLegend",
         "pedigree/view/hpoLegend",
         "pedigree/view/patientDropLegend",
@@ -60,6 +61,7 @@ define([
         CandidateGeneLegend,
         CausalGeneLegend,
         RejectedGeneLegend,
+        RejectedCandidateGeneLegend,
         CarrierGeneLegend,
         HPOLegend,
         PatientDropLegend,
@@ -120,6 +122,7 @@ define([
             this._candidateGeneLegend = new CandidateGeneLegend();
             this._causalGeneLegend = new CausalGeneLegend();
             this._rejectedGeneLegend = new RejectedGeneLegend();
+            this._rejectedCandidateGeneLegend = new RejectedCandidateGeneLegend();
             this._carrierGeneLegend = new CarrierGeneLegend();
             this._hpoLegend = new HPOLegend();
             this._cancerLegend = new CancerLegend();
@@ -545,6 +548,8 @@ define([
                 return this.getCausalGeneLegend();
             } else if (geneStatus == "rejected") {
                 return this.getRejectedGeneLegend();
+            } else if (geneStatus == "rejected_candidate") {
+                return this.getRejectedCandidateGeneLegend();
             } else if (geneStatus == "carrier") {
                 return this.getCarrierGeneLegend();
             }
@@ -569,10 +574,18 @@ define([
 
         /**
          * @method getRejectedGeneLegend
-         * @return {Legend} Responsible for managing rejected genes
+         * @return {Legend} Responsible for managing tested negative genes
          */
         getRejectedGeneLegend: function() {
             return this._rejectedGeneLegend;
+        },
+
+        /**
+         * @method getRejectedCandidateGeneLegend
+         * @return {Legend} Responsible for managing rejected candidate genes
+         */
+        getRejectedCandidateGeneLegend: function() {
+            return this._rejectedCandidateGeneLegend;
         },
 
         /**

@@ -48,6 +48,7 @@
 #end
 #set($customExporters = {
     'PhenoTips.GeneClass' : {'name' : 'genes', 'label': "$services.localization.render('phenotips.exportPreferences.field.genes')"},
+    'PhenoTips.GeneVariantClass': {'name' :'variants', 'label': "$services.localization.render('phenotips.exportPreferences.field.variants')", 'prerequisiteName': 'genes'},
     'PhenoTips.InvestigationClass' : {'name' : 'genes', 'label': "$services.localization.render('phenotips.exportPreferences.field.genes')"},
     'PhenoTips.AllergiesDataClass' : {'name': 'allergies', 'label' : "$services.localization.render('PhenoTips.AllergiesDataClass_allergies')"},
     'PhenoTips.ParentalInformationClass' : {'name': 'parentalAge', 'label': "$services.localization.render('phenotips.UIXField.parentalAge')"},
@@ -59,6 +60,8 @@
 #set ($customLabels = {
     'apgar1' : "$services.localization.render('phenotips.exportPreferences.prenatalPerinatalHistory.apgarScores')"
 })
+#set($geneVariantsExtentionId = 'org.phenotips.patientSheet.field.gene-variants')
+#set($genesExtentionId = 'org.phenotips.patientSheet.field.genes')
 {{html clean="false" wiki="false"}}
 ## Display custom fields
 #if(!$customFields.empty)
@@ -80,12 +83,19 @@
 #foreach ($section in $recordConfiguration.enabledSections)
  #set ($sectionContent = '')
  #foreach ($element in $section.enabledElements)
+   #if ($element.extension.id == $geneVariantsExtentionId)#set($geneVariantsEnabled = true)#end
+   #set ($disable = ($element.extension.id == $genesExtentionId &amp;&amp; $geneVariantsEnabled))
    #set ($eClasses = $element.extension.getParameters().pt_class.split(','))
-   #if ($eClasses)
+   #if ($eClasses &amp;&amp; !$disable)
      #foreach ($eClass in $eClasses)
        #set ($eCMeta = $customExporters.get($eClass))
        #if (!$ignored.types.contains($eClass) &amp;&amp; "$!{eCMeta}" != '' &amp;&amp; ($remoteEnabledFields.empty || $remoteEnabledFields.contains("${eCMeta.name}")) &amp;&amp; $xwiki.getClass($eClass).properties.size() &gt; 0)
-         #set ($itemContent = "&lt;li class='checkbox_tree_container'&gt;&lt;label&gt;&lt;input type=""checkbox"" name=""${targetFieldName}"" id=""${targetFieldName}_${eCMeta.name}"" value=""$eCMeta.name""#if ($selectedFields.contains($eCMeta.name) || $selectedFields.empty) checked=""checked""#end/&gt;${eCMeta.label}&lt;/label&gt;&lt;/li&gt;")
+         #if ($eCMeta.prerequisiteName)
+           #set ($extraclassname = "prerequisite-${targetFieldName}_$eCMeta.prerequisiteName")
+         #else
+           #set ($extraclassname = '')
+         #end
+         #set ($itemContent = "&lt;li class='checkbox_tree_container'&gt;&lt;label&gt;&lt;input type=""checkbox"" name=""${targetFieldName}"" id=""${targetFieldName}_${eCMeta.name}"" value=""$eCMeta.name"" class=""${extraclassname}""#if ($selectedFields.contains($eCMeta.name) || $selectedFields.empty) checked=""checked""#end/&gt;${eCMeta.label}&lt;/label&gt;&lt;/li&gt;")
          #set ($sectionContent = $sectionContent.concat($itemContent))
        #end
      #end
@@ -129,7 +139,7 @@
 #set($metaFields = [])
 #set($selectedFields = [])
 #if ($request.push)
-  #set($selectedFields = ['external_id', 'gender', 'phenotype', 'negative_phenotype', 'clinical_diagnosis', 'omim_id'])
+  #set($selectedFields = ['external_id', 'gender', 'phenotype', 'negative_phenotype', 'clinical_diagnosis', 'omim_id', 'genes'])
 #else
   #if (${request.export_id} != 'phenotips_json_export')
     #set($metaFields = ['phenotype'])

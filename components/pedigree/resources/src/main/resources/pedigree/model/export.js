@@ -250,6 +250,7 @@ define([
               var candidateGenes = [];
               var solvedGenes    = [];
               var negativeGenes  = [];
+              var rejectedCandidateGenes  = [];
               var carrierGenes   = [];
               nodeGenes.each( function(item) {
                   if (candidateGeneSelected && (item.status == "candidate")) {
@@ -261,7 +262,10 @@ define([
                   if (item.status == "rejected") {
                       negativeGenes.push(item.id);
                   }
-                  if (item.status == "carrier") {
+                  if (item.status == "rejected_candidate") {
+                      rejectedCandidateGenes.push(item.id);
+                  }
+                  if (carrierGeneSelected && (item.status == "carrier")) {
                       carrierGenes.push(item.id);
                   }
               });
@@ -279,13 +283,13 @@ define([
               // AND useStatus1 => return 1
               if (useStatus1) {
                   var allSelectedAreNegative = true;
-                  if (candidateGeneSelected && !listIsASubsetOf(selectedMap["ped-candidateGenes-options"], negativeGenes)) {
+                  if (candidateGeneSelected && !listIsASubsetOf(selectedMap["ped-candidateGenes-options"], rejectedCandidateGenes) && !listIsASubsetOf(selectedMap["ped-candidateGenes-options"], negativeGenes)) {
                       allSelectedAreNegative = false;
                   }
-                  if (causalGeneSelected && !listIsASubsetOf(selectedMap["ped-causalGenes-options"], negativeGenes)) {
+                  if (causalGeneSelected && !listIsASubsetOf(selectedMap["ped-causalGenes-options"], rejectedCandidateGenes) && !listIsASubsetOf(selectedMap["ped-causalGenes-options"], negativeGenes)) {
                       allSelectedAreNegative = false;
                   }
-                  if (carrierGeneSelected && !listIsASubsetOf(selectedMap["ped-carrierGenes-options"], negativeGenes)) {
+                  if (carrierGeneSelected && !listIsASubsetOf(selectedMap["ped-carrierGenes-options"], rejectedCandidateGenes) && !listIsASubsetOf(selectedMap["ped-carrierGenes-options"], negativeGenes)) {
                       allSelectedAreNegative = false;
                   }
                   if (allSelectedAreNegative) {
@@ -598,8 +602,8 @@ define([
              if (status == "0") {
                  // if BRCA1 and BRCA2 are among rejected genes set status to "N"
                  // TODO: what if only one is rejected and another untested?
-                 if (hasGeneWithOneOfStatuses("BRCA1", ["rejected"]) &&
-                     hasGeneWithOneOfStatuses("BRCA2", ["rejected"])) {
+                 if (hasGeneWithOneOfStatuses("BRCA1", ["rejected","rejected_candidate"]) &&
+                     hasGeneWithOneOfStatuses("BRCA2", ["rejected","rejected_candidate"])) {
                      status = "N";
                  }
              }

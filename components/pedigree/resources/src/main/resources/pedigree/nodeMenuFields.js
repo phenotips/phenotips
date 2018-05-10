@@ -133,10 +133,17 @@ define([
             },
             {
                 'name' : 'rejected_genes',
-                'label' : 'Genotype: negative genes',
+                'label' : 'Genotype: tested negative genes',
                 'type' : 'gene-picker',
                 'tab': 'Clinical',
                 'function' : 'setRejectedGenes' // not needed: read only for now
+            },
+            {
+                'name' : 'rejected_candidate_genes',
+                'label' : 'Genotype: rejected candidate genes',
+                'type' : 'gene-picker',
+                'tab': 'Clinical',
+                'function' : 'setRejectedCandidateGenes' // not needed: read only for now
             },
             {
                 'name' : 'carrier_genes',

@@ -1183,13 +1183,13 @@
       var grantedRemoteConcents = this._consentsModule.listGrantedConsentIDs();
       for (var i = 0; i &lt; this._lastLoginResponse.consents.length; i++) {
         // if remote concent granted - skip it, do not exclute its dataFields from push dialog
-        if (grantedRemoteConcents.indexOf(this._lastLoginResponse.consents[i].id) &gt; 0) {
+        if (grantedRemoteConcents.indexOf(this._lastLoginResponse.consents[i].id) &gt; -1) {
           continue;
         }
         var nonGrantedFields = this._lastLoginResponse.consents[i].dataFields;
         if (nonGrantedFields &amp;&amp; nonGrantedFields.length &gt; 0) {
           for (var j = 0; j &lt; nonGrantedFields.length; j++) {
-            if (enabledFields.indexOf(nonGrantedFields[j]) &gt; 0) {
+            if (enabledFields.indexOf(nonGrantedFields[j]) &gt; -1) {
               enabledFields.splice(enabledFields.indexOf(nonGrantedFields[j]), 1);
             }
           }
@@ -1217,7 +1217,7 @@
               }
               var nonGrantedFields = consents[i].dataFields;
               for (var j = 0; j &lt; nonGrantedFields.length; j++) {
-                if (pushParameters.enabledFields.indexOf(nonGrantedFields[j]) &gt; 0) {
+                if (pushParameters.enabledFields.indexOf(nonGrantedFields[j]) &gt; -1) {
                   pushParameters.enabledFields.splice(pushParameters.enabledFields.indexOf(nonGrantedFields[j]), 1);
                 }
               }
