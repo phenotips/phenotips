@@ -225,7 +225,7 @@ public abstract class AbstractPrimaryEntityManager<E extends PrimaryEntity> impl
     {
         try {
             XWikiContext xcontext = this.xcontextProvider.get();
-            XWikiDocument doc = xcontext.getWiki().getDocument(entity.getDocumentReference(), xcontext);
+            XWikiDocument doc = entity.getXDocument();
             xcontext.getWiki().deleteDocument(doc, xcontext);
             return true;
         } catch (Exception ex) {
@@ -241,10 +241,10 @@ public abstract class AbstractPrimaryEntityManager<E extends PrimaryEntity> impl
             return getEntityConstructor().newInstance(document);
         } catch (IllegalArgumentException | InvocationTargetException ex) {
             this.logger.info("Tried to load invalid entity of type [{}] from document [{}]",
-                document.getDocumentReference(), getEntityXClassReference());
+                getEntityXClassReference(), document == null ? null : document.getDocumentReference());
         } catch (InstantiationException | IllegalAccessException ex) {
             this.logger.error("Failed to instantiate primary entity of type [{}] from document [{}]: {}",
-                getEntityXClassReference(), document, ex.getMessage());
+                getEntityXClassReference(), document == null ? null : document.getDocumentReference(), ex.getMessage());
         }
         return null;
     }

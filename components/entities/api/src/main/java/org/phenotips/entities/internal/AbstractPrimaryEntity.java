@@ -63,6 +63,9 @@ public abstract class AbstractPrimaryEntity implements PrimaryEntity
      */
     protected AbstractPrimaryEntity(XWikiDocument document)
     {
+        if (document == null) {
+            throw new IllegalArgumentException("A primary entity must be constructed around a valid document");
+        }
         this.document = document;
     }
 
