@@ -641,25 +641,14 @@ define([
                         }
                     };
 
-                    var _onPatientCreated = function(response) {
-                        if (response.responseJSON && response.responseJSON.hasOwnProperty("newID")) {
-                            console.log("Created new patient: " + Helpers.stringifyObject(response.responseJSON));
-                            Event.fire(patientPicker, 'custom:selection:changed', { "useValue": response.responseJSON.newID, "eventDetails": {"loadPatientProperties": false, "skipConfirmDialogue" : true} });
-                            Event.fire(patientPicker, 'pedigree:patient:created', { "phenotipsPatientID": response.responseJSON.newID });
-                            _this.reposition();
-                        } else {
-                            alert("Patient creation failed");
-                        }
+                    var _onPatientCreated = function(newID) {
+                        Event.fire(patientPicker, 'custom:selection:changed', { "useValue": newID, "eventDetails": {"loadPatientProperties": false, "skipConfirmDialogue" : true} });
+                        Event.fire(patientPicker, 'pedigree:patient:created', { "phenotipsPatientID": newID });
+                        _this.reposition();
                     }
 
                     var processCreatePatient = function() {
-                        var createPatientURL = editor.getExternalEndpoint().getFamilyNewPatientURL();
-                        document.fire("pedigree:blockinteraction:start", {"message": "Waiting for the patient record to be created..."});
-                        new Ajax.Request(createPatientURL, {
-                            method: "GET",
-                            onSuccess: _onPatientCreated,
-                            onComplete: function() { document.fire("pedigree:blockinteraction:finish"); }
-                        });
+                        document.fire("pedigree:patient:createrequest", {"onCreatedHandler": _onPatientCreated } );
                     }
 
                     if (!editor.getPreferencesManager().getConfigurationOption("hideShareConsentDialog")) {

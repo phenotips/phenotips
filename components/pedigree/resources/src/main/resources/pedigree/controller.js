@@ -24,6 +24,7 @@ define([
             document.observe("pedigree:node:setproperty",          this.handleSetProperty);
             document.observe("pedigree:node:modify",               this.handleModification);
             document.observe("pedigree:patient:deleterequest",     this.handleDeletePatientRecords);
+            document.observe("pedigree:patient:createrequest",     this.handleCreatePatientRecord);
             document.observe("pedigree:person:drag:newparent",     this.handlePersonDragToNewParent);
             document.observe("pedigree:person:drag:newpartner",    this.handlePersonDragToNewPartner);
             document.observe("pedigree:person:drag:newsibling",    this.handlePersonDragToNewSibling);
@@ -234,6 +235,30 @@ define([
             }
 
             editor.getOkCancelDialogue().showCustomized(message, title, buttonLabel, deleteRecords, "Cancel");
+        },
+
+        handleCreatePatientRecord: function(event)
+        {
+            var onCreatedHandler = event.memo.onCreatedHandler;
+            var onFailureHandler = event.memo.onFailureHandler
+                                   ? event.memo.onFailureHandler
+                                   : (function() { editor.getOkCancelDialogue().showError("Can not create a new patient", "Can not create", "OK"); });
+
+            var createPatientURL = editor.getExternalEndpoint().getFamilyNewPatientURL();
+            document.fire("pedigree:blockinteraction:start", {"message": "Waiting for the patient record to be created..."});
+            new Ajax.Request(createPatientURL, {
+                method: "GET",
+                onSuccess: function(response) {
+                    if (response.responseJSON && response.responseJSON.hasOwnProperty("newID")) {
+                        console.log("Created new patient: " + Helpers.stringifyObject(response.responseJSON));
+                        onCreatedHandler(response.responseJSON.newID)
+                    } else {
+                        onFailureHandler();
+                    }
+                },
+                onFailure: onFailureHandler,
+                onComplete: function() { document.fire("pedigree:blockinteraction:finish"); }
+            });
         },
 
         handleRemove: function(event)
