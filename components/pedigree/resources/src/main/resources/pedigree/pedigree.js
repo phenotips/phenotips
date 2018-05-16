@@ -39,7 +39,8 @@ define([
         "pedigree/view/saveLoadIndicator",
         "pedigree/view/templateSelector",
         "pedigree/view/tabbedSelector",
-        "pedigree/view/printDialog"
+        "pedigree/view/printDialog",
+        "pedigree/view/addMemberDialog",
     ],
     function(
         PedigreeExtensionManager,
@@ -74,7 +75,8 @@ define([
         SaveLoadIndicator,
         TemplateSelector,
         TabbedSelector,
-        PrintDialog
+        PrintDialog,
+        AddNewMemberDialog
 ){
 
     var PedigreeEditor = Class.create({
@@ -160,6 +162,7 @@ define([
                     this._hpoLegend = new HPOLegend();
                     this._cancerLegend = new CancerLegend();
                     this._patientLegend = new PatientDropLegend();
+                    this._addNewMember = new AddNewMemberDialog();
 
                     var newPatientId = window.self.location.href.toQueryParams().new_patient_id;
                     if (newPatientId && newPatientId != ""){
@@ -639,6 +642,14 @@ define([
          */
         getPaper: function() {
             return this.getWorkspace().getPaper();
+        },
+
+        /**
+         * @method getAddNewMemberDialog
+         * @return {Dialog} A dialog for adding new members to the family
+         */
+        getAddNewMemberDialog: function() {
+            return this._addNewMember;
         },
 
         /**

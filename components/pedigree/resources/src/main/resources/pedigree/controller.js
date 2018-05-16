@@ -25,6 +25,7 @@ define([
             document.observe("pedigree:node:modify",               this.handleModification);
             document.observe("pedigree:patient:deleterequest",     this.handleDeletePatientRecords);
             document.observe("pedigree:patient:createrequest",     this.handleCreatePatientRecord);
+            document.observe("pedigree:patient:checklinkvalidity", this.handleCheckLinkValidity);
             document.observe("pedigree:person:drag:newparent",     this.handlePersonDragToNewParent);
             document.observe("pedigree:person:drag:newpartner",    this.handlePersonDragToNewPartner);
             document.observe("pedigree:person:drag:newsibling",    this.handlePersonDragToNewSibling);
@@ -1082,6 +1083,12 @@ define([
 
             if (!event.memo.noUndoRedo)
                 editor.getUndoRedoManager().addState( event );
+        },
+
+        handleCheckLinkValidity: function(event) {
+            console.log("event: " + event.eventName + ", memo: " + Helpers.stringifyObject(event.memo));
+
+            Controller._checkPatientLinkValidity(event.memo.onValidCallback, null, event.memo.phenotipsPatientID, true, false);
         }
     });
 
@@ -1159,19 +1166,37 @@ define([
             }
 
             var allLinkedNodes = editor.getGraph().getAllPatientLinks();
-            if (allLinkedNodes.patientToNodeMapping.hasOwnProperty(linkID)) {
-                var currentLinkedNodeID = allLinkedNodes.patientToNodeMapping[linkID];
-                editor.getView().unmarkAll();
-                editor.getView().markNode(currentLinkedNodeID);
-                var onCancel = function() {
-                    editor.getView().unmarkAll();
-                    onCancelAssignPatient();
+
+            // two different checks/workflows: one when adding a patient to a node, another when adding a node-less patient
+            // in the first case we allow assigning patients that are currently node-less, a nd allow re-assigning patient.
+            // In the other case anyh patient already in the family is no-go
+
+            if (nodeID == null) {
+                // if we are adding a node-less patient should also make sure that
+                //   1) it is not already on the list of node-less patients
+                //   2) it is not already assigned to a node
+                if (editor.getPatientLegend().hasPatient(linkID)
+                    || allLinkedNodes.patientToNodeMapping.hasOwnProperty(linkID)) {
+                    editor.getOkCancelDialogue().showError("This patient is already in the family",
+                            "Can't add a patient that is already in the family", "OK" );
+                    return;
                 }
-                editor.getOkCancelDialogue().showWithCheckbox("<br/>Patient record " + linkID + " is already in this pedigree. Do you want to transfer the record to the person currently selected?",
-                                                       "Re-assign patient record " + linkID + " to this person?",
-                                                       'Clear data from the person currently linked to this patient record', true,
-                                                       "OK", processLinkCallback, "Cancel", onCancel );
-                return;
+
+            } else {
+                if (allLinkedNodes.patientToNodeMapping.hasOwnProperty(linkID)) {
+                    var currentLinkedNodeID = allLinkedNodes.patientToNodeMapping[linkID];
+                    editor.getView().unmarkAll();
+                    editor.getView().markNode(currentLinkedNodeID);
+                    var onCancel = function() {
+                        editor.getView().unmarkAll();
+                        onCancelAssignPatient();
+                    }
+                    editor.getOkCancelDialogue().showWithCheckbox("<br/>Patient record " + linkID + " is already in this pedigree. Do you want to transfer the record to the person currently selected?<br/>",
+                                                           "Re-assign patient record " + linkID + " to this person?",
+                                                           "Clear data from the person currently linked to this patient record", true,
+                                                           "OK", processLinkCallback, "Cancel", onCancel );
+                    return;
+                }
             }
 
             var familyServiceURL = editor.getExternalEndpoint().getFamilyCheckLinkURL();
@@ -1184,7 +1209,7 @@ define([
                                     "Can't link to this person", "Can't link to this person: ", onCancelAssignPatient);
                         } else {
                             var clearPropertiesMsg = "";
-                            if (loadPatientProperties) {
+                            if (loadPatientProperties && nodeID != null) {
                                 // if node has any data entered for it, warn that the data will be lost
                                 var properties = editor.getGraph().getProperties(nodeID);
                                 for (var prop in properties) {

@@ -300,8 +300,7 @@ define([
                         parentContainer: $('tab_Cancers').up('.tabholder')
                     },
                     'patients' : {
-                        script: editor.getExternalEndpoint().getPatientSuggestServiceURL() +
-                        "?permission=edit&maxResults=12&",
+                        script: editor.getExternalEndpoint().getPatientSuggestServiceURL(),
                         noresults: "No matching patients",
                         width: 337,
                         resultsParameter: "matchedPatients",
