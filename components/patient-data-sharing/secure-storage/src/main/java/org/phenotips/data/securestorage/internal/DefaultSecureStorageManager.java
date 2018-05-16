@@ -68,7 +68,7 @@ public class DefaultSecureStorageManager implements SecureStorageManager
                 t.commit();
             } catch (HibernateException ex) {
                 this.logger.error("Error removing stored token for [{}@{}]: [{}]", localUserName, serverName, ex);
-                if (t!=null) {
+                if (t != null) {
                     t.rollback();
                 }
             } finally {
@@ -102,7 +102,7 @@ public class DefaultSecureStorageManager implements SecureStorageManager
             t.commit();
         } catch (HibernateException ex) {
             this.logger.error("Error storing remote login for [{}@{}]: [{}]", localUserName, serverName, ex);
-            if (t!=null) {
+            if (t != null) {
                 t.rollback();
             }
         } finally {
@@ -133,7 +133,7 @@ public class DefaultSecureStorageManager implements SecureStorageManager
             t.commit();
         } catch (HibernateException ex) {
             this.logger.error("Error storing local login token for [{}@{}]: [{}]", userName, sourceServerName, ex);
-            if (t!=null) {
+            if (t != null) {
                 t.rollback();
             }
         } finally {
@@ -156,7 +156,8 @@ public class DefaultSecureStorageManager implements SecureStorageManager
                 .uniqueResult();
 
             if (data == null) {
-                this.logger.info("Remote login token not found or more than one found for [{}@{}]", localUserName, serverName);
+                this.logger.info("Remote login token not found or more than one found for [{}@{}]", localUserName,
+                    serverName);
                 return null;
             }
 
@@ -185,11 +186,12 @@ public class DefaultSecureStorageManager implements SecureStorageManager
                 .uniqueResult();
 
             if (data == null) {
-                this.logger.info("Local token not found or more than one found for [{}@{}]", userName, sourceServerName);
+                this.logger
+                    .info("Local token not found or more than one found for [{}@{}]", userName, sourceServerName);
                 return null;
             }
 
-            //this.logger.debug("Local token found for [{}@{}]", userName, sourceServerName);
+            // this.logger.debug("Local token found for [{}@{}]", userName, sourceServerName);
             return data;
         } catch (HibernateException ex) {
             this.logger.error("Error getting local login token for [{}@{}]: [{}]", userName, sourceServerName, ex);
