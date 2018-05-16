@@ -196,7 +196,7 @@ public class SolvedController implements PatientDataController<SolvedData>
      * @param xwikiDataObject the {@link BaseObject} where data will be saved
      * @param data the {@link SolvedData} object containing data that needs to be saved, or null if policy is REPLCE and
      *            data is null
-     * @param policy policy : UPDATE, Replace, Merge
+     * @param policy policy : UPDATE, RERPLACE, MERGE
      */
     private void saveFieldValues(@Nonnull final BaseObject xwikiDataObject, SolvedData data, PatientWritePolicy policy)
     {

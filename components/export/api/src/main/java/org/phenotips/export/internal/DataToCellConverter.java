@@ -1376,7 +1376,7 @@ public class DataToCellConverter
         }
 
         if (present.contains(SolvedData.PUBMED_ID_PROPERTY_NAME)) {
-            List<String> pubmedIds = data != null ? data.getPubmedIds() : null;
+            List<String> pubmedIds = data != null ? data.getPubmedIds() : Collections.emptyList();
             if (!pubmedIds.isEmpty()) {
                 int y = 0;
                 for (String id : pubmedIds) {
