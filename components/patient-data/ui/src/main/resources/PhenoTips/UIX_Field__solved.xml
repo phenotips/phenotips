@@ -414,7 +414,7 @@
   display: inline-block;
   margin: 0 0 0.7em 0.1em;
   padding: 0.75em 1em;
-  max-width: 95%;
+  width: 95%;
   white-space: normal;
   text-align: left;
 }
