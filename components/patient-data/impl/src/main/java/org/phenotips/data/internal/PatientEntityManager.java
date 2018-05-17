@@ -19,7 +19,7 @@ package org.phenotips.data.internal;
 
 import org.phenotips.data.Patient;
 import org.phenotips.entities.PrimaryEntityManager;
-import org.phenotips.entities.internal.AbstractPrimaryEntityManager;
+import org.phenotips.entities.spi.AbstractPrimaryEntityManager;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;

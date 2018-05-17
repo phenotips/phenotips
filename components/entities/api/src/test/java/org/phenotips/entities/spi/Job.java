@@ -19,7 +19,6 @@ package org.phenotips.entities.spi;
 
 import org.phenotips.Constants;
 import org.phenotips.entities.PrimaryEntity;
-import org.phenotips.entities.internal.AbstractPrimaryEntity;
 
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;

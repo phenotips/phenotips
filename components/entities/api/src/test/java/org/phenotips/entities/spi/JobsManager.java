@@ -18,7 +18,6 @@
 package org.phenotips.entities.spi;
 
 import org.phenotips.entities.PrimaryEntityManager;
-import org.phenotips.entities.internal.AbstractPrimaryEntityManager;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.util.DefaultParameterizedType;

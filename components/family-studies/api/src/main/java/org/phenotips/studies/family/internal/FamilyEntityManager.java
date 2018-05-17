@@ -18,7 +18,7 @@
 package org.phenotips.studies.family.internal;
 
 import org.phenotips.entities.PrimaryEntityManager;
-import org.phenotips.entities.internal.AbstractPrimaryEntityManager;
+import org.phenotips.entities.spi.AbstractPrimaryEntityManager;
 import org.phenotips.studies.family.Family;
 
 import org.xwiki.component.annotation.Component;
