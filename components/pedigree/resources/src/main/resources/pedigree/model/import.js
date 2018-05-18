@@ -73,6 +73,8 @@ define([
 
         var newG = new BaseGraph();
 
+        var unlinkedMembers = {};
+
         // first pass: add all vertices and assign vertex IDs
         var members = input[KEY_MEMBERS];
         for (var i = 0; i < members.length; i++) {
@@ -86,6 +88,15 @@ define([
             }
             if (memberIDToNodeID.hasOwnProperty(nextPerson.id)) {
                 throw "Unable to import pedigree: duplicate person ID <" + nextPerson.id + ">";
+            }
+
+            if (nextPerson.hasOwnProperty("notInPedigree") && nextPerson.notInPedigree) {
+                if (!nextPerson.hasOwnProperty("properties") || typeof nextPerson.properties != 'object') {
+                    throw "Unable to import pedigree: a not-in-pedigree member of the family has no PhenoTips ID";
+                }
+                var id = nextPerson.properties[KEY_PROPERTIES_PHENOTIPSID];
+                unlinkedMembers[id] = nextPerson.properties;
+                continue;
             }
 
             var properties = {};
@@ -234,7 +245,7 @@ define([
 
         PedigreeImport.validateBaseGraph(newG);
 
-        return {"baseGraph": newG, "probandNodeID": probandID, "layout": internalLayout};
+        return {"baseGraph": newG, "probandNodeID": probandID, "layout": internalLayout, "unlinkedMembers": unlinkedMembers};
     }
 
     PedigreeImport._processLayout = function(inputLayout, newG, memberIDToNodeID, relationshipIDToNodeID)

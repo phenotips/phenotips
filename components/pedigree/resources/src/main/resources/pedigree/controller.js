@@ -696,11 +696,19 @@ define([
                         }
                     }
                     else
-                        if (modificationType == "trySetPhenotipsProperties") {
+                        if (modificationType == "trySetAllProperties") {
 
-                            node.assignProperties(modValue);
+                            if (modValue.pedigreeProperties) {
+                                node.assignProperties(modValue.pedigreeProperties);
+                                editor.getGraph().setProperties( nodeID, node.getProperties() );
+                            }
 
-                            editor.getGraph().setProperties( nodeID, node.getProperties() );
+                            if (modValue.phenotipsProperties) {
+                                editor.getGraph().setRawJSONProperties( nodeID, modValue.phenotipsProperties );
+                                if (!modValue.pedigreeProperties) {
+                                    editor.getGraph().setPersonNodeDataFromPhenotipsJSON( nodeID, modValue.phenotipsProperties );
+                                }
+                            }
 
                             if (!event.memo.noUndoRedo) {
                                 editor.getUndoRedoManager().addState( event );

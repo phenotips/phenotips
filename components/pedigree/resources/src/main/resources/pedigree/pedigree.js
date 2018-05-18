@@ -166,7 +166,7 @@ define([
 
                     var newPatientId = window.self.location.href.toQueryParams().new_patient_id;
                     if (newPatientId && newPatientId != ""){
-                        this.getPatientLegend().addCase(newPatientId, 'new');
+                        this.getPatientLegend().addCase(newPatientId);
                         this._unsavedNewPatient = true;
                     }
 

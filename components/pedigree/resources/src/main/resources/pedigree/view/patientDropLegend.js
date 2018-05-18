@@ -101,14 +101,9 @@ define([
 
             // add patient to a legend on unlink patient from node event
             document.observe('pedigree:patient:unlinked', function (event) {
-                    var pedigreeProperties = event.memo.pedigreeProperties;
                     this.addCase(event.memo.phenotipsID,
-                                 event.memo.type,
-                                 pedigreeProperties.gender,
-                                 pedigreeProperties.fName,
-                                 pedigreeProperties.lName,
-                                 pedigreeProperties.externalID,
-                                 pedigreeProperties);
+                                 event.memo.pedigreeProperties,
+                                 event.memo.phenotipsProperties);
             }.bind(this));
 
             var removeCase = this.removeCase.bind(this);
@@ -145,6 +140,8 @@ define([
             if (this.hasPatient(phenotipsPatientID)) {
                 this._deletePatientElement(phenotipsPatientID);
                 delete this._notLinkedPatients[phenotipsPatientID];
+
+                this._updateDataModel();
             }
         },
 
@@ -153,38 +150,95 @@ define([
          *
          * @method addCase
          **/
-        // TODO: replace pedigreeProperties with patientJSON and remove gender/name/extID parameters (since that data is
-        //       contained in PatientJSON.
-        //       For now this is left as is to simplify porting to 1.3.x where patientJSON is not available
-        addCase: function(phenotipsPatientID, type, gender, firstName, lastName, externalID, pedigreeProperties) {
+        addCase: function(phenotipsPatientID, pedigreeProperties, phenotipsProperties) {
 
             if (!this.hasPatient(phenotipsPatientID)) {
                 // if data about this patient is not available need to load it
-                if (gender === undefined) {
-                    this._loadPatientInfoAndAddToLegend(phenotipsPatientID, type);
+                if (phenotipsProperties === undefined) {
+                    this._loadPatientInfoAndAddToLegend(phenotipsPatientID);
                     return;
                 }
 
+                if (!pedigreeProperties) {
+                    pedigreeProperties = {};
+                }
+                if (!phenotipsProperties) {
+                    phenotipsProperties = {};
+                }
+
+                // pedigree properties are higher priority than phenotips properties, but check both:
+                var getProperty = function(pedigreePropertyName, phenotipsPropertyPath) {
+                    if (pedigreeProperties.hasOwnProperty(pedigreePropertyName)) {
+                        return pedigreeProperties[pedigreePropertyName];
+                    }
+
+                    if (phenotipsPropertyPath && phenotipsPropertyPath.length > 0) {
+                        var data = phenotipsProperties;
+                        for (var i = 0; i < phenotipsPropertyPath.length; i++) {
+                            if (data.hasOwnProperty(phenotipsPropertyPath[i])) {
+                                data = data[phenotipsPropertyPath[i]];
+                            } else {
+                                return "";
+                            }
+                        }
+                        return data;
+                    }
+
+                    return "";
+                };
+
+                // properties displayed in the legend:
+                var gender     = getProperty("gender", ["sex"]);
+                var externalID = getProperty("externalID", ["external_id"]).trim();
+                var firstName  = getProperty("fName", ["patient_name", "first_name"]).trim();
+                var lastName   = getProperty("lName", ["patient_name", "last_name"]).trim();
                 var name = (firstName ? firstName : "") + ((firstName && lastName) ? " " : "") + (lastName ? lastName : "");
 
-                this._notLinkedPatients[phenotipsPatientID] = {"type" : type,
-                                                               "phenotipsID": phenotipsPatientID,
-                                                               "currentPatient": (phenotipsPatientID == editor.getGraph().getCurrentPatientId()),
+                var patientDetails = [];
+                if (name != "") {
+                    patientDetails.push({"key": "name", "value": name});
+                }
+                if (externalID != "") {
+                    patientDetails.push({"key": "id", "value": externalID});
+                }
+                var patientNotes = [];
+                var currentPatient = (phenotipsPatientID == editor.getGraph().getCurrentPatientId());
+                if (currentPatient) {
+                    patientNotes.push("(current patient)");
+                }
+                if (name == "" && externalID == "" && !currentPatient) {
+                    patientNotes.push("(no name or id specified)");
+                }
+
+                this._notLinkedPatients[phenotipsPatientID] = {"phenotipsID": phenotipsPatientID,
                                                                "gender": gender,
-                                                               "name":  name,
-                                                               "externalID": externalID,
-                                                               "pedigreeProperties": pedigreeProperties };
+                                                               "patientDetails": patientDetails,
+                                                               "patientNotes": patientNotes,
+                                                               "pedigreeProperties": pedigreeProperties,
+                                                               "phenotipsProperties": phenotipsProperties};
 
                 var listElement = this._generateElement(this._notLinkedPatients[phenotipsPatientID]);
 
                 this._list_unlinked.insert(listElement);
+
+                this._updateDataModel();
             }
 
             // show legend in any case when addCase() is invoked
             this.legendContainer.show();
         },
 
-        _loadPatientInfoAndAddToLegend: function(phenotipsPatientID, type) {
+        _updateDataModel: function() {
+            var unlinked = {};
+            for (var phenotipsPatientID in this._notLinkedPatients) {
+                if (this._notLinkedPatients.hasOwnProperty(phenotipsPatientID)) {
+                    unlinked[phenotipsPatientID] = this._notLinkedPatients[phenotipsPatientID].phenotipsProperties;
+                }
+            }
+            editor.getGraph().setUnlinkedPatients(unlinked);
+        },
+
+        _loadPatientInfoAndAddToLegend: function(phenotipsPatientID) {
             var _this = this;
 
             var patientDataJsonURL = editor.getExternalEndpoint().getLoadPatientDataJSONURL([phenotipsPatientID]);
@@ -194,11 +248,7 @@ define([
                 onSuccess: function (response) {
                     if (response.responseJSON) {
                       var patient = response.responseJSON[phenotipsPatientID];
-                      var firstName = patient.hasOwnProperty('patient_name') && patient.patient_name.hasOwnProperty("first_name")
-                                      ? patient.patient_name.first_name.trim() : "";
-                      var lastName  = patient.hasOwnProperty('patient_name') && patient.patient_name.hasOwnProperty("last_name")
-                                      ? patient.patient_name.last_name.trim() : "";
-                      _this.addCase(phenotipsPatientID, type, patient.sex, firstName, lastName, patient.external_id);
+                      _this.addCase(phenotipsPatientID, {}, patient);
                     }
                 }
             });
@@ -236,9 +286,6 @@ define([
                  shape = 'diamond';
             }
 
-            var hasName       = patientElement.name && /\S/.test(patientElement.name);
-            var hasExternalID = patientElement.externalID && /\S/.test(patientElement.externalID);
-
             var createAnnotationDiv = function(label, value, fixedWidth) {
                 if (value.length > 15) {
                     // to make sure patient legend is not too wide
@@ -257,17 +304,12 @@ define([
             });
 
             var patientData = new Element('div', {'class': 'patient-legend-patient'}).update(patientIdLink);
-            if (hasName) {
-                patientData.insert(createAnnotationDiv('name:', patientElement.name, hasExternalID));
+            for (var i = 0; i < patientElement.patientDetails.length; i++) {
+                var data = patientElement.patientDetails[i];
+                patientData.insert(createAnnotationDiv(data.key + ":", data.value, (patientElement.patientDetails.length > 1)));
             }
-            if (hasExternalID) {
-                patientData.insert(createAnnotationDiv('id:', patientElement.externalID, hasName));
-            }
-            if (patientElement.currentPatient) {
-                patientData.insert(createAnnotationDiv('(current patient)', '', false));
-            }
-            if (!hasName && !hasExternalID && !patientElement.currentPatient) {
-                patientData.insert(createAnnotationDiv('(no name or id specified)', '', false));
+            for (var i = 0; i < patientElement.patientNotes.length; i++) {
+                patientData.insert(createAnnotationDiv(patientElement.patientNotes[i], "", false));
             }
 
             var draggablePart = new Element('div', {'class' : 'abnormality drop-patient'})
@@ -424,10 +466,9 @@ define([
             var event = { 'nodeID': node.getID(),
                           'details': {'skipConfirmDialogue': true } };
 
-            if (patient.pedigreeProperties) {
-                event.modifications = {'trySetPhenotipsProperties': patient.pedigreeProperties};
-            } else {
-                event.modifications = {'trySetPhenotipsPatientId': patient.phenotipsID};
+            if (patient.pedigreeProperties || patient.phenotipsProperties) {
+                event.modifications = {'trySetAllProperties': {"pedigreeProperties": patient.pedigreeProperties,
+                                                               "phenotipsProperties": patient.phenotipsProperties} };
             }
 
             document.fire("pedigree:node:modify", event);

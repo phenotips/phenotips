@@ -34,11 +34,27 @@ define([
                 if (state.eventToGetToThisState
                     && state.eventToGetToThisState.eventName == "pedigree:node:modify"
                     && state.eventToGetToThisState.memo
-                    && state.eventToGetToThisState.memo.modifications
-                    && state.eventToGetToThisState.memo.modifications.trySetPhenotipsPatientId
-                    && state.eventToGetToThisState.memo.modifications.trySetPhenotipsPatientId == removedID) {
-                    state.eventToGetToThisState.eventName = "operationWithDeletedPatient";
-                    delete state.eventToGetToThisState.memo;
+                    && state.eventToGetToThisState.memo.modifications) {
+
+                    // trySetPhenotipsPatientId
+                    if (state.eventToGetToThisState.memo.modifications.trySetPhenotipsPatientId
+                        && state.eventToGetToThisState.memo.modifications.trySetPhenotipsPatientId == removedID) {
+                        state.eventToGetToThisState.eventName = "operationWithDeletedPatient";
+                        delete state.eventToGetToThisState.memo;
+                    }
+
+                    // trySetAllProperties
+                    if (state.eventToGetToThisState.memo.modifications.trySetAllProperties) {
+                        if (state.eventToGetToThisState.memo.modifications.trySetAllProperties.pedigreeProperties
+                            && state.eventToGetToThisState.memo.modifications.trySetAllProperties.pedigreeProperties.phenotipsId) {
+                            delete state.eventToGetToThisState.memo.modifications.trySetAllProperties.pedigreeProperties.phenotipsId;
+                        }
+                        if (state.eventToGetToThisState.memo.modifications.trySetAllProperties.phenotipsProperties
+                            && state.eventToGetToThisState.memo.modifications.trySetAllProperties.phenotipsProperties.id
+                            && state.eventToGetToThisState.memo.modifications.trySetAllProperties.phenotipsProperties.id == removedID) {
+                            delete state.eventToGetToThisState.memo.modifications.trySetAllProperties.phenotipsProperties.id;
+                        }
+                    }
                 }
 
                 // 2)

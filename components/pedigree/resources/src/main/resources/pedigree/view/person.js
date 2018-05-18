@@ -151,7 +151,8 @@ define([
             if (this._phenotipsId != "") {
                 // fire patient this._phenotipsId is no longer in family
                 var event = { "phenotipsID": this._phenotipsId,
-                              "pedigreeProperties": this.getProperties() };
+                              "pedigreeProperties": Helpers.cloneObject(this.getProperties()),
+                              "phenotipsProperties": Helpers.cloneObject(editor.getGraph().getPatientPhenotipsJSON(this.getID()))};
                 document.fire("pedigree:patient:unlinked", event);
             } else {
                 document.fire("pedigree:patient:linked", {"phenotipsID": phenotipsId});

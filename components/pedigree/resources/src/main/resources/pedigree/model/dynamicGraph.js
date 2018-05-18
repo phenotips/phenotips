@@ -16,6 +16,8 @@ define([
     {
         this.DG = drawGraph;
 
+        this._unlinkedMembers = {}; // map phenotipsID -> properties JSON
+
         this._onlyProbandGraph = '[{"id": 0, "proband":true}]';  // a string in SimpleJSON format, used to create a new blank pedigree
     };
 
@@ -36,6 +38,11 @@ define([
         getProbandId: function()
         {
             return this.DG.probandId;
+        },
+
+        setUnlinkedPatients: function(unlinkedSet)
+        {
+            this._unlinkedMembers = unlinkedSet;
         },
 
         getAllPatientLinks: function()
@@ -1759,6 +1766,17 @@ define([
                 }
             }
 
+            // add unlinked members
+            var nextFreeID = this.DG.GG.getMaxRealVertexId() + 1;
+            for (var notInPedigreeMemberID in this._unlinkedMembers) {
+                if (this._unlinkedMembers.hasOwnProperty(notInPedigreeMemberID)) {
+                    var id = nextFreeID++;
+                    output.members.push( { "id": id,
+                                           "notInPedigree": true,
+                                           "properties": this._unlinkedMembers[notInPedigreeMemberID] } );
+                }
+            }
+
             // note: everything else can be recomputed based on the information above
 
             this._debug_printJSONSummary(output, false, true);
@@ -1837,7 +1855,8 @@ define([
 
             if (!this._initializeFromBaseGraphAndLayout( importData.baseGraph,
                                                          importData.probandNodeID,
-                                                         importData.layout )) {
+                                                         importData.layout,
+                                                         importData.unlinkedMembers)) {
                 return null;  // unable to genersate pedigree using import data, no import => no changes
             }
 
@@ -1845,24 +1864,26 @@ define([
 
             timer.printSinceLast("=== Import runtime: ");
 
-            return {"new": newNodes, "removed": removedNodes};
+            return {"new": newNodes, "removed": removedNodes, "unlinked": this._unlinkedMembers};
         },
 
         // suggestedRanks: when provided, attempt to use the suggested rank for all nodes,
         //                 in order to keep the new layout as close as possible to the previous layout
-        _initializeFromBaseGraphAndLayout: function (baseGraph, probandNodeID, suggestedLayout)
+        _initializeFromBaseGraphAndLayout: function (baseGraph, probandNodeID, suggestedLayout, unlinkedMembers)
         {
             try {
                 var newDG = new PositionedGraph( baseGraph,
                                                  probandNodeID,
                                                  this.DG.options,             // preserve whatever options are currently used
                                                  suggestedLayout );
+                this.DG = newDG;
+
+                this._unlinkedMembers = unlinkedMembers;
             } catch (e) {
                 console.log("ERROR creating a grpah from input data: " + e);
                 return false;
             }
 
-            this.DG = newDG;
             return true;
         },
 
