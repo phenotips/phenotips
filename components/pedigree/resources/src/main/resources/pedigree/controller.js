@@ -699,16 +699,20 @@ define([
                         if (modificationType == "trySetAllProperties") {
 
                             if (modValue.pedigreeProperties) {
-                                node.assignProperties(modValue.pedigreeProperties);
-                                editor.getGraph().setProperties( nodeID, node.getProperties() );
+                                editor.getGraph().setProperties( nodeID, modValue.pedigreeProperties );
                             }
 
                             if (modValue.phenotipsProperties) {
                                 editor.getGraph().setRawJSONProperties( nodeID, modValue.phenotipsProperties );
-                                if (!modValue.pedigreeProperties) {
+                                if (!modValue.pedigreeProperties || Helpers.isObjectEmpty(modValue.pedigreeProperties)) {
                                     editor.getGraph().setPersonNodeDataFromPhenotipsJSON( nodeID, modValue.phenotipsProperties );
                                 }
                             }
+
+                            node.assignProperties(editor.getGraph().getProperties(nodeID));
+
+                            var changeSet = editor.getGraph().updateYPositioning();
+                            editor.getView().applyChanges(changeSet, true);
 
                             if (!event.memo.noUndoRedo) {
                                 editor.getUndoRedoManager().addState( event );
@@ -774,7 +778,7 @@ define([
                                     editor.getGraph().setProperties( nodeID, node.getProperties() );
                                 }
 
-                                // remove life statuses not supported by PhenoTips - all loinked nodes should either
+                                // remove life statuses not supported by PhenoTips - all linked nodes should either
                                 // be "alive" or "deceased"
                                 if (Helpers.arrayContains(["stillborn", "unborn", "aborted","miscarriage"],node.getLifeStatus())) {
                                     node.setLifeStatus("deceased");

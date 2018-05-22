@@ -166,6 +166,8 @@ define([
                     phenotipsProperties = {};
                 }
 
+                phenotipsProperties.id = phenotipsPatientID;
+
                 // pedigree properties are higher priority than phenotips properties, but check both:
                 var getProperty = function(pedigreePropertyName, phenotipsPropertyPath) {
                     if (pedigreeProperties.hasOwnProperty(pedigreePropertyName)) {
