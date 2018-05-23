@@ -294,8 +294,8 @@ define([
         },
 
         _isDisplayedAsConsanguinous: function( v ) {
-            var consangr = editor.getGraph().isConsangrRelationship(v);
-            var nodeConsangrPreference = editor.getView().getNode(v).getConsanguinity();
+            var consangr = this.isConsangrRelationship(v);
+            var nodeConsangrPreference = this.getProperties(v).consangr;
             if (nodeConsangrPreference == "N")
                 consangr = false;
             if (nodeConsangrPreference == "Y")

@@ -32,7 +32,7 @@ define([
     ){
     var Person = Class.create(AbstractPerson, {
 
-        initialize: function($super, x, y, id, properties) {
+        initialize: function($super, x, y, id, properties, rawJSONProperties) {
             //var timer = new Helpers.Timer();
             !this._type && (this._type = "Person");
             this._setDefault();
@@ -46,6 +46,8 @@ define([
             // because changing properties requires a redraw, which relies on gender
             // shapes being there already
             this.assignProperties(properties);
+
+            this._rawJSONProperties = rawJSONProperties;
             //timer.printSinceLast("=== new person runtime: ");
         },
 
@@ -110,6 +112,10 @@ define([
             this.getGraphics().getHoverBox().regenerateButtons();
         },
 
+        setRawJSONProperties: function(rawJSONProperties) {
+            this._rawJSONProperties = rawJSONProperties
+        },
+
         /**
          * Returns the id of the PhenoTips patient represented by this node.
          * Returns an empty string for nodes not assosiated with any PhenoTips patients.
@@ -151,8 +157,8 @@ define([
             if (this._phenotipsId != "") {
                 // fire patient this._phenotipsId is no longer in family
                 var event = { "phenotipsID": this._phenotipsId,
-                              "pedigreeProperties": Helpers.cloneObject(this.getProperties()),
-                              "phenotipsProperties": Helpers.cloneObject(editor.getGraph().getPatientPhenotipsJSON(this.getID()))};
+                              "pedigreeProperties": this.getProperties(),
+                              "phenotipsProperties": PhenotipsJSON.internalToPhenotipsJSON(this.getProperties(), this._rawJSONProperties, {})};
                 document.fire("pedigree:patient:unlinked", event);
             } else {
                 document.fire("pedigree:patient:linked", {"phenotipsID": phenotipsId});
