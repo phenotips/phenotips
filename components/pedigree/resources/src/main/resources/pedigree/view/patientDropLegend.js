@@ -293,7 +293,10 @@ define([
                     // to make sure patient legend is not too wide
                     value = value.substring(0, 13) + "...";
                 }
-                var innerDiv = new Element('div', {'class' : 'patient-legend-details-label' + (fixedWidth ? ' min-column-width-45' : '')})
+                var innerDiv = new Element('div', {'class' : 'patient-legend-details-label'
+                                                             + (fixedWidth ? ' min-column-width-45' : '')
+                                                             + (value.length > 0 ? ' patient-legend-details-label-margin' : '')
+                                                  })
                                .insert(label);
                 var outerDiv = new Element('div', {'class' : 'patient-legend-details'}).insert(innerDiv).insert(value);
                 return outerDiv;

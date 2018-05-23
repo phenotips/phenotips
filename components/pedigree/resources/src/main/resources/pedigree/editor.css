@@ -1351,7 +1351,7 @@ div.field-box.field-cancers_picker {
 }
 
 .patient-list {
-  margin: 10px 0 0 5px;
+  margin: 10px 0 0 2px;
 }
 .drop-patient span:first-child {
   border-color: #636B75;
@@ -1367,8 +1367,10 @@ div.field-box.field-cancers_picker {
 .drop-patient .patient-legend-details {
   color: #999999;
 }
-.drop-patient .patient-legend-details-label {
+.patient-legend-details-label {
   float: left;
+}
+.drop-patient .patient-legend-details-label-margin {
   margin-right: 5px;
 }
 .drop-patient .min-column-width-45 {
@@ -1378,7 +1380,7 @@ div.field-box.field-cancers_picker {
 .drop-patient .patient-legend-patient {
   margin-left: 4px;
   padding-left: 0px;
-  padding-right: 8px;
+  padding-right: 3px;
   padding-bottom: 2px;
   padding-top: 1px;
   display: inline-block;
@@ -1432,6 +1434,7 @@ div.field-box.field-cancers_picker {
 .abnormality.drop-patient {
   cursor: move;
   margin-bottom: 5px;
+  padding-left: 2px;
   width: 85%;
 }
 .at-age-input, .cause-input {
