@@ -126,7 +126,7 @@
       {{html wiki=false clean=false}}&lt;input type="hidden" id="defaultDiffSearchTermsInput" value="" /&gt;&lt;input type="hidden" id="defaultDiffSearchTermIDsInput" value="" /&gt;{{/html}}##
       {{html wiki=false clean=false}}&lt;input type="hidden" id="phenotypes-summary" value="$escapetool.xml($jsontool.serialize($phenotypesSummary))" /&gt;{{/html}}##
       (% id="defaultDiffSearchTerms" %)((()))
-      (% class="background-search omim-search hidden" %)(((
+      (% class="background-search hidden" %)(((
         (% id="diffDiagnosis-search-results" class="background-suggestions" %)((()))
       )))
     )))
