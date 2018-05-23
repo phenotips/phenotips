@@ -577,7 +577,7 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__solved')##
       <parameters>title=$services.localization.render('phenotips.UIXField.solved')
 enabled=true
 required=
-order=5
+order=4
 fields=solved,solved__pubmed_id,solved__notes</parameters>
     </property>
     <property>
