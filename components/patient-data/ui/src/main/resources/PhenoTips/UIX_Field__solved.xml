@@ -561,7 +561,7 @@ $xwiki.ssx.use('PhenoTips.UIX_Field__solved')##
   )))
   (% class="controlled" %) (((
      #__displayIfNotEmpty2Col('solved__pubmed_id')
-     #__displayIfNotEmpty2Col('solved__notes')
+     #__displayIfNotEmpty('solved__notes')
   )))## controlled (pubmed/gene)
   )))## controlled-group
 #end## section has content
