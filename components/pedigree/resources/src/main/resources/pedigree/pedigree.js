@@ -294,8 +294,14 @@ define([
             var patientLinks = editor.getGraph().getAllPatientLinks();
             var currentPatientId = editor.getGraph().getCurrentPatientId();
 
-            var noPatientsAreLinked = !editor.isFamilyPage() && (patientLinks.linkedPatients.length == 0);
-            var currentPatientIsNotLinked = !editor.isFamilyPage() && !patientLinks.patientToNodeMapping.hasOwnProperty(currentPatientId);
+            var noPatientsAreLinked = !editor.isFamilyPage()
+                                      && (patientLinks.linkedPatients.length == 0)
+                                      && editor.getPatientLegend().getListOfPatientsInTheLegend();
+
+            var currentPatientIsNotLinked = !editor.isFamilyPage()
+                                            && !patientLinks.patientToNodeMapping.hasOwnProperty(currentPatientId)
+                                            && !editor.getPatientLegend().hasPatient(currentPatientId);
+
             var unsavedChanges = editor.getUndoRedoManager().hasUnsavedChanges();
 
             if (!unsavedChanges && this._unsavedNewPatient) {
