@@ -4213,7 +4213,7 @@ h1, h2, h3, h4 {
   display: table-cell;
   vertical-align: middle;
 }
-.collapsed #diffDiagnosis-search-results &gt; * {
+.ncbi-search-box-content.collapsed, .collapsed #diffDiagnosis-search-results &gt; * {
   display: none;
 }
 
