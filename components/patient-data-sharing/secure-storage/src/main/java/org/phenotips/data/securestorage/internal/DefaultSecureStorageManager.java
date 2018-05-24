@@ -29,6 +29,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.hibernate.HibernateException;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
@@ -46,6 +47,10 @@ import com.xpn.xwiki.store.hibernate.HibernateSessionFactory;
 @Singleton
 public class DefaultSecureStorageManager implements SecureStorageManager
 {
+    /** A query used to delete all stored push history data for the given local patient (localPatientID == localId). */
+    private static final String HQL_DELETE_ALL_PUSH_HISTRY_FOR_LOCAL_PATIENT =
+        "delete PatientPushedToInfo where localPatientID = :localId";
+
     /** Handles persistence. */
     @Inject
     private HibernateSessionFactory sessionFactory;
@@ -68,7 +73,7 @@ public class DefaultSecureStorageManager implements SecureStorageManager
                 t.commit();
             } catch (HibernateException ex) {
                 this.logger.error("Error removing stored token for [{}@{}]: [{}]", localUserName, serverName, ex);
-                if (t!=null) {
+                if (t != null) {
                     t.rollback();
                 }
             } finally {
@@ -102,7 +107,7 @@ public class DefaultSecureStorageManager implements SecureStorageManager
             t.commit();
         } catch (HibernateException ex) {
             this.logger.error("Error storing remote login for [{}@{}]: [{}]", localUserName, serverName, ex);
-            if (t!=null) {
+            if (t != null) {
                 t.rollback();
             }
         } finally {
@@ -133,7 +138,7 @@ public class DefaultSecureStorageManager implements SecureStorageManager
             t.commit();
         } catch (HibernateException ex) {
             this.logger.error("Error storing local login token for [{}@{}]: [{}]", userName, sourceServerName, ex);
-            if (t!=null) {
+            if (t != null) {
                 t.rollback();
             }
         } finally {
@@ -156,7 +161,8 @@ public class DefaultSecureStorageManager implements SecureStorageManager
                 .uniqueResult();
 
             if (data == null) {
-                this.logger.info("Remote login token not found or more than one found for [{}@{}]", localUserName, serverName);
+                this.logger.info("Remote login token not found or more than one found for [{}@{}]", localUserName,
+                    serverName);
                 return null;
             }
 
@@ -185,11 +191,12 @@ public class DefaultSecureStorageManager implements SecureStorageManager
                 .uniqueResult();
 
             if (data == null) {
-                this.logger.info("Local token not found or more than one found for [{}@{}]", userName, sourceServerName);
+                this.logger
+                    .info("Local token not found or more than one found for [{}@{}]", userName, sourceServerName);
                 return null;
             }
 
-            //this.logger.debug("Local token found for [{}@{}]", userName, sourceServerName);
+            // this.logger.debug("Local token found for [{}@{}]", userName, sourceServerName);
             return data;
         } catch (HibernateException ex) {
             this.logger.error("Error getting local login token for [{}@{}]: [{}]", userName, sourceServerName, ex);
@@ -283,6 +290,27 @@ public class DefaultSecureStorageManager implements SecureStorageManager
             session.save(new PatientPushedToInfo(localPatientID, remoteServerName,
                 remotePatientGUID, remotePatientID, remotePatientURL));
         }
+        t.commit();
+    }
+
+    @Override
+    public void deletePatientPushInfo(String localPatientID)
+    {
+        if (localPatientID == null) {
+            return;
+        }
+
+        Session session = this.sessionFactory.getSessionFactory().openSession();
+        Transaction t = session.beginTransaction();
+        t.begin();
+
+        Query query = session.createQuery(HQL_DELETE_ALL_PUSH_HISTRY_FOR_LOCAL_PATIENT);
+        query.setParameter("localId", localPatientID);
+        int numDeleted = query.executeUpdate();
+
+        this.logger.debug("Removed all [{}] stored push history records for local patient with ID [{}]",
+            numDeleted, localPatientID);
+
         t.commit();
     }
 

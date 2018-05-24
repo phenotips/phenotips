@@ -52,6 +52,8 @@ public interface SecureStorageManager
     void storePatientPushInfo(String localPatientID, String remoteServerName,
         String remotePatientGUID, String remotePatientID, String remotePatientURL);
 
+    void deletePatientPushInfo(String localPatientID);
+
     // null if never pushed to the given server
     PatientPushedToInfo getPatientPushInfo(String localPatientID, String remoteServerName);
 }
