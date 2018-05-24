@@ -3648,6 +3648,9 @@ h1, h2, h3, h4 {
 .omim_id.half-width p, .clinical_diagnosis.half-width p {
   margin: 0;
 }
+.solved__pubmed_id ol.xwiki-free-multiselect {
+  margin-left: 1em;
+}
 /** ----------------------------------------------------------- */
 /** PubMed search box &amp; suggest */
 .pubmed-search-box {
