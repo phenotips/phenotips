@@ -352,7 +352,7 @@
     <name>PhenoTips.UIX_Field__gene-variants</name>
     <number>0</number>
     <className>XWiki.UIExtensionClass</className>
-    <guid>37600d90-5a22-479d-ac6e-100fe18c8696</guid>
+    <guid>37600d90-5a22-479d-ac6e-100fe18c8697</guid>
     <class>
       <name>XWiki.UIExtensionClass</name>
       <customClass/>
