@@ -23,6 +23,8 @@ import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.phenotips.data.PatientWritePolicy;
 
+import org.xwiki.model.reference.EntityReference;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -63,7 +65,7 @@ public abstract class AbstractSimpleController implements PatientDataController<
     {
         try {
             XWikiDocument doc = patient.getXDocument();
-            BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
+            BaseObject data = doc.getXObject(getStorageXClass());
             if (data == null) {
                 return null;
             }
@@ -89,7 +91,7 @@ public abstract class AbstractSimpleController implements PatientDataController<
     public void save(@Nonnull final Patient patient, @Nonnull final PatientWritePolicy policy)
     {
         try {
-            final BaseObject xwikiDataObject = patient.getXDocument().getXObject(Patient.CLASS_REFERENCE, true,
+            final BaseObject xwikiDataObject = patient.getXDocument().getXObject(getStorageXClass(), true,
                 this.contextProvider.get());
             final PatientData<String> data = patient.getData(getName());
             if (data == null) {
@@ -108,7 +110,6 @@ public abstract class AbstractSimpleController implements PatientDataController<
         } catch (final Exception ex) {
             this.logger.error("Failed to save controller data: {}", ex.getMessage(), ex);
         }
-
 
     }
 
@@ -233,4 +234,9 @@ public abstract class AbstractSimpleController implements PatientDataController<
     protected abstract List<String> getProperties();
 
     protected abstract String getJsonPropertyName();
+
+    protected EntityReference getStorageXClass()
+    {
+        return Patient.CLASS_REFERENCE;
+    }
 }
