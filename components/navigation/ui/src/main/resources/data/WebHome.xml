@@ -113,6 +113,28 @@ $!value
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </enableImperialUnitSystem>
+      <externalIdFormat>
+        <customDisplay>{{velocity}}
+{{html wiki=false clean=false}}
+&lt;select name="$prefix$name" id="$prefix$name" class="autogenerate-family-external-id-controlled" #if($doc.getValue('autogenerateFamilyExternalId') == 0)disabled="true"#end&gt;
+#foreach ($val in ['XXXXXXXXX', 'XXX-XXX-XXX'])
+  &lt;option #if($val == $value)selected="selected"#end value="$val"&gt;$val&lt;/option&gt;
+#end
+&lt;/select&gt;
+{{/html}}
+{{/velocity}}</customDisplay>
+        <disabled>0</disabled>
+        <name>externalIdFormat</name>
+        <number>10</number>
+        <picker>0</picker>
+        <prettyName>External id display format</prettyName>
+        <size>30</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </externalIdFormat>
       <livetableColumns>
         <cache>0</cache>
         <customDisplay>**{{translation key="phenotips.DBConfigurationClass.metaInfo" /}}**
@@ -277,6 +299,9 @@ $xwiki.ssx.use('PhenoTips.DBConfigurationClass')##
     </property>
     <property>
       <hideInternalIds>0</hideInternalIds>
+    </property>
+    <property>
+      <externalIdFormat>XXXXXXXXX</externalIdFormat>
     </property>
     <property>
       <livetableColumns>
@@ -1833,6 +1858,7 @@ $xwiki.jsx.use('PhenoTips.PhenotypeMappingPreview')##</codeToExecute>
         <value>enableImperialUnitSystem</value>
         <value>measurementUnitSystem</value>
         <value>hideInternalIds</value>
+        <value>externalIdFormat</value>
       </propertiesToShow>
     </property>
     <property>
