@@ -19,7 +19,6 @@ package org.phenotips.entities.spi;
 
 import org.phenotips.Constants;
 import org.phenotips.entities.PrimaryEntityManager;
-import org.phenotips.entities.internal.AbstractPrimaryEntityManager;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.bridge.DocumentModelBridge;

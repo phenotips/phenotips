@@ -21,7 +21,7 @@ import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.internal.PhenoTipsPatient;
-import org.phenotips.entities.internal.AbstractPrimaryEntity;
+import org.phenotips.entities.spi.AbstractPrimaryEntity;
 import org.phenotips.studies.family.Family;
 import org.phenotips.studies.family.Pedigree;
 import org.phenotips.studies.family.internal.export.PhenotipsFamilyExport;
