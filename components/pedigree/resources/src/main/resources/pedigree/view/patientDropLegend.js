@@ -102,8 +102,7 @@ define([
             // add patient to a legend on unlink patient from node event
             document.observe('pedigree:patient:unlinked', function (event) {
                     this.addCase(event.memo.phenotipsID,
-                                 event.memo.pedigreeProperties,
-                                 event.memo.phenotipsProperties);
+                                 event.memo.pedigreeProperties);
             }.bind(this));
 
             var removeCase = this.removeCase.bind(this);
@@ -150,20 +149,19 @@ define([
          *
          * @method addCase
          **/
-        addCase: function(phenotipsPatientID, pedigreeProperties, phenotipsProperties) {
+        addCase: function(phenotipsPatientID, pedigreeProperties) {
 
             if (!this.hasPatient(phenotipsPatientID)) {
-                // if data about this patient is not available need to load it
-                if (phenotipsProperties === undefined) {
+                // check if we have patient record data for this patient, if not load it
+                if (!editor.getPatientRecordData().hasPatient(phenotipsPatientID)) {
                     this._loadPatientInfoAndAddToLegend(phenotipsPatientID);
                     return;
+                } else {
+                    var phenotipsProperties = editor.getPatientRecordData().get(phenotipsPatientID);
                 }
 
                 if (!pedigreeProperties) {
                     pedigreeProperties = {};
-                }
-                if (!phenotipsProperties) {
-                    phenotipsProperties = {};
                 }
 
                 phenotipsProperties.id = phenotipsPatientID;
@@ -216,8 +214,7 @@ define([
                                                                "gender": gender,
                                                                "patientDetails": patientDetails,
                                                                "patientNotes": patientNotes,
-                                                               "pedigreeProperties": pedigreeProperties,
-                                                               "phenotipsProperties": phenotipsProperties};
+                                                               "pedigreeProperties": pedigreeProperties};
 
                 var listElement = this._generateElement(this._notLinkedPatients[phenotipsPatientID]);
 
@@ -231,10 +228,10 @@ define([
         },
 
         _updateDataModel: function() {
-            var unlinked = {};
+            var unlinked = [];
             for (var phenotipsPatientID in this._notLinkedPatients) {
                 if (this._notLinkedPatients.hasOwnProperty(phenotipsPatientID)) {
-                    unlinked[phenotipsPatientID] = this._notLinkedPatients[phenotipsPatientID].phenotipsProperties;
+                    unlinked.push(phenotipsPatientID);
                 }
             }
             editor.getGraph().setUnlinkedPatients(unlinked);
@@ -243,17 +240,12 @@ define([
         _loadPatientInfoAndAddToLegend: function(phenotipsPatientID) {
             var _this = this;
 
-            var patientDataJsonURL = editor.getExternalEndpoint().getLoadPatientDataJSONURL([phenotipsPatientID]);
+            var onDataReady = function(responseJSON) {
+                var patient = responseJSON[phenotipsPatientID];
+                _this.addCase(phenotipsPatientID, {});
+            };
 
-            new Ajax.Request(patientDataJsonURL, {
-                method: "GET",
-                onSuccess: function (response) {
-                    if (response.responseJSON) {
-                      var patient = response.responseJSON[phenotipsPatientID];
-                      _this.addCase(phenotipsPatientID, {}, patient);
-                    }
-                }
-            });
+            editor.getPatientDataLoader().load([phenotipsPatientID], onDataReady);
         },
 
         /**
@@ -471,10 +463,8 @@ define([
             var event = { 'nodeID': node.getID(),
                           'details': {'skipConfirmDialogue': true } };
 
-            if (patient.pedigreeProperties || patient.phenotipsProperties) {
-                event.modifications = {'trySetAllProperties': {"pedigreeProperties": patient.pedigreeProperties,
-                                                               "phenotipsProperties": patient.phenotipsProperties} };
-            }
+            event.modifications = {'trySetAllProperties': {"pedigreeProperties": patient.pedigreeProperties,
+                                                           "phenotipsProperties": editor.getPatientRecordData().get(patient.phenotipsID)} };
 
             document.fire("pedigree:node:modify", event);
         },

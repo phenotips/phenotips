@@ -447,7 +447,7 @@ define([
             }
             else if (positionedGraph.isPerson(id)) {
                 //console.log("-> add person");
-                node = new Person(position.x, position.y, id, properties, positionedGraph.getRawJSONProperties(id));
+                node = new Person(position.x, position.y, id, properties);
             }
             else {
                 throw "addNode(): unsupported node type";

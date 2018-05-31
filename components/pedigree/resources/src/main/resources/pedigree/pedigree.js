@@ -20,6 +20,7 @@ define([
         "pedigree/nodeMenuFields",
         "pedigree/model/dynamicGraph",
         "pedigree/model/helpers",
+        "pedigree/model/patientRecordData",
         "pedigree/view/workspace",
         "pedigree/view/disorderLegend",
         "pedigree/view/exportSelector",
@@ -56,6 +57,7 @@ define([
         NodeMenuFields,
         DynamicPositionedGraph,
         Helpers,
+        PatientRecordData,
         Workspace,
         DisorderLegend,
         ExportSelector,
@@ -132,6 +134,7 @@ define([
             this._saveLoadEngine = new SaveLoadEngine();
             this._familyData = new FamilyData();
             this._patientDataLoader = new PatientDataLoader();
+            this._patientRecordData = new PatientRecordData();
 
             // load global pedigree preferences before a specific pedigree is loaded, since
             // preferences may affect the way it is rendered. Once preferences are loaded the
@@ -446,6 +449,14 @@ define([
          */
         getPatientDataLoader: function() {
             return this._patientDataLoader;
+        },
+
+        /**
+         * @method getPatientRecordData
+         * @return {PatientRecordData}
+         */
+        getPatientRecordData: function() {
+            return this._patientRecordData;
         },
 
         /**

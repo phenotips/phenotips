@@ -8,9 +8,6 @@
 define(["pedigree/model/helpers"], function(Helpers){
     var PatientDataLoader = Class.create( {
         initialize: function() {
-            this._patientData = {};    // ...as last loaded from PhenoTips
-
-            document.observe("pedigree:patient:deleted", this.handlePatientDeleted.bind(this));
         },
 
         load: function(patientList, dataProcessorWhenReady) {
@@ -24,26 +21,26 @@ define(["pedigree/model/helpers"], function(Helpers){
             document.fire("pedigree:blockinteraction:start");
             new Ajax.Request(patientDataJsonURL, {
                 method: "GET",
-                onSuccess: this._onPatientDataReady.bind(this),
+                onSuccess: function(response) {
+                    if (response.responseJSON) {
+                        console.log("Received patient data: " + Helpers.stringifyObject(response.responseJSON));
+
+                        // store JSON as loaded from PT as the last know aproved JSON for this patient
+                        for (var patient in response.responseJSON) {
+                            if (response.responseJSON.hasOwnProperty(patient)) {
+                                editor.getPatientRecordData().update(patient, response.responseJSON[patient]);
+                            }
+                        }
+
+                        dataProcessorWhenReady && dataProcessorWhenReady(response.responseJSON);
+                    } else {
+                        console.log("[!] Error parsing patient data JSON");
+                    }
+                },
                 onComplete: function() {
-                    dataProcessorWhenReady && dataProcessorWhenReady(_this._patientData);
                     document.fire("pedigree:blockinteraction:finish");
                 }
             });
-        },
-
-        _onPatientDataReady : function(response) {
-            if (response.responseJSON) {
-                console.log("Received patient data: " + Helpers.stringifyObject(response.responseJSON));
-                this._patientData = response.responseJSON;
-            } else {
-                console.log("[!] Error parsing patient data JSON");
-            }
-        },
-
-        handlePatientDeleted: function(event)
-        {
-            delete this._patientData[event.memo.phenotipsPatientID];
         }
     });
 

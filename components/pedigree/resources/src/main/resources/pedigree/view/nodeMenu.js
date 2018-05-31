@@ -641,7 +641,7 @@ define([
                     };
 
                     var _onPatientCreated = function(newID) {
-                        Event.fire(patientPicker, 'custom:selection:changed', { "useValue": newID, "eventDetails": {"loadPatientProperties": false, "skipConfirmDialogue" : true} });
+                        Event.fire(patientPicker, 'custom:selection:changed', { "useValue": newID, "eventDetails": {"loadPatientProperties": true, "skipConfirmDialogue" : true} });
                         Event.fire(patientPicker, 'pedigree:patient:created', { "phenotipsPatientID": newID });
                         _this.reposition();
                     }

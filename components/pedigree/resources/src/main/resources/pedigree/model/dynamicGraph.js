@@ -16,7 +16,7 @@ define([
     {
         this.DG = drawGraph;
 
-        this._unlinkedMembers = {}; // map phenotipsID -> properties JSON
+        this._unlinkedMembers = []; // array of PT ids
 
         this._onlyProbandGraph = '[{"id": 0, "proband":true}]';  // a string in SimpleJSON format, used to create a new blank pedigree
     };
@@ -40,9 +40,9 @@ define([
             return this.DG.probandId;
         },
 
-        setUnlinkedPatients: function(unlinkedSet)
+        setUnlinkedPatients: function(unlinkedMembers)
         {
-            this._unlinkedMembers = unlinkedSet;
+            this._unlinkedMembers = unlinkedMembers;
         },
 
         getAllPatientLinks: function()
@@ -242,6 +242,10 @@ define([
             this.DG.GG.properties[id] = newSetOfProperties;
         },
 
+        // TODO: completely remove RAW JSON from base graph, it is only needed for loading pedigree
+        //       (so can convert to internal pedigre JSON before storing in BaseGraph) and saving full
+        //       patient record JSON for drag/dop and saving (implemented in PatientRecordData class)
+        //       Raw JSON is only left here for now to reduce the amount of refactoring
         getRawJSONProperties: function( id )
         {
             return this.DG.GG.rawJSONProperties[id];
@@ -282,14 +286,7 @@ define([
 
             if (patientObject != null && !patientObject.hasOwnProperty("__ignore__")) {
                 var pedigreeOnlyProperties = this.getNodePropertiesNotStoredInPatientProfile(id);
-
                 this.setProperties(id, PhenotipsJSON.phenotipsJSONToInternal(patientObject, pedigreeOnlyProperties));
-            } else {
-                // else: keep properties as defined in the pedigree (e.g. via one of the old importers)
-                //       and replace null RAW properties with an empty object
-                // TODO: once converters are updated to fill new format fields instead of internal fields,
-                //       setting RAW properties to null will not be needed any more
-                this.setRawJSONProperties(id, {});
             }
         },
 
@@ -318,7 +315,7 @@ define([
             var relationshipProperties = {};
             relationshipProperties.consangr = consangr;
 
-            return PhenotipsJSON.internalToPhenotipsJSON(this.getProperties(v), this.getRawJSONProperties(v), relationshipProperties);
+            return PhenotipsJSON.internalToPhenotipsJSON(this.getProperties(v), relationshipProperties);
         },
 
         getRelationshipExternalJSON: function( v )
@@ -1768,13 +1765,12 @@ define([
 
             // add unlinked members
             var nextFreeID = this.DG.GG.getMaxRealVertexId() + 1;
-            for (var notInPedigreeMemberID in this._unlinkedMembers) {
-                if (this._unlinkedMembers.hasOwnProperty(notInPedigreeMemberID)) {
-                    var id = nextFreeID++;
-                    output.members.push( { "id": id,
-                                           "notInPedigree": true,
-                                           "properties": this._unlinkedMembers[notInPedigreeMemberID] } );
-                }
+            for (var i = 0; i < this._unlinkedMembers.length; i++) {
+                var ptID = this._unlinkedMembers[i];
+                var id = nextFreeID++;
+                output.members.push( { "id": id,
+                                       "notInPedigree": true,
+                                       "properties": editor.getPatientRecordData().get(ptID) } );
             }
 
             // note: everything else can be recomputed based on the information above
@@ -1785,21 +1781,23 @@ define([
             return output;
         },
 
-        _debug_printJSONSummary: function(jsonOutput, includeRawJSON, includeInternalData)
+        _debug_printJSONSummary: function(jsonOutput, printFullProperties, includeInternalData)
         {
             var timer = new Helpers.Timer();
 
             var debugOutput = JSON.parse(JSON.stringify(jsonOutput));
 
-            if (!includeRawJSON) {
+            if (!printFullProperties) {
                 for (var i = 0; i < debugOutput.members.length; i++) {
                     var useProperties = { "other": "..." };
                     // only keep essential properties
-                    if (debugOutput.members[i].properties.id) {
-                        useProperties.id = debugOutput.members[i].properties.id;
-                    }
-                    if (debugOutput.members[i].properties.sex) {
-                        useProperties.sex = debugOutput.members[i].properties.sex;
+                    if (debugOutput.members[i].properties) {
+                        if (debugOutput.members[i].properties.id) {
+                            useProperties.id = debugOutput.members[i].properties.id;
+                        }
+                        if (debugOutput.members[i].properties.sex) {
+                            useProperties.sex = debugOutput.members[i].properties.sex;
+                        }
                     }
                     debugOutput.members[i].properties = useProperties;
                 }

@@ -697,22 +697,14 @@ define([
                     }
                     else
                         if (modificationType == "trySetAllProperties") {
+                            // note: both UI element and data model record are available for given nodeID
+                            // (i.e. this should not be called while setting up data model before UI elements are created)
 
                             if (modValue.pedigreeProperties) {
                                 editor.getGraph().setProperties( nodeID, modValue.pedigreeProperties );
                             }
 
                             if (modValue.phenotipsProperties) {
-                                // update data model
-                                editor.getGraph().setRawJSONProperties( nodeID, modValue.phenotipsProperties );
-                                // update UI element
-                                // TODO: UI element needs to be updated because when a node is removed data is first cleared
-                                //       from the data model, then from the UI element, and only at this point event to unlink
-                                //       the previously link patient record is fired, and that requires knowing these properties.
-                                //       This designmay need to be reworked, but this is a late find which requires a lot of
-                                //       changes (and which is only a problem after unlinked patients are added ot the family),
-                                //       so for now the quick working fix is to manually store raw JSON properties in two places
-                                editor.getNode(nodeID).setRawJSONProperties(modValue.phenotipsProperties);
                                 if (!modValue.pedigreeProperties || Helpers.isObjectEmpty(modValue.pedigreeProperties)) {
                                     editor.getGraph().setPersonNodeDataFromPhenotipsJSON( nodeID, modValue.phenotipsProperties );
                                 }
@@ -804,15 +796,11 @@ define([
                                 }
                             }
 
-                            if (modValue != "") {
-                                if (loadPatientProperties) {
-                                    var patientDataLoader = editor.getPatientDataLoader();
+                            if (modValue != "" && loadPatientProperties) {
+                                var patientDataLoader = editor.getPatientDataLoader();
 
-                                    // load data for only one patient with ID=="modValue", the one a node was just linked to
-                                    patientDataLoader.load([modValue], onDataReady);
-                                } else {
-                                    onDataReady(null);
-                                }
+                                // load data for only one patient with ID=="modValue", the one a node was just linked to
+                                patientDataLoader.load([modValue], onDataReady);
                             } else {
                                 onDataReady(null);
                             }
