@@ -1,0 +1,8 @@
+org.phenotips.security.audit.internal.AuditEventProcessorsListProvider
+org.phenotips.security.audit.internal.AuditEventListener
+org.phenotips.security.audit.internal.HibernateAuditStore
+org.phenotips.security.audit.internal.ORMRegistrationHandler
+org.phenotips.security.audit.script.AuditScriptService
+org.phenotips.security.audit.internal.ExportTypeAuditEventProcessor
+org.phenotips.security.audit.internal.GetXPageAuditEventProcessor
+org.phenotips.security.audit.internal.PatientJsonExportAuditEventProcessor

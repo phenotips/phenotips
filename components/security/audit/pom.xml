@@ -22,19 +22,14 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>phenotips-components</artifactId>
+    <artifactId>phenotips-security</artifactId>
     <version>1.4-SNAPSHOT</version>
   </parent>
-  <artifactId>phenotips-security</artifactId>
+  <artifactId>phenotips-audit</artifactId>
+  <name>PhenoTips - Security - Auditing support</name>
   <packaging>pom</packaging>
-  <name>PhenoTips - Security</name>
-  <description>Modules dealing with security: authentication, authorization, logs.</description>
-
   <modules>
-    <module>authorization</module>
-    <module>bridge</module>
-    <module>crypto-api</module>
-    <module>crypto-xproperty</module>
-    <module>audit</module>
+    <module>backend</module>
+    <module>frontend</module>
   </modules>
 </project>

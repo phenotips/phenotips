@@ -22,19 +22,24 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>phenotips-components</artifactId>
+    <artifactId>phenotips-audit</artifactId>
     <version>1.4-SNAPSHOT</version>
   </parent>
-  <artifactId>phenotips-security</artifactId>
-  <packaging>pom</packaging>
-  <name>PhenoTips - Security</name>
-  <description>Modules dealing with security: authentication, authorization, logs.</description>
+  <artifactId>phenotips-audit-frontend</artifactId>
+  <name>PhenoTips - Security - Auditing support - Frontend sources</name>
+  <packaging>xar</packaging>
 
-  <modules>
-    <module>authorization</module>
-    <module>bridge</module>
-    <module>crypto-api</module>
-    <module>crypto-xproperty</module>
-    <module>audit</module>
-  </modules>
+  <properties>
+    <!-- Name to display by the Extension Manager -->
+    <xwiki.extension.name>Access audits</xwiki.extension.name>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-audit-backend</artifactId>
+      <version>${project.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
 </project>
