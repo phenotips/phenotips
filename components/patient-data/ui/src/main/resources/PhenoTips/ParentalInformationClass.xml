@@ -18,7 +18,7 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
 
-<xwikidoc version="1.1">
+<xwikidoc version="1.2" reference="PhenoTips.ParentalInformationClass" locale="">
   <web>PhenoTips</web>
   <name>ParentalInformationClass</name>
   <language/>
@@ -60,6 +60,32 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
     </maternal_age>
+    <maternal_first_name>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>maternal_first_name</name>
+      <number>4</number>
+      <picker>0</picker>
+      <prettyName>Mother's first name</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </maternal_first_name>
+    <maternal_last_name>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>maternal_last_name</name>
+      <number>3</number>
+      <picker>0</picker>
+      <prettyName>Mother's last name</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </maternal_last_name>
     <paternal_age>
       <customDisplay/>
       <disabled>0</disabled>
@@ -73,5 +99,31 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
     </paternal_age>
+    <paternal_first_name>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>paternal_first_name</name>
+      <number>6</number>
+      <picker>0</picker>
+      <prettyName>Father's first name</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </paternal_first_name>
+    <paternal_last_name>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>paternal_last_name</name>
+      <number>5</number>
+      <picker>0</picker>
+      <prettyName>Father's last name</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </paternal_last_name>
   </class>
 </xwikidoc>
