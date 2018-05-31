@@ -38,6 +38,14 @@ import java.util.Iterator;
 public interface PrimaryEntityManager<E extends PrimaryEntity>
 {
     /**
+     * Returns a local reference to the XClass used for storing this entity.
+     *
+     * @return a local reference, like {@code PhenoTips.PatientClass}
+     * @since 1.4
+     */
+    EntityReference getEntityType();
+
+    /**
      * Gets the space where entities of this type are stored in.
      *
      * @return a local space reference, without the wiki name
@@ -66,18 +74,15 @@ public interface PrimaryEntityManager<E extends PrimaryEntity>
      *
      * @param id the {@link PrimaryEntity#getId() entity identifier}, i.e. the serialized document reference
      * @return the requested entity
-     * @throws IllegalArgumentException if the requested entity does not exist or is not really a type of the entity
-     *             requested
      */
     E get(String id);
 
     /**
      * Retrieves an {@link PrimaryEntity entity} from the specified document.
      *
-     * @param reference reference of the {@link PrimaryEntity#getDocumentReference() document
-     *        where the entity is stored}
+     * @param reference reference of the {@link PrimaryEntity#getDocumentReference() document where the entity is
+     *            stored}
      * @return the requested entity
-     * @throws IllegalArgumentException if the document doesn't contain a proper entity
      */
     E get(DocumentReference reference);
 
@@ -111,10 +116,9 @@ public interface PrimaryEntityManager<E extends PrimaryEntity>
      *
      * @param document the document where the entity is stored
      * @return the loaded entity
-     * @throws IllegalArgumentException if the provided document doesn't contain a proper entity
      */
     @Unstable("The type of the parameter will be replaced by Document, once the new model module is implemented")
-    E load(DocumentModelBridge document) throws IllegalArgumentException;
+    E load(DocumentModelBridge document);
 
     /**
      * Gets a prefix for all {@code #create() generated} documents.

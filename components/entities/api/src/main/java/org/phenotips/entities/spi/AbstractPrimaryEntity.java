@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.entities.internal;
+package org.phenotips.entities.spi;
 
 import org.phenotips.components.ComponentManagerRegistry;
 import org.phenotips.entities.PrimaryEntity;
@@ -63,6 +63,9 @@ public abstract class AbstractPrimaryEntity implements PrimaryEntity
      */
     protected AbstractPrimaryEntity(XWikiDocument document)
     {
+        if (document == null) {
+            throw new IllegalArgumentException("A primary entity must be constructed around a valid document");
+        }
         this.document = document;
     }
 

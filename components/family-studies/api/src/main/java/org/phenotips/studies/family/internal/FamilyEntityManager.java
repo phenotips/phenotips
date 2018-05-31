@@ -18,7 +18,7 @@
 package org.phenotips.studies.family.internal;
 
 import org.phenotips.entities.PrimaryEntityManager;
-import org.phenotips.entities.internal.AbstractPrimaryEntityManager;
+import org.phenotips.entities.spi.AbstractPrimaryEntityManager;
 import org.phenotips.studies.family.Family;
 
 import org.xwiki.component.annotation.Component;
@@ -40,6 +40,12 @@ import javax.inject.Singleton;
 @Singleton
 public class FamilyEntityManager extends AbstractPrimaryEntityManager<Family>
 {
+    @Override
+    public EntityReference getEntityType()
+    {
+        return Family.CLASS_REFERENCE;
+    }
+
     @Override
     public EntityReference getDataSpace()
     {

@@ -15,50 +15,42 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.studies.family.internal;
+package org.phenotips.entities.spi;
 
-import org.phenotips.entities.PrimaryEntityManager;
-import org.phenotips.entities.spi.AbstractPrimaryEntityManager;
-import org.phenotips.studies.family.Family;
+import org.phenotips.Constants;
+import org.phenotips.entities.PrimaryEntity;
 
-import org.xwiki.component.annotation.Component;
+import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
 
-import javax.inject.Named;
-import javax.inject.Singleton;
+import org.json.JSONObject;
+
+import com.xpn.xwiki.doc.XWikiDocument;
 
 /**
- * Secure implementation of family data access service using XWiki as the storage backend.
+ * A sample primary entity implementation used for tests.
  *
  * @version $Id$
- * @since 1.4
  */
-@Named("Family/secure")
-@Component(roles = {PrimaryEntityManager.class})
-@Singleton
-public class SecureFamilyEntityManager extends AbstractPrimaryEntityManager<Family>
+public class Job extends AbstractPrimaryEntity implements PrimaryEntity
 {
-    @Override
-    public EntityReference getEntityType()
+    public static final EntityReference CLASS_REFERENCE = new EntityReference("Job", EntityType.DOCUMENT,
+        Constants.CODE_SPACE_REFERENCE);
+
+    public Job(XWikiDocument doc)
     {
-        return Family.CLASS_REFERENCE;
+        super(doc);
     }
 
     @Override
-    protected Class<? extends Family> getEntityClass()
+    public EntityReference getType()
     {
-        return PhenotipsFamily.class;
+        return CLASS_REFERENCE;
     }
 
     @Override
-    public EntityReference getDataSpace()
+    public void updateFromJSON(JSONObject json)
     {
-        return Family.DATA_SPACE;
-    }
-
-    @Override
-    public String getType()
-    {
-        return "families";
+        // Nothing to do here
     }
 }

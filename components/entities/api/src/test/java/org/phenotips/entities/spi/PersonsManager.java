@@ -15,50 +15,43 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.studies.family.internal;
+package org.phenotips.entities.spi;
 
 import org.phenotips.entities.PrimaryEntityManager;
-import org.phenotips.entities.spi.AbstractPrimaryEntityManager;
-import org.phenotips.studies.family.Family;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.util.DefaultParameterizedType;
+import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
+
+import java.lang.reflect.Type;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
- * Secure implementation of family data access service using XWiki as the storage backend.
+ * A sample primary entity manager implementation used for tests.
  *
  * @version $Id$
- * @since 1.4
  */
-@Named("Family/secure")
-@Component(roles = {PrimaryEntityManager.class})
+@Component
+@Named("Person")
 @Singleton
-public class SecureFamilyEntityManager extends AbstractPrimaryEntityManager<Family>
+public class PersonsManager extends AbstractPrimaryEntityManager<Person> implements PrimaryEntityManager<Person>
 {
-    @Override
-    public EntityReference getEntityType()
-    {
-        return Family.CLASS_REFERENCE;
-    }
+    public static final Type TYPE = new DefaultParameterizedType(null, PrimaryEntityManager.class, Person.class);
 
-    @Override
-    protected Class<? extends Family> getEntityClass()
-    {
-        return PhenotipsFamily.class;
-    }
+    private static final EntityReference DEFAULT_DATA_SPACE = new EntityReference("Persons", EntityType.SPACE);
 
     @Override
     public EntityReference getDataSpace()
     {
-        return Family.DATA_SPACE;
+        return DEFAULT_DATA_SPACE;
     }
 
     @Override
     public String getType()
     {
-        return "families";
+        return "persons";
     }
 }

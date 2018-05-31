@@ -15,11 +15,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.entities.internal;
+package org.phenotips.entities.spi;
 
 import org.phenotips.Constants;
 import org.phenotips.entities.PrimaryEntity;
 import org.phenotips.entities.PrimaryEntityManager;
+import org.phenotips.entities.internal.LazyPrimaryEntityIterator;
 
 import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.bridge.DocumentModelBridge;
@@ -225,7 +226,7 @@ public abstract class AbstractPrimaryEntityManager<E extends PrimaryEntity> impl
     {
         try {
             XWikiContext xcontext = this.xcontextProvider.get();
-            XWikiDocument doc = xcontext.getWiki().getDocument(entity.getDocumentReference(), xcontext);
+            XWikiDocument doc = entity.getXDocument();
             xcontext.getWiki().deleteDocument(doc, xcontext);
             return true;
         } catch (Exception ex) {
@@ -241,10 +242,10 @@ public abstract class AbstractPrimaryEntityManager<E extends PrimaryEntity> impl
             return getEntityConstructor().newInstance(document);
         } catch (IllegalArgumentException | InvocationTargetException ex) {
             this.logger.info("Tried to load invalid entity of type [{}] from document [{}]",
-                document.getDocumentReference(), getEntityXClassReference());
+                getEntityXClassReference(), document == null ? null : document.getDocumentReference());
         } catch (InstantiationException | IllegalAccessException ex) {
             this.logger.error("Failed to instantiate primary entity of type [{}] from document [{}]: {}",
-                getEntityXClassReference(), document, ex.getMessage());
+                getEntityXClassReference(), document == null ? null : document.getDocumentReference(), ex.getMessage());
         }
         return null;
     }
@@ -322,7 +323,7 @@ public abstract class AbstractPrimaryEntityManager<E extends PrimaryEntity> impl
             throw new AbstractMethodError(
                 "Missing @Named annotation on PrimaryEntityManager class " + this.getClass().getCanonicalName());
         }
-        String name = this.getClass().getAnnotation(Named.class).value();
+        String name = StringUtils.substringBefore(this.getClass().getAnnotation(Named.class).value(), "/");
         DocumentReference result = this.stringResolver.resolve(name, Constants.CODE_SPACE_REFERENCE);
         if (!this.bridge.exists(result) && !name.endsWith("Class")) {
             result = this.stringResolver.resolve(name + "Class", Constants.CODE_SPACE_REFERENCE);
@@ -335,6 +336,13 @@ public abstract class AbstractPrimaryEntityManager<E extends PrimaryEntity> impl
                     + " must be a reference to the XClass used by its managed entity");
         }
         return result;
+    }
+
+    @Override
+    public EntityReference getEntityType()
+    {
+        DocumentReference fullReference = getEntityXClassReference();
+        return fullReference.removeParent(fullReference.getRoot());
     }
 
     /**

@@ -15,50 +15,42 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
-package org.phenotips.studies.family.internal;
+package org.phenotips.entities.spi;
 
+import org.phenotips.entities.PrimaryEntityConnectionsManager;
 import org.phenotips.entities.PrimaryEntityManager;
-import org.phenotips.entities.spi.AbstractPrimaryEntityManager;
-import org.phenotips.studies.family.Family;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.model.reference.EntityReference;
+import org.xwiki.component.phase.InitializationException;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 /**
- * Secure implementation of family data access service using XWiki as the storage backend.
+ * A sample primary entity connections manager implementation used for tests.
  *
  * @version $Id$
- * @since 1.4
  */
-@Named("Family/secure")
-@Component(roles = {PrimaryEntityManager.class})
+@Component
+@Named("person-belongsTo-family")
 @Singleton
-public class SecureFamilyEntityManager extends AbstractPrimaryEntityManager<Family>
+public class PersonBelongsToFamilyConnectionsManager
+    extends AbstractIncomingPrimaryEntityConnectionsManager<Person, Family>
+    implements PrimaryEntityConnectionsManager<Person, Family>
 {
-    @Override
-    public EntityReference getEntityType()
-    {
-        return Family.CLASS_REFERENCE;
-    }
+    @Inject
+    @Named("Person")
+    private PrimaryEntityManager<Person> personsManager;
+
+    @Inject
+    @Named("Family")
+    private PrimaryEntityManager<Family> familiesManager;
 
     @Override
-    protected Class<? extends Family> getEntityClass()
+    public void initialize() throws InitializationException
     {
-        return PhenotipsFamily.class;
-    }
-
-    @Override
-    public EntityReference getDataSpace()
-    {
-        return Family.DATA_SPACE;
-    }
-
-    @Override
-    public String getType()
-    {
-        return "families";
+        super.subjectsManager = this.personsManager;
+        super.objectsManager = this.familiesManager;
     }
 }
