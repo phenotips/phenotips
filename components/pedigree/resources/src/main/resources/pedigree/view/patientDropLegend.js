@@ -316,12 +316,6 @@ define([
                        .insert(new Element('input', {'type' : 'hidden', 'value' : patientElement.phenotipsID}));
 
             var _this = this;
-            Element.observe(draggablePart, 'mouseover', function() {
-                _this._highlightDropTargets(patientElement, true);
-            });
-            Element.observe(draggablePart, 'mouseout', function() {
-                _this._highlightDropTargets(patientElement, false);
-            });
 
             new Draggable(draggablePart, {
                 revert: true,
@@ -360,7 +354,7 @@ define([
             return item;
         },
 
-        _highlightDropTargets: function(patient, isOn) {
+        _highlightDropTargets: function(isOn) {
             if (editor.getView().getCurrentDraggable() != null) {
                 return;
             }
@@ -393,6 +387,10 @@ define([
                 return;
             }
             editor.getNodeMenu().hide();
+
+            // highlight potential targets
+            this._highlightDropTargets(true);
+
             editor.getView().setCurrentDraggable(-1); // in drag mode but with no target
             var divPos = editor.getWorkspace().viewportToDiv(event.pointerX(), event.pointerY());
             var pos    = editor.getWorkspace().divToCanvas(divPos.x,divPos.y);
@@ -430,10 +428,7 @@ define([
 
             editor.getView().setCurrentDraggable(null);
 
-            var id = label.select('input')[0].value;
-            var patient = this._notLinkedPatients[id];
-
-            this._highlightDropTargets(patient, false);
+            this._highlightDropTargets(false);
             this._unhighlightAfterDrag();
 
             var divPos = editor.getWorkspace().viewportToDiv(event.pointerX(), event.pointerY());
@@ -444,6 +439,9 @@ define([
                     editor.getOkCancelDialogue().showCustomized("This individual is already linked to another patient","Can't assign", "OK", null);
                     return;
                 }
+
+                var id = label.select('input')[0].value;
+                var patient = this._notLinkedPatients[id];
                 this._onDropObject(node, patient);
             }
         },
