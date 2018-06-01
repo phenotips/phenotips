@@ -64,7 +64,7 @@ require(['jquery'], function ($)
             var numberMissing = 0;
             $.each(fieldsByPosition, function (index, fieldObject)
             {
-                if (!fieldObject['field'][0].__validation.validate()) {
+                if (fieldObject['field'][0].__validation && !fieldObject['field'][0].__validation.validate()) {
                     fieldObject['parent'].removeClass('collapsed');
                     var position = fieldObject['field'].offset().top - (viewportHeight / 3);
                     position < 0 ? position = 0 : null;
