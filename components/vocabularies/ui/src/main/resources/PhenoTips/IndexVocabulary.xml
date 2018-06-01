@@ -438,6 +438,7 @@ $xwiki.ssx.use('PhenoTips.Widgets')##
       var form = event.element();
       var mandatoryElt = form.down('.mandatory input[id^="vocabulary"]');
       var vocabularyId = form.down('input[name="vocabulary"]').value;
+      var indexButton = form.down('input[name="actionindex"]');
       if (!mandatoryElt || mandatoryElt.value != "") {
         // Create a notification message to display to the user when the submit is being sent
         form._x_notification = new XWiki.widgets.Notification("$!escapetool.javascript($services.localization.render('phenotips.indexVocabulary.inProgress'))", "inprogress");
@@ -463,7 +464,7 @@ $xwiki.ssx.use('PhenoTips.Widgets')##
               response.request.options.onFailure(response);
             },
             onComplete : function (response) {
-              form.enable();
+              indexButton.disabled = false;
             }
         });
       }
