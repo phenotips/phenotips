@@ -76,8 +76,8 @@ require(['jquery'], function ($)
                 }
             });
             if (numberMissing > 0) {
-                var dialog = new PhenoTips.widgets.ModalPopup("There are " + numberMissing + " missing fields",
-                    false, {'title': 'Missing fields', 'verticalPosition': 'top', 'removeOnClose': true});
+                var dialog = new PhenoTips.widgets.ModalPopup("<div class='box errormessage'>Some fields are missing or invalid. Please review and correct the entered data. Missing or invalid fields: " + numberMissing + "</div>",
+                    false, {'title': 'Invalid input', 'verticalPosition': 'top', 'removeOnClose': true});
                 dialog.showDialog();
                 document.fire("phenotips:scrollValidation:invalid");
             }
