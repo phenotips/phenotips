@@ -245,6 +245,15 @@ define([
                                    ? event.memo.onFailureHandler
                                    : (function() { editor.getOkCancelDialogue().showError("Can not create a new patient", "Can not create", "OK"); });
 
+            // once patient is created need to load data for the patient, to meet the
+            // assumption that data for all patients is always loaded
+            var onCreated = function(newID) {
+                var onLoaded = function(data) {
+                    onCreatedHandler(newID, data[newID]);
+                }
+                editor.getPatientDataLoader().load([newID], onLoaded);
+            };
+
             var createPatientURL = editor.getExternalEndpoint().getFamilyNewPatientURL();
             document.fire("pedigree:blockinteraction:start", {"message": "Waiting for the patient record to be created..."});
             new Ajax.Request(createPatientURL, {
@@ -252,7 +261,7 @@ define([
                 onSuccess: function(response) {
                     if (response.responseJSON && response.responseJSON.hasOwnProperty("newID")) {
                         console.log("Created new patient: " + Helpers.stringifyObject(response.responseJSON));
-                        onCreatedHandler(response.responseJSON.newID)
+                        onCreated(response.responseJSON.newID)
                     } else {
                         onFailureHandler();
                     }

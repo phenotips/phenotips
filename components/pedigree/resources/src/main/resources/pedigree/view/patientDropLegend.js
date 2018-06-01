@@ -241,8 +241,9 @@ define([
             var _this = this;
 
             var onDataReady = function(responseJSON) {
-                var patient = responseJSON[phenotipsPatientID];
-                _this.addCase(phenotipsPatientID, {});
+                // a newly linked patient record has no pedigree-specific properties yet
+                var pedigreeProperties = {};
+                _this.addCase(phenotipsPatientID, pedigreeProperties);
             };
 
             editor.getPatientDataLoader().load([phenotipsPatientID], onDataReady);

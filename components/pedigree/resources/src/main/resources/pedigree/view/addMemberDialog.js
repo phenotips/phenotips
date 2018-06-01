@@ -69,8 +69,10 @@ define([
             document.fire("pedigree:patient:createrequest", {"onCreatedHandler": this._onPatientCreated.bind(this) } );
         },
 
-        _onPatientCreated: function(newID) {
-            editor.getPatientLegend().addCase(newID);
+        _onPatientCreated: function(newID, patientJSON) {
+            // a newly linked patient record has no pedigree-specific properties yet
+            var pedigreeProperties = {};
+            editor.getPatientLegend().addCase(newID, pedigreeProperties);
         },
 
         _onLinkExisting: function(phenotipsID) {
