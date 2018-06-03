@@ -160,6 +160,17 @@ define([
                     alert(warningString);
                 }
 
+                // 3. add patients that are not in pedigree to the patient legend
+                var allLinkedNodes = editor.getGraph().getAllPatientLinks();
+                var allFamilyMembers = editor.getFamilyData().getAllFamilyMembersList()
+                for (var i = 0; i < allFamilyMembers.length; i++) {
+                    var nextMemberID = allFamilyMembers[i].id;
+                    if (!allLinkedNodes.patientToNodeMapping.hasOwnProperty(nextMemberID)) {
+                        editor.getPatientLegend().addCase(nextMemberID, {});
+                    }
+                }
+
+
                 if (!noUndo && !editor.isReadOnlyMode()) {
                     var undoRedoState = editor.getGraph().toUndoRedoState();
                     editor.getUndoRedoManager().addState({"eventName": eventName}, null, undoRedoState);
