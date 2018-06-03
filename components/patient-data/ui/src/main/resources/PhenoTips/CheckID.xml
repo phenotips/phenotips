@@ -55,7 +55,7 @@
     Self
     #break
   #end
-  #set ($matchingDocuments = $xwiki.wrapDocs($services.query.xwql("where doc.object($className).external_id = :eid").bindValue('eid', $externalIdentifier).execute()))
+  #set ($matchingDocuments = $services.query.xwql("where doc.object($className).external_id = :eid").bindValue('eid', $externalIdentifier).execute())
   #if ($externalIdentifier == '')
     $response.setStatus(403)
     Empty
