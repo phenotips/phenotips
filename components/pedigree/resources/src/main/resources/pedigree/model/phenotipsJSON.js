@@ -21,31 +21,31 @@ define([
      * Since some of the properties in Phenotips JSON are not stored internally, need to use the original JSON
      * as a base and only update those fields which have equivalents in internal format
      */
-    PhenotipsJSON.internalToPhenotipsJSON = function(internalProperties, initialPatientJSON, relationshipProperties)
+    PhenotipsJSON.internalToPhenotipsJSON = function(internalProperties, relationshipProperties)
     {
-        // To be more functional could have used Helpers.cloneObject(initialPatientJSON), but
-        // that is inefficient (multiplied by the number of patient in a family) and in practice
-        // there is no need for that
-        var result = initialPatientJSON; // could be blank initially
+        // if a PT patient is linked to this node, there may be properties which are not stored in pedigree,
+        // which need to be preserved. Otherwise we start from a blank state and just convert what we have in
+        // pedigree to PT JSON format
+        var result = internalProperties.hasOwnProperty("phenotipsId")
+                     ? Helpers.cloneObject(editor.getPatientRecordData().get(internalProperties.phenotipsId))
+                     : {};
 
         result.phenotips_version = editor.getPhenotipsVersion();
 
         if (internalProperties.hasOwnProperty("phenotipsId")) {
-            initialPatientJSON.id = internalProperties.phenotipsId;
-        } else {
-            delete initialPatientJSON.id; // this patient is no longer linked to a PT patient
+            result.id = internalProperties.phenotipsId;
         }
 
-        initialPatientJSON.sex = internalProperties.gender;
-        if (initialPatientJSON.sex != "M" && initialPatientJSON.sex != "F" && initialPatientJSON.sex != "U") {
-            initialPatientJSON.sex = "U";  // pedigree supports more genders than PhenoTips as of right now
+        result.sex = internalProperties.gender;
+        if (result.sex != "M" && result.sex != "F" && result.sex != "U") {
+            result.sex = "U";  // pedigree supports more genders than PhenoTips as of right now
         }
 
         // ethnicities: not touched, since the meaning is different
 
         var setValueOrDefault = function(internalKey, externalKey, valueIfNoInternalKey, externalObject) {
             if (!externalObject) {
-                externalObject = initialPatientJSON;
+                externalObject = result;
             }
             if (internalProperties.hasOwnProperty(internalKey)) {
                 externalObject[externalKey] = internalProperties[internalKey];
@@ -56,9 +56,9 @@ define([
 
         setValueOrDefault("externalID", "external_id", "");
 
-        initialPatientJSON.patient_name = {};
-        setValueOrDefault("fName", "first_name", "", initialPatientJSON.patient_name);
-        setValueOrDefault("lName", "last_name", "", initialPatientJSON.patient_name);
+        result.patient_name = {};
+        setValueOrDefault("fName", "first_name", "", result.patient_name);
+        setValueOrDefault("lName", "last_name", "", result.patient_name);
 
         setValueOrDefault("lifeStatus", "life_status", "alive");
 
@@ -89,14 +89,14 @@ define([
                 outputDisorders.push( {"label": disorderName} );
             }
         }
-        initialPatientJSON["disorders"] = outputDisorders;
+        result["disorders"] = outputDisorders;
 
         if (relationshipProperties && relationshipProperties.consangr) {
             var familyHistory = internalProperties.hasOwnProperty("family_history")
             ? internalProperties["family_history"]
             : {};
             familyHistory["consanguinity"] = (relationshipProperties.consangr === "Y") ? true : false;
-            initialPatientJSON["family_history"] = familyHistory;
+            result["family_history"] = familyHistory;
         }
 
         // TODO: convert Alive&Well into "clinicalStatus"?
@@ -120,10 +120,7 @@ define([
             console.log("Possibly unsuported Patient JSON version: " + patientJSON.phenotips_version);
         }
 
-        // To be more functional could have used Helpers.cloneObject(pedigreeOnlyProperties), but
-        // that is inefficient (multiplied by the number of patient in a family) and in practice
-        // there is no need for that
-        var result = pedigreeOnlyProperties;
+        var result = Helpers.cloneObject(pedigreeOnlyProperties);
 
         // Fields which are loaded from the patient document are:
         // - id (important and special, as presense of an ID indicates this patient is linked to a PhenoTips patient)

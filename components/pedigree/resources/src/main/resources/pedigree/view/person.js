@@ -46,6 +46,7 @@ define([
             // because changing properties requires a redraw, which relies on gender
             // shapes being there already
             this.assignProperties(properties);
+
             //timer.printSinceLast("=== new person runtime: ");
         },
 
@@ -149,8 +150,29 @@ define([
             }
 
             if (this._phenotipsId != "") {
-                // fire patient this._phenotipsId is no longer in family
-                var event = {"phenotipsID": this._phenotipsId, "gender": this.getGender(), "firstName":  this._firstName, "lastName": this._lastName, "externalID": this._externalID};
+                // Store curent state of the patient as "the last know aproved state for this patient record".
+                //
+                // assumption: this node (as of this moment when the patient record is unlinked from this pedigree node)
+                //             has the latest known data for the given patient record, which is assumed to override data loaded
+                //             for this patient record from the backend. E.g. if a patient record was linked to a node,
+                //             edited, and then unliked, those changes should be saved.
+                //
+                // TODO: do not need this if every property is instantly placed into PT JSON, which is a better
+                //       and more consistent way, but requires much more refactoring.
+                // TODO: alternatively, this code can be triggered when data model is being updated, but since
+                //       all other triggers are activated by changes in the "view" component the code is placed here
+                //
+                // note: ignoring relationship properties, since once unlinked there are no relationships
+                //       may decideto preserve that as well, but that is hard since if this mthod is called when a
+                //       part of a pedigree gets deleted => relationship properties may no longer be available by
+                //       the point this patient is deleted and this code is called
+                var relationshipProperties = {};
+                var currentStateJSON = PhenotipsJSON.internalToPhenotipsJSON(this.getProperties(), relationshipProperties);
+                editor.getPatientRecordData().update(this._phenotipsId, currentStateJSON);
+
+                // fire "patient [this._phenotipsId] is no longer linked to a node" event
+                var event = { "phenotipsID": this._phenotipsId,
+                              "pedigreeProperties": this.getProperties() };
                 document.fire("pedigree:patient:unlinked", event);
             } else {
                 document.fire("pedigree:patient:linked", {"phenotipsID": phenotipsId});
@@ -1358,10 +1380,10 @@ define([
             info['nonstandard_features'] = phenotipsFeatures.nonstandard_features;
 
             // convert pedigree genes to PhenoTips gene format
-            info['genes'] = this.getGenes();
+            info['genes'] = this.getGenes().slice();
 
             if (this.getEthnicities().length > 0)
-                info['ethnicities'] = this.getEthnicities();
+                info['ethnicities'] = this.getEthnicities().slice();
             if (this._twinGroup !== null)
                 info['twinGroup'] = this._twinGroup;
             if (this._monozygotic)

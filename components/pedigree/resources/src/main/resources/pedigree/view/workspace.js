@@ -19,6 +19,11 @@ define([
             this.canvas = new Element('div', {'id' : 'canvas'});
             this.workArea = new Element('div', {'id' : 'work-area'}).update(this.canvas);
             $('body').update(this.workArea);
+
+            // prepare placeholder area for various legends
+            this.allLegendsContainer = new Element('div', {'class': 'all-legend-container', 'id': 'all-legend-container'});
+            this.workArea.insert(this.allLegendsContainer);
+
             var screenDimensions = document.viewport.getDimensions();
             this.generateTopMenu();
             this.width = screenDimensions.width;
@@ -215,6 +220,16 @@ define([
          */
         getWorkArea: function() {
             return this.workArea;
+        },
+
+        /**
+         * Returns the div element which is suposed to house all the legends (disorder legend, patient legend, etc.)
+         *
+         * @method getLegendContainer
+         * @return {HTMLElement}
+         */
+        getLegendContainer: function() {
+            return this.allLegendsContainer;
         },
 
         /**

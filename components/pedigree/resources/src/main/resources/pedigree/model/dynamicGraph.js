@@ -16,6 +16,8 @@ define([
     {
         this.DG = drawGraph;
 
+        this._unlinkedMembers = []; // array of PT ids
+
         this._onlyProbandGraph = '[{"id": 0, "proband":true}]';  // a string in SimpleJSON format, used to create a new blank pedigree
     };
 
@@ -36,6 +38,11 @@ define([
         getProbandId: function()
         {
             return this.DG.probandId;
+        },
+
+        setUnlinkedPatients: function(unlinkedMembers)
+        {
+            this._unlinkedMembers = unlinkedMembers;
         },
 
         getAllPatientLinks: function()
@@ -235,6 +242,10 @@ define([
             this.DG.GG.properties[id] = newSetOfProperties;
         },
 
+        // TODO: completely remove RAW JSON from base graph, it is only needed for loading pedigree
+        //       (so can convert to internal pedigre JSON before storing in BaseGraph) and saving full
+        //       patient record JSON for drag/dop and saving (implemented in PatientRecordData class)
+        //       Raw JSON is only left here for now to reduce the amount of refactoring
         getRawJSONProperties: function( id )
         {
             return this.DG.GG.rawJSONProperties[id];
@@ -275,20 +286,13 @@ define([
 
             if (patientObject != null && !patientObject.hasOwnProperty("__ignore__")) {
                 var pedigreeOnlyProperties = this.getNodePropertiesNotStoredInPatientProfile(id);
-
                 this.setProperties(id, PhenotipsJSON.phenotipsJSONToInternal(patientObject, pedigreeOnlyProperties));
-            } else {
-                // else: keep properties as defined in the pedigree (e.g. via one of the old importers)
-                //       and replace null RAW properties with an empty object
-                // TODO: once converters are updated to fill new format fields instead of internal fields,
-                //       setting RAW properties to null will not be needed any more
-                this.setRawJSONProperties(id, {});
             }
         },
 
         _isDisplayedAsConsanguinous: function( v ) {
-            var consangr = editor.getGraph().isConsangrRelationship(v);
-            var nodeConsangrPreference = editor.getView().getNode(v).getConsanguinity();
+            var consangr = this.isConsangrRelationship(v);
+            var nodeConsangrPreference = this.getProperties(v).consangr;
             if (nodeConsangrPreference == "N")
                 consangr = false;
             if (nodeConsangrPreference == "Y")
@@ -311,7 +315,7 @@ define([
             var relationshipProperties = {};
             relationshipProperties.consangr = consangr;
 
-            return PhenotipsJSON.internalToPhenotipsJSON(this.getProperties(v), this.getRawJSONProperties(v), relationshipProperties);
+            return PhenotipsJSON.internalToPhenotipsJSON(this.getProperties(v), relationshipProperties);
         },
 
         getRelationshipExternalJSON: function( v )
@@ -1759,6 +1763,16 @@ define([
                 }
             }
 
+            // add unlinked members
+            var nextFreeID = this.DG.GG.getMaxRealVertexId() + 1;
+            for (var i = 0; i < this._unlinkedMembers.length; i++) {
+                var ptID = this._unlinkedMembers[i];
+                var id = nextFreeID++;
+                output.members.push( { "id": id,
+                                       "notInPedigree": true,
+                                       "properties": editor.getPatientRecordData().get(ptID) } );
+            }
+
             // note: everything else can be recomputed based on the information above
 
             this._debug_printJSONSummary(output, false, true);
@@ -1767,21 +1781,23 @@ define([
             return output;
         },
 
-        _debug_printJSONSummary: function(jsonOutput, includeRawJSON, includeInternalData)
+        _debug_printJSONSummary: function(jsonOutput, printFullProperties, includeInternalData)
         {
             var timer = new Helpers.Timer();
 
             var debugOutput = JSON.parse(JSON.stringify(jsonOutput));
 
-            if (!includeRawJSON) {
+            if (!printFullProperties) {
                 for (var i = 0; i < debugOutput.members.length; i++) {
                     var useProperties = { "other": "..." };
                     // only keep essential properties
-                    if (debugOutput.members[i].properties.id) {
-                        useProperties.id = debugOutput.members[i].properties.id;
-                    }
-                    if (debugOutput.members[i].properties.sex) {
-                        useProperties.sex = debugOutput.members[i].properties.sex;
+                    if (debugOutput.members[i].properties) {
+                        if (debugOutput.members[i].properties.id) {
+                            useProperties.id = debugOutput.members[i].properties.id;
+                        }
+                        if (debugOutput.members[i].properties.sex) {
+                            useProperties.sex = debugOutput.members[i].properties.sex;
+                        }
                     }
                     debugOutput.members[i].properties = useProperties;
                 }
@@ -1837,7 +1853,8 @@ define([
 
             if (!this._initializeFromBaseGraphAndLayout( importData.baseGraph,
                                                          importData.probandNodeID,
-                                                         importData.layout )) {
+                                                         importData.layout,
+                                                         importData.unlinkedMembers)) {
                 return null;  // unable to genersate pedigree using import data, no import => no changes
             }
 
@@ -1845,24 +1862,26 @@ define([
 
             timer.printSinceLast("=== Import runtime: ");
 
-            return {"new": newNodes, "removed": removedNodes};
+            return {"new": newNodes, "removed": removedNodes, "unlinked": this._unlinkedMembers};
         },
 
         // suggestedRanks: when provided, attempt to use the suggested rank for all nodes,
         //                 in order to keep the new layout as close as possible to the previous layout
-        _initializeFromBaseGraphAndLayout: function (baseGraph, probandNodeID, suggestedLayout)
+        _initializeFromBaseGraphAndLayout: function (baseGraph, probandNodeID, suggestedLayout, unlinkedMembers)
         {
             try {
                 var newDG = new PositionedGraph( baseGraph,
                                                  probandNodeID,
                                                  this.DG.options,             // preserve whatever options are currently used
                                                  suggestedLayout );
+                this.DG = newDG;
+
+                this._unlinkedMembers = unlinkedMembers;
             } catch (e) {
                 console.log("ERROR creating a grpah from input data: " + e);
                 return false;
             }
 
-            this.DG = newDG;
             return true;
         },
 

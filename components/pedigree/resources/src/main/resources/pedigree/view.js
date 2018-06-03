@@ -774,6 +774,14 @@ define([
                 timer.printSinceLast("=== highlight & update handles runtime: ");
             }
 
+            if (changeSet.hasOwnProperty("unlinked")) {
+                for (var phenotipsID in changeSet.unlinked) {
+                    if (changeSet.unlinked.hasOwnProperty(phenotipsID)) {
+                        editor.getPatientLegend().addCase(phenotipsID, {}, changeSet.unlinked[phenotipsID]);
+                    }
+                }
+            }
+
             timer2.printSinceLast("=== Total apply changes runtime: ");
 
             } catch(err) {

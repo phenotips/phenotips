@@ -20,6 +20,7 @@ define([
         "pedigree/nodeMenuFields",
         "pedigree/model/dynamicGraph",
         "pedigree/model/helpers",
+        "pedigree/model/patientRecordData",
         "pedigree/view/workspace",
         "pedigree/view/disorderLegend",
         "pedigree/view/exportSelector",
@@ -39,7 +40,8 @@ define([
         "pedigree/view/saveLoadIndicator",
         "pedigree/view/templateSelector",
         "pedigree/view/tabbedSelector",
-        "pedigree/view/printDialog"
+        "pedigree/view/printDialog",
+        "pedigree/view/addMemberDialog",
     ],
     function(
         PedigreeExtensionManager,
@@ -55,6 +57,7 @@ define([
         NodeMenuFields,
         DynamicPositionedGraph,
         Helpers,
+        PatientRecordData,
         Workspace,
         DisorderLegend,
         ExportSelector,
@@ -74,7 +77,8 @@ define([
         SaveLoadIndicator,
         TemplateSelector,
         TabbedSelector,
-        PrintDialog
+        PrintDialog,
+        AddNewMemberDialog
 ){
 
     var PedigreeEditor = Class.create({
@@ -118,15 +122,7 @@ define([
 
             //initialize the elements of the app
             this._workspace = new Workspace();
-            this._disorderLegend = new DisorderLegend();
-            this._candidateGeneLegend = new CandidateGeneLegend();
-            this._causalGeneLegend = new CausalGeneLegend();
-            this._rejectedGeneLegend = new RejectedGeneLegend();
-            this._rejectedCandidateGeneLegend = new RejectedCandidateGeneLegend();
-            this._carrierGeneLegend = new CarrierGeneLegend();
-            this._hpoLegend = new HPOLegend();
-            this._cancerLegend = new CancerLegend();
-            this._patientLegend = new PatientDropLegend();
+
             this._nodetypeSelectionBubble = new NodetypeSelectionBubble(false);
             this._siblingSelectionBubble  = new NodetypeSelectionBubble(true);
             this._okCancelDialogue = new OkCancelDialogue();
@@ -138,12 +134,7 @@ define([
             this._saveLoadEngine = new SaveLoadEngine();
             this._familyData = new FamilyData();
             this._patientDataLoader = new PatientDataLoader();
-
-            var newPatientId = window.self.location.href.toQueryParams().new_patient_id;
-            if (newPatientId && newPatientId != ""){
-                this.getPatientLegend().addCase(newPatientId, 'new');
-                this._unsavedNewPatient = true;
-            }
+            this._patientRecordData = new PatientRecordData();
 
             // load global pedigree preferences before a specific pedigree is loaded, since
             // preferences may affect the way it is rendered. Once preferences are loaded the
@@ -165,6 +156,23 @@ define([
                                                                       [_templateSelector, _importSelector]);
 
                     // generate various dialogues after preferences have been loaded
+                    this._disorderLegend = new DisorderLegend();
+                    this._candidateGeneLegend = new CandidateGeneLegend();
+                    this._causalGeneLegend = new CausalGeneLegend();
+                    this._rejectedGeneLegend = new RejectedGeneLegend();
+                    this._rejectedCandidateGeneLegend = new RejectedCandidateGeneLegend();
+                    this._carrierGeneLegend = new CarrierGeneLegend();
+                    this._hpoLegend = new HPOLegend();
+                    this._cancerLegend = new CancerLegend();
+                    this._patientLegend = new PatientDropLegend();
+                    this._addNewMember = new AddNewMemberDialog();
+
+                    var newPatientId = window.self.location.href.toQueryParams().new_patient_id;
+                    if (newPatientId && newPatientId != ""){
+                        this.getPatientLegend().addCase(newPatientId);
+                        this._unsavedNewPatient = true;
+                    }
+
                     this._nodeMenu = this.generateNodeMenu();
                     this._deceasedMenu = this.generateDeceasedMenu();
                     this._nodeGroupMenu = this.generateNodeGroupMenu();
@@ -289,8 +297,14 @@ define([
             var patientLinks = editor.getGraph().getAllPatientLinks();
             var currentPatientId = editor.getGraph().getCurrentPatientId();
 
-            var noPatientsAreLinked = !editor.isFamilyPage() && (patientLinks.linkedPatients.length == 0);
-            var currentPatientIsNotLinked = !editor.isFamilyPage() && !patientLinks.patientToNodeMapping.hasOwnProperty(currentPatientId);
+            var noPatientsAreLinked = !editor.isFamilyPage()
+                                      && (patientLinks.linkedPatients.length == 0)
+                                      && editor.getPatientLegend().getListOfPatientsInTheLegend();
+
+            var currentPatientIsNotLinked = !editor.isFamilyPage()
+                                            && !patientLinks.patientToNodeMapping.hasOwnProperty(currentPatientId)
+                                            && !editor.getPatientLegend().hasPatient(currentPatientId);
+
             var unsavedChanges = editor.getUndoRedoManager().hasUnsavedChanges();
 
             if (!unsavedChanges && this._unsavedNewPatient) {
@@ -435,6 +449,14 @@ define([
          */
         getPatientDataLoader: function() {
             return this._patientDataLoader;
+        },
+
+        /**
+         * @method getPatientRecordData
+         * @return {PatientRecordData}
+         */
+        getPatientRecordData: function() {
+            return this._patientRecordData;
         },
 
         /**
@@ -637,6 +659,14 @@ define([
          */
         getPaper: function() {
             return this.getWorkspace().getPaper();
+        },
+
+        /**
+         * @method getAddNewMemberDialog
+         * @return {Dialog} A dialog for adding new members to the family
+         */
+        getAddNewMemberDialog: function() {
+            return this._addNewMember;
         },
 
         /**

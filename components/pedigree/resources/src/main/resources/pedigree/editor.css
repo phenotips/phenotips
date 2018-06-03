@@ -252,19 +252,37 @@ input[type="radio"] {
   padding-left: 10px;
   font-size: 1.1em;
 }
+.legend-warning {
+  padding: 6px 10px 6px 30px;
+  color: #B08020;
+}
+
+.all-legend-container {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 10000;
+  max-width: 80%;
+}
+.abnormalities-legend span {
+  font-family: Arial,Verdana,sans-serif;
+}
+.abnormalities-legend {
+  margin-bottom: 10px;
+}
+.generic-legend {
+  min-width: 245px;
+  max-width: 270px;
+  width: 100%;
+  background: #FFF;
+}
+.patient-assign-legend {
+  float: right;
+}
 .legend-box {
   background: #FFF;
   border-radius: 0 0 0 4px;
   padding: .5em .5em .5em 1em;
-}
-.legend-container {
-  top: 0;
-  position: absolute;
-  right: 0;
-  z-index: 10000;
-}
-.legend-container span {
-  font-family: Arial,Verdana,sans-serif;
 }
 .legend-box-controls-open {
   background: #F4F4F4;
@@ -307,7 +325,7 @@ input[type="radio"] {
   cursor: pointer;
   padding-left: 1px;
 }
-li.abnormality:hover {
+li.abnormality:hover, div.abnormality:hover {
   background-color: #FBF5EA;
 }
 .abnormality.highlighted {
@@ -805,7 +823,7 @@ li.abnormality:hover {
 }
 
 .menu-box .patient-link-remove:hover {
-  background: #E6CE85;
+  background: #E6CE85 !important;
 }
 .menu-box .patient-create-button {
   margin-top: 0 !important;
@@ -917,7 +935,8 @@ li.abnormality:hover {
 }
 .pedigree-nodePatientTextLink {
   cursor: pointer;
-  fill: #00498A;
+  fill: #00498A;   /* for link on the canvas */
+  color: #00498A;  /* for link in the legend */
 }
 .pedigree-nodePatientTextLink:hover {
   text-decoration: underline;
@@ -1332,39 +1351,91 @@ div.field-box.field-cancers_picker {
 }
 
 .patient-list {
-  list-style-type: none;
-  margin: 10px 0 10px 9px;
+  margin: 10px 0 0 2px;
 }
 .drop-patient span:first-child {
   border-color: #636B75;
   background-color: #99aadd;
   margin-right: 3px;
-  vertical-align: middle;
+  vertical-align: top;
+  margin-top: 6px;
 }
 .patient-list .drop-patient {
   display : inline-block;
-  margin-right: 20px;
+  margin-right: 6px;
 }
-.drop-patient .patient-name {
+.drop-patient .patient-legend-details {
+  color: #999999;
+}
+.patient-legend-details-label {
+  float: left;
+}
+.drop-patient .patient-legend-details-label-margin {
+  margin-right: 5px;
+}
+.drop-patient .min-column-width-45 {
+  width: 45px;
+  margin-right: 0px !important;
+}
+.drop-patient .patient-legend-patient {
   margin-left: 4px;
+  padding-left: 0px;
+  padding-right: 3px;
+  padding-bottom: 2px;
+  padding-top: 1px;
+  display: inline-block;
+}
+.legend-patient-link {
+  width: 0%;
+}
+.legend-patient-button {
+  display: inline-block;
+  vertical-align: top;
+  cursor: pointer;
+}
+.legend-edit-patient-button {
+  margin-top: 7px;
+  font-size: 90%;
+}
+.legend-remove-patient-button {
+  margin-top: 6px;
+  margin-left: 6px;
+  font-size: 85%;
+  margin-right: 2px;
+  float: right; /* to be removed after edit button is enabled */
+}
+.legend-remove-patient-button:hover {
+  color: #A33;
+}
+.patient-record-add-section {
+  margin-top: 5px;
+  padding-bottom: 5px;
+}
+.add-family-member-button, .create-family-member-button {
+  border-radius: 2px;
+  padding: 3px 9px 3px 9px;
+  cursor: pointer;
+}
+.add-family-member-button {
+  box-shadow: 0px 1px 1px #CCC;
+  background: #F5F5F5;
+}
+.add-family-member-button:hover, .create-family-member-button:hover {
+  background: #B1C2E2;
+}
+.pedigree-create-patient {
+}
+.add-link-to-existing-patient .suggest-patients {
+  width: 30%;
 }
 .no-word-wrap {
   white-space: nowrap;
 }
 .abnormality.drop-patient {
   cursor: move;
-}
-#list_new, #list_unlinked {
-  padding-left: 8px;
-  padding-top: 10px;
-}
-.patient-assign-legend {
-  left: 100px;
-  top: 10px;
-  position: absolute;
-  z-index: 10000;
-  min-width: 200px;
-  max-width: 550px;
+  margin-bottom: 5px;
+  padding-left: 2px;
+  width: 85%;
 }
 .at-age-input, .cause-input {
     margin-top: 3px;

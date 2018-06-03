@@ -24,6 +24,8 @@ define([
             document.observe("pedigree:node:setproperty",          this.handleSetProperty);
             document.observe("pedigree:node:modify",               this.handleModification);
             document.observe("pedigree:patient:deleterequest",     this.handleDeletePatientRecords);
+            document.observe("pedigree:patient:createrequest",     this.handleCreatePatientRecord);
+            document.observe("pedigree:patient:checklinkvalidity", this.handleCheckLinkValidity);
             document.observe("pedigree:person:drag:newparent",     this.handlePersonDragToNewParent);
             document.observe("pedigree:person:drag:newpartner",    this.handlePersonDragToNewPartner);
             document.observe("pedigree:person:drag:newsibling",    this.handlePersonDragToNewSibling);
@@ -234,6 +236,39 @@ define([
             }
 
             editor.getOkCancelDialogue().showCustomized(message, title, buttonLabel, deleteRecords, "Cancel");
+        },
+
+        handleCreatePatientRecord: function(event)
+        {
+            var onCreatedHandler = event.memo.onCreatedHandler;
+            var onFailureHandler = event.memo.onFailureHandler
+                                   ? event.memo.onFailureHandler
+                                   : (function() { editor.getOkCancelDialogue().showError("Can not create a new patient", "Can not create", "OK"); });
+
+            // once patient is created need to load data for the patient, to meet the
+            // assumption that data for all patients is always loaded
+            var onCreated = function(newID) {
+                var onLoaded = function(data) {
+                    onCreatedHandler(newID, data[newID]);
+                }
+                editor.getPatientDataLoader().load([newID], onLoaded);
+            };
+
+            var createPatientURL = editor.getExternalEndpoint().getFamilyNewPatientURL();
+            document.fire("pedigree:blockinteraction:start", {"message": "Waiting for the patient record to be created..."});
+            new Ajax.Request(createPatientURL, {
+                method: "GET",
+                onSuccess: function(response) {
+                    if (response.responseJSON && response.responseJSON.hasOwnProperty("newID")) {
+                        console.log("Created new patient: " + Helpers.stringifyObject(response.responseJSON));
+                        onCreated(response.responseJSON.newID)
+                    } else {
+                        onFailureHandler();
+                    }
+                },
+                onFailure: onFailureHandler,
+                onComplete: function() { document.fire("pedigree:blockinteraction:finish"); }
+            });
         },
 
         handleRemove: function(event)
@@ -670,6 +705,30 @@ define([
                         }
                     }
                     else
+                        if (modificationType == "trySetAllProperties") {
+                            // note: both UI element and data model record are available for given nodeID
+                            // (i.e. this should not be called while setting up data model before UI elements are created)
+
+                            if (modValue.pedigreeProperties) {
+                                editor.getGraph().setProperties( nodeID, modValue.pedigreeProperties );
+                            }
+
+                            if (modValue.phenotipsProperties) {
+                                if (!modValue.pedigreeProperties || Helpers.isObjectEmpty(modValue.pedigreeProperties)) {
+                                    editor.getGraph().setPersonNodeDataFromPhenotipsJSON( nodeID, modValue.phenotipsProperties );
+                                }
+                            }
+
+                            node.assignProperties(editor.getGraph().getProperties(nodeID));
+
+                            var changeSet = editor.getGraph().updateYPositioning();
+                            editor.getView().applyChanges(changeSet, true);
+
+                            if (!event.memo.noUndoRedo) {
+                                editor.getUndoRedoManager().addState( event );
+                            }
+                        }
+                    else
                     if (modificationType == "trySetPhenotipsPatientId") {
 
                         var setLink = function(clearOldData, loadPatientProperties) {
@@ -729,7 +788,7 @@ define([
                                     editor.getGraph().setProperties( nodeID, node.getProperties() );
                                 }
 
-                                // remove life statuses not supported by PhenoTips - all loinked nodes should either
+                                // remove life statuses not supported by PhenoTips - all linked nodes should either
                                 // be "alive" or "deceased"
                                 if (Helpers.arrayContains(["stillborn", "unborn", "aborted","miscarriage"],node.getLifeStatus())) {
                                     node.setLifeStatus("deceased");
@@ -746,15 +805,11 @@ define([
                                 }
                             }
 
-                            if (modValue != "") {
-                                if (loadPatientProperties) {
-                                    var patientDataLoader = editor.getPatientDataLoader();
+                            if (modValue != "" && loadPatientProperties) {
+                                var patientDataLoader = editor.getPatientDataLoader();
 
-                                    // load data for only one patient with ID=="modValue", the one a node was just linked to
-                                    patientDataLoader.load([modValue], onDataReady);
-                                } else {
-                                    onDataReady(null);
-                                }
+                                // load data for only one patient with ID=="modValue", the one a node was just linked to
+                                patientDataLoader.load([modValue], onDataReady);
                             } else {
                                 onDataReady(null);
                             }
@@ -1046,6 +1101,12 @@ define([
 
             if (!event.memo.noUndoRedo)
                 editor.getUndoRedoManager().addState( event );
+        },
+
+        handleCheckLinkValidity: function(event) {
+            console.log("event: " + event.eventName + ", memo: " + Helpers.stringifyObject(event.memo));
+
+            Controller._checkPatientLinkValidity(event.memo.onValidCallback, null, event.memo.phenotipsPatientID, true, false);
         }
     });
 
@@ -1123,19 +1184,37 @@ define([
             }
 
             var allLinkedNodes = editor.getGraph().getAllPatientLinks();
-            if (allLinkedNodes.patientToNodeMapping.hasOwnProperty(linkID)) {
-                var currentLinkedNodeID = allLinkedNodes.patientToNodeMapping[linkID];
-                editor.getView().unmarkAll();
-                editor.getView().markNode(currentLinkedNodeID);
-                var onCancel = function() {
-                    editor.getView().unmarkAll();
-                    onCancelAssignPatient();
+
+            // two different checks/workflows: one when adding a patient to a node, another when adding a node-less patient
+            // in the first case we allow assigning patients that are currently node-less, a nd allow re-assigning patient.
+            // In the other case anyh patient already in the family is no-go
+
+            if (nodeID == null) {
+                // if we are adding a node-less patient should also make sure that
+                //   1) it is not already on the list of node-less patients
+                //   2) it is not already assigned to a node
+                if (editor.getPatientLegend().hasPatient(linkID)
+                    || allLinkedNodes.patientToNodeMapping.hasOwnProperty(linkID)) {
+                    editor.getOkCancelDialogue().showError("This patient is already in the family",
+                            "Can't add a patient that is already in the family", "OK" );
+                    return;
                 }
-                editor.getOkCancelDialogue().showWithCheckbox("<br/>Patient record " + linkID + " is already in this pedigree. Do you want to transfer the record to the person currently selected?",
-                                                       "Re-assign patient record " + linkID + " to this person?",
-                                                       'Clear data from the person currently linked to this patient record', true,
-                                                       "OK", processLinkCallback, "Cancel", onCancel );
-                return;
+
+            } else {
+                if (allLinkedNodes.patientToNodeMapping.hasOwnProperty(linkID)) {
+                    var currentLinkedNodeID = allLinkedNodes.patientToNodeMapping[linkID];
+                    editor.getView().unmarkAll();
+                    editor.getView().markNode(currentLinkedNodeID);
+                    var onCancel = function() {
+                        editor.getView().unmarkAll();
+                        onCancelAssignPatient();
+                    }
+                    editor.getOkCancelDialogue().showWithCheckbox("<br/>Patient record " + linkID + " is already in this pedigree. Do you want to transfer the record to the person currently selected?<br/>",
+                                                           "Re-assign patient record " + linkID + " to this person?",
+                                                           "Clear data from the person currently linked to this patient record", true,
+                                                           "OK", processLinkCallback, "Cancel", onCancel );
+                    return;
+                }
             }
 
             var familyServiceURL = editor.getExternalEndpoint().getFamilyCheckLinkURL();
@@ -1148,7 +1227,7 @@ define([
                                     "Can't link to this person", "Can't link to this person: ", onCancelAssignPatient);
                         } else {
                             var clearPropertiesMsg = "";
-                            if (loadPatientProperties) {
+                            if (loadPatientProperties && nodeID != null) {
                                 // if node has any data entered for it, warn that the data will be lost
                                 var properties = editor.getGraph().getProperties(nodeID);
                                 for (var prop in properties) {

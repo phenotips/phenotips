@@ -106,7 +106,7 @@ define([
         },
 
         getPatientSuggestServiceURL: function() {
-            return this.patientSuggestService;
+            return this.patientSuggestService + "?permission=edit&maxResults=12&";
         },
 
         // contextaction is optional parameter
