@@ -777,7 +777,7 @@ define([
             if (changeSet.hasOwnProperty("unlinked")) {
                 for (var phenotipsID in changeSet.unlinked) {
                     if (changeSet.unlinked.hasOwnProperty(phenotipsID)) {
-                        editor.getPatientLegend().addCase(phenotipsID, {}, changeSet.unlinked[phenotipsID]);
+                        editor.getPatientLegend().addCase(phenotipsID, {});
                     }
                 }
             }
