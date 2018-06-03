@@ -20,7 +20,7 @@ define([
 
             this._notLinkedPatients  = {};
 
-            this._dragInfo = new Element('div', {'class' : 'legend-box legend-info', id: 'legend-info'}).insert(
+            this._dragInfo = new Element('div', {'class' : 'legend-box legend-info pedigree_family_record_ui', id: 'legend-info'}).insert(
                     new Element('div', {'class' : 'infomessage no-word-wrap'}).insert(
                       "Drag and drop onto the pedigree")
                  );
@@ -73,7 +73,7 @@ define([
                 };
             });
 
-            this.legendContainer = new Element('div', {'class' : 'patient-assign-legend generic-legend', id: 'patient-assign'})
+            this.legendContainer = new Element('div', {'class' : 'patient-assign-legend generic-legend pedigree_family_record_ui', id: 'patient-assign'})
                                    .insert(this._legendBoxControls)
                                    .insert(this._dragInfo);
 
@@ -88,7 +88,7 @@ define([
                 editor.getAddNewMemberDialog().show();
             })
 
-            this._addButtonContainer = new Element('div', {'class': 'patient-record-add-section'});
+            this._addButtonContainer = new Element('div', {'class': 'patient-record-add-section pedigree_family_record_ui'});
             this._addButtonContainer.insert(this._addFamilyMembersButton);
             lg_box.insert(this._addButtonContainer);
             this.legendContainer.insert(lg_box);
@@ -234,6 +234,13 @@ define([
                     unlinked.push(phenotipsPatientID);
                 }
             }
+
+            if (unlinked.length == 0) {
+               this.legendContainer.addClassName("pedigree_family_record_ui");
+            } else {
+               this.legendContainer.removeClassName("pedigree_family_record_ui");
+            }
+
             editor.getGraph().setUnlinkedPatients(unlinked);
         },
 

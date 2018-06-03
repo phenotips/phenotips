@@ -68,6 +68,8 @@ define([
             this._disorders = [];
             this._cancers = {};
             this._hpo = [];
+            this.features = [];
+            this.nonStandardFeatures = [];
             this._ethnicities = [];
             this._genes = [];
             this._twinGroup = null;
