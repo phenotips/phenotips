@@ -630,6 +630,7 @@ define([
             },
             'phenotipsid-picker' : function (data) {
                 var result = this._generateEmptyField(data);
+                result.addClassName("pedigree_family_record_ui");
                 var patientNewLinkContainer = new Element('div', { 'class': 'patient-newlink-container'});
                 var patientPicker = new Element('input', {type: 'text', 'class': 'suggest suggest-patients', name: data.name});
                 var newPatientButton = new Element('span', {'class': 'patient-menu-button patient-create-button'}).update("Create new");
