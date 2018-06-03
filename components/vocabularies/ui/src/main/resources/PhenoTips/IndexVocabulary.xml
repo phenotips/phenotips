@@ -442,7 +442,7 @@ $xwiki.ssx.use('PhenoTips.Widgets')##
       if (!mandatoryElt || mandatoryElt.value != "") {
         // Create a notification message to display to the user when the submit is being sent
         form._x_notification = new XWiki.widgets.Notification("$!escapetool.javascript($services.localization.render('phenotips.indexVocabulary.inProgress'))", "inprogress");
-        form.disable();
+        indexButton.disabled = true;
         var vocabularyIndexURL = XWiki.contextPath + "/rest/vocabularies/" + vocabularyId + "?url=" + encodeURIComponent(mandatoryElt.value);
         new Ajax.Request(vocabularyIndexURL, {
             method: 'post',
