@@ -397,11 +397,15 @@ $!displayValue
   #if($propClassName != '')
     #set ($propClass = $xwiki.getDocument($propClassName).getxWikiClass())
     #if ($propClass &amp;&amp; $propClass.getPropertyNames().contains($colname) &amp;&amp; !$extraClassesAddedToQuery.containsKey($propClassName) &amp;&amp; $forceFilter)
-      #set ($targetedObject = "extraobj${extraClassesAddedToQuery.size()}")
-      #set ($discard = $extraClassesAddedToQuery.put($propClassName, $targetedObject))
-      #set ($fromSql = "${fromSql}, BaseObject ${targetedObject}")
-      #set ($whereSql = "${whereSql} and ${targetedObject}.className = ? and ${targetedObject}.name = doc.fullName")
-      #set ($discard = $whereParams.add($propClassName))
+      ## Additional decision: if the property is Boolean, and the filter value is 0, then the query will be a "not exists", so we don't need to add the object to the "from" part
+      #set($propType = "$!{propClass.get($colname).type}")
+      #if (!($propType == 'BooleanClass' &amp;&amp; ($filterValue == '0' || $filterValue == '-1')))
+        #set ($targetedObject = "extraobj${extraClassesAddedToQuery.size()}")
+        #set ($discard = $extraClassesAddedToQuery.put($propClassName, $targetedObject))
+        #set ($fromSql = "${fromSql}, BaseObject ${targetedObject}")
+        #set ($whereSql = "${whereSql} and ${targetedObject}.className = ? and ${targetedObject}.name = doc.fullName")
+        #set ($discard = $whereParams.add($propClassName))
+      #end
     #end
     #set ($targetedObject = $extraClassesAddedToQuery.get($propClassName))
   #else
@@ -543,9 +547,15 @@ $!displayValue
       #end
     #elseif($propType=='BooleanClass')
       #livetable_getTableName($colname)
-      #set($fromSql = "${fromSql}, ${tableName} ${safe_tableAlias}")
-      #set($whereSql = "${whereSql} and ${targetedObject}.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and ${safe_tableAlias}.value = ?")
-      #set($discard = $whereParams.addAll(["${colname}", $mathtool.toInteger(${filterValue})]))
+      #if ($filterValue == '1')
+        #set($fromSql = "${fromSql}, ${tableName} ${safe_tableAlias}")
+        #set($whereSql = "${whereSql} and ${targetedObject}.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and ${safe_tableAlias}.value = ?")
+        #set($discard = $whereParams.addAll(["${colname}", $mathtool.toInteger(${filterValue})]))
+      #elseif ($filterValue == '0')
+        #set($whereSql = "${whereSql} and not exists (from BaseObject extraboolobj, ${tableName} ${safe_tableAlias} where extraboolobj.name = doc.fullName and extraboolobj.className = '${propClass.name}' and extraboolobj.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and ${safe_tableAlias}.value = 1)")
+        #set($discard = $whereParams.addAll(["${colname}"]))
+      #end
+      ## For all values, no filtering needed
     ##
     ## Dates, either substring or before/after filters
     #elseif($propType == 'DateClass')
