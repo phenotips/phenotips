@@ -164,6 +164,33 @@ public class PhenotipsFamilyTools implements FamilyTools
     }
 
     @Override
+    public boolean addMember(String patientId, String familyId)
+    {
+        User currentUser = this.userManager.getCurrentUser();
+
+        Patient patient = this.patientRepository.get(patientId);
+        if (patient == null) {
+            return false;
+        }
+        if (!this.authorizationService.hasAccess(currentUser, Right.EDIT, patient.getDocumentReference())) {
+            return false;
+        }
+
+        Family family = this.familyRepository.get(familyId);
+        if (family == null || !currentUserHasAccessRight(family, Right.EDIT)) {
+            return false;
+        }
+
+        try {
+            this.familyRepository.addMember(family, patient, currentUser);
+        } catch (PTException ex) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
     public boolean deleteFamily(String familyId, boolean deleteAllMembers)
     {
         Family family = this.familyRepository.get(familyId);
