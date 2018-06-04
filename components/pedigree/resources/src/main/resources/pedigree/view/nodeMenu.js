@@ -1285,10 +1285,11 @@ define([
                 } else {
                     if (label) {label.update("Linked to patient record");}
                     suggestContainer.hide();
+                    link.target = value;
                     link.href = editor.getExternalEndpoint().getPhenotipsPatientURL(value);
                     link.innerHTML = value;
                     linkContainer.show();
-                    if (_this.targetNode.getPhenotipsPatientId() == editor.getGraph().getCurrentPatientId()) {
+                    if (value == editor.getGraph().getCurrentPatientId()) {
                         linkRemove.hide();
                     } else {
                         linkRemove.show();

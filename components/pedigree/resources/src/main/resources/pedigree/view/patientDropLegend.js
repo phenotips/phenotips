@@ -305,7 +305,7 @@ define([
             var patientIdLink = new Element('div', {'class': 'pedigree-nodePatientTextLink legend-patient-link'})
                                 .update(patientElement.phenotipsID);
             patientIdLink.observe("click", function() {
-                window.open(editor.getExternalEndpoint().getPhenotipsPatientURL(patientElement.phenotipsID), "_blank");
+                window.open(editor.getExternalEndpoint().getPhenotipsPatientURL(patientElement.phenotipsID), patientElement.phenotipsID);
             });
 
             var patientData = new Element('div', {'class': 'patient-legend-patient'}).update(patientIdLink);
