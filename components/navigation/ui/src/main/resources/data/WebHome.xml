@@ -18,7 +18,7 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
 
-<xwikidoc version="1.1">
+<xwikidoc version="1.2" reference="data.WebHome" locale="">
   <web>data</web>
   <name>WebHome</name>
   <language/>
@@ -129,12 +129,25 @@ $!value
         <picker>0</picker>
         <prettyName>External id display format</prettyName>
         <size>30</size>
-        <sort>none</sort>
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
       </externalIdFormat>
+      <hideInternalIds>
+        <customDisplay/>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <displayType/>
+        <name>hideInternalIds</name>
+        <number>9</number>
+        <prettyName>Add ability to show external identifiers in place of internal ones in the Patient and Family record forms</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </hideInternalIds>
       <livetableColumns>
         <cache>0</cache>
         <customDisplay>**{{translation key="phenotips.DBConfigurationClass.metaInfo" /}}**
@@ -142,11 +155,20 @@ $!value
 {{velocity output=false}}
 $xwiki.ssx.use('PhenoTips.DBConfigurationClass')##
 #set ($docFields = ['doc.name', 'doc.creator', 'doc.author', 'doc.creationDate', 'doc.date'])
+#if (!$xwiki.getDocument('PhenoTips.OwnerClass').isNew())
+  #set ($discard = $docFields.add('owner/PhenoTips.OwnerClass'))
+#end
+#if (!$xwiki.getDocument('PhenoTips.CollaboratorClass').isNew())
+  #set ($discard = $docFields.add('collaborator/PhenoTips.CollaboratorClass'))
+#end
+#if (!$xwiki.getDocument('PhenoTips.VisibilityClass').isNew())
+  #set ($discard = $docFields.add('visibility/PhenoTips.VisibilityClass'))
+#end
 #macro(__xclass__displayLivetableColOption $option $value)
   &lt;li&gt;
     &lt;label&gt;
     &lt;input type="checkbox" name="${prefix}${name}" id="${prefix}${name}_${option}" value="$option"#if ($value.contains($option)) checked="checked"#end/&gt;
-    $services.localization.render("patient.livetable.${option}")
+    $services.localization.render("patient.livetable.${option.replaceAll('\/.*', '')}")
     &lt;/label&gt;
   &lt;/li&gt;
 #end
@@ -276,20 +298,6 @@ $xwiki.ssx.use('PhenoTips.DBConfigurationClass')##
         <valueField>doc.name</valueField>
         <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
       </phenotypeMapping>
-      <hideInternalIds>
-        <customDisplay/>
-        <defaultValue/>
-        <disabled>0</disabled>
-        <displayFormType>checkbox</displayFormType>
-        <displayType/>
-        <name>hideInternalIds</name>
-        <number>9</number>
-        <prettyName>Add ability to show external identifiers in place of internal ones in the Patient and Family record forms</prettyName>
-        <unmodifiable>0</unmodifiable>
-        <validationMessage/>
-        <validationRegExp/>
-        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
-      </hideInternalIds>
     </class>
     <property>
       <dateOfBirthFormat>yyyy-MM-dd</dateOfBirthFormat>
@@ -298,10 +306,10 @@ $xwiki.ssx.use('PhenoTips.DBConfigurationClass')##
       <enableImperialUnitSystem>0</enableImperialUnitSystem>
     </property>
     <property>
-      <hideInternalIds>0</hideInternalIds>
+      <externalIdFormat>XXXXXXXXX</externalIdFormat>
     </property>
     <property>
-      <externalIdFormat>XXXXXXXXX</externalIdFormat>
+      <hideInternalIds>0</hideInternalIds>
     </property>
     <property>
       <livetableColumns>
@@ -722,6 +730,19 @@ $xwiki.ssx.use('PhenoTips.DBConfigurationClass')##
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </advancedOnly>
+      <categoryIcon>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>categoryIcon</name>
+        <number>11</number>
+        <picker>0</picker>
+        <prettyName>categoryIcon</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </categoryIcon>
       <categoryPriority>
         <customDisplay/>
         <disabled>0</disabled>
@@ -777,6 +798,19 @@ $xwiki.ssx.use('PhenoTips.DBConfigurationClass')##
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </configureGlobally>
+      <displayBeforeCategory>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>displayBeforeCategory</name>
+        <number>10</number>
+        <picker>0</picker>
+        <prettyName>displayBeforeCategory</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </displayBeforeCategory>
       <displayInCategory>
         <customDisplay/>
         <disabled>0</disabled>
@@ -863,6 +897,19 @@ $xwiki.ssx.use('PhenoTips.DBConfigurationClass')##
         <values/>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </propertiesToShow>
+      <sectionOrder>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>sectionOrder</name>
+        <number>12</number>
+        <numberType>integer</numberType>
+        <prettyName>sectionOrder</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </sectionOrder>
       <sectionPriority>
         <customDisplay/>
         <disabled>0</disabled>
@@ -946,6 +993,19 @@ $xwiki.ssx.use('PhenoTips.DBConfigurationClass')##
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </advancedOnly>
+      <categoryIcon>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>categoryIcon</name>
+        <number>11</number>
+        <picker>0</picker>
+        <prettyName>categoryIcon</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </categoryIcon>
       <categoryPriority>
         <customDisplay/>
         <disabled>0</disabled>
@@ -1001,6 +1061,19 @@ $xwiki.ssx.use('PhenoTips.DBConfigurationClass')##
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </configureGlobally>
+      <displayBeforeCategory>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>displayBeforeCategory</name>
+        <number>10</number>
+        <picker>0</picker>
+        <prettyName>displayBeforeCategory</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </displayBeforeCategory>
       <displayInCategory>
         <customDisplay/>
         <disabled>0</disabled>
@@ -1087,6 +1160,19 @@ $xwiki.ssx.use('PhenoTips.DBConfigurationClass')##
         <values/>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </propertiesToShow>
+      <sectionOrder>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>sectionOrder</name>
+        <number>12</number>
+        <numberType>integer</numberType>
+        <prettyName>sectionOrder</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </sectionOrder>
       <sectionPriority>
         <customDisplay/>
         <disabled>0</disabled>
@@ -1166,6 +1252,19 @@ $xwiki.ssx.use('PhenoTips.DBConfigurationClass')##
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </advancedOnly>
+      <categoryIcon>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>categoryIcon</name>
+        <number>11</number>
+        <picker>0</picker>
+        <prettyName>categoryIcon</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </categoryIcon>
       <categoryPriority>
         <customDisplay/>
         <disabled>0</disabled>
@@ -1221,6 +1320,19 @@ $xwiki.ssx.use('PhenoTips.DBConfigurationClass')##
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </configureGlobally>
+      <displayBeforeCategory>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>displayBeforeCategory</name>
+        <number>10</number>
+        <picker>0</picker>
+        <prettyName>displayBeforeCategory</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </displayBeforeCategory>
       <displayInCategory>
         <customDisplay/>
         <disabled>0</disabled>
@@ -1307,6 +1419,19 @@ $xwiki.ssx.use('PhenoTips.DBConfigurationClass')##
         <values/>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </propertiesToShow>
+      <sectionOrder>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>sectionOrder</name>
+        <number>12</number>
+        <numberType>integer</numberType>
+        <prettyName>sectionOrder</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </sectionOrder>
       <sectionPriority>
         <customDisplay/>
         <disabled>0</disabled>
@@ -1402,6 +1527,19 @@ $xwiki.ssx.use('PhenoTips.DBConfigurationClass')##
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </advancedOnly>
+      <categoryIcon>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>categoryIcon</name>
+        <number>11</number>
+        <picker>0</picker>
+        <prettyName>categoryIcon</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </categoryIcon>
       <categoryPriority>
         <customDisplay/>
         <disabled>0</disabled>
@@ -1457,6 +1595,19 @@ $xwiki.ssx.use('PhenoTips.DBConfigurationClass')##
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </configureGlobally>
+      <displayBeforeCategory>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>displayBeforeCategory</name>
+        <number>10</number>
+        <picker>0</picker>
+        <prettyName>displayBeforeCategory</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </displayBeforeCategory>
       <displayInCategory>
         <customDisplay/>
         <disabled>0</disabled>
@@ -1543,6 +1694,19 @@ $xwiki.ssx.use('PhenoTips.DBConfigurationClass')##
         <values/>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </propertiesToShow>
+      <sectionOrder>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>sectionOrder</name>
+        <number>12</number>
+        <numberType>integer</numberType>
+        <prettyName>sectionOrder</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </sectionOrder>
       <sectionPriority>
         <customDisplay/>
         <disabled>0</disabled>
@@ -1667,6 +1831,19 @@ $xwiki.jsx.use('PhenoTips.PhenotypeMappingPreview')##</codeToExecute>
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </advancedOnly>
+      <categoryIcon>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>categoryIcon</name>
+        <number>11</number>
+        <picker>0</picker>
+        <prettyName>categoryIcon</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </categoryIcon>
       <categoryPriority>
         <customDisplay/>
         <disabled>0</disabled>
@@ -1722,6 +1899,19 @@ $xwiki.jsx.use('PhenoTips.PhenotypeMappingPreview')##</codeToExecute>
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </configureGlobally>
+      <displayBeforeCategory>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>displayBeforeCategory</name>
+        <number>10</number>
+        <picker>0</picker>
+        <prettyName>displayBeforeCategory</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </displayBeforeCategory>
       <displayInCategory>
         <customDisplay/>
         <disabled>0</disabled>
@@ -1808,6 +1998,19 @@ $xwiki.jsx.use('PhenoTips.PhenotypeMappingPreview')##</codeToExecute>
         <values/>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </propertiesToShow>
+      <sectionOrder>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>sectionOrder</name>
+        <number>12</number>
+        <numberType>integer</numberType>
+        <prettyName>sectionOrder</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </sectionOrder>
       <sectionPriority>
         <customDisplay/>
         <disabled>0</disabled>
@@ -1893,6 +2096,19 @@ $xwiki.jsx.use('PhenoTips.PhenotypeMappingPreview')##</codeToExecute>
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </advancedOnly>
+      <categoryIcon>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>categoryIcon</name>
+        <number>11</number>
+        <picker>0</picker>
+        <prettyName>categoryIcon</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </categoryIcon>
       <categoryPriority>
         <customDisplay/>
         <disabled>0</disabled>
@@ -1948,6 +2164,19 @@ $xwiki.jsx.use('PhenoTips.PhenotypeMappingPreview')##</codeToExecute>
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </configureGlobally>
+      <displayBeforeCategory>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>displayBeforeCategory</name>
+        <number>10</number>
+        <picker>0</picker>
+        <prettyName>displayBeforeCategory</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </displayBeforeCategory>
       <displayInCategory>
         <customDisplay/>
         <disabled>0</disabled>
@@ -2034,6 +2263,19 @@ $xwiki.jsx.use('PhenoTips.PhenotypeMappingPreview')##</codeToExecute>
         <values/>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </propertiesToShow>
+      <sectionOrder>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>sectionOrder</name>
+        <number>12</number>
+        <numberType>integer</numberType>
+        <prettyName>sectionOrder</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </sectionOrder>
       <sectionPriority>
         <customDisplay/>
         <disabled>0</disabled>

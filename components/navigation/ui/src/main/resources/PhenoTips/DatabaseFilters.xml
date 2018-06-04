@@ -59,7 +59,7 @@
 #set ($labelParam = 'label')
 #set ($valueParam = 'value')
 #set ($existingLabels = $services.query.xwql("select distinct labeled_eid.${labelParam} from Document doc, doc.object(PhenoTips.LabeledIdentifierClass) as labeled_eid").execute())
-#if ($!{existingLabels} &amp;&amp; $existingLabels.size() > 0)
+#if ($!{existingLabels} &amp;&amp; $existingLabels.size() &gt; 0)
 * $services.localization.render('phenotips.databaseFilters.labeledExternalID')
 (% class="labeled-eids" %)(((
 #__filters_LabeledEidLabel ("$services.localization.render('phenotips.databaseFilters.label.label') " $labelParam $eidClass $existingLabels)
