@@ -1289,11 +1289,6 @@ define([
                     link.href = editor.getExternalEndpoint().getPhenotipsPatientURL(value);
                     link.innerHTML = value;
                     linkContainer.show();
-                    if (value == editor.getGraph().getCurrentPatientId()) {
-                        linkRemove.hide();
-                    } else {
-                        linkRemove.show();
-                    }
                 }
             },
             'button' : function (container, value) {
