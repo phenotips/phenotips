@@ -1546,7 +1546,7 @@ define([
 
             var importData = PedigreeImport.initFromSimpleJSON(this._onlyProbandGraph);
 
-            this._initializeFromBaseGraphAndLayout(importData.baseGraph, importData.probandNodeID);
+            this._initializeFromBaseGraphAndLayout(importData.baseGraph, importData.probandNodeID, []);
 
             this.setProperties(0, remainingNodeProperties);
 
@@ -1571,7 +1571,7 @@ define([
 
             var suggestedLayout = { "ranks": oldRanks };
 
-            if (!this._initializeFromBaseGraphAndLayout(this.DG.GG, this.getProbandId(), suggestedLayout)) {
+            if (!this._initializeFromBaseGraphAndLayout(this.DG.GG, this.getProbandId(), suggestedLayout, this._unlinkedMembers)) {
                 return {};  // no changes
             }
 
@@ -1842,8 +1842,11 @@ define([
                 return null;  // incorrect input data, no import => no changes
             }
 
+            var unlinkedMembers = importData.unlinkedMembers ? Object.keys(importData.unlinkedMembers) : [];
+
             // FIXME: for now, we do not allow linking patients via import dialogue, so remove all links to all patients
             if (importOptions && importOptions.doNotLinkPatients) {
+                unlinkedMembers = [];
                 var personIDs = importData.baseGraph.getAllPersons(true);
                 for (var p = 0; p < personIDs.length; p++) {
                     delete importData.baseGraph.rawJSONProperties[personIDs[p]].id;
@@ -1854,7 +1857,7 @@ define([
             if (!this._initializeFromBaseGraphAndLayout( importData.baseGraph,
                                                          importData.probandNodeID,
                                                          importData.layout,
-                                                         importData.unlinkedMembers)) {
+                                                         unlinkedMembers)) {
                 return null;  // unable to genersate pedigree using import data, no import => no changes
             }
 
@@ -1876,7 +1879,7 @@ define([
                                                  suggestedLayout );
                 this.DG = newDG;
 
-                this._unlinkedMembers = unlinkedMembers;
+                this.setUnlinkedPatients(unlinkedMembers);
             } catch (e) {
                 console.log("ERROR creating a grpah from input data: " + e);
                 return false;
