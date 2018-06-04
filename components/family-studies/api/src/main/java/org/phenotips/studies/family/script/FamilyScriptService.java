@@ -137,6 +137,19 @@ public class FamilyScriptService implements ScriptService
     }
 
     /**
+     * Adds a patient to the family, modifying both the family and patient records to reflect the change.
+     *
+     * @param patientId of the patient to add
+     * @param familyId of the family to add patient to
+     * @return true if patient was added. false if not, for example, if the patient is already in another family,
+     *         or if current user has no edit rights
+     */
+    public boolean addMember(String patientId, String familyId)
+    {
+        return this.familyTools.addMember(patientId, familyId);
+    }
+
+    /**
      * Deletes a family record, modifying all member patient records to reflect the change. No patient records are
      * deleted.
      *

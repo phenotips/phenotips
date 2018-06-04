@@ -82,6 +82,12 @@ public class SecureFamilyTools implements FamilyTools
     }
 
     @Override
+    public boolean addMember(String patientId, String familyId)
+    {
+        return this.familyTools.addMember(patientId, familyId);
+    }
+
+    @Override
     public boolean deleteFamily(String familyId, boolean deleteAllMembers)
     {
         return this.familyTools.deleteFamily(familyId, deleteAllMembers);

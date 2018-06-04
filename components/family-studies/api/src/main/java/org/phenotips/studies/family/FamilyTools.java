@@ -86,13 +86,23 @@ public interface FamilyTools
     Pedigree getPedigreeForPatient(String patientId);
 
     /**
-     * Removes a patient from the family, modifying the both the family and patient records to reflect the change.
+     * Removes a patient from the family, modifying both the family and patient records to reflect the change.
      *
      * @param patientId of the patient to delete
      * @return true if patient was removed. false if not, for example, if the patient is not associated with a family,
      *         or if current user has no delete rights
      */
     boolean removeMember(String patientId);
+
+    /**
+     * Adds a patient to the family, modifying both the family and patient records to reflect the change.
+     *
+     * @param patientId of the patient to add
+     * @param familyId of the family to add patient to
+     * @return true if patient was added. false if not, for example, if the patient is already in a family,
+     *         or if current user has no edit rights
+     */
+    boolean addMember(String patientId, String familyId);
 
     /**
      * Delete family, modifying the both the family and patient records to reflect the change. For the patients which
