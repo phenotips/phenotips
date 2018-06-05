@@ -51,9 +51,18 @@
       <cache>0</cache>
       <classname>PhenoTips.FamilyClass</classname>
       <customDisplay>{{velocity}}
+#set ($config = $xwiki.getDocument('data.WebHome').getObject('PhenoTips.DBConfigurationClass'))
 #set ($family = $services.families.getFamilyById($value))
-#if ("$!family.getId()" != '')
-[[$family.getId()#if ("$family.getExternalId()" != '') ($family.getExternalId())#end&gt;&gt;path:$xwiki.getURL($family.getDocumentReference(), 'view')||id="familyId" target="$family.getId()"]]
+#set ($familyID = $family.getId())
+#if ("$family.getExternalId()" != '')
+  #if ($config &amp;&amp; "$!{config.getProperty('hideInternalIds').value}" == '1')
+    #set ($familyID = $family.getExternalId())
+  #else
+    #set ($familyID = "$family.getId() ($family.getExternalId())")
+  #end
+#end
+#if ("$familyID" != '')
+[[$familyID&gt;&gt;path:$xwiki.getURL($family.getDocumentReference(), 'view')||id="familyId" target="$family.getId()"]]
 #end
 {{/velocity}}
 </customDisplay>
