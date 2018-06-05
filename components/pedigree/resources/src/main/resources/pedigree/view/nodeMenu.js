@@ -1319,6 +1319,7 @@ define([
                         })
                     }
                     target._silent = false;
+                    target.value = '';
                 }
             },
             'ethnicity-picker' : function (container, values) {
@@ -1333,6 +1334,7 @@ define([
                         })
                     }
                     target._silent = false;
+                    target.value = '';
                 }
             },
             'hpo-picker' : function (container, values) {
@@ -1347,6 +1349,7 @@ define([
                         })
                     }
                     target._silent = false;
+                    target.value = '';
                 }
             },
             'gene-picker' : function (container, values) {
@@ -1362,6 +1365,7 @@ define([
                         })
                     }
                     target._silent = false;
+                    target.value = '';
                 }
             },
             'phenotipsid-picker' : function (container, value) {
