@@ -1215,6 +1215,7 @@ define([
                         })
                     }
                     target._silent = false;
+                    target.value = '';
                 }
             },
             'ethnicity-picker' : function (container, values) {
@@ -1229,6 +1230,7 @@ define([
                         })
                     }
                     target._silent = false;
+                    target.value = '';
                 }
             },
             'hpo-picker' : function (container, values) {
@@ -1243,11 +1245,13 @@ define([
                         })
                     }
                     target._silent = false;
+                    target.value = '';
                 }
             },
             'cancers-picker' : function (container, values) {
                 var target = container.down('input[type=text].suggest-cancers');
                 target.placeholder = "Search for cancers";
+                target.value = '';
             },
             'gene-picker' : function (container, values) {
                 var _this = this;
@@ -1262,6 +1266,7 @@ define([
                         })
                     }
                     target._silent = false;
+                    target.value = '';
                 }
             },
             'phenotipsid-picker' : function (container, value) {
