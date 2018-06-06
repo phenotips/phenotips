@@ -97,6 +97,12 @@
     </dependency>
     <dependency>
       <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-script</artifactId>
+      <version>${xwiki.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-logging-api</artifactId>
       <version>${xwiki.version}</version>
       <scope>provided</scope>
@@ -104,6 +110,12 @@
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-resource-default</artifactId>
+      <version>${xwiki.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-template-api</artifactId>
       <version>${xwiki.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -122,6 +134,12 @@
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-store-api</artifactId>
+      <version>${xwiki.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.rendering</groupId>
+      <artifactId>xwiki-rendering-api</artifactId>
       <version>${xwiki.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -202,6 +220,18 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>dom4j</groupId>
+      <artifactId>dom4j</artifactId>
+      <version>1.6.1</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>ecs</groupId>
+      <artifactId>ecs</artifactId>
+      <version>1.4.2</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
       <scope>provided</scope>
@@ -215,6 +245,12 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.velocity</groupId>
+      <artifactId>velocity</artifactId>
+      <version>1.7</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
