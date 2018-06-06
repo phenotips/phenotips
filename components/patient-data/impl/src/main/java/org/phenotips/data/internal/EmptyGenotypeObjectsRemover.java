@@ -18,6 +18,7 @@
 package org.phenotips.data.internal;
 
 import org.phenotips.Constants;
+import org.phenotips.data.Gene;
 import org.phenotips.data.events.PatientChangingEvent;
 
 import org.xwiki.component.annotation.Component;
@@ -26,9 +27,9 @@ import org.xwiki.model.reference.EntityReference;
 import org.xwiki.observation.AbstractEventListener;
 import org.xwiki.observation.event.Event;
 
-import java.util.LinkedHashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -51,9 +52,6 @@ import com.xpn.xwiki.objects.BaseStringProperty;
 @Singleton
 public class EmptyGenotypeObjectsRemover extends AbstractEventListener
 {
-    private static final EntityReference GENE_CLASS_REFERENCE = new EntityReference("GeneClass",
-        EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
-
     private static final EntityReference VARIANT_CLASS_REFERENCE = new EntityReference("GeneVariantClass",
         EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
 
@@ -61,37 +59,69 @@ public class EmptyGenotypeObjectsRemover extends AbstractEventListener
 
     private static final String VARIANT_KEY = "cdna";
 
-    private static Map<String, EntityReference> refs = new LinkedHashMap<>();
-
     /**
      * Default constructor, sets up the listener name and the list of events to subscribe to.
      */
     public EmptyGenotypeObjectsRemover()
     {
         super("empty-genotype-objects-remover", new PatientChangingEvent());
-        refs.put(GENE_KEY, GENE_CLASS_REFERENCE);
-        refs.put(VARIANT_KEY, VARIANT_CLASS_REFERENCE);
     }
 
     @Override
     public void onEvent(Event event, Object source, Object data)
     {
         XWikiDocument doc = (XWikiDocument) source;
+        List<BaseObject> geneXWikiObjects = doc.getXObjects(Gene.GENE_CLASS);
+        List<BaseObject> variantXWikiObjects = doc.getXObjects(VARIANT_CLASS_REFERENCE);
 
-        for (String key : refs.keySet()) {
-            List<BaseObject> xWikiObjects = doc.getXObjects(refs.get(key));
-            if (xWikiObjects == null || xWikiObjects.isEmpty()) {
+        if ((geneXWikiObjects == null || geneXWikiObjects.isEmpty())
+            && (variantXWikiObjects != null && !variantXWikiObjects.isEmpty())) {
+            // delete all variants
+            doc.removeXObjects(VARIANT_CLASS_REFERENCE);
+            return;
+        }
+
+        // get list of patient genes
+        Set<String> genes = new HashSet<>();
+        for (BaseObject geneObject : geneXWikiObjects) {
+            if (geneObject == null) {
                 continue;
             }
-            for (BaseObject object : xWikiObjects) {
-                if (object == null) {
-                    continue;
-                }
-                BaseStringProperty field = (BaseStringProperty) object.getField(key);
-                if (field == null || StringUtils.isEmpty(field.getValue())) {
-                    doc.removeXObject(object);
-                }
+
+            BaseStringProperty field = (BaseStringProperty) geneObject.getField(GENE_KEY);
+            // remove gene object from the document if key "gene" field is empty
+            if (field == null || StringUtils.isEmpty(field.getValue())) {
+                doc.removeXObject(geneObject);
+                continue;
+            }
+
+            genes.add(field.getValue());
+        }
+
+        if (variantXWikiObjects == null || variantXWikiObjects.isEmpty()) {
+            // nothing to remove
+            return;
+        }
+
+        // loop through variants to detect those who do not correspond to any gene and delete them
+        for (BaseObject variantObject : variantXWikiObjects) {
+            if (variantObject == null) {
+                continue;
+            }
+
+            BaseStringProperty variantField = (BaseStringProperty) variantObject.getField(VARIANT_KEY);
+            // remove variant object from the document if key "cdna" field is empty
+            if (variantField == null || StringUtils.isEmpty(variantField.getValue())) {
+                doc.removeXObject(variantObject);
+                continue;
+            }
+
+            // remove variant object from the document if its gene is not in patient genes
+            BaseStringProperty geneField = (BaseStringProperty) variantObject.getField(GENE_KEY);
+            if (!genes.contains(geneField.getValue())) {
+                doc.removeXObject(variantObject);
             }
         }
+
     }
 }
