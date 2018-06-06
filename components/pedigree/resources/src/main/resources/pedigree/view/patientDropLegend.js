@@ -398,6 +398,9 @@ define([
             // highlight potential targets
             this._highlightDropTargets(true);
 
+            // disable patient record link clicking
+            label.down(".legend-patient-link").addClassName("no-mouse-interaction");
+
             editor.getView().setCurrentDraggable(-1); // in drag mode but with no target
             var divPos = editor.getWorkspace().viewportToDiv(event.pointerX(), event.pointerY());
             var pos    = editor.getWorkspace().divToCanvas(divPos.x,divPos.y);
@@ -434,6 +437,8 @@ define([
             }
 
             editor.getView().setCurrentDraggable(null);
+
+            label.down(".legend-patient-link").removeClassName("no-mouse-interaction");
 
             this._highlightDropTargets(false);
             this._unhighlightAfterDrag();
