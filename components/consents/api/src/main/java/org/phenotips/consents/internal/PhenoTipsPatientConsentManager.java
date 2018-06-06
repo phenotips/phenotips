@@ -170,7 +170,7 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
         }
     }
 
-    // supressing conversion of List returned by getListValue() to List<String>
+    // suppressing conversion of List returned by getListValue() to List<String>
     @SuppressWarnings("unchecked")
     private Consent fromXWikiConsentConfiguration(BaseObject xwikiConsent, XWikiDocument configDoc)
     {
@@ -179,8 +179,7 @@ public class PhenoTipsPatientConsentManager implements ConsentManager, Initializ
             String label = cleanDescription(
                 configDoc.display("label", RENDERING_MODE, xwikiConsent, this.contextProvider.get()), true);
             if (label == null || label.length() == 0) {
-                label = id + " "
-                    + this.translationManager.translate("PhenoTips.PatientConsentManager_emptyLabelPostfix");
+                label = id + " " + this.translationManager.translate("phenotips.consents.label.empty");
             }
             String description = cleanDescription(
                 configDoc.display("description", RENDERING_MODE, xwikiConsent, this.contextProvider.get()), false);

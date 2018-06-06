@@ -445,7 +445,7 @@
 
         displayConsentLabel: function (consent)
         {
-          return $("&lt;li class='consent-label " + (consent.isRequired ? " required":"") + "'&gt;" + consent.label + (consent.isRequired ? " $!escapetool.javascript($services.localization.render('phenotips.PushPatient.required'))":"") + "&lt;/li&gt;");
+          return $("&lt;li class='consent-label " + (consent.isRequired ? " required":"") + "'&gt;" + consent.label + (consent.isRequired ? " $!escapetool.javascript($services.localization.render('phenotips.consents.label.required'))":"") + "&lt;/li&gt;");
         },
 
         displayConsentDescription: function (consent)
@@ -761,25 +761,25 @@
         &lt;input type="hidden" id="patient-consents-json" class="patient-consents-json" value='$escapetool.xml($jsontool.serialize($consents))'/&gt;
       {{/html}}
       (% class='consents-title clear' %)
-      ==== $services.localization.render('PhenoTips.PatientConsent_granted_list') ====
+      ==== $services.localization.render('phenotips.consents.title') ====
       (% class='consents' %)(((
 
       )))
       #if ($xcontext.action == 'edit')
       {{html clean='false' wiki='false'}}##
       &lt;span class="buttonwrapper consent-update-button hidden" id="patient-consent-update"&gt;##
-        &lt;a class="button" href="#"&gt;$services.localization.render('PhenoTips.PatientConsent_change_consents_btn')&lt;/a&gt;##
+        &lt;a class="button" href="#"&gt;$services.localization.render('phenotips.consents.submit')&lt;/a&gt;##
         &lt;/span&gt;##
       {{/html}}##
       #end
       (% class='error error_updating_consents hidden' %)(((
-        {{error}}$services.localization.render('PhenoTips.PatientConsent_error_updating_consents'){{/error}}
+        {{error}}$services.localization.render('phenotips.consents.error.updateFailure'){{/error}}
       )))
       (% class='view-title-required-not-granted hidden' %)(((
-        {{warning}}$services.localization.render('PhenoTips.PatientConsent_required_not_granted'){{/warning}}
+        {{warning}}$services.localization.render('phenotips.consents.error.mandatoryConsentsMissing'){{/warning}}
       )))
       (% class='error error_no_consent_data hidden' %)(((
-        {{error}}$services.localization.render('PhenoTips.PatientConsent_error_no_consent_data'){{/error}}
+        {{error}}$services.localization.render('phenotips.consents.error.noConsentData'){{/error}}
       )))
     )))
   #end
