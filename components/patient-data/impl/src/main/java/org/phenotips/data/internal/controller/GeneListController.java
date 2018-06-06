@@ -17,7 +17,6 @@
  */
 package org.phenotips.data.internal.controller;
 
-import org.phenotips.Constants;
 import org.phenotips.data.Gene;
 import org.phenotips.data.IndexedPatientData;
 import org.phenotips.data.Patient;
@@ -27,8 +26,6 @@ import org.phenotips.data.PatientWritePolicy;
 import org.phenotips.data.internal.PhenoTipsGene;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.model.EntityType;
-import org.xwiki.model.reference.EntityReference;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -73,10 +70,6 @@ import com.xpn.xwiki.objects.StringListProperty;
 @Singleton
 public class GeneListController implements PatientDataController<Gene>
 {
-    /** The XClass used for storing gene data. */
-    protected static final EntityReference GENE_CLASS_REFERENCE = new EntityReference("GeneClass",
-        EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
-
     private static final String GENES_STRING = "genes";
 
     private static final String CONTROLLER_NAME = GENES_STRING;
@@ -125,7 +118,7 @@ public class GeneListController implements PatientDataController<Gene>
     {
         try {
             XWikiDocument doc = patient.getXDocument();
-            List<BaseObject> geneXWikiObjects = doc.getXObjects(GENE_CLASS_REFERENCE);
+            List<BaseObject> geneXWikiObjects = doc.getXObjects(Gene.GENE_CLASS);
             if (geneXWikiObjects == null || geneXWikiObjects.isEmpty()) {
                 return null;
             }
@@ -339,7 +332,7 @@ public class GeneListController implements PatientDataController<Gene>
             final PatientData<Gene> genes = patient.getData(getName());
             if (genes == null) {
                 if (PatientWritePolicy.REPLACE.equals(policy)) {
-                    docX.removeXObjects(GENE_CLASS_REFERENCE);
+                    docX.removeXObjects(Gene.GENE_CLASS);
                 }
             } else if (!genes.isIndexed()) {
                 this.logger.info("Wrong data type for gene data");
@@ -367,7 +360,7 @@ public class GeneListController implements PatientDataController<Gene>
         @Nonnull final PatientWritePolicy policy,
         @Nonnull final XWikiContext context)
     {
-        docX.removeXObjects(GENE_CLASS_REFERENCE);
+        docX.removeXObjects(Gene.GENE_CLASS);
         if (PatientWritePolicy.MERGE.equals(policy)) {
             final Map<String, Gene> mergedGenes = getMergedGenes(data, load(patient));
             mergedGenes.forEach((id, gene) -> saveGene(docX, gene, context));
@@ -389,7 +382,7 @@ public class GeneListController implements PatientDataController<Gene>
         @Nonnull final XWikiContext context)
     {
         try {
-            final BaseObject xwikiObject = docX.newXObject(GENE_CLASS_REFERENCE, context);
+            final BaseObject xwikiObject = docX.newXObject(Gene.GENE_CLASS, context);
             setXWikiObjectProperty(INTERNAL_GENE_KEY, gene.getId(), xwikiObject, context);
             String status = gene.getStatus();
             // setting status to default 'candidate' if not defined yet
