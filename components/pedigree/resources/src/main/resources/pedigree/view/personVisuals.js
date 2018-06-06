@@ -785,8 +785,9 @@ define([
                 this._linkLabel.node.setAttribute("class","pedigree-nodePatientTextLink");
                 this._linkLabel.addGapAfter = true;
                 var patientURL = this.getNode().getPhenotipsPatientURL();
-                //this._linkLabel.click(function () { window.open(patientURL); })
-                this._linkLabel.attr({ "href": patientURL, "target": "blank"});  // note: "blank" not "_blank" as Raphael processes this in its own way
+                var patientID = this.getNode().getPhenotipsPatientId();
+                this._linkLabel.attr({ "href": patientURL });
+                this._linkLabel.node.parentNode.setAttribute("target", patientID);
                 this._linkLabel.attr("fill", "#00498A");
             }
             this.drawLabels();
