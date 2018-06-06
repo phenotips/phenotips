@@ -299,7 +299,7 @@ define([
 
             var noPatientsAreLinked = !editor.isFamilyPage()
                                       && (patientLinks.linkedPatients.length == 0)
-                                      && editor.getPatientLegend().getListOfPatientsInTheLegend();
+                                      && (editor.getPatientLegend().getListOfPatientsInTheLegend().length == 0);
 
             var currentPatientIsNotLinked = !editor.isFamilyPage()
                                             && !patientLinks.patientToNodeMapping.hasOwnProperty(currentPatientId)
