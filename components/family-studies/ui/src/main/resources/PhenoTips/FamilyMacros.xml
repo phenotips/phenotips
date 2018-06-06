@@ -50,7 +50,7 @@
     #set ($dob = "$!{member.getData('dates').date_of_birth.toYYYYMMDDString()}")
     #set ($meta = "$name#if($name != '' &amp;&amp; $dob != ''), #end$dob")
     #set ($patientLabel = "$id#if ($meta != '') ($meta)#end")
-* [[$patientLabel&gt;&gt;$member.getDocumentReference()||target="$id"]]
+* [[$patientLabel&gt;&gt;$member.getDocumentReference()||target="$member.id"]]
   #end
 #end
 #end
