@@ -2732,11 +2732,11 @@ Recursive title display detected!##
 #set ($config = $xwiki.getDocument('data.WebHome').getObject('PhenoTips.DBConfigurationClass'))
 #set ($pageExternalTitle = $defaultTitle)
 #if ($config && "$!{config.getProperty('hideInternalIds').value}" == '1' && "$!{doc.getValue('external_id')}" != '')
-  #set ($ext_id = "$!{doc.getValue('external_id')}")
-  #if ("$!{config.getProperty('externalIdFormat').value}" == 'XXX-XXX-XXX')
-    #set ($ext_id = $ext_id.replaceAll("([^-])(?=([^-]{3})+(?=(-|$)))", "$1-"))
-  #end
-  #set ($pageExternalTitle = "$!{ext_id}")
+#set ($ext_id = "$!{doc.getValue('external_id')}")
+#if ("$!{config.getProperty('externalIdFormat').value}" == 'XXX-XXX-XXX')
+#set ($ext_id = $ext_id.replaceAll("([^-])(?=([^-]{3})+(?=(-|$)))", "$1-"))
 #end
-${escapetool.xml($!pageExternalTitle)}##
+#set ($pageExternalTitle = "$!{ext_id}")
+#end
+${escapetool.xml($!pageExternalTitle)}
 #end
