@@ -548,6 +548,9 @@
 .pedigree-box.draw:hover, .pedigree-box.open:hover {
   color: #2173AF;
 }
+.pedigree-patient-record-link {
+  pointer-events: none;
+}
 .pedigree-button {
   display: inherit !important;
 }

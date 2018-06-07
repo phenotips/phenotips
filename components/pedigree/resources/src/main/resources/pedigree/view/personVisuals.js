@@ -788,6 +788,7 @@ define([
                 var patientID = this.getNode().getPhenotipsPatientId();
                 this._linkLabel.attr({ "href": patientURL });
                 this._linkLabel.node.parentNode.setAttribute("target", patientID);
+                this._linkLabel.node.parentNode.setAttribute("class", "pedigree-patient-record-link");
                 this._linkLabel.attr("fill", "#00498A");
             }
             this.drawLabels();
