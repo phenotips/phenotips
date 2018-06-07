@@ -24,7 +24,9 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.users.User;
 
+import java.util.Calendar;
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -35,6 +37,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Example;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 
 import com.xpn.xwiki.store.hibernate.HibernateSessionFactory;
@@ -111,6 +114,48 @@ public class HibernateAuditStore implements AuditStore
         c.addOrder(Order.desc("time"));
         @SuppressWarnings("unchecked")
         List<AuditEvent> foundEntries = c.list();
+        return foundEntries;
+    }
+
+    @Override
+    public List<AuditEvent> getEvents(AuditEvent eventTemplate, Calendar fromTime, Calendar toTime, int start,
+        int count)
+    {
+        Session session = this.sessionFactory.getSessionFactory().openSession();
+        Criteria c = session.createCriteria(AuditEvent.class);
+
+        if (eventTemplate != null) {
+            c.add(Example.create(eventTemplate));
+        }
+
+        Calendar from = fromTime;
+        if (from == null) {
+            from = Calendar.getInstance();
+            from.setTimeInMillis(0);
+        }
+
+        Calendar to = toTime;
+        if (to == null) {
+            to = Calendar.getInstance();
+            to.setTimeInMillis(System.currentTimeMillis());
+        }
+
+        if (to.after(from)) {
+            c.add(Restrictions.between("time", from, to));
+        }
+
+        c.addOrder(Order.desc("time"));
+        @SuppressWarnings("unchecked")
+        List<AuditEvent> foundEntries = c.list();
+
+        if (foundEntries != null && Optional.ofNullable(start).orElse(0).intValue() != 0
+            && foundEntries.size() > start) {
+            int end =
+                (Optional.ofNullable(count).orElse(0).intValue() == 0 || foundEntries.size() <= start + count)
+                    ? foundEntries.size() : start + count;
+            return foundEntries.subList(start, end);
+        }
+
         return foundEntries;
     }
 }

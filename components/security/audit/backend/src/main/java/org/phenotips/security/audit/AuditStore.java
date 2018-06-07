@@ -22,6 +22,7 @@ import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.stability.Unstable;
 import org.xwiki.users.User;
 
+import java.util.Calendar;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -92,4 +93,23 @@ public interface AuditStore
      */
     @Nonnull
     List<AuditEvent> getEventsForUser(@Nullable User user, @Nullable String ip, @Nullable String type);
+
+    /**
+     * Retrieves all the events of a specific event template. Parameters fromTime and toTime define an interval for the
+     * time stamp.
+     *
+     * @param eventTemplate the event template that can have non-{@code null} fields which are to be used as filters
+     *            when retrieving matching events. If all fields are null or the template itself is {@code null}, all
+     *            events match and should be returned.
+     * @param fromTime start of the interval for the time stamp filter. If parameter fromTime is {@code null}, matching
+     *            events from the beginning will be retrieved.
+     * @param toTime end of the interval for the time stamp filter. If parameter toTime is {@code null}, matching events
+     *            until the present moment will be retrieved.
+     * @param start starting index of events to return
+     * @param count upper bound of events number to return
+     * @return a list of audited events, may be empty
+     */
+    @Nonnull
+    List<AuditEvent> getEvents(@Nullable AuditEvent eventTemplate, @Nullable Calendar fromTime,
+        @Nullable Calendar toTime, int start, int count);
 }
