@@ -1038,15 +1038,15 @@ define([
             }
             var labels = this.getLabels();
             var selectionOffset = this._labelSelectionOffset();
-            var childlessOffset = this.getChildlessStatusLabel() ? PedigreeEditorParameters.attributes.label['font-size'] : 0;
-            childlessOffset += ((this.getNode().getChildlessStatus() !== null) ? (PedigreeEditorParameters.attributes.infertileMarkerHeight + 2) : 0);
+            var childlessOffset = this._getChildlessOffset();
 
             var lowerBound = PedigreeEditorParameters.attributes.radius * (this.getNode().isPersonGroup() ? PedigreeEditorParameters.attributes.groupNodesScale : 1.0);
 
-            var startY = this.getY() + lowerBound * 1.8 + selectionOffset + childlessOffset + 15;
+            var firstLabelPosition = this.getY() + lowerBound * 1.8 + childlessOffset + 15 + PedigreeEditorParameters.attributes.firstNodeLabelSpaceOnTop;
+            var startY = firstLabelPosition + selectionOffset;
             for (var i = 0; i < labels.length; i++) {
-                var shift = (labels[i].addGap && i != 0) ? 4 : 8;   // make a small gap between comments and other fields
-                var offset = (labels[i].alignTop) ? (GraphicHelpers.getElementHalfHeight(labels[i]) - shift) : 0;
+                var shift = labels[i].addGap ? 4 : 0;
+                var offset = (labels[i].alignTop) ? (GraphicHelpers.getElementHalfHeight(labels[i]) - shift) : shift;
                 if (i == 0 && labels[i].shiftUp) {
                     offset -= labels[i].shiftUp;
                 }
@@ -1071,11 +1071,14 @@ define([
                 this._linkArea && this._linkArea.remove();
                 var boundingBox = this._linkLabel.getBBox();
                 var patientURL = this.getNode().getPhenotipsPatientURL();
+                var minVerticalClickArea = PedigreeEditorParameters.attributes.patientLinkClickAreaAbove;
                 // the hack should cover the bottom part of the hoverbox to make sure mouse can be moved to the link from
                 // the left, right and the bottom without making the hoverbox trigger and move the link
-                var startY = boundingBox.y-3;
-                var hackHeight = Math.max(boundingBox.height+6, this.getHoverBox().getY() + this.getHoverBox().getHeight() - startY);
-                this._linkArea = editor.getPaper().rect(this.getHoverBox().getX(), startY, this.getHoverBox().getWidth(), hackHeight).attr({
+                var normalPositionTop = boundingBox.y - selectionOffset;
+                var hackHeight = Math.max(boundingBox.height+minVerticalClickArea*2,
+                                          this.getHoverBox().getY() + this.getHoverBox().getHeight() - normalPositionTop + minVerticalClickArea + 1);
+                var linkAreaTop = boundingBox.y-minVerticalClickArea;
+                this._linkArea = editor.getPaper().rect(this.getHoverBox().getX() - 1, linkAreaTop, this.getHoverBox().getWidth() + 2, hackHeight).attr({
                     fill: "#F00",
                     opacity: 0
                   });
@@ -1090,15 +1093,26 @@ define([
             //    labels.flatten().insertBefore(this.getHoverBox().getFrontElements().flatten());
         },
 
+        _getChildlessOffset: function() {
+            var childlessOffset = this.getChildlessStatusLabel() ? PedigreeEditorParameters.attributes.label['font-size'] : 0;
+            childlessOffset += ((this.getNode().getChildlessStatus() !== null) ? (PedigreeEditorParameters.attributes.infertileMarkerHeight + 2) : 0);
+            return childlessOffset;
+        },
+
         _labelSelectionOffset: function() {
+            if (!this.isSelected()) {
+                return 0;
+            }
             var labelsOffset = this.getHoverBox().getBottomExtensionHeight();
-            var selectionOffset = this.isSelected() ? PedigreeEditorParameters.attributes.radius/1.4 + labelsOffset : 0;
+            var selectionOffset = PedigreeEditorParameters.attributes.radius/1.4 + labelsOffset;
 
-            if (this.isSelected() && this.getNode().isPersonGroup())
+            if (this.getNode().isPersonGroup()) {
                 selectionOffset += PedigreeEditorParameters.attributes.radius * (1-PedigreeEditorParameters.attributes.groupNodesScale) + 5;
+            }
 
-            if (this.getChildlessStatusLabel())
-                selectionOffset = selectionOffset/2;
+            if (this.getChildlessStatusLabel()) {
+                selectionOffset = selectionOffset - this._getChildlessOffset();
+            }
             return selectionOffset;
         },
 
