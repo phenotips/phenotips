@@ -1821,9 +1821,11 @@
 
   clearAcceptedList : function () {
     var _this = this;
-    this.list.select('li').each(function (item) {
-      _this.removeItem(item);
-    });
+    // note: removal of one item may trigger (via an event and event handler in client code) removal or addition of
+    // other items, so need to use a while() loop to remove whatever elements happen to be there after each removeItem()
+    while(this.list.select('li').length &gt; 0) {
+      _this.removeItem(this.list.select('li')[0]);
+    };
   },
 
   updateListTools : function () {
