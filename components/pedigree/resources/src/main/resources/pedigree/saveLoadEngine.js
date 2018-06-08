@@ -181,6 +181,9 @@ define([
                 // TODO: investigate, may no longer be true
                 callbackWhenDataLoaded && callbackWhenDataLoaded();
 
+                // new loaded data may take up some space below some nodes, so need to recompute vertical positioning
+                editor.getGraph().updateYPositioning();
+
                 if (editor.getView().applyChanges(changeSet, false)) {
                     editor.getWorkspace().adjustSizeToScreen();
                 }
