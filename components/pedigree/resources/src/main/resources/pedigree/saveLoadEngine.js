@@ -41,10 +41,12 @@ define([
             editor.getView().applyChanges(changeSet, false);
         },
 
-        createGraphFromStoredData: function(JSONString, dataSource) {
+        createGraphFromStoredData: function(JSONString, dataSource, markAsEquivalentToSaved) {
             var addSaveEventOnceLoaded = function() {
-                // since we just loaded data from disk data in memory is equivalent to data on disk
-                editor.getUndoRedoManager().addSaveEvent();
+                if (markAsEquivalentToSaved) {
+                    // since we just loaded data from disk data in memory is equivalent to data on disk
+                    editor.getUndoRedoManager().addSaveEvent();
+                }
             }
             this.createGraphFromImportData(JSONString, "phenotipsJSON", null, false, true, dataSource, "pedigreeLoaded", addSaveEventOnceLoaded);
         },
@@ -176,9 +178,6 @@ define([
                     editor.getUndoRedoManager().addState({"eventName": eventName}, null, undoRedoState);
                 }
 
-                // FIXME: load will set callbackWhenDataLoaded() to be actionStack.addSaveEvent(), effectively
-                //        a) duplicating undo states and b) doing it for read-only pedigrees
-                // TODO: investigate, may no longer be true
                 callbackWhenDataLoaded && callbackWhenDataLoaded();
 
                 // new loaded data may take up some space below some nodes, so need to recompute vertical positioning
@@ -367,8 +366,11 @@ define([
                         // TODO: avoid unnecessary JSON -> string -> JSON conversions
                         var updatedJSONData = JSON.stringify(responseJSON.pedigree);
 
+                        var markAsEquivalentToSaved = true;
+
                         // if pedigree is misformatted createGraphFromStoredData() may throw as well
-                        this.createGraphFromStoredData(updatedJSONData, "familyPedigree" /* data source */);
+                        this.createGraphFromStoredData(updatedJSONData, "familyPedigree" /* data source */, markAsEquivalentToSaved);
+
                         return;
                     } catch (error) {
                         console.log("[LOAD] error parsing pedigree JSON");
