@@ -1017,10 +1017,6 @@ define([
             });
         },
 
-        hideCancersData: function() {
-            this._setFieldValue['cancerlist'].call(this, this.fieldMap["cancers"].element, {});
-        },
-
         isVisible: function() {
             return this._onscreen;
         },
@@ -1035,7 +1031,6 @@ define([
                 && !event.findElement('.ok-cancel-dialogue')
                 && !event.findElement('.msdialog-screen')) {
                 this.hide();
-                this.hideCancersData();
             }
         },
 

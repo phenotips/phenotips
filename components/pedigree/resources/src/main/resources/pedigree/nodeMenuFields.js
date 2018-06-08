@@ -300,7 +300,8 @@ define([
                 'label' : 'Common Cancers',
                 'type' : 'cancerlist',
                 'tab' : 'Cancers',
-                'function' : 'setCancers'
+                'function' : 'setCancers',
+                'default' : {},
             },
             {
                 'name' : 'cancers_picker',
