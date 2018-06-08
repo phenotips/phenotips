@@ -15,7 +15,8 @@ define([
             this._stack        = [];
             this._MAXUNDOSIZE  = 100;
 
-            this._savedState   = null;
+            this._savedState         = null;
+            this._savedUnlinkedState = null;
 
             // observe patient deletion events to remove all references to the deleted patient from all undo/redo states
             document.observe("pedigree:patient:deleted", this.handlePatientDeleted.bind(this));
@@ -74,7 +75,11 @@ define([
             if (state == null) {
                 return false;
             }
-            if (this._savedState == state.serializedState) {
+
+            // a state of the pedigree is the combination of the state of pedigree graph (stored in `this._savedState`)
+            // and a set of all unlinked patients (which can be computed using `this.computeUnlinkedState()`).
+            // If those two parts are the same as they were the last time pedigree was saved => there are no changes
+            if (this._savedState == state.serializedState && this._savedUnlinkedState == this.computeUnlinkedState()) {
                 return false;
             }
             return true;
@@ -96,7 +101,15 @@ define([
                 return;
             }
             this._savedState = state.serializedState;
+            this._savedUnlinkedState = this.computeUnlinkedState();
         },
+
+        computeUnlinkedState: function() {
+            // converts the current state of all unlinked patient into a string
+            var unlinked = editor.getPatientLegend().getPatientsInTheLegendData();
+            return JSON.stringify(unlinked);
+        },
+
         /**
          * Moves one state forward in the action stack
          *

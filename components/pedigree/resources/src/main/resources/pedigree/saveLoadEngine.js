@@ -163,13 +163,9 @@ define([
                 }
 
                 // 3. add patients that are not in pedigree to the patient legend
-                var allLinkedNodes = editor.getGraph().getAllPatientLinks();
-                var allFamilyMembers = editor.getFamilyData().getAllFamilyMembersList()
-                for (var i = 0; i < allFamilyMembers.length; i++) {
-                    var nextMemberID = allFamilyMembers[i].id;
-                    if (!allLinkedNodes.patientToNodeMapping.hasOwnProperty(nextMemberID)) {
-                        editor.getPatientLegend().addCase(nextMemberID, {});
-                    }
+                for (var i = 0; i < changeSet.unlinked.length; i++) {
+                    var nextMemberID = changeSet.unlinked[i];
+                    editor.getPatientLegend().addCase(nextMemberID, {});
                 }
 
 
@@ -198,8 +194,8 @@ define([
                 // update to include nodes possibly added to the set of linked nodes above
                 var allLinkedNodes = editor.getGraph().getAllPatientLinks();
 
-                // get all patients in the pedigree and those in the patient legend (those are not in pedigree but may get assigned)
-                var patientList = Helpers.filterUnique(allLinkedNodes.linkedPatients.concat(editor.getPatientLegend().getListOfPatientsInTheLegend()));
+                // combine patients in the pedigree and unlinked patients
+                var patientList = Helpers.filterUnique(allLinkedNodes.linkedPatients.concat(changeSet.unlinked));
 
                 editor.getPatientDataLoader().load(patientList, finalizeCreation);
             } else {
