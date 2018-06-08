@@ -137,6 +137,7 @@ public class SolvedController extends AbstractSimpleController implements Initia
         }
     }
 
+    @SuppressWarnings("checkstyle:CyclomaticComplexity")
     @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
@@ -149,23 +150,16 @@ public class SolvedController extends AbstractSimpleController implements Initia
         }
 
         Iterator<Entry<String, String>> dataIterator = data.dictionaryIterator();
-        JSONObject container = json.optJSONObject(getJsonPropertyName());
+        final JSONObject container = json.optJSONObject(getJsonPropertyName()) != null
+            ? json.optJSONObject(getJsonPropertyName()) : new JSONObject();
 
         while (dataIterator.hasNext()) {
             Entry<String, String> datum = dataIterator.next();
             String key = datum.getKey();
 
             if (selectedFieldNames == null || selectedFieldNames.contains(key)) {
-                if (container == null) {
-                    // put() is placed here because we want to create the property iff at least one field is set/enabled
-                    json.put(getJsonPropertyName(), new JSONObject());
-                    container = json.optJSONObject(getJsonPropertyName());
-                }
                 // Parse value
-                String value = datum.getValue();
-                if (STATUS_KEY.equals(key)) {
-                    value = parseSolvedStatus(value);
-                }
+                String value = STATUS_KEY.equals(key) ? parseSolvedStatus(datum.getValue()) : datum.getValue();
 
                 if (StringUtils.isNotBlank(value)) {
                     // Get internal property name
@@ -173,6 +167,10 @@ public class SolvedController extends AbstractSimpleController implements Initia
                     container.put(name, value);
                 }
             }
+        }
+
+        if (container.length() > 0) {
+            json.put(getJsonPropertyName(), container);
         }
     }
 

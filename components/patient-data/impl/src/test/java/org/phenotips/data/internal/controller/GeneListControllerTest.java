@@ -64,7 +64,6 @@ import com.xpn.xwiki.objects.StringListProperty;
 import com.xpn.xwiki.objects.classes.BaseClass;
 import com.xpn.xwiki.objects.classes.StaticListClass;
 import com.xpn.xwiki.web.Utils;
-
 import net.jcip.annotations.NotThreadSafe;
 
 import static org.mockito.Matchers.any;

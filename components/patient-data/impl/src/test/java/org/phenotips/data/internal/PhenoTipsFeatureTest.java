@@ -52,7 +52,6 @@ import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.ListProperty;
 import com.xpn.xwiki.objects.StringProperty;
 import com.xpn.xwiki.web.Utils;
-
 import net.jcip.annotations.NotThreadSafe;
 
 import static org.mockito.Mockito.mock;

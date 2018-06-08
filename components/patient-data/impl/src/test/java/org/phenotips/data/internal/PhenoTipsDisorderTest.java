@@ -39,7 +39,6 @@ import org.mockito.MockitoAnnotations;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.objects.ListProperty;
 import com.xpn.xwiki.web.Utils;
-
 import net.jcip.annotations.NotThreadSafe;
 
 import static org.mockito.Mockito.mock;
