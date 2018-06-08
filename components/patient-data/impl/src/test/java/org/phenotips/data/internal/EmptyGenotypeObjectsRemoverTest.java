@@ -17,42 +17,46 @@
  */
 package org.phenotips.data.internal;
 
+import org.phenotips.Constants;
+import org.phenotips.data.Gene;
+
 import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.observation.EventListener;
-import org.xwiki.observation.event.Event;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Collections;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-import com.xpn.xwiki.objects.BaseStringProperty;
-
 import net.jcip.annotations.NotThreadSafe;
 
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @NotThreadSafe
 public class EmptyGenotypeObjectsRemoverTest
 {
+    private static final EntityReference VARIANT_CLASS_REFERENCE = new EntityReference("GeneVariantClass",
+        EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE);
+
+    private static final String GENE_KEY = "gene";
+
+    private static final String VARIANT_KEY = "cdna";
+
     @Rule
     public MockitoComponentMockingRule<EventListener> mocker =
         new MockitoComponentMockingRule<>(EmptyGenotypeObjectsRemover.class);
@@ -60,12 +64,19 @@ public class EmptyGenotypeObjectsRemoverTest
     @Mock
     private XWikiContext context;
 
-    @Mock
-    private XWiki xWiki;
-
     private EmptyGenotypeObjectsRemover patientEmptyObjectsRemover;
 
-    private List<BaseObject> xWikiObjects;
+    @Mock
+    private BaseObject gene1;
+
+    @Mock
+    private BaseObject gene2;
+
+    @Mock
+    private BaseObject variant1;
+
+    @Mock
+    private BaseObject variant2;
 
     @Mock
     private XWikiDocument xWikiDocument;
@@ -75,49 +86,118 @@ public class EmptyGenotypeObjectsRemoverTest
     {
         MockitoAnnotations.initMocks(this);
         this.patientEmptyObjectsRemover = (EmptyGenotypeObjectsRemover) this.mocker.getComponentUnderTest();
-
-        this.xWikiObjects = new ArrayList<>();
-        doReturn(this.xWikiObjects).when(this.xWikiDocument).getXObjects(any(EntityReference.class));
     }
 
     @Test
-    public void emptyObjectRemovedTest() throws XWikiException
+    public void emptyGenesRemovedTest() throws XWikiException
     {
-        BaseObject objOne = mock(BaseObject.class);
-        BaseObject objTwo = mock(BaseObject.class);
-        this.xWikiObjects.add(objOne);
-        this.xWikiObjects.add(objTwo);
+        when(this.xWikiDocument.getXObjects(Gene.GENE_CLASS)).thenReturn(Arrays.asList(this.gene1, this.gene2));
+        when(this.gene1.getStringValue(GENE_KEY)).thenReturn("");
+        when(this.gene2.getStringValue(GENE_KEY)).thenReturn("BRCA1");
 
-        BaseStringProperty property = mock(BaseStringProperty.class);
-        doReturn(property).when(objOne).getField(anyString());
-        doReturn(property).when(objTwo).getField(anyString());
-        doReturn("").when(property).getValue();
+        this.patientEmptyObjectsRemover.onEvent(null, this.xWikiDocument, null);
 
-        this.patientEmptyObjectsRemover.onEvent(mock(Event.class), this.xWikiDocument, mock(Object.class));
-        verify(this.xWikiDocument, times(4)).removeXObject((BaseObject) anyObject());
+        verify(this.xWikiDocument).removeXObject(this.gene1);
+        verify(this.xWikiDocument, Mockito.never()).removeXObject(this.gene2);
     }
 
     @Test
-    public void onEventIgnoresNullObjectsTest() throws XWikiException
+    public void nullGeneObjectsAreIgnored() throws XWikiException
     {
-        BaseObject obj = mock(BaseObject.class);
-        this.xWikiObjects.add(null);
-        this.xWikiObjects.add(obj);
+        when(this.xWikiDocument.getXObjects(Gene.GENE_CLASS)).thenReturn(Arrays.asList(this.gene1, null, this.gene2));
+        when(this.xWikiDocument.getXObjects(VARIANT_CLASS_REFERENCE)).thenReturn(Collections.emptyList());
+        when(this.gene1.getStringValue(GENE_KEY)).thenReturn("BRCA1");
+        when(this.gene2.getStringValue(GENE_KEY)).thenReturn("");
 
-        BaseStringProperty property = mock(BaseStringProperty.class);
-        doReturn(property).when(obj).getField(anyString());
-        doReturn("").when(property).getValue();
+        this.patientEmptyObjectsRemover.onEvent(null, this.xWikiDocument, null);
 
-        this.patientEmptyObjectsRemover.onEvent(mock(Event.class), this.xWikiDocument, mock(Object.class));
-        verify(this.xWikiDocument, times(2)).removeXObject((BaseObject) anyObject());
+        verify(this.xWikiDocument, never()).removeXObject(this.gene1);
+        verify(this.xWikiDocument).removeXObject(this.gene2);
     }
 
     @Test
-    public void onEventIgnoresEmptyListTest() throws XWikiException
+    public void ignoresEmptyDocuments() throws XWikiException
     {
-        this.xWikiObjects = null;
+        when(this.xWikiDocument.getXObjects(Gene.GENE_CLASS)).thenReturn(Collections.emptyList());
+        when(this.xWikiDocument.getXObjects(VARIANT_CLASS_REFERENCE)).thenReturn(Collections.emptyList());
 
-        this.patientEmptyObjectsRemover.onEvent(mock(Event.class), this.xWikiDocument, mock(Object.class));
+        this.patientEmptyObjectsRemover.onEvent(null, this.xWikiDocument, null);
+
         verify(this.xWikiDocument, never()).removeXObject((BaseObject) anyObject());
+    }
+
+    @Test
+    public void noGenesDeletesAllVariants()
+    {
+        when(this.xWikiDocument.getXObjects(Gene.GENE_CLASS)).thenReturn(null);
+        when(this.xWikiDocument.getXObjects(VARIANT_CLASS_REFERENCE))
+            .thenReturn(Arrays.asList(this.variant1, this.variant2));
+
+        this.patientEmptyObjectsRemover.onEvent(null, this.xWikiDocument, null);
+
+        verify(this.xWikiDocument).removeXObjects(VARIANT_CLASS_REFERENCE);
+    }
+
+    @Test
+    public void emptyGenesDeletesAllVariants()
+    {
+        when(this.xWikiDocument.getXObjects(Gene.GENE_CLASS)).thenReturn(Collections.emptyList());
+        when(this.xWikiDocument.getXObjects(VARIANT_CLASS_REFERENCE))
+            .thenReturn(Arrays.asList(this.variant1, this.variant2));
+
+        this.patientEmptyObjectsRemover.onEvent(null, this.xWikiDocument, null);
+
+        verify(this.xWikiDocument).removeXObjects(VARIANT_CLASS_REFERENCE);
+    }
+
+    @Test
+    public void emptyVariantsAreRemoved()
+    {
+        when(this.xWikiDocument.getXObjects(Gene.GENE_CLASS)).thenReturn(Arrays.asList(this.gene1));
+        when(this.xWikiDocument.getXObjects(VARIANT_CLASS_REFERENCE))
+            .thenReturn(Arrays.asList(this.variant1, this.variant2));
+
+        when(this.variant1.getStringValue(VARIANT_KEY)).thenReturn("cdna");
+        when(this.variant2.getStringValue(VARIANT_KEY)).thenReturn("");
+
+        this.patientEmptyObjectsRemover.onEvent(null, this.xWikiDocument, null);
+
+        verify(this.xWikiDocument, never()).removeXObject(this.variant1);
+        verify(this.xWikiDocument).removeXObject(this.variant2);
+    }
+
+    @Test
+    public void variantsForUnsetGenesAreRemoved()
+    {
+        when(this.xWikiDocument.getXObjects(Gene.GENE_CLASS)).thenReturn(Arrays.asList(this.gene1));
+        when(this.xWikiDocument.getXObjects(VARIANT_CLASS_REFERENCE))
+            .thenReturn(Arrays.asList(this.variant1, this.variant2));
+
+        when(this.gene1.getStringValue(GENE_KEY)).thenReturn("BRCA1");
+        when(this.variant1.getStringValue(GENE_KEY)).thenReturn("BRCA1");
+        when(this.variant1.getStringValue(VARIANT_KEY)).thenReturn("cdna");
+        when(this.variant2.getStringValue(GENE_KEY)).thenReturn("BRCA3");
+        when(this.variant2.getStringValue(VARIANT_KEY)).thenReturn("cdna");
+
+        this.patientEmptyObjectsRemover.onEvent(null, this.xWikiDocument, null);
+
+        verify(this.xWikiDocument, never()).removeXObject(this.variant1);
+        verify(this.xWikiDocument).removeXObject(this.variant2);
+    }
+
+    @Test
+    public void nullVariantObjectsAreIgnored()
+    {
+        when(this.xWikiDocument.getXObjects(Gene.GENE_CLASS)).thenReturn(Arrays.asList(this.gene1));
+        when(this.xWikiDocument.getXObjects(VARIANT_CLASS_REFERENCE))
+            .thenReturn(Arrays.asList(this.variant1, null, this.variant2));
+
+        when(this.variant1.getStringValue(VARIANT_KEY)).thenReturn("cdna");
+        when(this.variant2.getStringValue(VARIANT_KEY)).thenReturn("");
+
+        this.patientEmptyObjectsRemover.onEvent(null, this.xWikiDocument, null);
+
+        verify(this.xWikiDocument, never()).removeXObject(this.variant1);
+        verify(this.xWikiDocument).removeXObject(this.variant2);
     }
 }
