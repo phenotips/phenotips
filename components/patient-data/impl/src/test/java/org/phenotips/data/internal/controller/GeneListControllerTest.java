@@ -609,7 +609,7 @@ public class GeneListControllerTest
     public void saveWithNoDataRemovesAllGenesWhenPolicyIsReplace()
     {
         this.component.save(this.patient, PatientWritePolicy.REPLACE);
-        verify(this.doc, times(1)).removeXObjects(GeneListController.GENE_CLASS_REFERENCE);
+        verify(this.doc, times(1)).removeXObjects(Gene.GENE_CLASS);
         verifyNoMoreInteractions(this.doc);
     }
 
@@ -628,7 +628,7 @@ public class GeneListControllerTest
             .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, Collections.emptyList()));
         when(this.context.getWiki()).thenReturn(mock(XWiki.class));
         this.component.save(this.patient);
-        verify(this.doc).removeXObjects(GeneListController.GENE_CLASS_REFERENCE);
+        verify(this.doc).removeXObjects(Gene.GENE_CLASS);
 
         verifyNoMoreInteractions(this.doc);
     }
@@ -641,7 +641,7 @@ public class GeneListControllerTest
         when(this.context.getWiki()).thenReturn(mock(XWiki.class));
 
         final BaseObject geneObject = mock(BaseObject.class);
-        when(this.doc.getXObjects(GeneListController.GENE_CLASS_REFERENCE))
+        when(this.doc.getXObjects(Gene.GENE_CLASS))
             .thenReturn(Collections.singletonList(geneObject));
 
         final BaseStringProperty geneProperty = mock(BaseStringProperty.class);
@@ -657,13 +657,13 @@ public class GeneListControllerTest
         when(statusProperty.getValue()).thenReturn(JSON_OLD_SOLVED_GENE_KEY);
 
         final BaseObject xwikiObject = mock(BaseObject.class);
-        when(this.doc.newXObject(GeneListController.GENE_CLASS_REFERENCE, this.context)).thenReturn(xwikiObject);
+        when(this.doc.newXObject(Gene.GENE_CLASS, this.context)).thenReturn(xwikiObject);
 
         this.component.save(this.patient, PatientWritePolicy.MERGE);
 
-        verify(this.doc, times(1)).newXObject(GeneListController.GENE_CLASS_REFERENCE, this.context);
-        verify(this.doc, times(1)).removeXObjects(GeneListController.GENE_CLASS_REFERENCE);
-        verify(this.doc, times(1)).getXObjects(GeneListController.GENE_CLASS_REFERENCE);
+        verify(this.doc, times(1)).newXObject(Gene.GENE_CLASS, this.context);
+        verify(this.doc, times(1)).removeXObjects(Gene.GENE_CLASS);
+        verify(this.doc, times(1)).getXObjects(Gene.GENE_CLASS);
         verify(xwikiObject, times(1)).set(GENE_KEY, GENE_VALUE, this.context);
         verify(xwikiObject, times(1)).set(STATUS_KEY, JSON_OLD_SOLVED_GENE_KEY, this.context);
         verify(xwikiObject, times(1)).set(eq(STRATEGY_KEY), eq(Collections.emptyList()), eq(this.context));
@@ -680,7 +680,7 @@ public class GeneListControllerTest
             .thenReturn(new IndexedPatientData<>(CONTROLLER_NAME, Collections.emptyList()));
         when(this.context.getWiki()).thenReturn(mock(XWiki.class));
         this.component.save(this.patient, PatientWritePolicy.REPLACE);
-        verify(this.doc).removeXObjects(GeneListController.GENE_CLASS_REFERENCE);
+        verify(this.doc).removeXObjects(Gene.GENE_CLASS);
 
         verifyNoMoreInteractions(this.doc);
     }
@@ -700,11 +700,11 @@ public class GeneListControllerTest
 
         BaseObject o1 = mock(BaseObject.class);
         BaseObject o2 = mock(BaseObject.class);
-        when(this.doc.newXObject(GeneListController.GENE_CLASS_REFERENCE, this.context)).thenReturn(o1, o2);
+        when(this.doc.newXObject(Gene.GENE_CLASS, this.context)).thenReturn(o1, o2);
 
         this.component.save(this.patient);
 
-        verify(this.doc).removeXObjects(GeneListController.GENE_CLASS_REFERENCE);
+        verify(this.doc).removeXObjects(Gene.GENE_CLASS);
         verify(o1).set(GENE_KEY, "GENE1", this.context);
         verify(o1).set(COMMENTS_KEY, "Notes1", this.context);
         verify(o2).set(GENE_KEY, "GENE2", this.context);
@@ -726,11 +726,11 @@ public class GeneListControllerTest
 
         BaseObject o1 = mock(BaseObject.class);
         BaseObject o2 = mock(BaseObject.class);
-        when(this.doc.newXObject(GeneListController.GENE_CLASS_REFERENCE, this.context)).thenReturn(o1, o2);
+        when(this.doc.newXObject(Gene.GENE_CLASS, this.context)).thenReturn(o1, o2);
 
         this.component.save(this.patient, PatientWritePolicy.REPLACE);
 
-        verify(this.doc).removeXObjects(GeneListController.GENE_CLASS_REFERENCE);
+        verify(this.doc).removeXObjects(Gene.GENE_CLASS);
         verify(o1).set(GENE_KEY, "GENE1", this.context);
         verify(o1).set(COMMENTS_KEY, "Notes1", this.context);
         verify(o2).set(GENE_KEY, "GENE2", this.context);
@@ -753,7 +753,7 @@ public class GeneListControllerTest
         BaseObject o1 = mock(BaseObject.class);
         BaseObject o2 = mock(BaseObject.class);
         BaseObject o3 = mock(BaseObject.class);
-        when(this.doc.getXObjects(GeneListController.GENE_CLASS_REFERENCE)).thenReturn(Collections.singletonList(o3));
+        when(this.doc.getXObjects(Gene.GENE_CLASS)).thenReturn(Collections.singletonList(o3));
 
         final BaseStringProperty geneProperty = mock(BaseStringProperty.class);
         final BaseStringProperty statusProperty = mock(BaseStringProperty.class);
@@ -765,12 +765,12 @@ public class GeneListControllerTest
         when(geneProperty.getValue()).thenReturn(GENE_VALUE);
         when(statusProperty.getValue()).thenReturn(STATUS_KEY);
 
-        when(this.doc.newXObject(GeneListController.GENE_CLASS_REFERENCE, this.context)).thenReturn(o3, o1, o2);
+        when(this.doc.newXObject(Gene.GENE_CLASS, this.context)).thenReturn(o3, o1, o2);
         this.component.save(this.patient, PatientWritePolicy.MERGE);
 
-        verify(this.doc, times(1)).removeXObjects(GeneListController.GENE_CLASS_REFERENCE);
-        verify(this.doc, times(3)).newXObject(GeneListController.GENE_CLASS_REFERENCE, this.context);
-        verify(this.doc, times(1)).getXObjects(GeneListController.GENE_CLASS_REFERENCE);
+        verify(this.doc, times(1)).removeXObjects(Gene.GENE_CLASS);
+        verify(this.doc, times(3)).newXObject(Gene.GENE_CLASS, this.context);
+        verify(this.doc, times(1)).getXObjects(Gene.GENE_CLASS);
         verify(o1).set(GENE_KEY, "GENE1", this.context);
         verify(o1).set(COMMENTS_KEY, "Notes1", this.context);
         verify(o2).set(GENE_KEY, "GENE2", this.context);
