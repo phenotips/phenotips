@@ -722,15 +722,21 @@ define([
         getPossiblePatientIDTarget: function() {
             // Valid targets:
             //  1) not currently linked to other patients
-            //  2) (updated) any gender
+            //  2) not a group (n-person) node
 
             var allPersonNodes = this.getAllPersonIDs();
             var result = [];
-            // exclude those nodes which already have a phenotipsID link
+
             for (var i = 0; i < allPersonNodes.length; i++) {
-                if (this.getPhenotipsLinkID(allPersonNodes[i]) == "") {
-                    result.push(allPersonNodes[i]);
+                // exclude those nodes which already have a phenotipsID link
+                if (this.getPhenotipsLinkID(allPersonNodes[i]) != "") {
+                    continue;
                 }
+                // exclude group nodes
+                if (this.isPersonGroup(i)) {
+                    continue;
+                }
+                result.push(allPersonNodes[i]);
             }
             return result;
         },
