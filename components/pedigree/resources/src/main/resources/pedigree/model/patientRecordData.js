@@ -29,12 +29,30 @@ define([], function(){
         hasPatient: function(phenotipsPatientID) {
             return this._patientRecordData.hasOwnProperty(phenotipsPatientID);
         },
-        
+
         get: function(phenotipsPatientID) {
-            if (!this._patientRecordData.hasOwnProperty(phenotipsPatientID)) {
+            if (!this.hasPatient(phenotipsPatientID)) {
                 console.log("[PatientRecordData] Requesting data for non-existent patient record " + phenotipsPatientID);
             }
             return this._patientRecordData[phenotipsPatientID];
+        },
+
+        getAll: function(patientList) {
+            var result = {};
+            patientList.forEach(function(patientID) {
+                result[patientID] = this.get(patientID);
+            }, this);
+            return result;
+        },
+
+        getMissingPatientIDs: function(patientList) {
+            var result = [];
+            patientList.forEach(function(patientID) {
+                if (!this.hasPatient(patientID)) {
+                    result.push(patientID);
+                }
+            }, this);
+            return result;
         },
 
         update: function(phenotipsPatientID, phenotipsJSON) {

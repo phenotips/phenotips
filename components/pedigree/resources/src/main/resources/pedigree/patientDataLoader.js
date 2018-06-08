@@ -11,13 +11,16 @@ define(["pedigree/model/helpers"], function(Helpers){
         },
 
         load: function(patientList, dataProcessorWhenReady) {
-            if (patientList.length == 0) {
-                dataProcessorWhenReady({});
-                document.fire("pedigree:blockinteraction:finish");
+
+            // check which patients have been already loaded and are available via editor.getPatientRecordData()
+            var needToLoadList = editor.getPatientRecordData().getMissingPatientIDs(patientList);
+            if (needToLoadList.length == 0) {
+                this._onAllDataAvailable(patientList, dataProcessorWhenReady);
                 return;
             }
+
             var _this = this;
-            var patientDataJsonURL = editor.getExternalEndpoint().getLoadPatientDataJSONURL(patientList);
+            var patientDataJsonURL = editor.getExternalEndpoint().getLoadPatientDataJSONURL(needToLoadList);
             document.fire("pedigree:blockinteraction:start");
             new Ajax.Request(patientDataJsonURL, {
                 method: "GET",
@@ -25,14 +28,14 @@ define(["pedigree/model/helpers"], function(Helpers){
                     if (response.responseJSON) {
                         console.log("Received patient data: " + Helpers.stringifyObject(response.responseJSON));
 
-                        // store JSON as loaded from PT as the last know aproved JSON for this patient
+                        // store JSON as loaded from PT as the last know approved JSON for this patient
                         for (var patient in response.responseJSON) {
                             if (response.responseJSON.hasOwnProperty(patient)) {
                                 editor.getPatientRecordData().update(patient, response.responseJSON[patient]);
                             }
                         }
 
-                        dataProcessorWhenReady && dataProcessorWhenReady(response.responseJSON);
+                        _this._onAllDataAvailable(patientList, dataProcessorWhenReady);
                     } else {
                         console.log("[!] Error parsing patient data JSON");
                     }
@@ -41,6 +44,12 @@ define(["pedigree/model/helpers"], function(Helpers){
                     document.fire("pedigree:blockinteraction:finish");
                 }
             });
+        },
+
+        _onAllDataAvailable: function(patientList, dataProcessorWhenReady) {
+            var data = editor.getPatientRecordData().getAll(patientList);
+            dataProcessorWhenReady && dataProcessorWhenReady(data);
+            document.fire("pedigree:blockinteraction:finish");
         }
     });
 
