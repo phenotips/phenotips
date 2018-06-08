@@ -37,6 +37,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Example;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 
@@ -52,6 +53,8 @@ import com.xpn.xwiki.store.hibernate.HibernateSessionFactory;
 @Singleton
 public class HibernateAuditStore implements AuditStore
 {
+    private static final String TIME_FIELD_NAME = "time";
+
     /** Handles persistence. */
     @Inject
     private HibernateSessionFactory sessionFactory;
@@ -111,7 +114,7 @@ public class HibernateAuditStore implements AuditStore
         Criteria c = session.createCriteria(AuditEvent.class);
         AuditEvent sample = new AuditEvent(user, ip, type, null, entity, null);
         c.add(Example.create(sample));
-        c.addOrder(Order.desc("time"));
+        c.addOrder(Order.desc(TIME_FIELD_NAME));
         @SuppressWarnings("unchecked")
         List<AuditEvent> foundEntries = c.list();
         return foundEntries;
@@ -141,10 +144,10 @@ public class HibernateAuditStore implements AuditStore
         }
 
         if (to.after(from)) {
-            c.add(Restrictions.between("time", from, to));
+            c.add(Restrictions.between(TIME_FIELD_NAME, from, to));
         }
 
-        c.addOrder(Order.desc("time"));
+        c.addOrder(Order.desc(TIME_FIELD_NAME));
         @SuppressWarnings("unchecked")
         List<AuditEvent> foundEntries = c.list();
 
@@ -157,5 +160,92 @@ public class HibernateAuditStore implements AuditStore
         }
 
         return foundEntries;
+    }
+
+    @Override
+    public long countEventsForEntity(DocumentReference entity)
+    {
+        return getCount(null, null, null, entity);
+    }
+
+    @Override
+    public long countEventsForEntity(DocumentReference entity, String type)
+    {
+        return getCount(null, null, type, entity);
+    }
+
+    @Override
+    public long countEventsForUser(User user)
+    {
+        return getCount(user, null, null, null);
+    }
+
+    @Override
+    public long countEventsForUser(User user, String ip)
+    {
+        return getCount(user, ip, null, null);
+    }
+
+    @Override
+    public long countEventsForUser(User user, String ip, String type)
+    {
+        return getCount(user, ip, type, null);
+    }
+
+    @Override
+    public long countEvents(AuditEvent eventTemplate, Calendar fromTime, Calendar toTime)
+    {
+        Session session = this.sessionFactory.getSessionFactory().openSession();
+        Criteria c = session.createCriteria(AuditEvent.class);
+
+        if (eventTemplate != null) {
+            c.add(Example.create(eventTemplate));
+        }
+
+        Calendar from = fromTime;
+        if (from == null) {
+            from = Calendar.getInstance();
+            from.setTimeInMillis(0);
+        }
+
+        Calendar to = toTime;
+        if (to == null) {
+            to = Calendar.getInstance();
+            to.setTimeInMillis(System.currentTimeMillis());
+        }
+
+        if (to.after(from)) {
+            c.add(Restrictions.between(TIME_FIELD_NAME, from, to));
+        }
+
+        c.setProjection(Projections.rowCount());
+
+        @SuppressWarnings("rawtypes")
+        List foundEntries = c.list();
+        if (foundEntries != null && !foundEntries.isEmpty()) {
+            long rowCount = (long) foundEntries.get(0);
+            return rowCount;
+        }
+
+        return 0;
+    }
+
+    private long getCount(User user, String ip, String type, DocumentReference entity)
+    {
+        Session session = this.sessionFactory.getSessionFactory().openSession();
+        Criteria c = session.createCriteria(AuditEvent.class);
+        AuditEvent sample = new AuditEvent(user, ip, type, null, entity, null);
+        c.add(Example.create(sample));
+        c.addOrder(Order.desc(TIME_FIELD_NAME));
+        c.setProjection(Projections.rowCount());
+
+        @SuppressWarnings("rawtypes")
+        List foundEntries = c.list();
+        if (foundEntries != null && !foundEntries.isEmpty()) {
+            long rowCount = (long) foundEntries.get(0);
+            return rowCount;
+        }
+
+        return 0;
     }
 }
