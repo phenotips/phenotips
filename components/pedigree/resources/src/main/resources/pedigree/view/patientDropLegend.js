@@ -262,16 +262,35 @@ define([
          * Returns the list of unassigned patients that are in the in the patient legend
          *
          * @method getListOfPatientsInTheLegend
-         * @return {patientList} List of patients in the legend
+         * @return {Array} List of patients in the legend
          */
         getListOfPatientsInTheLegend: function() {
-          var patientList = [];
-          for (var patient in this._notLinkedPatients) {
-            if (this._notLinkedPatients.hasOwnProperty(patient)) {
-              patientList.push(patient);
+            var patientList = [];
+            for (var patient in this._notLinkedPatients) {
+                if (this._notLinkedPatients.hasOwnProperty(patient)) {
+                    patientList.push(patient);
+                }
             }
-          }
-          return patientList;
+            return patientList;
+        },
+
+        /**
+         * Returns the list of unassigned patients that are in the in the patient legend,
+         * togehter with the stored details.
+         *
+         * @method getPatientInTheLegend
+         * @return {Object} A {patientID1: {"pedigreeProperties": {...}, "phenotipsProperties": {...}, patientID2: ...} map
+         */
+        getPatientsInTheLegendData: function() {
+            var unlinked = {};
+            for (var patient in this._notLinkedPatients) {
+                if (this._notLinkedPatients.hasOwnProperty(patient)) {
+                    var data = { "pedigreeProperties": this._notLinkedPatients[patient].pedigreeProperties,
+                                 "phenotipsProperties": editor.getPatientRecordData().get(patient) };
+                    unlinked[patient] = data;
+                }
+            }
+            return unlinked;
         },
 
         /**
