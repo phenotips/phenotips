@@ -73,7 +73,9 @@ define([
                 };
             });
 
-            this.legendContainer = new Element('div', {'class' : 'patient-assign-legend generic-legend pedigree_family_record_ui', id: 'patient-assign'})
+            this.legendContainer = new Element('div',
+                                               {'class': 'patient-assign-legend generic-legend pedigree_family_record_ui field-no-user-select',
+                                                  'id' : 'patient-assign'} )
                                    .insert(this._legendBoxControls)
                                    .insert(this._dragInfo);
 
