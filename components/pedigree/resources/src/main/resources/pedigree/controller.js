@@ -353,15 +353,10 @@ define([
 
             var removedNodesHaveLinkedPatients = false;
 
-            // disallow removal of the node linked to the current patient
+            // disallow removal of nodes linked ot patient sthat current user has no edit rights for
             for (var i = 0; i < disconnectedList.length; i++) {
                 if (editor.getGraph().isPerson(disconnectedList[i])) {
                     var node = editor.getNode(disconnectedList[i]);
-                    if (node.getPhenotipsPatientId() == editor.getGraph().getCurrentPatientId()) {
-                        editor.getOkCancelDialogue().showError("This " + removedNodeType + " cannot be removed because that would cause the current patient (consultand) to be disconnected from the proband and removed as well, which is currently not supported.",
-                                "Can not remove " + removedNodeType, "OK", unhighlightSelected);
-                        return;
-                    }
                     if (!editor.getPatientAccessPermissions(node.getPhenotipsPatientId()).hasEdit) {
                         editor.getOkCancelDialogue().showError("This " + removedNodeType + " cannot be removed because that would cause "
                                 + "the removal of patient " + node.getPhenotipsPatientId() + " from the pedigree, which you do not have rights for.",
@@ -374,9 +369,9 @@ define([
                 }
             }
 
-            var message = 'Deleting this ' + removedNodeType + ' will result in the removal of all highlighted members from this family (to keep the family connected).';
+            var message = 'Deleting this ' + removedNodeType + ' will result in the removal of all highlighted members from the pedigree';
             if (removedNodesHaveLinkedPatients) {
-                message += '<br><br>(note that no patient records will be deleted, this operation only removes their pedigree representation)';
+                message += '<br><br>(note that no patient records will be removed form the family, this operation only removes their pedigree representation)';
             }
             message += '<br><br>Are you sure you wish to delete all highlighted members?';
 
