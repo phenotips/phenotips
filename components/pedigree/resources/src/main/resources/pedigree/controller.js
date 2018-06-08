@@ -543,9 +543,9 @@ define([
                     }
 
                     if (propertySetFunction == "setComments"  || propertySetFunction == "setExternalID" ||
-                        propertySetFunction == "setFirstName" || propertySetFunction == "setLastName") {
-                        // all the methods which may result in addition ort deletion of person labels
-                        // (which may cause a shift up or down)
+                        propertySetFunction == "setFirstName" || propertySetFunction == "setLastName" ||
+                        propertySetFunction == "setChildlessReason") {
+                        // these methods may cause addition or deletion of labels under the node
                         if (Helpers.numTextLines(oldValue) != Helpers.numTextLines(propValue)) {
                             needUpdateYPositions = true;
                         }

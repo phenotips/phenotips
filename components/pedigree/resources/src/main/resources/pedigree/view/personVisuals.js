@@ -1177,6 +1177,12 @@ define([
                 };
             }
             $super(x, y, animate, funct);
+
+            // to avoid visual distractions, re-draw hoverbox elements if they were on screen before re-positioning
+            if (this.getHoverBox().isMenuToggled()) {
+                this.getHoverBox().generateButtons();
+                this.getHoverBox().generateHandles();
+            }
         }
     });
 
