@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<!--
+/*
  * See the NOTICE file distributed with this work for additional
  * information regarding copyright ownership.
  *
@@ -16,21 +14,22 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see http://www.gnu.org/licenses/
--->
+ */
+package org.phenotips.security.audit.rest.internal;
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.phenotips</groupId>
-    <artifactId>phenotips-security</artifactId>
-    <version>1.4-SNAPSHOT</version>
-  </parent>
-  <artifactId>phenotips-audit</artifactId>
-  <name>PhenoTips - Security - Auditing support</name>
-  <packaging>pom</packaging>
-  <modules>
-    <module>backend</module>
-    <module>frontend</module>
-    <module>rest</module>
-  </modules>
-</project>
+import org.xwiki.test.mockito.MockitoComponentMockingRule;
+
+import org.junit.Rule;
+
+/**
+ * Tests for the {@link HibernateAuditStoreResource} component.
+ *
+ * @version $Id$
+ */
+public class HibernateAuditStoreResourceTest
+{
+    @Rule
+    public final MockitoComponentMockingRule<HibernateAuditStoreResource> mocker =
+        new MockitoComponentMockingRule<>(HibernateAuditStoreResource.class);
+
+}

@@ -34,6 +34,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
+import org.json.JSONObject;
 
 /**
  * An audit event represents an action that a user performed.
@@ -182,5 +183,22 @@ public class AuditEvent
     public int hashCode()
     {
         return HashCodeBuilder.reflectionHashCode(this, false);
+    }
+
+    /**
+     * Returns the JSON representation of the audit event.
+     *
+     * @return a JSON object.
+     */
+    public JSONObject toJSON()
+    {
+        JSONObject event = new JSONObject();
+        event.put("user", this.user == null ? null : this.user.getName());
+        event.put("ip", this.ip);
+        event.put("action", this.action);
+        event.put("extra", this.extra);
+        event.put("entity", this.entity == null ? null : this.entity.getName());
+        event.put("time", this.time == null ? null : this.time.toString());
+        return event;
     }
 }
