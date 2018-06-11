@@ -195,7 +195,11 @@ define([
                 var allLinkedNodes = editor.getGraph().getAllPatientLinks();
 
                 // combine patients in the pedigree and unlinked patients
-                var patientList = Helpers.filterUnique(allLinkedNodes.linkedPatients.concat(changeSet.unlinked));
+                var patientList = allLinkedNodes.linkedPatients.concat(changeSet.unlinked);
+
+                // add patients in the legend - e.g. nwhen creating a new pedigree for a patient from a template the
+                // patient will be in the legend but not in pedigree as it was loaded
+                patientList = Helpers.filterUnique(patientList.concat(editor.getPatientLegend().getListOfPatientsInTheLegend()));
 
                 editor.getPatientDataLoader().load(patientList, finalizeCreation);
             } else {
