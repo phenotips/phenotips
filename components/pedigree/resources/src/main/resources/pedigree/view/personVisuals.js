@@ -213,14 +213,18 @@ define([
          */
         updateExternalIDLabel: function() {
             this._externalIDLabel && this._externalIDLabel.remove();
-
-            if (this.getNode().getExternalID()) {
-                var text = '[ ' + this.getNode().getExternalID() + " ]";
-                this._externalIDLabel = editor.getPaper().text(this.getX(), this.getY() + PedigreeEditorParameters.attributes.radius, text).attr(PedigreeEditorParameters.attributes.externalIDLabels);
+            if (!editor.getPreferencesManager().getConfigurationOption("replaceIdWithExternalID")) {
+                if (this.getNode().getExternalID()) {
+                    var text = '[ ' + this.getNode().getExternalID() + " ]";
+                    this._externalIDLabel = editor.getPaper().text(this.getX(), this.getY() + PedigreeEditorParameters.attributes.radius, text).attr(PedigreeEditorParameters.attributes.externalIDLabels);
+                } else {
+                    this._externalIDLabel = null;
+                }
+                this.drawLabels();
             } else {
                 this._externalIDLabel = null;
+                this.updateLinkLabel();
             }
-            this.drawLabels();
         },
 
         /**
@@ -778,18 +782,25 @@ define([
             this._linkArea && this._linkArea.remove();
             this._linkArea = null;
             this._linkLabel && this._linkLabel.remove();
-            if (this.getNode().getPhenotipsPatientId() == "") {
+            var useExternalID = editor.getPreferencesManager().getConfigurationOption("replaceIdWithExternalID");
+            if (this.getNode().getPhenotipsPatientId() == "" && (!useExternalID || this.getNode().getExternalID() == "")) {
                 this._linkLabel = null;
             } else {
-                this._linkLabel = editor.getPaper().text(this.getX(), this.getY(), this.getNode().getPhenotipsPatientId()).attr(PedigreeEditorParameters.attributes.label);
-                this._linkLabel.node.setAttribute("class","pedigree-nodePatientTextLink");
+                var linkText = (useExternalID && this.getNode().getExternalID() != "") ? this.getNode().getExternalID() : this.getNode().getPhenotipsPatientId();
+                if (this.getNode().getPhenotipsPatientId() == "") {
+                    linkText = "[ " + linkText + " ]";
+                }
+                this._linkLabel = editor.getPaper().text(this.getX(), this.getY(), linkText).attr(PedigreeEditorParameters.attributes.label);
                 this._linkLabel.addGapAfter = true;
-                var patientURL = this.getNode().getPhenotipsPatientURL();
-                var patientID = this.getNode().getPhenotipsPatientId();
-                this._linkLabel.attr({ "href": patientURL });
-                this._linkLabel.node.parentNode.setAttribute("target", patientID);
-                this._linkLabel.node.parentNode.setAttribute("class", "pedigree-patient-record-link");
-                this._linkLabel.attr("fill", "#00498A");
+                if (this.getNode().getPhenotipsPatientId() != "") {
+                    this._linkLabel.node.setAttribute("class","pedigree-nodePatientTextLink");
+                    var patientURL = this.getNode().getPhenotipsPatientURL();
+                    var patientID = this.getNode().getPhenotipsPatientId();
+                    this._linkLabel.attr({ "href": patientURL });
+                    this._linkLabel.node.parentNode.setAttribute("target", patientID);
+                    this._linkLabel.node.parentNode.setAttribute("class", "pedigree-patient-record-link");
+                    this._linkLabel.attr("fill", "#00498A");
+                }
             }
             this.drawLabels();
         },
@@ -1068,10 +1079,9 @@ define([
             }
 
             // a hack for node links which should be clickable without hoverbox obscuring them and making them move
-            if (this._linkLabel) {
+            if (this._linkLabel && this.getNode().getPhenotipsPatientId() != "") {
                 this._linkArea && this._linkArea.remove();
                 var boundingBox = this._linkLabel.getBBox();
-                var patientURL = this.getNode().getPhenotipsPatientURL();
                 var minVerticalClickArea = PedigreeEditorParameters.attributes.patientLinkClickAreaAbove;
                 // the hack should cover the bottom part of the hoverbox to make sure mouse can be moved to the link from
                 // the left, right and the bottom without making the hoverbox trigger and move the link

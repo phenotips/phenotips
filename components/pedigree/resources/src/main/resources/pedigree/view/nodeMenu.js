@@ -1287,7 +1287,8 @@ define([
                     suggestContainer.hide();
                     link.target = value;
                     link.href = editor.getExternalEndpoint().getPhenotipsPatientURL(value);
-                    link.innerHTML = value;
+                    var externalID = (_this.targetNode.getExternalID() == "") ? value : _this.targetNode.getExternalID();
+                    link.innerHTML = editor.getPreferencesManager().getConfigurationOption("replaceIdWithExternalID") ? externalID : value;
                     linkContainer.show();
                 }
             },

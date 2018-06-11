@@ -200,7 +200,7 @@ define([
                 if (name != "") {
                     patientDetails.push({"key": "name", "value": name});
                 }
-                if (externalID != "") {
+                if (externalID != "" && !editor.getPreferencesManager().getConfigurationOption("replaceIdWithExternalID")) {
                     patientDetails.push({"key": "id", "value": externalID});
                 }
                 var patientNotes = [];
@@ -214,6 +214,7 @@ define([
 
                 this._notLinkedPatients[phenotipsPatientID] = {"phenotipsID": phenotipsPatientID,
                                                                "gender": gender,
+                                                               "externalID": externalID,
                                                                "patientDetails": patientDetails,
                                                                "patientNotes": patientNotes,
                                                                "pedigreeProperties": pedigreeProperties};
@@ -323,8 +324,12 @@ define([
                 return outerDiv;
             };
 
+            var linkText = editor.getPreferencesManager().getConfigurationOption("replaceIdWithExternalID") && (patientElement.externalID != "")
+                           ? patientElement.externalID
+                           : patientElement.phenotipsID;
+
             var patientIdLink = new Element('div', {'class': 'pedigree-nodePatientTextLink legend-patient-link'})
-                                .update(patientElement.phenotipsID);
+                                .update(linkText);
             patientIdLink.observe("click", function() {
                 window.open(editor.getExternalEndpoint().getPhenotipsPatientURL(patientElement.phenotipsID), patientElement.phenotipsID);
             });

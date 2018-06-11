@@ -99,6 +99,7 @@ define([
             //  dateEditFormat:               {"YMD"|"DMY"|"MY"|"Y"}  - defines order of fields in the date picker; default "YMD"
             //  drawNodeShadows:              {true|false}   - display small shadow under node graphic; default: "true"
             //  disabledFields:               [array]        - list of node-menu fields disabled for this installation
+            //  replaceIdWithExternalID:      {true|false}   - when true, patient links display external ID as the link text (instead of PT ids)
             //  displayCancerLabels:          {true|false}   - display labels for each afecting cancer; default: "true"
             //  lineStyle:                    {"thin"|"regular"|"bold"} - controls the thickness of all lines in pedigree
             //
@@ -108,6 +109,7 @@ define([
                                                      dateEditFormat: "YMD",
                                                      drawNodeShadows: true,
                                                      disabledFields: [],
+                                                     replaceIdWithExternalID: false,
                                                      displayCancerLabels: true,
                                                      lineStyle: "regular" },
                                          user:     { hideDraggingHint: false,
