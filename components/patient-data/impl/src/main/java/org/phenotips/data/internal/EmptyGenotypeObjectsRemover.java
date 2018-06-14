@@ -74,10 +74,11 @@ public class EmptyGenotypeObjectsRemover extends AbstractEventListener
         List<BaseObject> geneXWikiObjects = doc.getXObjects(Gene.GENE_CLASS);
         List<BaseObject> variantXWikiObjects = doc.getXObjects(VARIANT_CLASS_REFERENCE);
 
-        if ((geneXWikiObjects == null || geneXWikiObjects.isEmpty())
-            && (variantXWikiObjects != null && !variantXWikiObjects.isEmpty())) {
-            // delete all variants
-            doc.removeXObjects(VARIANT_CLASS_REFERENCE);
+        if (geneXWikiObjects == null || geneXWikiObjects.isEmpty()) {
+            if (variantXWikiObjects != null && !variantXWikiObjects.isEmpty()) {
+                // delete all variants
+                doc.removeXObjects(VARIANT_CLASS_REFERENCE);
+            }
             return;
         }
 
