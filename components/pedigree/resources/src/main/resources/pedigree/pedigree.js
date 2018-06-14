@@ -113,6 +113,8 @@ define([
                                                      displayCancerLabels: true,
                                                      lineStyle: "regular" },
                                          user:     { hideDraggingHint: false,
+                                                     hidePatientDraggingHint: false,
+                                                     hideShareConsentDialog: false,
                                                      firstName: "",
                                                      lastName: "" },
                                          pedigree: {}

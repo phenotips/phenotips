@@ -40,7 +40,7 @@ define([
 
             // read user preferences from cookies
             // TODO: read from user profile instead of using cookies?
-            this.preferences.user = Helpers.getAllCookies(this._cookiePrefix);
+            Helpers.setByTemplate(this.preferences.user, Helpers.getAllCookies(this._cookiePrefix));
         },
 
         getPhenotipsVersion: function() {
