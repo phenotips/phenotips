@@ -168,6 +168,12 @@ define([
                     editor.getPatientLegend().addCase(nextMemberID, {});
                 }
 
+                // new loaded data may take up some space below some nodes, so need to recompute vertical positioning
+                editor.getGraph().updateYPositioning();
+
+                if (editor.getView().applyChanges(changeSet, false)) {
+                    editor.getWorkspace().adjustSizeToScreen();
+                }
 
                 if (!noUndo && !editor.isReadOnlyMode()) {
                     var undoRedoState = editor.getGraph().toUndoRedoState();
@@ -175,13 +181,6 @@ define([
                 }
 
                 callbackWhenDataLoaded && callbackWhenDataLoaded();
-
-                // new loaded data may take up some space below some nodes, so need to recompute vertical positioning
-                editor.getGraph().updateYPositioning();
-
-                if (editor.getView().applyChanges(changeSet, false)) {
-                    editor.getWorkspace().adjustSizeToScreen();
-                }
 
                 if (centerAroundProband) {
                     editor.getWorkspace().centerAroundNode(editor.getGraph().getProbandId());
