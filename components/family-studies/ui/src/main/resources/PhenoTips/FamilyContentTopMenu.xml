@@ -476,10 +476,10 @@
     #if ($id == '')
       #set ($id = $member.id)
     #end
-    #set ($name = "$!{member.getData('patientName').first_name} $!{member.getData('patientName').last_name}")
-    #set ($name = $name.trim())
+    #set ($memberName = "$!{member.getData('patientName').first_name} $!{member.getData('patientName').last_name}")
+    #set ($memberName = $memberName.trim())
     #set ($dob = "$!{member.getData('dates').date_of_birth.toYYYYMMDDString()}")
-    #set ($meta = "$name#if($name != '' &amp;&amp; $dob != ''), #end$dob")
+    #set ($meta = "$memberName#if($memberName != '' &amp;&amp; $dob != ''), #end$dob")
     #set ($patientLabel = "$id#if ($meta != '') ($meta)#end")
     #set ($membersList = "$!{membersList}${util.newline}&lt;li&gt;&lt;a href=""${member.getSecureDocument().getURL()}"" target=""_blank""&gt;$patientLabel&lt;/a&gt;&lt;/li&gt;")
   #end
