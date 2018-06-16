@@ -144,7 +144,7 @@ define([
             //   #E0F8F8
             var prefColors = ['#D1E9E9', '#92c0db', '#4575B4', '#949ab8', "#FEE090", '#bf6632', '#fca860', '#9a4500', '#d12943', '#00a2bf'];
             if (disorderID == "affected") {
-                prefColors = ["#FEE090", "#dbad71", "#3F3F3F"];
+                prefColors = ["#999999", "#dbad71", "#3F3F3F"];
             }
             if (this.getPreferedColor(disorderID) !== null) {
                 prefColors.unshift(this.getPreferedColor(disorderID));
