@@ -64,8 +64,8 @@ public class AdminTemplateAccessAuthorizationModule implements AuthorizationModu
         @Nonnull final Right access,
         @Nonnull final EntityReference entity)
     {
-        // If this is not a template, then do not try to authorize.
-        if (!entity.toString().contains(TEMPLATE)) {
+        // If this is not a template, or the right is read-only, then do not try to authorize.
+        if (!entity.toString().contains(TEMPLATE) || access.isReadOnly()) {
             return null;
         }
 
