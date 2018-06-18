@@ -100,33 +100,39 @@ public class AdminTemplateAccessAuthorizationModuleTest
     @Test
     public void hasAccessIsNullIfNotTemplate()
     {
-        Assert.assertNull(this.component.hasAccess(this.adminUser, Right.VIEW, PS_DOC));
+        Assert.assertNull(this.component.hasAccess(this.adminUser, Right.EDIT, PS_DOC));
+    }
+
+    @Test
+    public void hasAccessIsNullIfReadOnlyRight()
+    {
+        Assert.assertNull(this.component.hasAccess(this.adminUser, Right.VIEW, PT_DOC));
     }
 
     @Test
     public void hasAccessIsFalseIfNullUser()
     {
-        Assert.assertFalse(this.component.hasAccess(null, Right.VIEW, PT_DOC));
+        Assert.assertFalse(this.component.hasAccess(null, Right.EDIT, PT_DOC));
     }
 
     @Test
     public void hasAccessIsFalseIfGuestUser()
     {
-        Assert.assertFalse(this.component.hasAccess(this.guestUser, Right.VIEW, PT_DOC));
-        Assert.assertFalse(this.component.hasAccess(this.guestUser, Right.VIEW, FT_DOC));
+        Assert.assertFalse(this.component.hasAccess(this.guestUser, Right.EDIT, PT_DOC));
+        Assert.assertFalse(this.component.hasAccess(this.guestUser, Right.EDIT, FT_DOC));
     }
 
     @Test
     public void hasAccessIsFalseIfNonAdminUser()
     {
-        Assert.assertFalse(this.component.hasAccess(this.nonAdminUser, Right.VIEW, PT_DOC));
-        Assert.assertFalse(this.component.hasAccess(this.nonAdminUser, Right.VIEW, FT_DOC));
+        Assert.assertFalse(this.component.hasAccess(this.nonAdminUser, Right.EDIT, PT_DOC));
+        Assert.assertFalse(this.component.hasAccess(this.nonAdminUser, Right.EDIT, FT_DOC));
     }
 
     @Test
     public void hasAccessIsTrueIfAdminUser()
     {
-        Assert.assertTrue(this.component.hasAccess(this.adminUser, Right.VIEW, PT_DOC));
-        Assert.assertTrue(this.component.hasAccess(this.adminUser, Right.VIEW, FT_DOC));
+        Assert.assertTrue(this.component.hasAccess(this.adminUser, Right.EDIT, PT_DOC));
+        Assert.assertTrue(this.component.hasAccess(this.adminUser, Right.EDIT, FT_DOC));
     }
 }

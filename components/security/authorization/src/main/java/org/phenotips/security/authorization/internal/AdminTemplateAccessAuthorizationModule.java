@@ -59,8 +59,8 @@ public class AdminTemplateAccessAuthorizationModule implements AuthorizationModu
     @Override
     public Boolean hasAccess(final User user, final Right access, final EntityReference entity)
     {
-        // If this is not a template, then do not try to authorize.
-        if (!entity.toString().contains(TEMPLATE)) {
+        // If this is not a template, or the right is read-only, then do not try to authorize.
+        if (!entity.toString().contains(TEMPLATE) || access.isReadOnly()) {
             return null;
         }
 
