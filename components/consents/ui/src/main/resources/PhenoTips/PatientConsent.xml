@@ -18,7 +18,7 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
 
-<xwikidoc version="1.1">
+<xwikidoc version="1.2" reference="PhenoTips.PatientConsent" locale="">
   <web>PhenoTips</web>
   <name>PatientConsent</name>
   <language/>
@@ -445,7 +445,7 @@
 
         displayConsentLabel: function (consent)
         {
-          return $("&lt;li class='consent-label " + (consent.isRequired ? " required":"") + "'&gt;" + consent.label + (consent.isRequired ? " $!escapetool.javascript($services.localization.render('phenotips.PushPatient.required'))":"") + "&lt;/li&gt;");
+          return $("&lt;li class='consent-label " + (consent.isRequired ? " required":"") + "'&gt;" + consent.label + (consent.isRequired ? " $!escapetool.javascript($services.localization.render('phenotips.consents.label.required'))":"") + "&lt;/li&gt;");
         },
 
         displayConsentDescription: function (consent)
@@ -576,7 +576,7 @@
         <displayType>select</displayType>
         <multiSelect>0</multiSelect>
         <name>cache</name>
-        <number>5</number>
+        <number>6</number>
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
@@ -589,7 +589,7 @@
       <code>
         <disabled>0</disabled>
         <name>code</name>
-        <number>2</number>
+        <number>3</number>
         <prettyName>Code</prettyName>
         <rows>20</rows>
         <size>50</size>
@@ -602,7 +602,7 @@
         <displayType>select</displayType>
         <multiSelect>0</multiSelect>
         <name>contentType</name>
-        <number>6</number>
+        <number>1</number>
         <prettyName>Content Type</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
@@ -615,7 +615,7 @@
       <name>
         <disabled>0</disabled>
         <name>name</name>
-        <number>1</number>
+        <number>2</number>
         <prettyName>Name</prettyName>
         <size>30</size>
         <unmodifiable>0</unmodifiable>
@@ -626,7 +626,7 @@
         <displayFormType>select</displayFormType>
         <displayType>yesno</displayType>
         <name>parse</name>
-        <number>4</number>
+        <number>5</number>
         <prettyName>Parse content</prettyName>
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
@@ -637,7 +637,7 @@
         <displayType>select</displayType>
         <multiSelect>0</multiSelect>
         <name>use</name>
-        <number>3</number>
+        <number>4</number>
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
@@ -761,25 +761,25 @@
         &lt;input type="hidden" id="patient-consents-json" class="patient-consents-json" value='$escapetool.xml($jsontool.serialize($consents))'/&gt;
       {{/html}}
       (% class='consents-title clear' %)
-      ==== $services.localization.render('PhenoTips.PatientConsent_granted_list') ====
+      ==== $services.localization.render('phenotips.consents.title') ====
       (% class='consents' %)(((
 
       )))
       #if ($xcontext.action == 'edit')
       {{html clean='false' wiki='false'}}##
       &lt;span class="buttonwrapper consent-update-button hidden" id="patient-consent-update"&gt;##
-        &lt;a class="button" href="#"&gt;$services.localization.render('PhenoTips.PatientConsent_change_consents_btn')&lt;/a&gt;##
+        &lt;a class="button" href="#"&gt;$services.localization.render('phenotips.consents.submit')&lt;/a&gt;##
         &lt;/span&gt;##
       {{/html}}##
       #end
       (% class='error error_updating_consents hidden' %)(((
-        {{error}}$services.localization.render('PhenoTips.PatientConsent_error_updating_consents'){{/error}}
+        {{error}}$services.localization.render('phenotips.consents.error.updateFailure'){{/error}}
       )))
       (% class='view-title-required-not-granted hidden' %)(((
-        {{warning}}$services.localization.render('PhenoTips.PatientConsent_required_not_granted'){{/warning}}
+        {{warning}}$services.localization.render('phenotips.consents.error.mandatoryConsentsMissing'){{/warning}}
       )))
       (% class='error error_no_consent_data hidden' %)(((
-        {{error}}$services.localization.render('PhenoTips.PatientConsent_error_no_consent_data'){{/error}}
+        {{error}}$services.localization.render('phenotips.consents.error.noConsentData'){{/error}}
       )))
     )))
   #end
@@ -794,6 +794,96 @@
     </property>
     <property>
       <parameters>order=30</parameters>
+    </property>
+    <property>
+      <scope>wiki</scope>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.PatientConsent</name>
+    <number>1</number>
+    <className>XWiki.UIExtensionClass</className>
+    <guid>1302a69d-a296-4733-83d1-8253c0adaa4b</guid>
+    <class>
+      <name>XWiki.UIExtensionClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <content>
+        <disabled>0</disabled>
+        <name>content</name>
+        <number>3</number>
+        <prettyName>Extension Content</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </content>
+      <extensionPointId>
+        <disabled>0</disabled>
+        <name>extensionPointId</name>
+        <number>1</number>
+        <prettyName>Extension Point ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </extensionPointId>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>2</number>
+        <prettyName>Extension ID</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parameters>
+        <disabled>0</disabled>
+        <name>parameters</name>
+        <number>4</number>
+        <prettyName>Extension Parameters</prettyName>
+        <rows>10</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </parameters>
+      <scope>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>scope</name>
+        <number>5</number>
+        <prettyName>Extension Scope</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>wiki=Current Wiki|user=Current User|global=Global</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </scope>
+    </class>
+    <property>
+      <content>{{velocity}}
+## $elementCount is defined in PhenoTips.PatientSheet to be the number of displayed elements
+#if ($elementCount == 0 &amp;&amp; $xcontext.action == 'edit')
+  {{warning}}$services.localization.render('phenotips.consents.error.noSectionsToDisplay'){{/warning}}
+#end
+{{/velocity}}</content>
+    </property>
+    <property>
+      <extensionPointId>org.phenotips.patientSheet.after</extensionPointId>
+    </property>
+    <property>
+      <name>org.phenotips.patientSheet.missingConsentWarning</name>
+    </property>
+    <property>
+      <parameters>order=0</parameters>
     </property>
     <property>
       <scope>wiki</scope>

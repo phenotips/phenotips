@@ -22,16 +22,32 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.phenotips</groupId>
-    <artifactId>phenotips-components</artifactId>
+    <artifactId>phenotips-consents</artifactId>
     <version>1.4-SNAPSHOT</version>
   </parent>
-  <artifactId>phenotips-consents</artifactId>
-  <packaging>pom</packaging>
-  <name>PhenoTips - Consents</name>
+  <artifactId>phenotips-consents-ui</artifactId>
+  <name>PhenoTips - Consents - Frontend sources</name>
+  <packaging>xar</packaging>
 
-  <modules>
-    <module>api</module>
-    <module>rest</module>
-    <module>ui</module>
-  </modules>
+  <properties>
+    <!-- Don't run CLIRR here since there's no Java code. -->
+    <xwiki.clirr.skip>true</xwiki.clirr.skip>
+    <!-- Name to display by the Extension Manager -->
+    <xwiki.extension.name>Support for recording consents, checks and confirmations</xwiki.extension.name>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-consents-api</artifactId>
+      <version>${project.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-consents-rest</artifactId>
+      <version>${project.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
 </project>
