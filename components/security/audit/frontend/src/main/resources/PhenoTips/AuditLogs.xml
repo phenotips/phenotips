@@ -1,0 +1,654 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+-->
+
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>AuditLogs</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1401822213000</creationDate>
+  <parent>PhenoTips.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1489775836000</date>
+  <contentUpdateDate>1489775682000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content>{{include reference="PhenoTips.TabelarDataMacros"/}}
+
+{{include reference="PhenoTips.AuditFilters" /}}
+
+{{velocity}}
+$xwiki.ssfx.use('uicomponents/suggest/suggestPicker.css', true)##
+$xwiki.jsfx.use('uicomponents/suggest/suggestPicker.js', true)##
+$xwiki.ssfx.use('uicomponents/widgets/userpicker/userPicker.css', true)##
+$xwiki.jsfx.use('uicomponents/widgets/userpicker/userPicker.js', true)##
+$xwiki.ssx.use('PhenoTips.DatabaseFilters')##
+$xwiki.ssx.use('PhenoTips.Skin', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
+$xwiki.jsx.use('PhenoTips.DBWebHomeSheet')##
+$xwiki.ssx.use('PhenoTips.DBWebHomeSheet')##
+$xwiki.jsfx.use('uicomponents/widgets/exportData.js', true)####
+$xwiki.ssfx.use('uicomponents/widgets/exportData.css', true)####
+$xwiki.ssx.use('PhenoTips.Widgets')##
+$xwiki.jsx.use('PhenoTips.Widgets')##
+$xwiki.jsx.use('XWiki.DateTimePicker')##
+$xwiki.ssx.use('XWiki.DateTimePicker')##
+$xwiki.jsx.use('PhenoTips.AuditLogs')##
+$xwiki.ssx.use('PhenoTips.AuditLogs')##
+##
+#set($dataCount = $services.audit.countEvents('', '', '', '', '', ''))
+#if ($dataCount &gt; 0)
+  #set ($columns = ['time', 'user', 'ip', 'action', 'entity', 'extra'])
+  #set ($columnsProperties = {})
+  #foreach ($column in $columns)
+    #set ($link = "#if ($column == 'user' || $column == 'entity')field#{else}editor#end")
+    #set ($discard = $columnsProperties.put($column, { 'type' : "text", 'link' : $link, 'size' : 7, 'filterable' : false, 'sortable': true  }))
+  #end
+##
+##
+  #set ($topFilters = $doc.getRenderedContent("(% class='xform' %)((({{velocity}}#__filters_display('xform', true){{/velocity}})))", "xwiki/2.1"))
+  #set ($options = {
+  'translationPrefix' : 'audit.livetable.',
+  'rowCount'          : 25,
+  'maxPages'          : 10,
+  'topFilters'        : "${topFilters}",
+  'selectedColumn'    : 'time',
+  'defaultOrder'      : 'desc',
+  'resultPage'        : 'PhenoTips.AuditResults'
+  })
+  (% id="auditlogs-directory" class="entity-directory" %)(((##
+    #livetable('audit' $columns $columnsProperties $options)
+  )))
+  $xwiki.ssfx.use('js/xwiki/table/livetable.css', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')", 'forceSkinAction' : true})##
+#else
+{{info}}$services.localization.render('phenotips.auditlogs.noData'){{/info}}
+#end
+{{/velocity}}</content>
+  <object>
+    <name>PhenoTips.AuditLogs</name>
+    <number>0</number>
+    <className>XWiki.ConfigurableClass</className>
+    <guid>bfa12267-9ccc-4695-8b23-5dd115b15799</guid>
+    <class>
+      <name>XWiki.ConfigurableClass</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <advancedOnly>
+        <customDisplay/>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType/>
+        <name>advancedOnly</name>
+        <number>5</number>
+        <prettyName>advancedOnly</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </advancedOnly>
+      <categoryPriority>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>categoryPriority</name>
+        <number>2</number>
+        <numberType>integer</numberType>
+        <prettyName>categoryPriority</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </categoryPriority>
+      <codeToExecute>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <editor>---</editor>
+        <name>codeToExecute</name>
+        <number>11</number>
+        <picker>0</picker>
+        <prettyName>codeToExecute</prettyName>
+        <rows>5</rows>
+        <size>40</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </codeToExecute>
+      <configurationClass>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>configurationClass</name>
+        <number>7</number>
+        <picker>0</picker>
+        <prettyName>configurationClass</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </configurationClass>
+      <configureGlobally>
+        <customDisplay/>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <displayType/>
+        <name>configureGlobally</name>
+        <number>8</number>
+        <prettyName>configureGlobally</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </configureGlobally>
+      <displayInCategory>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>displayInCategory</name>
+        <number>1</number>
+        <picker>0</picker>
+        <prettyName>displayInCategory</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </displayInCategory>
+      <displayInSection>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>displayInSection</name>
+        <number>3</number>
+        <picker>0</picker>
+        <prettyName>displayInSection</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </displayInSection>
+      <heading>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>heading</name>
+        <number>6</number>
+        <picker>0</picker>
+        <prettyName>heading</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </heading>
+      <iconAttachment>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>iconAttachment</name>
+        <number>12</number>
+        <picker>0</picker>
+        <prettyName>iconAttachment</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </iconAttachment>
+      <linkPrefix>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>linkPrefix</name>
+        <number>9</number>
+        <picker>0</picker>
+        <prettyName>linkPrefix</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </linkPrefix>
+      <propertiesToShow>
+        <cache>0</cache>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <displayType>input</displayType>
+        <multiSelect>1</multiSelect>
+        <name>propertiesToShow</name>
+        <number>10</number>
+        <picker>0</picker>
+        <prettyName>propertiesToShow</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator> </separator>
+        <separators> ,|</separators>
+        <size>20</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </propertiesToShow>
+      <sectionPriority>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>sectionPriority</name>
+        <number>4</number>
+        <numberType>integer</numberType>
+        <prettyName>sectionPriority</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </sectionPriority>
+    </class>
+    <property>
+      <advancedOnly>0</advancedOnly>
+    </property>
+    <property>
+      <categoryPriority>10</categoryPriority>
+    </property>
+    <property>
+      <codeToExecute>{{include reference="PhenoTips.AuditLogs" /}}</codeToExecute>
+    </property>
+    <property>
+      <configurationClass/>
+    </property>
+    <property>
+      <configureGlobally>1</configureGlobally>
+    </property>
+    <property>
+      <displayInCategory>security</displayInCategory>
+    </property>
+    <property>
+      <displayInSection>accesslogs</displayInSection>
+    </property>
+    <property>
+      <heading/>
+    </property>
+    <property>
+      <iconAttachment/>
+    </property>
+    <property>
+      <linkPrefix/>
+    </property>
+    <property>
+      <propertiesToShow/>
+    </property>
+    <property>
+      <sectionPriority>100</sectionPriority>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.AuditLogs</name>
+    <number>1</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>27737a98-9433-41fd-83f6-ecb74ffac1a3</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>(function() {
+  /**
+   * Enhances a plain HTML text input with the ability to suggest entity records.
+   */
+  var widgets = PhenoTips.widgets = PhenoTips.widgets || {};
+
+  /**
+   * Extends the SuggestPicker to customize the way the selected records are displayed.
+   */
+  var RecordSelectionManager = Class.create(XWiki.widgets.SuggestPicker, {
+    // @Override
+    acceptSuggestion: function(suggestion) {
+      if (!this.list.down('input[value="' + suggestion.value + '"]')) {
+        this.addItem(suggestion);
+      }
+      this.input.value = '';
+    },
+
+    // @Override
+    addItem: function($super, suggestion) {
+      // Clear the previously selected record in single selection mode.
+      this.input.hasClassName('multipleSelection') || this.list.update('');
+      $super(suggestion);
+    },
+
+    // @Override
+    displayItem: function(suggestion) {
+     var itemDisplay = this.suggest.createItemDisplay(suggestion, {});
+      itemDisplay.style.backgroundImage = suggestion.originalEvent.element().up('.results').down('.sourceName').style.backgroundImage;
+      itemDisplay.down('.value').insert(this.createDeleteTool());
+      return new Element('li').insert(itemDisplay).insert(this.createItemInput(suggestion));
+    },
+
+    // @Override
+    createItemInput: function(suggestion) {
+      return new Element('input', {type: 'hidden', name: 'record', value: suggestion.info});
+    }
+  });
+
+  widgets.RecordPicker = Class.create(XWiki.widgets.UserPicker, {
+    // @Override
+    initialize: function($super, input, options) {
+      $super(input, options || {});
+    },
+
+    // @Override
+    createItemDisplay: function(data, source) {
+      var escapedInput = this.sInput ? this.sInput.escapeHTML() : this.sInput;
+      var escapedValue = ((data.value || '') + '').escapeHTML();
+      // Output is either emphasized or raw value depending on source option.
+      var output = source.highlight ? this.emphasizeMatches(escapedInput, escapedValue) : escapedValue;
+      var displayNode = new Element("div", {'class':'record'}).insert(new Element('div', {'class':'value'}).update(output));
+      return displayNode;
+    },
+
+    /**
+      * Determines the selection manager that is going to be used. Derived classes can override this method if they want
+      * to use a different selection manager.
+     */
+    _createSelectionManager: function(options) {
+      return new RecordSelectionManager(this.fld, this, options);
+    }
+  });
+
+  var init = function() {
+    /*
+    ## Iterate over the sources defined in the configuration document, and create a source array to be passed to the
+    ## search suggest contructor.
+    #set ($sources = [])
+    #set ($searchSuggestConfig = $xwiki.getDocument('XWiki.SearchSuggestConfig'))
+    #foreach ($source in $searchSuggestConfig.getObjects('XWiki.SearchSuggestSourceClass'))
+      #if ($source.getProperty('activated').value == 1)
+        #set ($engine = $source.getProperty('engine').value)
+        #if ("$!engine" == '')
+          ## For backward compatibility we consider the search engine to be Lucene when it's no specified.
+          #set ($engine = 'lucene')
+        #end
+        #set ($discard = $xwiki.getDocument('XWiki.SearchCode').getRenderedContent())
+        #if ($engine == $searchEngine)
+          #set ($name = $source.getProperty('name').value)
+          #if ($services.localization.get($name))
+            #set ($name = $services.localization.render($name))
+          #else
+            ## Evaluate the Velocity code for backward compatibility.
+            #set ($name = "#evaluate($name)")
+          #end
+          #set ($icon = $source.getProperty('icon').value)
+          #if ($icon.startsWith('icon:'))
+            #set ($icon = $xwiki.getSkinFile("icons/silk/${icon.substring(5)}.png"))
+          #else
+            ## Evaluate the Velocity code for backward compatibility.
+            #set ($icon = "#evaluate($icon)")
+          #end
+          #set ($service = $source.getProperty('url').value)
+          #set ($parameters = {
+            'query': $source.getProperty('query').value,
+            'nb': $source.getProperty('resultsNumber').value
+          })
+          #if ($xwiki.exists($service))
+            #set ($discard = $parameters.put('outputSyntax', 'plain'))
+            #set ($service = $xwiki.getURL($service, 'get', $escapetool.url($parameters)))
+          #else
+            ## Evaluate the Velocity code for backward compatibility.
+            #set ($service = "#evaluate($service)")
+            #set ($service = "$service#if ($service.contains('?'))&amp;#else?#end$escapetool.url($parameters)")
+          #end
+          #set ($highlight = $source.getProperty('highlight').value == 1)
+          #set ($discard = $sources.add({
+            'name': $name,
+            'varname': 'input',
+            'script': $service,
+            'icon': $icon,
+            'highlight': $highlight
+          }))
+        #end
+      #end
+    #end
+    */
+    var sources = $jsontool.serialize($sources);
+    var containers = (event &amp;&amp; event.memo.elements) || [$('body')];
+    containers.each(function(container) {
+      container.select('input.suggestEntity').each(function(input) {
+        if (!input.hasClassName('initialized')) {
+          var options = {
+            sources : sources
+          };
+          new PhenoTips.widgets.RecordPicker(input, options);
+          input.addClassName('initialized');
+        }
+      });
+    });
+  };
+  (XWiki.domIsLoaded &amp;&amp; init()) || document.observe('xwiki:dom:loaded', init);
+  document.observe('xwiki:dom:updated', init);
+})()</code>
+    </property>
+    <property>
+      <name>Suggest records</name>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>PhenoTips.AuditLogs</name>
+    <number>9</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>a9b51b91-4ca2-45c8-9b25-845afcdd9a6c</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>.accepted-suggestions .record {
+  padding-left: 22px;
+  background-repeat: no-repeat;
+  margin: 5px 5px 0 0;
+}
+tbody.xwiki-livetable-display-body td:hover.linkeditor {
+  background-image: none;
+}</code>
+    </property>
+    <property>
+      <contentType>CSS</contentType>
+    </property>
+    <property>
+      <name>Segmented Bar</name>
+    </property>
+    <property>
+      <parse>0</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+</xwikidoc>

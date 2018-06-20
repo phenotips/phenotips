@@ -28,14 +28,21 @@ import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.script.service.ScriptService;
 import org.xwiki.security.authorization.Right;
+import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Provides access to {@link AuditEvent audit events}.
@@ -48,6 +55,7 @@ import javax.inject.Singleton;
 @Singleton
 public class AuditScriptService implements ScriptService
 {
+    private static final List<String> ACTION_VALUES = Arrays.asList("view", "edit", "get", "export", "download");
 
     @Inject
     private AuditStore store;
@@ -61,6 +69,10 @@ public class AuditScriptService implements ScriptService
     @Inject
     @Named("currentmixed")
     private DocumentReferenceResolver<EntityReference> resolver;
+
+    @Inject
+    @Named("current")
+    private DocumentReferenceResolver<String> resolverd;
 
     /**
      * Retrieves all the events affecting a specific entity.
@@ -106,4 +118,96 @@ public class AuditScriptService implements ScriptService
         }
         return Collections.emptyList();
     }
+
+    /**
+     * Retrieves audit events for filter parameters. Parameters fromTime and toTime define an interval for the time
+     * stamp.
+     *
+     * @param start for large result set paging, the index of the first event to display in the returned page
+     * @param number for large result set paging, how many events to display in the returned page
+     * @param action the event type, for example {@code view}, {@code edit}, {@code export}, empty (meaning all)
+     * @param userId the user whose events to retrieve, may be {@code null}, if empty events for all users returned
+     * @param ip the ip where the request came from, if empty events for all ips returned
+     * @param entityId a reference to the target entity
+     * @param fromTime start of the interval for the time stamp filter. If parameter fromTime is {@code null}, matching
+     *            events from the beginning will be retrieved.
+     * @param toTime end of the interval for the time stamp filter. If parameter toTime is {@code null}, matching events
+     *            until the present moment will be retrieved.
+     * @return a list of audited events, may be empty
+     */
+    @SuppressWarnings("ParameterNumber")
+    public List<AuditEvent> getEvents(int start, int number, String action, String userId, String ip, String entityId,
+        String fromTime, String toTime)
+    {
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
+        Calendar from = Calendar.getInstance();
+        try {
+            from.setTime(sdf.parse(fromTime));
+        } catch (Exception e) {
+            from.setTimeInMillis(0);
+        }
+
+        Calendar to = Calendar.getInstance();
+        try {
+            if (to.after(from)) {
+                to.setTime(sdf.parse(toTime));
+            } else {
+                to.setTimeInMillis(System.currentTimeMillis());
+            }
+        } catch (Exception e) {
+            to.setTimeInMillis(System.currentTimeMillis());
+        }
+
+        DocumentReference entity = entityId != null ? this.resolverd.resolve(entityId) : null;
+        User user = userId != null ? this.users.getUser(userId) : null;
+        String actionId = ACTION_VALUES.contains(action) ? action : null;
+
+        AuditEvent eventTemplate = new AuditEvent(user, ip, actionId, null, entity, null);
+        return this.store.getEvents(eventTemplate, from, to, start, number);
+    }
+
+    /**
+     * Counts all the events for filter parameters. Parameters fromTime and toTime define an interval for the time
+     * stamp.
+     *
+     * @param action the event type, for example {@code view}, {@code edit}, {@code export}, empty (meaning all)
+     * @param userId the user whose events to retrieve, may be {@code null}, if empty events for all users returned
+     * @param ip the ip where the request came from, if empty events for all ips returned
+     * @param entityId a reference to the target entity
+     * @param fromTime start of the interval for the time stamp filter. If parameter fromTime is {@code null}, matching
+     *            events from the beginning will be retrieved.
+     * @param toTime end of the interval for the time stamp filter. If parameter toTime is {@code null}, matching events
+     *            until the present moment will be retrieved.
+     * @return total number of events satisfying template and time criteria
+     */
+    public long countEvents(String action, String userId, String ip, String entityId, String fromTime, String toTime)
+    {
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
+        Calendar from = Calendar.getInstance();
+        try {
+            from.setTime(sdf.parse(fromTime));
+        } catch (Exception e) {
+            from.setTimeInMillis(0);
+        }
+
+        Calendar to = Calendar.getInstance();
+        try {
+            if (to.after(from)) {
+                to.setTime(sdf.parse(toTime));
+            } else {
+                to.setTimeInMillis(System.currentTimeMillis());
+            }
+        } catch (Exception e) {
+            to.setTimeInMillis(System.currentTimeMillis());
+        }
+
+        DocumentReference entity = StringUtils.isNotBlank(entityId) ? this.resolverd.resolve(entityId) : null;
+        User user = StringUtils.isNotBlank(userId) ? this.users.getUser(userId) : null;
+        String actionId = ACTION_VALUES.contains(action) ? action : null;
+        String ipValue = StringUtils.isNotBlank(ip) ? ip : null;
+
+        AuditEvent eventTemplate = new AuditEvent(user, ipValue, actionId, null, entity, null);
+        return this.store.countEvents(eventTemplate, from, to);
+    }
+
 }
