@@ -276,10 +276,10 @@ define([
         },
 
         /**
-         * Returns the list of unassigned patients that are in the in the patient legend,
-         * togehter with the stored details.
+         * Returns the list of unassigned patients that are in the patient legend,
+         * together with the stored details.
          *
-         * @method getPatientInTheLegend
+         * @method getPatientsInTheLegendData
          * @return {Object} A {patientID1: {"pedigreeProperties": {...}, "phenotipsProperties": {...}, patientID2: ...} map
          */
         getPatientsInTheLegendData: function() {

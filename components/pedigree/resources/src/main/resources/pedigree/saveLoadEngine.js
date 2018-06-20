@@ -44,7 +44,7 @@ define([
         createGraphFromStoredData: function(JSONString, dataSource, markAsEquivalentToSaved) {
             var addSaveEventOnceLoaded = function() {
                 if (markAsEquivalentToSaved) {
-                    // since we just loaded data from disk data in memory is equivalent to data on disk
+                    // since we just loaded data from disk, data in memory is equivalent to data on disk
                     editor.getUndoRedoManager().addSaveEvent();
                 }
             }
@@ -196,8 +196,8 @@ define([
                 // combine patients in the pedigree and unlinked patients
                 var patientList = allLinkedNodes.linkedPatients.concat(changeSet.unlinked);
 
-                // add patients in the legend - e.g. nwhen creating a new pedigree for a patient from a template the
-                // patient will be in the legend but not in pedigree as it was loaded
+                // add patients in the legend - e.g. when creating a new pedigree for a patient from a template the
+                // patient will be in the legend but not in the pedigree as it was loaded
                 patientList = Helpers.filterUnique(patientList.concat(editor.getPatientLegend().getListOfPatientsInTheLegend()));
 
                 editor.getPatientDataLoader().load(patientList, finalizeCreation);

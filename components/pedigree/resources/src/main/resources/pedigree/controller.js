@@ -353,7 +353,7 @@ define([
 
             var removedNodesHaveLinkedPatients = false;
 
-            // disallow removal of nodes linked ot patient sthat current user has no edit rights for
+            // disallow removal of nodes linked to patients that current user has no edit rights for
             for (var i = 0; i < disconnectedList.length; i++) {
                 if (editor.getGraph().isPerson(disconnectedList[i])) {
                     var node = editor.getNode(disconnectedList[i]);
@@ -371,7 +371,7 @@ define([
 
             var message = 'Deleting this ' + removedNodeType + ' will result in the removal of all highlighted members from the pedigree';
             if (removedNodesHaveLinkedPatients) {
-                message += '<br><br>(note that no patient records will be removed form the family, this operation only removes their pedigree representation)';
+                message += '<br><br>(note that no patient records will be removed from the family, this operation only removes their pedigree representation)';
             }
             message += '<br><br>Are you sure you wish to delete all highlighted members?';
 

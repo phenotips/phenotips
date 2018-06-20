@@ -182,9 +182,9 @@ define([
 
                     // finally, load the pedigree
                     if (newPatientId && newPatientId != "") {
-                        // since this is a new patient, we do not want to load that patients data, we explicitly
+                        // since this is a new patient, we do not want to load that patient's data, we explicitly
                         // want to load the family document (either new family or existing), and add new patient
-                        // to the un-llinked patients legend (note: in case it is a new family and a template is
+                        // to the un-linked patients legend (note: in case it is a new family and a template is
                         // loaded, patient may be auto-assigned to a node in the template)
                         this.getPatientLegend().addCase(newPatientId);
                         this._saveLoadEngine.load(XWiki.currentDocument.page);
