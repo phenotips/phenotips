@@ -33,6 +33,7 @@ import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 import org.junit.Assert;
@@ -43,6 +44,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.when;
 
 /**
@@ -139,5 +142,14 @@ public class AuditScriptServiceTest
         when(this.store.getEventsForUser(this.user, "ip")).thenReturn(this.events);
         when(this.auth.hasAccess(this.user, Right.ADMIN, this.xwikiPreferences)).thenReturn(true);
         Assert.assertSame(this.events, this.scriptService.getEventsForUser("user", "ip"));
+    }
+
+    @Test
+    public void getEvents()
+    {
+        when(this.store.getEvents(any(AuditEvent.class), any(Calendar.class), any(Calendar.class), anyInt(), anyInt()))
+            .thenReturn(this.events);
+        when(this.auth.hasAccess(this.user, Right.ADMIN, this.xwikiPreferences)).thenReturn(true);
+        Assert.assertSame(this.events, this.scriptService.getEvents(0, 25, "get", this.user.getId(), "ip", "", "", ""));
     }
 }

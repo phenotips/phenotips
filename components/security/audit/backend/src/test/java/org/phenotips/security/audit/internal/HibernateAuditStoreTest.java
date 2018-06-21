@@ -26,6 +26,8 @@ import org.xwiki.security.authorization.Right;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.users.User;
 
+import java.util.Calendar;
+
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
@@ -174,5 +176,87 @@ public class HibernateAuditStoreTest
         Mockito.verify(this.criteria).add(criterion.capture());
         Example ex = (Example) criterion.getValue();
         Assert.assertEquals("example (wiki:XWiki.user (127.0.0.1): action on null at null)", ex.toString());
+    }
+
+    @Test
+    public void getEvents()
+    {
+        ArgumentCaptor<Criterion> criterion = ArgumentCaptor.forClass(Criterion.class);
+        Calendar from = Calendar.getInstance();
+        Calendar to = Calendar.getInstance();
+        AuditEvent eventTemplate = new AuditEvent(this.user, "127.0.0.1", "action", null, null, null);
+        this.store.getEvents(eventTemplate, from, to, 0, 25);
+        Mockito.verify(this.criteria).add(criterion.capture());
+        Example ex = (Example) criterion.getValue();
+        Assert.assertEquals("example (wiki:XWiki.user (127.0.0.1): action on null at null)", ex.toString());
+    }
+
+    @Test
+    public void countEventsForEntity()
+    {
+        ArgumentCaptor<Criterion> criterion = ArgumentCaptor.forClass(Criterion.class);
+        long count = this.store.countEventsForEntity(this.doc);
+        Mockito.verify(this.criteria).add(criterion.capture());
+        Example ex = (Example) criterion.getValue();
+        Assert.assertEquals("example (null (null): null on wiki:Space.Page at null)", ex.toString());
+        Assert.assertEquals(0, count);
+    }
+
+    @Test
+    public void countEventsForEntityAndType()
+    {
+        ArgumentCaptor<Criterion> criterion = ArgumentCaptor.forClass(Criterion.class);
+        long count = this.store.countEventsForEntity(this.doc, "action");
+        Mockito.verify(this.criteria).add(criterion.capture());
+        Example ex = (Example) criterion.getValue();
+        Assert.assertEquals("example (null (null): action on wiki:Space.Page at null)", ex.toString());
+        Assert.assertEquals(0, count);
+    }
+
+    @Test
+    public void countEventsForUser()
+    {
+        ArgumentCaptor<Criterion> criterion = ArgumentCaptor.forClass(Criterion.class);
+        long count = this.store.countEventsForUser(this.user);
+        Mockito.verify(this.criteria).add(criterion.capture());
+        Example ex = (Example) criterion.getValue();
+        Assert.assertEquals("example (wiki:XWiki.user (null): null on null at null)", ex.toString());
+        Assert.assertEquals(0, count);
+    }
+
+    @Test
+    public void countEventsForUserAndIp()
+    {
+        ArgumentCaptor<Criterion> criterion = ArgumentCaptor.forClass(Criterion.class);
+        long count = this.store.countEventsForUser(this.user, "127.0.0.1");
+        Mockito.verify(this.criteria).add(criterion.capture());
+        Example ex = (Example) criterion.getValue();
+        Assert.assertEquals("example (wiki:XWiki.user (127.0.0.1): null on null at null)", ex.toString());
+        Assert.assertEquals(0, count);
+    }
+
+    @Test
+    public void countEventsForUserIpType()
+    {
+        ArgumentCaptor<Criterion> criterion = ArgumentCaptor.forClass(Criterion.class);
+        long count = this.store.countEventsForUser(this.user, "127.0.0.1", "action");
+        Mockito.verify(this.criteria).add(criterion.capture());
+        Example ex = (Example) criterion.getValue();
+        Assert.assertEquals("example (wiki:XWiki.user (127.0.0.1): action on null at null)", ex.toString());
+        Assert.assertEquals(0, count);
+    }
+
+    @Test
+    public void countEvents()
+    {
+        ArgumentCaptor<Criterion> criterion = ArgumentCaptor.forClass(Criterion.class);
+        Calendar from = Calendar.getInstance();
+        Calendar to = Calendar.getInstance();
+        AuditEvent eventTemplate = new AuditEvent(this.user, "127.0.0.1", "action", null, null, null);
+        long count = this.store.countEvents(eventTemplate, from, to);
+        Mockito.verify(this.criteria).add(criterion.capture());
+        Example ex = (Example) criterion.getValue();
+        Assert.assertEquals("example (wiki:XWiki.user (127.0.0.1): action on null at null)", ex.toString());
+        Assert.assertEquals(0, count);
     }
 }
