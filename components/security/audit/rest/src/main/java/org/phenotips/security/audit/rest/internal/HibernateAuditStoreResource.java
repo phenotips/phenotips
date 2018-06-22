@@ -17,14 +17,18 @@
  */
 package org.phenotips.security.audit.rest.internal;
 
+import org.phenotips.Constants;
 import org.phenotips.security.audit.AuditEvent;
 import org.phenotips.security.audit.AuditStore;
 import org.phenotips.security.audit.rest.AuditStoreResource;
+import org.phenotips.security.authorization.AuthorizationService;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.rest.XWikiResource;
+import org.xwiki.security.authorization.Right;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
@@ -39,6 +43,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
@@ -63,19 +68,59 @@ public class HibernateAuditStoreResource extends XWikiResource implements AuditS
     @Inject
     private UserManager users;
 
+    @Inject
+    private AuthorizationService auth;
+
+    @Inject
+    @Named("currentmixed")
+    private DocumentReferenceResolver<EntityReference> resolver;
+
     /** Resolves unprefixed document names to the current wiki. */
     @Inject
     @Named("current")
-    private DocumentReferenceResolver<String> resolver;
+    private DocumentReferenceResolver<String> resolverd;
 
     @Override
     @SuppressWarnings("ParameterNumber")
     public Response listEvents(int start, int number, String action, String userId, String ip, String entityId,
         String fromTime, String toTime)
     {
+        if (!this.auth.hasAccess(this.users.getCurrentUser(), Right.ADMIN,
+            this.resolver.resolve(Constants.XWIKI_SPACE_REFERENCE))) {
+            this.slf4Jlogger.debug("Activity logs access denied to user [{}]", this.users.getCurrentUser());
+            return Response.status(Status.FORBIDDEN).build();
+        }
+
         JSONArray eventsList = new JSONArray();
+        AuditEvent eventTemplate = setTemplate(action, userId, ip, entityId);
+        List<AuditEvent> results = getResults(eventTemplate, fromTime, toTime, start, number);
+        for (AuditEvent event : results) {
+            eventsList.put(event.toJSON());
+        }
+
+        JSONObject response = new JSONObject();
+        response.put("data", eventsList);
+
+        return Response.ok(response, MediaType.APPLICATION_JSON_TYPE).build();
+    }
+
+    private AuditEvent setTemplate(String action, String userId, String ip, String entityId)
+    {
+        DocumentReference entity = StringUtils.isNotBlank(entityId) ? this.resolverd.resolve(entityId) : null;
+        User user = StringUtils.isNotBlank(userId) ? this.users.getUser(userId) : null;
+        String actionId = ACTION_VALUES.contains(action) ? action : null;
+        String ipValue = StringUtils.isNotBlank(ip) ? ip : null;
+
+        AuditEvent eventTemplate = new AuditEvent(user, ipValue, actionId, null, entity, null);
+
+        return eventTemplate;
+    }
+
+    private List<AuditEvent> getResults(AuditEvent eventTemplate, String fromTime, String toTime, int start, int number)
+    {
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
         Calendar from = Calendar.getInstance();
+
         try {
             from.setTime(sdf.parse(fromTime));
         } catch (Exception e) {
@@ -93,21 +138,7 @@ public class HibernateAuditStoreResource extends XWikiResource implements AuditS
             to.setTimeInMillis(System.currentTimeMillis());
         }
 
-        DocumentReference entity = StringUtils.isNotBlank(entityId) ? this.resolver.resolve(entityId) : null;
-        User user = StringUtils.isNotBlank(userId) ? this.users.getUser(userId) : null;
-        String actionId = ACTION_VALUES.contains(action) ? action : null;
-        String ipValue = StringUtils.isNotBlank(ip) ? ip : null;
-
-        AuditEvent eventTemplate = new AuditEvent(user, ipValue, actionId, null, entity, null);
         List<AuditEvent> results = this.auditStore.getEvents(eventTemplate, from, to, start, number);
-
-        for (AuditEvent event : results) {
-            eventsList.put(event.toJSON());
-        }
-
-        JSONObject response = new JSONObject();
-        response.put("data", eventsList);
-
-        return Response.ok(response, MediaType.APPLICATION_JSON_TYPE).build();
+        return results;
     }
 }

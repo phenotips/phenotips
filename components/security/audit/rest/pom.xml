@@ -47,6 +47,11 @@
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-security-api</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
+    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>xwiki-platform-users-api</artifactId>
       <version>${project.version}</version>
@@ -54,6 +59,16 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>phenotips-audit-backend</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-authorization</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-constants</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -67,6 +82,10 @@
     <dependency>
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
     </dependency>
     <!-- Test dependencies -->
     <dependency>

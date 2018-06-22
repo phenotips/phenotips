@@ -139,31 +139,36 @@ public class AuditScriptService implements ScriptService
     public List<AuditEvent> getEvents(int start, int number, String action, String userId, String ip, String entityId,
         String fromTime, String toTime)
     {
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
-        Calendar from = Calendar.getInstance();
-        try {
-            from.setTime(sdf.parse(fromTime));
-        } catch (Exception e) {
-            from.setTimeInMillis(0);
-        }
+        if (this.auth.hasAccess(this.users.getCurrentUser(), Right.ADMIN,
+            this.resolver.resolve(Constants.XWIKI_SPACE_REFERENCE))) {
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
+            Calendar from = Calendar.getInstance();
+            try {
+                from.setTime(sdf.parse(fromTime));
+            } catch (Exception e) {
+                from.setTimeInMillis(0);
+            }
 
-        Calendar to = Calendar.getInstance();
-        try {
-            if (to.after(from)) {
-                to.setTime(sdf.parse(toTime));
-            } else {
+            Calendar to = Calendar.getInstance();
+            try {
+                if (to.after(from)) {
+                    to.setTime(sdf.parse(toTime));
+                } else {
+                    to.setTimeInMillis(System.currentTimeMillis());
+                }
+            } catch (Exception e) {
                 to.setTimeInMillis(System.currentTimeMillis());
             }
-        } catch (Exception e) {
-            to.setTimeInMillis(System.currentTimeMillis());
+
+            DocumentReference entity = entityId != null ? this.resolverd.resolve(entityId) : null;
+            User user = userId != null ? this.users.getUser(userId) : null;
+            String actionId = ACTION_VALUES.contains(action) ? action : null;
+            String ipValue = StringUtils.isNotBlank(ip) ? ip : null;
+
+            AuditEvent eventTemplate = new AuditEvent(user, ipValue, actionId, null, entity, null);
+            return this.store.getEvents(eventTemplate, from, to, start, number);
         }
-
-        DocumentReference entity = entityId != null ? this.resolverd.resolve(entityId) : null;
-        User user = userId != null ? this.users.getUser(userId) : null;
-        String actionId = ACTION_VALUES.contains(action) ? action : null;
-
-        AuditEvent eventTemplate = new AuditEvent(user, ip, actionId, null, entity, null);
-        return this.store.getEvents(eventTemplate, from, to, start, number);
+        return Collections.emptyList();
     }
 
     /**
@@ -182,32 +187,36 @@ public class AuditScriptService implements ScriptService
      */
     public long countEvents(String action, String userId, String ip, String entityId, String fromTime, String toTime)
     {
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
-        Calendar from = Calendar.getInstance();
-        try {
-            from.setTime(sdf.parse(fromTime));
-        } catch (Exception e) {
-            from.setTimeInMillis(0);
-        }
+        if (this.auth.hasAccess(this.users.getCurrentUser(), Right.ADMIN,
+            this.resolver.resolve(Constants.XWIKI_SPACE_REFERENCE))) {
+            SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
+            Calendar from = Calendar.getInstance();
+            try {
+                from.setTime(sdf.parse(fromTime));
+            } catch (Exception e) {
+                from.setTimeInMillis(0);
+            }
 
-        Calendar to = Calendar.getInstance();
-        try {
-            if (to.after(from)) {
-                to.setTime(sdf.parse(toTime));
-            } else {
+            Calendar to = Calendar.getInstance();
+            try {
+                if (to.after(from)) {
+                    to.setTime(sdf.parse(toTime));
+                } else {
+                    to.setTimeInMillis(System.currentTimeMillis());
+                }
+            } catch (Exception e) {
                 to.setTimeInMillis(System.currentTimeMillis());
             }
-        } catch (Exception e) {
-            to.setTimeInMillis(System.currentTimeMillis());
+
+            DocumentReference entity = StringUtils.isNotBlank(entityId) ? this.resolverd.resolve(entityId) : null;
+            User user = StringUtils.isNotBlank(userId) ? this.users.getUser(userId) : null;
+            String actionId = ACTION_VALUES.contains(action) ? action : null;
+            String ipValue = StringUtils.isNotBlank(ip) ? ip : null;
+
+            AuditEvent eventTemplate = new AuditEvent(user, ipValue, actionId, null, entity, null);
+            return this.store.countEvents(eventTemplate, from, to);
         }
-
-        DocumentReference entity = StringUtils.isNotBlank(entityId) ? this.resolverd.resolve(entityId) : null;
-        User user = StringUtils.isNotBlank(userId) ? this.users.getUser(userId) : null;
-        String actionId = ACTION_VALUES.contains(action) ? action : null;
-        String ipValue = StringUtils.isNotBlank(ip) ? ip : null;
-
-        AuditEvent eventTemplate = new AuditEvent(user, ipValue, actionId, null, entity, null);
-        return this.store.countEvents(eventTemplate, from, to);
+        return -1;
     }
 
 }
