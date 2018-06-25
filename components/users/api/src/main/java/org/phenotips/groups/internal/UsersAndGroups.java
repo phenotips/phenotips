@@ -182,8 +182,7 @@ public class UsersAndGroups implements Initializable
     public String search(String input, int maxResults, boolean searchUsers, boolean searchGroups,
         boolean returnAsJSON)
     {
-        String formattedInput = input.toLowerCase();
-        formattedInput = String.format(UsersAndGroups.INPUT_FORMAT, input);
+        String formattedInput = String.format(UsersAndGroups.INPUT_FORMAT, input.toLowerCase());
 
         JSONArray resultArray = new JSONArray();
         try {
