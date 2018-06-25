@@ -71,6 +71,8 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
     private static final EntityReference GROUP_CLASS = new EntityReference("XWikiGroups", EntityType.DOCUMENT,
         new EntityReference(XWiki.SYSTEM_SPACE, EntityType.SPACE));
 
+    private static final String GROUP = "group";
+
     @Inject
     private Logger logger;
 
@@ -115,7 +117,8 @@ public class DefaultPatientAccessHelper implements PatientAccessHelper
     @Override
     public boolean isAdministrator(Patient patient, DocumentReference user)
     {
-        if (patient == null || patient.getDocument() == null) {
+        // A group cannot be an administrator.
+        if (patient == null || patient.getDocument() == null || GROUP.equals(getType(user))) {
             return false;
         }
         return this.rights.hasAccess(Right.ADMIN, user, patient.getDocument());
