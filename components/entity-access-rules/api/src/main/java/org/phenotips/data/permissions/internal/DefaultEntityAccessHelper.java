@@ -97,6 +97,18 @@ public class DefaultEntityAccessHelper implements EntityAccessHelper
         return UNKNOWN_LABEL;
     }
 
+    @Override
+    public boolean isGroup(@Nullable final EntityReference userOrGroup)
+    {
+        return GROUP_LABEL.equals(getType(userOrGroup));
+    }
+
+    @Override
+    public boolean isUser(@Nullable final EntityReference userOrGroup)
+    {
+        return USER_LABEL.equals(getType(userOrGroup));
+    }
+
     @Nonnull
     @Override
     public Document getDocument(EntityReference userOrGroup)

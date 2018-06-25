@@ -225,7 +225,8 @@ public class DefaultEntityAccessManager implements EntityAccessManager
     @Override
     public boolean isAdministrator(@Nullable final PrimaryEntity entity, @Nullable final DocumentReference user)
     {
-        return entity != null
+        return !this.helper.isGroup(user)
+            && entity != null
             && entity.getDocumentReference() != null
             && this.rights.hasAccess(Right.ADMIN, user, entity.getDocumentReference());
     }
