@@ -51,7 +51,7 @@
       <cache>0</cache>
       <classname>PhenoTips.FamilyClass</classname>
       <customDisplay>{{velocity}}
-#set ($config = $xwiki.getDocument('data.WebHome').getObject('PhenoTips.DBConfigurationClass'))
+#set ($config = $xwiki.getDocument('XWiki.XWikiPreferences').getObject('PhenoTips.LabeledIdentifierGlobalSettings'))
 #set ($family = $services.families.getFamilyById($value))
 #set ($familyID = $family.getId())
 #if ("$family.getExternalId()" != '')

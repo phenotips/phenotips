@@ -71,8 +71,18 @@
   &lt;h2&gt;$services.localization.render('phenotips.navigation.webHome.eidConfig.heading')&lt;/h2&gt;
 {{/html}}
   #__extradata_displayTable($labeledIdentifierSettings, {'counter' : false, 'labels' : false, 'mode' : 'edit', 'addedDisplaySheet' : $displayDocumentName})
+
+
   $doc.display("allowOtherEids", "edit", $targetObj) ##
-  #__labeledIdentifierConfig_label($targetObj "allowOtherEids" '')##
+  #__labeledIdentifierConfig_label($targetObj "allowOtherEids" '')
+
+
+  $doc.display("hideInternalIds", "edit", $targetObj) ##
+  #__labeledIdentifierConfig_label($targetObj "hideInternalIds" '')
+
+
+  #__labeledIdentifierConfig_label($targetObj "externalIdFormat" '') ##
+  $doc.display("externalIdFormat", "edit", $targetObj) ##
 {{html clean="false"}}
   &lt;br/&gt;
   &lt;div class="buttons"&gt;

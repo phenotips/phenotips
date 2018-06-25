@@ -3142,4 +3142,86 @@ ${host}${xwiki.getURL('XWiki.AccountValidation', 'view', "validkey=${validkey}&a
       <xwiki.title.mandatory>0</xwiki.title.mandatory>
     </property>
   </object>
+  <object>
+    <name>XWiki.XWikiPreferences</name>
+    <number>1</number>
+    <className>PhenoTips.LabeledIdentifierGlobalSettings</className>
+    <guid>e9630277-a371-4228-8659-8a1abc7bacfz</guid>
+    <class>
+      <name>PhenoTips.LabeledIdentifierGlobalSettings</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <allow>
+        <defaultValue>1</defaultValue>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>allow</displayType>
+        <name>allow</name>
+        <number>4</number>
+        <prettyName>Allow/Deny</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </allow>
+      <allowOtherEids>
+        <defaultValue>1</defaultValue>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <name>allowOtherEids</name>
+        <number>1</number>
+        <prettyName/>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </allowOtherEids>
+      <externalIdFormat>
+        <customDisplay>{{velocity}}
+{{html wiki=false clean=false}}
+&lt;select name="$prefix$name" id="$prefix$name"&gt;
+#foreach ($val in ['XXXXXXXXX', 'XXX-XXX-XXX'])
+  &lt;option #if($val == $value)selected="selected"#end value="$val"&gt;$val&lt;/option&gt;
+#end
+&lt;/select&gt;
+{{/html}}
+{{/velocity}}</customDisplay>
+        <disabled>0</disabled>
+        <name>externalIdFormat</name>
+        <number>3</number>
+        <picker>0</picker>
+        <prettyName>External id display format</prettyName>
+        <size>30</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </externalIdFormat>
+      <hideInternalIds>
+        <customDisplay/>
+        <defaultValue/>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <displayType/>
+        <name>hideInternalIds</name>
+        <number>2</number>
+        <prettyName>Add ability to show external identifiers in place of internal ones in the Patient and Family record forms</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </hideInternalIds>
+    </class>
+    <property>
+      <allowOtherEids>1</allowOtherEids>
+    </property>
+    <property>
+      <hideInternalIds>0</hideInternalIds>
+    </property>
+    <property>
+      <externalIdFormat>XXXXXXXXX</externalIdFormat>
+    </property>
+  </object>
 </xwikidoc>

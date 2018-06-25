@@ -2729,7 +2729,7 @@ Recursive title display detected!##
 ###
 ### @param defaultTitle The default page title to format for displaying
 #macro(pageExternalTitle $defaultTitle)
-#set ($config = $xwiki.getDocument('data.WebHome').getObject('PhenoTips.DBConfigurationClass'))
+#set ($config = $xwiki.getDocument('XWiki.XWikiPreferences').getObject('PhenoTips.LabeledIdentifierGlobalSettings'))
 #set ($pageExternalTitle = $defaultTitle)
 #if ($config && "$!{config.getProperty('hideInternalIds').value}" == '1' && "$!{doc.getValue('external_id')}" != '')
 #set ($ext_id = "$!{doc.getValue('external_id')}")
