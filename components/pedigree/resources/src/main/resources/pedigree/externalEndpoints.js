@@ -105,6 +105,18 @@ define([
             return XWiki.contextPath + "/rest/patients/" + patientId + "?method=DELETE";
         },
 
+        getPatientUpdateURL: function(patientId) {
+            // note: have to use "?method=PUT" because of pecularities of how prototype Ajax.Request works
+            //       see: http://api.prototypejs.org/ajax/
+            //       see: https://stackoverflow.com/questions/4476810/is-it-really-possible-to-call-http-put-using-prototype
+            return XWiki.contextPath + "/rest/patients/" + patientId + "?method=PUT";
+        },
+
+        getPatientUpdateOKStatusCode: function() {
+            // see PUT method @ https://phenotips.org/DevGuide/PatientsRESTfulAPI1.3#HPatientresources
+            return 204;
+        },
+
         getPatientSuggestServiceURL: function() {
             return this.patientSuggestService + "?permission=edit&maxResults=12&";
         },
