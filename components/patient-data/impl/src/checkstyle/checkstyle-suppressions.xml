@@ -29,4 +29,5 @@
   <suppress checks="ClassFanOutComplexity" files="AbstractComplexController.java"/>
   <suppress checks="ClassFanOutComplexity" files="GlobalQualifiersController.java"/>
   <suppress checks="CyclomaticComplexity" files="EmptyGenotypeObjectsRemover.java"/>
+  <suppress checks="NPathComplexity" files="EmptyGenotypeObjectsRemover.java"/>
 </suppressions>
