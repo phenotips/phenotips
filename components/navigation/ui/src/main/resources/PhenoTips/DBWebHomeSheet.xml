@@ -568,6 +568,11 @@ ul.filters ul label {
 .entity-directory .xwiki-livetable-topfilters-tip .tippointer {
   display: none;
 }
+
+/* Override some other XWiki styles that conflict with the desired look of the pagination limits */
+.skin-colibri .xwiki-livetable-pagination .xwiki-livetable-limits {
+  float: none;
+}
 </code>
     </property>
     <property>
