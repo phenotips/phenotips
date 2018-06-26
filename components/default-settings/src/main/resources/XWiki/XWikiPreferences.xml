@@ -3215,7 +3215,7 @@ ${host}${xwiki.getURL('XWiki.AccountValidation', 'view', "validkey=${validkey}&a
       </hideInternalIds>
     </class>
     <property>
-      <allowOtherEids>1</allowOtherEids>
+      <allowOtherEids>0</allowOtherEids>
     </property>
     <property>
       <hideInternalIds>0</hideInternalIds>
