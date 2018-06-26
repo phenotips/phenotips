@@ -292,9 +292,9 @@ public class UsersAndGroups implements Initializable
                 XWiki xwiki = xcontext.getWiki();
                 avatarURL = xwiki.getSkinFile("icons/xwiki/noavatargroup.png", xcontext);
             }
-            JSONObject o =
-                createObject(group.getReference().getName(), groupName, avatarURL, group.getReference().getName(),
-                    groupName);
+            DocumentReference ref = (DocumentReference) group.getReference();
+            XWikiDocument doc = (XWikiDocument) this.bridge.getDocument(ref);
+            JSONObject o = createObject(ref.getName(), groupName, avatarURL, doc.getTitle(), groupName);
             resultArray.put(o);
         }
     }

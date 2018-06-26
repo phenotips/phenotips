@@ -170,7 +170,7 @@ public class UsersAndGroupsTest
     }
 
     @Test
-    public void searchTest2() throws ComponentLookupException, QueryException
+    public void searchTest2() throws Exception
     {
         String input = "g";
 
@@ -193,6 +193,11 @@ public class UsersAndGroupsTest
         Group g = mock(Group.class);
         when(g.getReference()).thenReturn(groupDocument);
 
+        XWikiDocument doc = mock(XWikiDocument.class);
+        DocumentAccessBridge bridge = this.mocker.getInstance(DocumentAccessBridge.class);
+        when(bridge.getDocument(groupDocument)).thenReturn(doc);
+        when(doc.getTitle()).thenReturn(groupName);
+
         GroupManager gm = this.mocker.getInstance(GroupManager.class);
         when(gm.getGroup(groupFullName)).thenReturn(g);
 
@@ -211,7 +216,7 @@ public class UsersAndGroupsTest
     }
 
     @Test
-    public void searchTest3() throws QueryException, ComponentLookupException
+    public void searchTest3() throws Exception
     {
         String input = "a";
 
@@ -258,6 +263,11 @@ public class UsersAndGroupsTest
         DocumentReference groupDocument = new DocumentReference("xwiki", "Groups", groupName);
         Group g = mock(Group.class);
         when(g.getReference()).thenReturn(groupDocument);
+
+        XWikiDocument doc = mock(XWikiDocument.class);
+        DocumentAccessBridge bridge = this.mocker.getInstance(DocumentAccessBridge.class);
+        when(bridge.getDocument(groupDocument)).thenReturn(doc);
+        when(doc.getTitle()).thenReturn(groupName);
 
         GroupManager gm = this.mocker.getInstance(GroupManager.class);
         when(gm.getGroup(groupFullName)).thenReturn(g);
