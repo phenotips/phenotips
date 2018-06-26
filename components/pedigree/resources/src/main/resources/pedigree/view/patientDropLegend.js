@@ -377,6 +377,8 @@ define([
             removeButton.observe("click", function() {
                 var onRemove = function() {
                     _this.removeCase(patientElement.phenotipsID);
+                    var event = { "phenotipsPatientID": patientElement.phenotipsID };
+                    document.fire("pedigree:patient:removedfromfamily", event);
                 };
                 editor.getOkCancelDialogue().show("Remove this patient record from the family?", "Remove?", onRemove);
             });
