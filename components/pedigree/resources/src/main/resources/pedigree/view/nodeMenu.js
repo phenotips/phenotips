@@ -1860,16 +1860,24 @@ define([
                 return true;
             },
             'date-picker' : function (container, field_parameters, field_value) {
-                if (field_parameters.required) {
-                    if (!field_value || !field_value.hasOwnProperty("year") || !field_value.year) {
-                        container.parentElement.select(".year")[0].style.border="1px solid red";
-                        container.parentElement.select(".year")[0].style.outline = "none";
+                var checkDateComponent = function(name) {
+                    if (field_parameters.required
+                        && (!field_value || !field_value.hasOwnProperty(name) || !field_value[name])) {
+                        container.parentElement.select("." + name)[0].style.border="1px solid red";
+                        container.parentElement.select("." + name)[0].style.outline = "none";
                         return false;
+                    } else {
+                        container.parentElement.select("." + name)[0].style.border="";
+                        container.parentElement.select("." + name)[0].style.outline = "";
+                        return true;
                     }
                 }
-                container.parentElement.select(".year")[0].style.border="";
-                container.parentElement.select(".year")[0].style.outline = "";
-                return true;
+                var yearOK  = checkDateComponent("year");
+                var monthOK = checkDateComponent("month");
+                var dayOK   = checkDateComponent("day");
+                // note: can't use checkDateComponent("year") && checkDateComponent("month") swince if "year check"
+                //       fails "month check" will never be run, and we need side-effects (red borders) of a failed check
+                return yearOK && monthOK && dayOK;
             },
             'button' : function (container, field_parameters, field_value) {
                 // not supported
