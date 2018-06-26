@@ -41,10 +41,12 @@ define([
             editor.getView().applyChanges(changeSet, false);
         },
 
-        createGraphFromStoredData: function(JSONString, dataSource) {
+        createGraphFromStoredData: function(JSONString, dataSource, markAsEquivalentToSaved) {
             var addSaveEventOnceLoaded = function() {
-                // since we just loaded data from disk data in memory is equivalent to data on disk
-                editor.getUndoRedoManager().addSaveEvent();
+                if (markAsEquivalentToSaved) {
+                    // since we just loaded data from disk, data in memory is equivalent to data on disk
+                    editor.getUndoRedoManager().addSaveEvent();
+                }
             }
             this.createGraphFromImportData(JSONString, "phenotipsJSON", null, false, true, dataSource, "pedigreeLoaded", addSaveEventOnceLoaded);
         },
@@ -161,29 +163,24 @@ define([
                 }
 
                 // 3. add patients that are not in pedigree to the patient legend
-                var allLinkedNodes = editor.getGraph().getAllPatientLinks();
-                var allFamilyMembers = editor.getFamilyData().getAllFamilyMembersList()
-                for (var i = 0; i < allFamilyMembers.length; i++) {
-                    var nextMemberID = allFamilyMembers[i].id;
-                    if (!allLinkedNodes.patientToNodeMapping.hasOwnProperty(nextMemberID)) {
-                        editor.getPatientLegend().addCase(nextMemberID, {});
-                    }
+                for (var i = 0; i < changeSet.unlinked.length; i++) {
+                    var nextMemberID = changeSet.unlinked[i];
+                    editor.getPatientLegend().addCase(nextMemberID, {});
                 }
 
+                // new loaded data may take up some space below some nodes, so need to recompute vertical positioning
+                editor.getGraph().updateYPositioning();
+
+                if (editor.getView().applyChanges(changeSet, false)) {
+                    editor.getWorkspace().adjustSizeToScreen();
+                }
 
                 if (!noUndo && !editor.isReadOnlyMode()) {
                     var undoRedoState = editor.getGraph().toUndoRedoState();
                     editor.getUndoRedoManager().addState({"eventName": eventName}, null, undoRedoState);
                 }
 
-                // FIXME: load will set callbackWhenDataLoaded() to be actionStack.addSaveEvent(), effectively
-                //        a) duplicating undo states and b) doing it for read-only pedigrees
-                // TODO: investigate, may no longer be true
                 callbackWhenDataLoaded && callbackWhenDataLoaded();
-
-                if (editor.getView().applyChanges(changeSet, false)) {
-                    editor.getWorkspace().adjustSizeToScreen();
-                }
 
                 if (centerAroundProband) {
                     editor.getWorkspace().centerAroundNode(editor.getGraph().getProbandId());
@@ -196,8 +193,12 @@ define([
                 // update to include nodes possibly added to the set of linked nodes above
                 var allLinkedNodes = editor.getGraph().getAllPatientLinks();
 
-                // get all patients in the pedigree and those in the patient legend (those are not in pedigree but may get assigned)
-                var patientList = Helpers.filterUnique(allLinkedNodes.linkedPatients.concat(editor.getPatientLegend().getListOfPatientsInTheLegend()));
+                // combine patients in the pedigree and unlinked patients
+                var patientList = allLinkedNodes.linkedPatients.concat(changeSet.unlinked);
+
+                // add patients in the legend - e.g. when creating a new pedigree for a patient from a template the
+                // patient will be in the legend but not in the pedigree as it was loaded
+                patientList = Helpers.filterUnique(patientList.concat(editor.getPatientLegend().getListOfPatientsInTheLegend()));
 
                 editor.getPatientDataLoader().load(patientList, finalizeCreation);
             } else {
@@ -364,8 +365,11 @@ define([
                         // TODO: avoid unnecessary JSON -> string -> JSON conversions
                         var updatedJSONData = JSON.stringify(responseJSON.pedigree);
 
+                        var markAsEquivalentToSaved = true;
+
                         // if pedigree is misformatted createGraphFromStoredData() may throw as well
-                        this.createGraphFromStoredData(updatedJSONData, "familyPedigree" /* data source */);
+                        this.createGraphFromStoredData(updatedJSONData, "familyPedigree" /* data source */, markAsEquivalentToSaved);
+
                         return;
                     } catch (error) {
                         console.log("[LOAD] error parsing pedigree JSON");

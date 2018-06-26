@@ -22,6 +22,9 @@ define([
             this.familyPage = familyJSON.hasOwnProperty("id") ?
                               familyJSON.id : null;
 
+            this.familyExtId = familyJSON.hasOwnProperty("externalId") ?
+                               familyJSON.externalId: "";
+
             this.familyMembers = familyJSON.hasOwnProperty("familyMembers") ?
                                  familyJSON.familyMembers: [];
 
@@ -44,6 +47,10 @@ define([
 
         getFamilyId: function() {
             return this.familyPage;
+        },
+
+        getFamilyExternalId: function() {
+            return this.familyExtId;
         },
 
         hasWarningMessage: function() {

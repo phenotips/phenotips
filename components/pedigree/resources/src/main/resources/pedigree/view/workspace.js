@@ -16,7 +16,7 @@ define([
 
         initialize: function() {
             var me = this;
-            this.canvas = new Element('div', {'id' : 'canvas'});
+            this.canvas = new Element('div', {'id' : 'canvas', 'class': 'field-no-user-select'});
             this.workArea = new Element('div', {'id' : 'work-area'}).update(this.canvas);
             $('body').update(this.workArea);
 
@@ -49,8 +49,7 @@ define([
                     me.disablePan = true;
                     return;
                 }
-                //me.background.attr({cursor: 'url(https://mail.google.com/mail/images/2/closedhand.cur)'});
-                me.background.attr({cursor: 'move'});
+                me._paper.canvas.setAttribute("class","cursor-move");
             };
             var move = function(dx, dy) {
                 if (editor.isAnyMenuVisible() || me.disablePan) {
@@ -75,7 +74,7 @@ define([
             var end = function() {
                 me.viewBoxX = me.background.ox;
                 me.viewBoxY = me.background.oy;
-                me.background.attr({cursor: 'default'});
+                me._paper.canvas.setAttribute("class","")
                 me.disablePan = false;
             };
             me.background.drag(move, start, end);

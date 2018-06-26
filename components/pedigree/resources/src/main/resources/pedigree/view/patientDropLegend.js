@@ -73,7 +73,9 @@ define([
                 };
             });
 
-            this.legendContainer = new Element('div', {'class' : 'patient-assign-legend generic-legend pedigree_family_record_ui', id: 'patient-assign'})
+            this.legendContainer = new Element('div',
+                                               {'class': 'patient-assign-legend generic-legend pedigree_family_record_ui field-no-user-select',
+                                                  'id' : 'patient-assign'} )
                                    .insert(this._legendBoxControls)
                                    .insert(this._dragInfo);
 
@@ -198,7 +200,7 @@ define([
                 if (name != "") {
                     patientDetails.push({"key": "name", "value": name});
                 }
-                if (externalID != "") {
+                if (externalID != "" && !editor.getPreferencesManager().getConfigurationOption("replaceIdWithExternalID")) {
                     patientDetails.push({"key": "id", "value": externalID});
                 }
                 var patientNotes = [];
@@ -212,6 +214,7 @@ define([
 
                 this._notLinkedPatients[phenotipsPatientID] = {"phenotipsID": phenotipsPatientID,
                                                                "gender": gender,
+                                                               "externalID": externalID,
                                                                "patientDetails": patientDetails,
                                                                "patientNotes": patientNotes,
                                                                "pedigreeProperties": pedigreeProperties};
@@ -260,16 +263,35 @@ define([
          * Returns the list of unassigned patients that are in the in the patient legend
          *
          * @method getListOfPatientsInTheLegend
-         * @return {patientList} List of patients in the legend
+         * @return {Array} List of patients in the legend
          */
         getListOfPatientsInTheLegend: function() {
-          var patientList = [];
-          for (var patient in this._notLinkedPatients) {
-            if (this._notLinkedPatients.hasOwnProperty(patient)) {
-              patientList.push(patient);
+            var patientList = [];
+            for (var patient in this._notLinkedPatients) {
+                if (this._notLinkedPatients.hasOwnProperty(patient)) {
+                    patientList.push(patient);
+                }
             }
-          }
-          return patientList;
+            return patientList;
+        },
+
+        /**
+         * Returns the list of unassigned patients that are in the patient legend,
+         * together with the stored details.
+         *
+         * @method getPatientsInTheLegendData
+         * @return {Object} A {patientID1: {"pedigreeProperties": {...}, "phenotipsProperties": {...}, patientID2: ...} map
+         */
+        getPatientsInTheLegendData: function() {
+            var unlinked = {};
+            for (var patient in this._notLinkedPatients) {
+                if (this._notLinkedPatients.hasOwnProperty(patient)) {
+                    var data = { "pedigreeProperties": this._notLinkedPatients[patient].pedigreeProperties,
+                                 "phenotipsProperties": editor.getPatientRecordData().get(patient) };
+                    unlinked[patient] = data;
+                }
+            }
+            return unlinked;
         },
 
         /**
@@ -302,8 +324,12 @@ define([
                 return outerDiv;
             };
 
+            var linkText = editor.getPreferencesManager().getConfigurationOption("replaceIdWithExternalID") && (patientElement.externalID != "")
+                           ? patientElement.externalID
+                           : patientElement.phenotipsID;
+
             var patientIdLink = new Element('div', {'class': 'pedigree-nodePatientTextLink legend-patient-link'})
-                                .update(patientElement.phenotipsID);
+                                .update(linkText);
             patientIdLink.observe("click", function() {
                 window.open(editor.getExternalEndpoint().getPhenotipsPatientURL(patientElement.phenotipsID), patientElement.phenotipsID);
             });
@@ -398,6 +424,9 @@ define([
             // highlight potential targets
             this._highlightDropTargets(true);
 
+            // disable patient record link clicking
+            label.down(".legend-patient-link").addClassName("no-mouse-interaction");
+
             editor.getView().setCurrentDraggable(-1); // in drag mode but with no target
             var divPos = editor.getWorkspace().viewportToDiv(event.pointerX(), event.pointerY());
             var pos    = editor.getWorkspace().divToCanvas(divPos.x,divPos.y);
@@ -434,6 +463,8 @@ define([
             }
 
             editor.getView().setCurrentDraggable(null);
+
+            label.down(".legend-patient-link").removeClassName("no-mouse-interaction");
 
             this._highlightDropTargets(false);
             this._unhighlightAfterDrag();

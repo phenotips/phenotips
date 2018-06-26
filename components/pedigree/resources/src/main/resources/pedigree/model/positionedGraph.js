@@ -3079,7 +3079,7 @@ define([
                         numLabelLines += ((comments.match(/\n/g) || []).length + 1);
                     }
                     if (this.GG.properties[person].hasOwnProperty("phenotipsId")) {
-                        numLabelLines++;
+                        numLabelLines += 1.1;
                     }
                     var dob = personProperties.hasOwnProperty("dob") ? new PedigreeDate(personProperties.dob) : null;
                     var dod = personProperties.hasOwnProperty("dod") ? new PedigreeDate(personProperties.dod) : null;
@@ -3106,6 +3106,9 @@ define([
                     if (personProperties.hasOwnProperty("deceasedCause") || personProperties.hasOwnProperty("deceasedAge")) {
                         numLabelLines++;
                     }
+                    if (personProperties.hasOwnProperty("childlessReason") && personProperties.childlessReason) {
+                        numLabelLines+=0.9;
+                    }
                     if (editor && editor.getPreferencesManager().getConfigurationOption("displayCancerLabels")) {
                         // count number of cancer labels
                         if (personProperties.hasOwnProperty("cancers")) {
@@ -3113,7 +3116,7 @@ define([
                                 if (personProperties.cancers.hasOwnProperty(cancer)) {
                                     if (personProperties.cancers[cancer].hasOwnProperty("affected")) {
                                         if (personProperties.cancers[cancer].affected) {
-                                            numLabelLines++;
+                                            numLabelLines += 1.15;
                                         }
                                     }
                                 }

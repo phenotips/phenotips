@@ -175,8 +175,7 @@ define([
             //       see discussion for PT-3442
             if (hasEditRights
                 && !this.getNode().isProband()
-                && !editor.getGraph().getMaxNodeId() == 0
-                && this.getNode().getPhenotipsPatientId() != editor.getGraph().getCurrentPatientId()) {
+                && !editor.getGraph().getMaxNodeId() == 0) {
                 this.generateDeleteBtn();
             }
         },

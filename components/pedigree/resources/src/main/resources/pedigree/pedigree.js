@@ -99,6 +99,7 @@ define([
             //  dateEditFormat:               {"YMD"|"DMY"|"MY"|"Y"}  - defines order of fields in the date picker; default "YMD"
             //  drawNodeShadows:              {true|false}   - display small shadow under node graphic; default: "true"
             //  disabledFields:               [array]        - list of node-menu fields disabled for this installation
+            //  replaceIdWithExternalID:      {true|false}   - when true, patient links display external ID as the link text (instead of PT ids)
             //  displayCancerLabels:          {true|false}   - display labels for each afecting cancer; default: "true"
             //  lineStyle:                    {"thin"|"regular"|"bold"} - controls the thickness of all lines in pedigree
             //
@@ -108,9 +109,12 @@ define([
                                                      dateEditFormat: "YMD",
                                                      drawNodeShadows: true,
                                                      disabledFields: [],
+                                                     replaceIdWithExternalID: false,
                                                      displayCancerLabels: true,
                                                      lineStyle: "regular" },
                                          user:     { hideDraggingHint: false,
+                                                     hidePatientDraggingHint: false,
+                                                     hideShareConsentDialog: false,
                                                      firstName: "",
                                                      lastName: "" },
                                          pedigree: {}
@@ -167,12 +171,6 @@ define([
                     this._patientLegend = new PatientDropLegend();
                     this._addNewMember = new AddNewMemberDialog();
 
-                    var newPatientId = window.self.location.href.toQueryParams().new_patient_id;
-                    if (newPatientId && newPatientId != ""){
-                        this.getPatientLegend().addCase(newPatientId);
-                        this._unsavedNewPatient = true;
-                    }
-
                     this._nodeMenu = this.generateNodeMenu();
                     this._deceasedMenu = this.generateDeceasedMenu();
                     this._nodeGroupMenu = this.generateNodeGroupMenu();
@@ -180,9 +178,15 @@ define([
                     this._exportSelector = new ExportSelector();
                     this._printDialog = new PrintDialog();
 
-                    // finally, load the pedigree
                     var newPatientId = window.self.location.href.toQueryParams().new_patient_id;
-                    if (newPatientId && newPatientId != ""){
+
+                    // finally, load the pedigree
+                    if (newPatientId && newPatientId != "") {
+                        // since this is a new patient, we do not want to load that patient's data, we explicitly
+                        // want to load the family document (either new family or existing), and add new patient
+                        // to the un-linked patients legend (note: in case it is a new family and a template is
+                        // loaded, patient may be auto-assigned to a node in the template)
+                        this.getPatientLegend().addCase(newPatientId);
                         this._saveLoadEngine.load(XWiki.currentDocument.page);
                     } else {
                         var documentId = editor.getGraph().getCurrentPatientId();
@@ -307,13 +311,8 @@ define([
 
             var unsavedChanges = editor.getUndoRedoManager().hasUnsavedChanges();
 
-            if (!unsavedChanges && this._unsavedNewPatient) {
-                // we want the explicit message that the current patient is unlinked
-                noPatientsAreLinked = false;
-            }
-
-            var noPatientsLinkedMessage = "There are no patients linked to this pedigree and thus family has no members.<br/><br/>";
-            var currentPatientUnlinkedMessage = "Current patient is not linked to the pedigree and thus not part of the family.<br/><br/>";
+            var noPatientsLinkedMessage = "There are no patients in this family.<br/><br/>";
+            var currentPatientUnlinkedMessage = "Current patient is not a member of this family.<br/><br/>";
 
             //-----------------
             var saveWithChecks = function(quitAfterSave) {
@@ -322,10 +321,7 @@ define([
                     editor.getSaveLoadEngine().save(editor.closePedigree);
                 }
                 var saveAndKeepEditingFunc = function() {
-                    var onSuccessfulSave = function() {
-                        editor._unsavedNewPatient = false;
-                    };
-                    editor.getSaveLoadEngine().save(onSuccessfulSave);
+                    editor.getSaveLoadEngine().save();
                 }
                 var removeFamily = function() {
                     var removed = false;
@@ -399,11 +395,7 @@ define([
                             " Don't save and quit ", editor.closePedigree,
                             " Keep editing pedigree ", undefined, true );
                 } else {
-                    if (this._unsavedNewPatient) {
-                        saveWithChecks(true);
-                    } else {
-                        editor.closePedigree();
-                    }
+                    editor.closePedigree();
                 }
             } else {
                 saveWithChecks(false);

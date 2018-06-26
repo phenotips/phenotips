@@ -131,7 +131,9 @@ define([], function(){
         legendMaxWidthPixels: 270,
         legendMinWidthPixels: 245,
         legendMinimizedWidthPixels: 150,
-        legendStyle: "multiSector"
+        legendStyle: "multiSector",
+        firstNodeLabelSpaceOnTop: 8,
+        patientLinkClickAreaAbove: 3
     };
 
     return PedigreeEditorParameters;

@@ -213,14 +213,18 @@ define([
          */
         updateExternalIDLabel: function() {
             this._externalIDLabel && this._externalIDLabel.remove();
-
-            if (this.getNode().getExternalID()) {
-                var text = '[ ' + this.getNode().getExternalID() + " ]";
-                this._externalIDLabel = editor.getPaper().text(this.getX(), this.getY() + PedigreeEditorParameters.attributes.radius, text).attr(PedigreeEditorParameters.attributes.externalIDLabels);
+            if (!editor.getPreferencesManager().getConfigurationOption("replaceIdWithExternalID")) {
+                if (this.getNode().getExternalID()) {
+                    var text = '[ ' + this.getNode().getExternalID() + " ]";
+                    this._externalIDLabel = editor.getPaper().text(this.getX(), this.getY() + PedigreeEditorParameters.attributes.radius, text).attr(PedigreeEditorParameters.attributes.externalIDLabels);
+                } else {
+                    this._externalIDLabel = null;
+                }
+                this.drawLabels();
             } else {
                 this._externalIDLabel = null;
+                this.updateLinkLabel();
             }
-            this.drawLabels();
         },
 
         /**
@@ -778,17 +782,25 @@ define([
             this._linkArea && this._linkArea.remove();
             this._linkArea = null;
             this._linkLabel && this._linkLabel.remove();
-            if (this.getNode().getPhenotipsPatientId() == "") {
+            var useExternalID = editor.getPreferencesManager().getConfigurationOption("replaceIdWithExternalID");
+            if (this.getNode().getPhenotipsPatientId() == "" && (!useExternalID || this.getNode().getExternalID() == "")) {
                 this._linkLabel = null;
             } else {
-                this._linkLabel = editor.getPaper().text(this.getX(), this.getY(), this.getNode().getPhenotipsPatientId()).attr(PedigreeEditorParameters.attributes.label);
-                this._linkLabel.node.setAttribute("class","pedigree-nodePatientTextLink");
+                var linkText = (useExternalID && this.getNode().getExternalID() != "") ? this.getNode().getExternalID() : this.getNode().getPhenotipsPatientId();
+                if (this.getNode().getPhenotipsPatientId() == "") {
+                    linkText = "[ " + linkText + " ]";
+                }
+                this._linkLabel = editor.getPaper().text(this.getX(), this.getY(), linkText).attr(PedigreeEditorParameters.attributes.label);
                 this._linkLabel.addGapAfter = true;
-                var patientURL = this.getNode().getPhenotipsPatientURL();
-                var patientID = this.getNode().getPhenotipsPatientId();
-                this._linkLabel.attr({ "href": patientURL });
-                this._linkLabel.node.parentNode.setAttribute("target", patientID);
-                this._linkLabel.attr("fill", "#00498A");
+                if (this.getNode().getPhenotipsPatientId() != "") {
+                    this._linkLabel.node.setAttribute("class","pedigree-nodePatientTextLink");
+                    var patientURL = this.getNode().getPhenotipsPatientURL();
+                    var patientID = this.getNode().getPhenotipsPatientId();
+                    this._linkLabel.attr({ "href": patientURL });
+                    this._linkLabel.node.parentNode.setAttribute("target", patientID);
+                    this._linkLabel.node.parentNode.setAttribute("class", "pedigree-patient-record-link");
+                    this._linkLabel.attr("fill", "#00498A");
+                }
             }
             this.drawLabels();
         },
@@ -1038,15 +1050,15 @@ define([
             }
             var labels = this.getLabels();
             var selectionOffset = this._labelSelectionOffset();
-            var childlessOffset = this.getChildlessStatusLabel() ? PedigreeEditorParameters.attributes.label['font-size'] : 0;
-            childlessOffset += ((this.getNode().getChildlessStatus() !== null) ? (PedigreeEditorParameters.attributes.infertileMarkerHeight + 2) : 0);
+            var childlessOffset = this._getChildlessOffset();
 
             var lowerBound = PedigreeEditorParameters.attributes.radius * (this.getNode().isPersonGroup() ? PedigreeEditorParameters.attributes.groupNodesScale : 1.0);
 
-            var startY = this.getY() + lowerBound * 1.8 + selectionOffset + childlessOffset + 15;
+            var firstLabelPosition = this.getY() + lowerBound * 1.8 + childlessOffset + 15 + PedigreeEditorParameters.attributes.firstNodeLabelSpaceOnTop;
+            var startY = firstLabelPosition + selectionOffset;
             for (var i = 0; i < labels.length; i++) {
-                var shift = (labels[i].addGap && i != 0) ? 4 : 8;   // make a small gap between comments and other fields
-                var offset = (labels[i].alignTop) ? (GraphicHelpers.getElementHalfHeight(labels[i]) - shift) : 0;
+                var shift = labels[i].addGap ? 4 : 0;
+                var offset = (labels[i].alignTop) ? (GraphicHelpers.getElementHalfHeight(labels[i]) - shift) : shift;
                 if (i == 0 && labels[i].shiftUp) {
                     offset -= labels[i].shiftUp;
                 }
@@ -1067,15 +1079,17 @@ define([
             }
 
             // a hack for node links which should be clickable without hoverbox obscuring them and making them move
-            if (this._linkLabel) {
+            if (this._linkLabel && this.getNode().getPhenotipsPatientId() != "") {
                 this._linkArea && this._linkArea.remove();
                 var boundingBox = this._linkLabel.getBBox();
-                var patientURL = this.getNode().getPhenotipsPatientURL();
+                var minVerticalClickArea = PedigreeEditorParameters.attributes.patientLinkClickAreaAbove;
                 // the hack should cover the bottom part of the hoverbox to make sure mouse can be moved to the link from
                 // the left, right and the bottom without making the hoverbox trigger and move the link
-                var startY = boundingBox.y-3;
-                var hackHeight = Math.max(boundingBox.height+6, this.getHoverBox().getY() + this.getHoverBox().getHeight() - startY);
-                this._linkArea = editor.getPaper().rect(this.getHoverBox().getX(), startY, this.getHoverBox().getWidth(), hackHeight).attr({
+                var normalPositionTop = boundingBox.y - selectionOffset;
+                var hackHeight = Math.max(boundingBox.height+minVerticalClickArea*2,
+                                          this.getHoverBox().getY() + this.getHoverBox().getHeight() - normalPositionTop + minVerticalClickArea + 1);
+                var linkAreaTop = boundingBox.y-minVerticalClickArea;
+                this._linkArea = editor.getPaper().rect(this.getHoverBox().getX() - 1, linkAreaTop, this.getHoverBox().getWidth() + 2, hackHeight).attr({
                     fill: "#F00",
                     opacity: 0
                   });
@@ -1090,15 +1104,26 @@ define([
             //    labels.flatten().insertBefore(this.getHoverBox().getFrontElements().flatten());
         },
 
+        _getChildlessOffset: function() {
+            var childlessOffset = this.getChildlessStatusLabel() ? PedigreeEditorParameters.attributes.label['font-size'] : 0;
+            childlessOffset += ((this.getNode().getChildlessStatus() !== null) ? (PedigreeEditorParameters.attributes.infertileMarkerHeight + 2) : 0);
+            return childlessOffset;
+        },
+
         _labelSelectionOffset: function() {
+            if (!this.isSelected()) {
+                return 0;
+            }
             var labelsOffset = this.getHoverBox().getBottomExtensionHeight();
-            var selectionOffset = this.isSelected() ? PedigreeEditorParameters.attributes.radius/1.4 + labelsOffset : 0;
+            var selectionOffset = PedigreeEditorParameters.attributes.radius/1.4 + labelsOffset;
 
-            if (this.isSelected() && this.getNode().isPersonGroup())
+            if (this.getNode().isPersonGroup()) {
                 selectionOffset += PedigreeEditorParameters.attributes.radius * (1-PedigreeEditorParameters.attributes.groupNodesScale) + 5;
+            }
 
-            if (this.getChildlessStatusLabel())
-                selectionOffset = selectionOffset/2;
+            if (this.getChildlessStatusLabel()) {
+                selectionOffset = selectionOffset - this._getChildlessOffset();
+            }
             return selectionOffset;
         },
 
@@ -1162,6 +1187,12 @@ define([
                 };
             }
             $super(x, y, animate, funct);
+
+            // to avoid visual distractions, re-draw hoverbox elements if they were on screen before re-positioning
+            if (this.getHoverBox().isMenuToggled()) {
+                this.getHoverBox().generateButtons();
+                this.getHoverBox().generateHandles();
+            }
         }
     });
 

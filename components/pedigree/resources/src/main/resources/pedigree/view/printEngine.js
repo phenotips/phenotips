@@ -30,6 +30,7 @@ define([
             var patientInfoHeight = 0;
             var legendHTML      = "";
             var patientInfoHTML = "";
+
             if (options.includeLegend) {
                 // Manually compose legend for print; 3 benefits:
                 //   - color samples not using background gcolor (which is not printed by default in some browsers)
@@ -75,24 +76,55 @@ define([
                     legendHTML        += sections[i].html;
                 }
             } // if includeLegend
+
             if (options.includePatientInfo) {
                 patientInfoHeight = 30;
-                var proband = editor.getNode(0);
-                if (options.anonymize.removePII || (!proband.getFirstName() && !proband.getLastName())) {
+
+                var proband = editor.getNode(editor.getGraph().getProbandId());
+                if (options.anonymize.removePII) {
                     patientInfoHTML = editor.getExternalEndpoint().getParentDocument().type + " " +
                                       editor.getExternalEndpoint().getParentDocument().id;
                 } else {
-                    // TODO: update to correct proband/family when fmaly studies are merged in
-                    var space = (proband.getFirstName() && proband.getLastName()) ? " " : "";
-                    var probandName = proband.getFirstName() + space + proband.getLastName();
-                    patientInfoHTML = probandName + ", " + XWiki.currentDocument.page;
+                    var hasName = proband.getFirstName() || proband.getLastName();
+                    var hasExternalID = proband.getExternalID() && proband.getExternalID() != "";
+                    var hasPTLink = proband.getPhenotipsPatientId() && proband.getPhenotipsPatientId() != "";
+                    var hasAnyData = hasName || hasExternalID || hasPTLink;
+
+                    if (hasAnyData) {
+                        if (hasName) {
+                            var space = (proband.getFirstName() && proband.getLastName()) ? " " : "";
+                            var probandInfo = proband.getFirstName() + space + proband.getLastName();
+                            if (hasExternalID || hasPTLink) {
+                                probandInfo += " [";
+                            }
+                        } else {
+                            var probandInfo = "Patient ";
+                        }
+                        if (hasExternalID) {
+                            probandInfo += proband.getExternalID();
+                        } else if (hasPTLink) {
+                            probandInfo += proband.getPhenotipsPatientId();
+                        }
+                        if (hasName && (hasExternalID || hasPTLink)) {
+                            probandInfo += "]";
+                        }
+                        patientInfoHTML = probandInfo + ", ";
+                    }
+
+                    var familyID = editor.getFamilyData().getFamilyId();
+                    var familyExtID = editor.getFamilyData().getFamilyExternalId();
+                    var useFamilyId = (editor.getPreferencesManager().getConfigurationOption("replaceIdWithExternalID") && familyExtID != "")
+                                      ? familyExtID : familyID;
+
+                    patientInfoHTML += "Family " + useFamilyId;
+
                 }
                 var userFirstName = editor.getPreferencesManager().getConfigurationOption("firstName");
                 var userLastName  = editor.getPreferencesManager().getConfigurationOption("lastName");
                 var date = new PedigreeDate(new Date());
                 patientInfoHTML += ". Printed";
                 if (userFirstName || userLastName) {
-                    patientInfoHTML += " by " + userFirstName + " " + userLastName;
+                    patientInfoHTML += " by " + userFirstName + (userFirstName && userLastName ? " " : "") + userLastName;
                 }
                 var dateDisplayFormat = editor.getPreferencesManager().getConfigurationOption("dateDisplayFormat");
                 if (dateDisplayFormat == "DMY" || dateDisplayFormat == "MY" || dateDisplayFormat == "Y") {

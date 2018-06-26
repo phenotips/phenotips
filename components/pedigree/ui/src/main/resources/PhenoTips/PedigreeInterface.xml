@@ -81,13 +81,15 @@ $response.setContentType('application/json')##
 #if ("$!request.action" == "getPreferences")
   #set($user = $!{xwiki.getDocument($xcontext.getUser()).getObject('XWiki.XWikiUsers')})##
   #set($config = $!{xwiki.getDocument('XWiki.XWikiPreferences').getObject('PhenoTips.PedigreeGlobalSettings')})##
+  #set($configPT = $xwiki.getDocument('data.WebHome').getObject('PhenoTips.DBConfigurationClass'))##
   { "user": {
         "firstName" : "$!{user.getProperty('first_name').value}",
         "lastName" : "$!{user.getProperty('last_name').value}",
         "hideDraggingHint": false
     },
     "global": {
-            "disabledFields"               : #__getDisabledFields()
+            "disabledFields"               : #__getDisabledFields(),
+            "replaceIdWithExternalID"      : #if ($configPT &amp;&amp; "$!{configPT.getProperty('hideInternalIds').value}" == '1')true#else false#end
         #if ($config)
             ,
             "dateDisplayFormat"            : "$!{config.getProperty('dateDisplayFormat').value}",
