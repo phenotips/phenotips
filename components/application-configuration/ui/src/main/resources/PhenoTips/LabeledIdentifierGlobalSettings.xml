@@ -48,7 +48,7 @@
     <nameField/>
     <validationScript/>
     <allowOtherEids>
-      <defaultValue>1</defaultValue>
+      <defaultValue/>
       <disabled>0</disabled>
       <displayFormType>checkbox</displayFormType>
       <name>allowOtherEids</name>
@@ -71,7 +71,7 @@
       <name>externalIdFormat</name>
       <number>3</number>
       <picker>0</picker>
-      <prettyName>External id display format</prettyName>
+      <prettyName/>
       <size>30</size>
       <sort>none</sort>
       <unmodifiable>0</unmodifiable>
@@ -87,7 +87,7 @@
       <displayType/>
       <name>hideInternalIds</name>
       <number>2</number>
-      <prettyName>Add ability to show external identifiers in place of internal ones in the Patient and Family record forms</prettyName>
+      <prettyName/>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
