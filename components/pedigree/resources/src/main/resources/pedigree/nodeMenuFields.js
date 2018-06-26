@@ -19,7 +19,10 @@ define([
     ){
     var NodeMenuFields = {};
 
-    NodeMenuFields.getPersonNodeMenuFields = function(disabledFields) {
+    NodeMenuFields.getPersonNodeMenuFields = function() {
+        var disabledFields = editor.getPreferencesManager().getConfigurationOption("disabledFields");
+        var requiredFields = editor.getPreferencesManager().getConfigurationOption("requiredFields");
+
         var fieldList = [
             {
                 'name' : 'identifier',
@@ -122,6 +125,7 @@ define([
                 'label' : 'Genotype: candidate genes',
                 'type' : 'gene-picker',
                 'tab': 'Clinical',
+                'legendName': "candidate",
                 'function' : 'setCandidateGenes'
             },
             {
@@ -129,6 +133,7 @@ define([
                 'label' : 'Genotype: confirmed causal genes',
                 'type' : 'gene-picker',
                 'tab': 'Clinical',
+                'legendName': "solved",
                 'function' : 'setCausalGenes'
             },
             {
@@ -150,6 +155,7 @@ define([
                 'label' : 'Genotype: carrier genes',
                 'type' : 'gene-picker',
                 'tab': 'Clinical',
+                'legendName': "carrier",
                 'function' : 'setCarrierGenes'
             },
             {
@@ -331,10 +337,46 @@ define([
                                     "disabledFields": disabledFields };
         var extendedMenu = editor.getExtensionManager().callExtensions("personNodeMenu", extensionParameters).extendedData;
 
+        var requiredSet = Helpers.toObjectWithTrue(requiredFields);
+
+        extendedMenu.fieldList.forEach(function(field) {
+            if (requiredSet.hasOwnProperty(field.name)) {
+                field.required = true;
+            }
+        });
+
         return NodeMenuFields._filterDisabled(extendedMenu.fieldList, extendedMenu.disabledFields);
     },
 
-    NodeMenuFields.getGroupNodeMenuFields = function(disabledFields) {
+    NodeMenuFields.getNewPersonMenuFields = function() {
+        var fields = NodeMenuFields.getPersonNodeMenuFields();
+
+        function isRequired(field) {
+            return (field.required == true);
+        }
+        fields = fields.filter(isRequired);
+
+        // add "OK/Cancel" buttons
+        fields.push({
+            'name' : 'submit',
+            'label' : '',
+            'ok_label' : 'Create new patient',
+            'cancel_label' : 'Cancel',
+            'type' : 'submit-cancel',
+            'tab_message': 'All required fields must be filled before a new patient is created',
+            'not_valid_message': 'All required fields must be filled before a new patient is created',
+        });
+
+        fields.forEach(function(field) {
+            field.tab = 'Create new patient';
+        });
+
+        return fields;
+    },
+
+    NodeMenuFields.getGroupNodeMenuFields = function() {
+        var disabledFields = editor.getPreferencesManager().getConfigurationOption("disabledFields");
+
         var fieldList = [
             {
                 'name' : 'identifier',
@@ -447,7 +489,9 @@ define([
         return NodeMenuFields._filterDisabled(extendedMenu.fieldList, extendedMenu.disabledFields);
     },
 
-    NodeMenuFields.getRelationshipMenuFields = function(disabledFields) {
+    NodeMenuFields.getRelationshipMenuFields = function() {
+        var disabledFields = editor.getPreferencesManager().getConfigurationOption("disabledFields");
+
         var fieldList = [
             {
                 'label' : 'Heredity options',
