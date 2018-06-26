@@ -97,12 +97,12 @@
         },
 
         /**
-         * Retrieve the color associated with the given gene - regardless of which gene legend has it
+         * Retrieve the color associated with the given gene in this legend
          *
          * @method getGeneColor
          */
-        getGeneColor: function(geneID, nodeID) {
-            if (this._hasAffectedNodes(geneID) && Helpers.arrayIndexOf(this._affectedNodes[geneID], nodeID) >= 0){
+        getGeneColor: function(geneID) {
+            if (this._hasAffectedNodes(geneID)){
                 return this.getObjectColor(geneID);
             }
             return undefined;
@@ -115,7 +115,7 @@
          */
         updateGeneData: function(oldId, newId, symbol) {
             // update symbol
-            var name = this._legendBox.down('li#' + this._getPrefix() + '-' + this._hashID(oldId) + ' .abnormallity-gene-name');
+            var name = this._legendBox.down('li#' + this._getPrefix() + '-' + this._hashID(oldId) + ' .abnormality-' + this._getPrefix() + '-name');
             name && name.update(symbol);
 
             if (oldId != newId) {

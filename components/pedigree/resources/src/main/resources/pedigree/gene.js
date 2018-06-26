@@ -64,11 +64,16 @@ define([
             try {
                 var gene = response.responseJSON;
 
-                if (gene && gene.hasOwnProperty("id") && gene.hasOwnProperty("symbol")) {
-                    console.log("LOADED GENE INFO: id = " + gene.id + ", name = " + gene.symbol);
+                if (gene
+                    && gene.hasOwnProperty("ensembl_gene_id") && (gene.ensembl_gene_id.length > 0)
+                    && gene.hasOwnProperty("symbol")) {
+
+                    var loadedId = gene.ensembl_gene_id[0];
+
+                    console.log("LOADED GENE INFO: id = " + loadedId + ", name = " + gene.symbol);
 
                     // may have to change ID, if old ID was actually a symbol which has an EnsembleID
-                    if (gene.id.toUpperCase() == this._geneID.toUpperCase()) {
+                    if (loadedId.toUpperCase() == this._geneID.toUpperCase()) {
                         if (this._symbol != gene.symbol) {
                             console.log("LOADED GENE INFO: loaded symbol for ID (new)");
                         }
@@ -81,7 +86,7 @@ define([
                     }
                     if (needUpdate) {
                         // update even if it matched - in case of upper/lower case differences
-                        this._geneID = gene.id;
+                        this._geneID = loadedId;
                         this._symbol = gene.symbol;
                         if (oldID != this._geneID || oldSymbol != this._symbol) {
                             document.fire('gene:loaded', {'oldid' : oldID, 'newid': this._geneID, 'symbol': this._symbol});
