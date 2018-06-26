@@ -371,7 +371,7 @@ define([
             // FIXME: when node menu works for node-less patients
             editButton.hide();
 
-            var removeButton = new Element('div', {'class' : 'legend-patient-button legend-remove-patient-button'})
+            var removeButton = new Element('div', {'class' : 'legend-patient-button legend-remove-patient-button pedigree-remove-from-family-button'})
                              .update(new Element('span', {'class' : 'fa fa-remove'}));
 
             removeButton.observe("click", function() {
@@ -380,7 +380,10 @@ define([
                     var event = { "phenotipsPatientID": patientElement.phenotipsID };
                     document.fire("pedigree:patient:removedfromfamily", event);
                 };
-                editor.getOkCancelDialogue().show("Remove this patient record from the family?", "Remove?", onRemove);
+                editor.getOkCancelDialogue().showCustomized(
+                        "You are about to remove this patient from the pedigree. The patient record will still exist in PhenoTips. Would you like to proceed?",
+                        "Remove?",
+                        "Yes", onRemove, "No");
             });
 
             var item = new Element('div', {'id' : patientElement.phenotipsID})
