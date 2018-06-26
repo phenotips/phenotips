@@ -119,7 +119,8 @@ public class UsersAndGroups implements Initializable
 
         StringBuilder groupsQuerySb = new StringBuilder();
         groupsQuerySb.append("from doc.object(PhenoTips.PhenoTipsGroupClass) as groups");
-        groupsQuerySb.append(" where lower(doc.name) like :").append(UsersAndGroups.INPUT_PARAMETER);
+        groupsQuerySb.append(" where concat(concat(lower(doc.name), ' '), lower(doc.title)) like ");
+        groupsQuerySb.append(":").append(UsersAndGroups.INPUT_PARAMETER);
         groupsQuerySb.append(" and doc.fullName <> 'PhenoTips.PhenoTipsGroupTemplate'");
         groupsQuerySb.append(" order by doc.name");
         UsersAndGroups.groupsQueryString = groupsQuerySb.toString();
