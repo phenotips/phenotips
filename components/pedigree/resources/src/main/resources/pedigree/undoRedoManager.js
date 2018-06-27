@@ -45,7 +45,9 @@ define([
                     }
 
                     // trySetAllProperties
-                    if (state.eventToGetToThisState.memo.modifications.trySetAllProperties) {
+                    if (state.eventToGetToThisState
+                        && state.eventToGetToThisState.memo
+                        && state.eventToGetToThisState.memo.modifications.trySetAllProperties) {
                         if (state.eventToGetToThisState.memo.modifications.trySetAllProperties.pedigreeProperties
                             && state.eventToGetToThisState.memo.modifications.trySetAllProperties.pedigreeProperties.phenotipsId) {
                             delete state.eventToGetToThisState.memo.modifications.trySetAllProperties.pedigreeProperties.phenotipsId;
