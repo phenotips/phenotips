@@ -119,7 +119,8 @@ public class UsersAndGroups implements Initializable
 
         StringBuilder groupsQuerySb = new StringBuilder();
         groupsQuerySb.append("from doc.object(PhenoTips.PhenoTipsGroupClass) as groups");
-        groupsQuerySb.append(" where lower(doc.name) like :").append(UsersAndGroups.INPUT_PARAMETER);
+        groupsQuerySb.append(" where concat(concat(lower(doc.name), ' '), lower(doc.title)) like ");
+        groupsQuerySb.append(":").append(UsersAndGroups.INPUT_PARAMETER);
         groupsQuerySb.append(" and doc.fullName <> 'PhenoTips.PhenoTipsGroupTemplate'");
         groupsQuerySb.append(" order by doc.name");
         UsersAndGroups.groupsQueryString = groupsQuerySb.toString();
@@ -182,8 +183,7 @@ public class UsersAndGroups implements Initializable
     public String search(String input, int maxResults, boolean searchUsers, boolean searchGroups,
         boolean returnAsJSON)
     {
-        String formattedInput = input.toLowerCase();
-        formattedInput = String.format(UsersAndGroups.INPUT_FORMAT, input);
+        String formattedInput = String.format(UsersAndGroups.INPUT_FORMAT, input.toLowerCase());
 
         JSONArray resultArray = new JSONArray();
         try {
@@ -292,9 +292,9 @@ public class UsersAndGroups implements Initializable
                 XWiki xwiki = xcontext.getWiki();
                 avatarURL = xwiki.getSkinFile("icons/xwiki/noavatargroup.png", xcontext);
             }
-            JSONObject o =
-                createObject(group.getReference().getName(), groupName, avatarURL, group.getReference().getName(),
-                    groupName);
+            DocumentReference ref = (DocumentReference) group.getReference();
+            XWikiDocument doc = (XWikiDocument) this.bridge.getDocument(ref);
+            JSONObject o = createObject(ref.getName(), groupName, avatarURL, doc.getTitle(), groupName);
             resultArray.put(o);
         }
     }
