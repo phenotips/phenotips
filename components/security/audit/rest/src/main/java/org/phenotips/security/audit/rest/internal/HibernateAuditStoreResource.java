@@ -33,7 +33,6 @@ import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -60,8 +59,6 @@ import org.json.JSONObject;
 @Singleton
 public class HibernateAuditStoreResource extends XWikiResource implements AuditStoreResource
 {
-    private static final List<String> ACTION_VALUES = Arrays.asList("view", "edit", "get", "export");
-
     @Inject
     private AuditStore auditStore;
 
@@ -108,7 +105,7 @@ public class HibernateAuditStoreResource extends XWikiResource implements AuditS
     {
         DocumentReference entity = StringUtils.isNotBlank(entityId) ? this.resolverd.resolve(entityId) : null;
         User user = StringUtils.isNotBlank(userId) ? this.users.getUser(userId) : null;
-        String actionId = ACTION_VALUES.contains(action) ? action : null;
+        String actionId = StringUtils.isNotBlank(action) ? action : null;
         String ipValue = StringUtils.isNotBlank(ip) ? ip : null;
 
         AuditEvent eventTemplate = new AuditEvent(user, ipValue, actionId, null, entity, null);

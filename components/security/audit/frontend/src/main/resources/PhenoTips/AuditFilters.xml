@@ -60,13 +60,18 @@
 * $services.localization.render('phenotips.auditFilters.user') {{html clean=false}}&lt;input type="text" class="suggestUsers" name="user" value=""/&gt;{{/html}}
 * $services.localization.render('phenotips.auditFilters.ip') {{html clean=false}}&lt;input type="text" name="ip" value=""/&gt;{{/html}}
 * $services.localization.render('phenotips.auditFilters.action') {{html clean=false}}&lt;select name="action"&gt;
-                                                                           &lt;option value="all" selected="selected"&gt;$services.localization.render('phenotips.auditFilters.action.all')&lt;/option&gt;
+                                                                           &lt;option value="" selected="selected"&gt;$services.localization.render('phenotips.auditFilters.action.all')&lt;/option&gt;
                                                                            &lt;option value="view" &gt;$services.localization.render('phenotips.auditFilters.action.view')&lt;/option&gt;
                                                                            &lt;option value="edit" &gt;$services.localization.render('phenotips.auditFilters.action.edit')&lt;/option&gt;
                                                                            &lt;option value="get" &gt;$services.localization.render('phenotips.auditFilters.action.get')&lt;/option&gt;
                                                                            &lt;option value="export" &gt;$services.localization.render('phenotips.auditFilters.action.export')&lt;/option&gt;
                                                                            &lt;option value="download" &gt;$services.localization.render('phenotips.auditFilters.action.download')&lt;/option&gt;
-                                                                           &lt;/select&gt;{{/html}}
+                                                                           &lt;option value="delete" &gt;$services.localization.render('phenotips.auditFilters.action.delete')&lt;/option&gt;
+                                                                           &lt;option value="save" &gt;$services.localization.render('phenotips.auditFilters.action.save')&lt;/option&gt;
+                                                                           &lt;option value="login" &gt;$services.localization.render('phenotips.auditFilters.action.login')&lt;/option&gt;
+                                                                           &lt;option value="logout" &gt;$services.localization.render('phenotips.auditFilters.action.logout')&lt;/option&gt;
+                                                                           &lt;option value="cancel" &gt;$services.localization.render('phenotips.auditFilters.action.cancel')&lt;/option&gt;
+                                                                          &lt;/select&gt;{{/html}}
 * $services.localization.render('phenotips.auditFilters.entity') {{html clean=false}}&lt;input type="text" class="suggestEntity" value=""/&gt;{{/html}}
 #end
 {{/velocity}}</content>

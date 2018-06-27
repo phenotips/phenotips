@@ -32,7 +32,6 @@ import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
@@ -55,8 +54,6 @@ import org.apache.commons.lang3.StringUtils;
 @Singleton
 public class AuditScriptService implements ScriptService
 {
-    private static final List<String> ACTION_VALUES = Arrays.asList("view", "edit", "get", "export", "download");
-
     @Inject
     private AuditStore store;
 
@@ -162,7 +159,7 @@ public class AuditScriptService implements ScriptService
 
             DocumentReference entity = entityId != null ? this.resolverd.resolve(entityId) : null;
             User user = userId != null ? this.users.getUser(userId) : null;
-            String actionId = ACTION_VALUES.contains(action) ? action : null;
+            String actionId = StringUtils.isNotBlank(action) ? action : null;
             String ipValue = StringUtils.isNotBlank(ip) ? ip : null;
 
             AuditEvent eventTemplate = new AuditEvent(user, ipValue, actionId, null, entity, null);
@@ -210,7 +207,7 @@ public class AuditScriptService implements ScriptService
 
             DocumentReference entity = StringUtils.isNotBlank(entityId) ? this.resolverd.resolve(entityId) : null;
             User user = StringUtils.isNotBlank(userId) ? this.users.getUser(userId) : null;
-            String actionId = ACTION_VALUES.contains(action) ? action : null;
+            String actionId = StringUtils.isNotBlank(action) ? action : null;
             String ipValue = StringUtils.isNotBlank(ip) ? ip : null;
 
             AuditEvent eventTemplate = new AuditEvent(user, ipValue, actionId, null, entity, null);

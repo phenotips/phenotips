@@ -24,6 +24,7 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.users.User;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
@@ -56,6 +57,9 @@ public class HibernateAuditStore implements AuditStore
 {
     private static final String TIME_FIELD_NAME = "time";
 
+    private static final List<String> ACTION_IGNORED = Arrays.asList("tex", "temp", "dot", "svg", "skin", "jsx", "ssx",
+        "charting", "lock", "imagecaptcha", "unknown");
+
     /** Handles persistence. */
     @Inject
     private HibernateSessionFactory sessionFactory;
@@ -66,6 +70,9 @@ public class HibernateAuditStore implements AuditStore
     @Override
     public void store(AuditEvent event)
     {
+        if (ACTION_IGNORED.contains(event.getAction())) {
+            return;
+        }
         Session session = this.sessionFactory.getSessionFactory().openSession();
         try {
             Transaction t = session.beginTransaction();
