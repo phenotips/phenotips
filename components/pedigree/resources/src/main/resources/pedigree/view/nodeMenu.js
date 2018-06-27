@@ -1,25 +1,68 @@
 /**
- * NodeMenu is a UI Element containing options for AbstractNode elements
+ * NodeMenu is a UI dialogue that allows editing of multiple data fields of various types.
+ * The data will be displayed in a tabbed dialogue, with field parameters determining which data goes to which tab.
+ *
+ * The dialog is supposed to be initialized once with a list of all posible fields (at which point
+ * all the DOM elements for all the fields are created, and the dialog is hidden), and then displayed
+ * when necessary using the `show()` method which takes a `node` object as a parameter and populates
+ * the fields based on the data obtained via the `node.getSummary()` method (at which point some fields
+ * may be hidden or disabled, depending on the data specific to the node).
  *
  * @class NodeMenu
  * @constructor
- * @param {Array} data Contains objects corresponding to different menu items
+ * @param {Array} data - a list of objects each representing one input field (in the field definition format described below)
+ * @param {String} additionalCSSClass - additional CSS added to the main dialog container/div element
+ * @param {Object} options - a set of (optional) parameters modifying some aspects of dialog behaviour (in the format described below)
  *
- {
- [
-    {
-        'name' : the name of the menu item,
-        'label' : the text label above this menu option,
-        'type' : the type of form input. (eg. 'radio', 'date-picker', 'text', 'textarea', 'disease-picker', 'select'),
-        'values' : [
-                    {'actual' : actual value of the option, 'displayed' : the way the option will be seen in the menu} ...
-                    ]
-    }, ...
- ]
- }
-
- Note: when an item is specified as "inactive" it is completely removed from the menu; when it
-       is specified as "disabled" it is greyed-out and does not allow selection, but is still visible.
+ * Field definition format:
+ *   [
+ *      {
+ *          'name'    : the internal name of the menu item,
+ *          'label'   : the text label above the input element for this item,
+ *          'type'    : determines what kind of input element is rendered for this input field, and sets its behaviour;
+ *                      supported types are:
+ *                         - generic: 'radio', 'text', 'textarea', 'date-picker', 'select'
+ *                         - phenotips specific: 'phenotipsid-picker', 'gene-picker', 'disease-picker'
+ *                      the type determines what kind of input element is rendered for this input field,
+ *          'tab'     : name of the tab to display the data on. The set of tabs presented is determined based on the tabs specified
+ *                      in this field,
+ *          'function': (optional) the method name of a Node object which is used to set the value of this type of data;
+ *                      if the function name starts with a 'set' (e.g. "setXXX") a "pedigree:node:setproperty" event will be
+ *                      triggered for each edit of the field, otherwise a "pedigree:node:modify" is triggered for each edit;
+ *                      note: events are not triggered in the "noDynamicUpdates" mode, see `options` description below)
+ *          'default' : (optional) default value of the field, if none is provided when the dialog is displayed via `show()`
+ *
+ *          Some of the data types support additional parameters:
+ *
+ *          'values'  : specifies the set of options for the `radio`-typed inputs, should be an array of objects in the format below:
+ *                      [
+ *                        {'actual' : actual value of the option, 'displayed' : the way the option will be displayed in the dialog},
+ *                        ...
+ *                      ]
+ *      }, ...
+ *   ]
+ *
+ * `getSummary()` format which is used to set the value of the fields when dialog is displayed:
+ *
+ *   {
+ *     name: {                     // should match the name of a field as specified in the field definition array above
+ *       'value' : ...,            // the value that the element of this type (specified in the field definiton array) knows how to render
+ *       'disabled': boolean,      // (optional) when true, the element is displayed but grayed out and not available for edit
+ *       'inactive': boolean },    // (optional) when true, the element is not displayed at all
+ *     ...
+ *   }
+ *
+ * `options` object format:
+ *   {
+ *     'modalMode'       : boolean (optional),  // when true, the dialog is displayed as modal, and can only be closed by
+ *                                              //            pressing a dedicated button (e.g. "cancel" or "create new patient" buttons)
+ *     'noDynamicUpdates': boolean (optional),  // when true, no events are fired after every edit, and the only way to get the
+ *                                              //            data entered in the dialog is by processing events triggered by
+ *                                              //            special buttons such as the "create new patient" button
+ *                                              // when false (default) an event is fired for every edit of every field that has a
+ *                                              //            'function' property set (either "pedigree:node:modify"
+ *                                              //            or "pedigree:node:setproperty", depending on function name, see above)
+ *   }
  */
 define([
         "pedigree/disorder",
@@ -41,7 +84,7 @@ define([
         AgeCalc
     ){
     NodeMenu = Class.create({
-        initialize : function(data, otherCSSClass, options) {
+        initialize : function(data, additionalCSSClass, options) {
 
             var tabs = this._findActiveTabs(data);
 
@@ -61,8 +104,7 @@ define([
 
             "All the required fields on another tab should be filled before the data can be saved"
             this.canvas = editor.getWorkspace().canvas || $('body');
-            var cssClass = 'menu-box';
-            if (otherCSSClass) cssClass += " " + otherCSSClass;
+            var cssClass = 'menu-box' + (additionalCSSClass ? (" " + additionalCSSClass) : "");
             this.menuBox = new Element('div', {'class' : cssClass});
             // width: 27em with 3 tabs, add 6.5em for each additional tab
             var menuWidthEM = 27 + Math.max(0,(tabs.length - 3))*6.5;
@@ -320,7 +362,6 @@ define([
                         resultInfo : {},
                         resultParent : "is_a",
                         tooltip: 'phenotype-info'
-                        //parentContainer: $('tab_Cancers').up('.tabholder')
                     },
                     'patients' : {
                         script: editor.getExternalEndpoint().getPatientSuggestServiceURL(),
@@ -403,20 +444,36 @@ define([
 
             var _this = this;
             eventNames.each(function(eventName) {
+
+                //-------------------------------------------------------------------------------------------
+                // this is the function which is called for each and every change of the value for the field
+                // (e.g. radio value i schanged or any single charatcer is added or removed in a text field
+                //-------------------------------------------------------------------------------------------
                 field.observe(eventName, function(event) {
                     _this._saveCursorPositionIfNecessary(field);
                     if (_this._updating) return; // otherwise a field change triggers an update which triggers field change etc
 
+                    // update the internal representation of the data
                     if (event.hasOwnProperty("memo") && event.memo.hasOwnProperty("useValue")) {
                         _this.fieldMap[field.name].crtValue = event.memo.useValue;
                     } else {
                         _this.fieldMap[field.name].crtValue = field._getValue && field._getValue()[0];
                     }
 
+                    // normally for every change an event is fired so that the change can be immediately reflected
+                    // on the pedigree image. In the "noDynamicUpdates" mode the change is stored intenrally but
+                    // nothing happens until an explicit update is triggered by some dedicated "submit" button is
+                    // pressed (currently the only suported button is a 'create patient' field/button)
                     if (_this._noDynamicUpdates) {
+
+                        // normally in the "noDynamicUpdates" mode no validations are done until the dedicated
+                        // "submit" button is pressed. However if vlaidations are forced they are still done
+                        // after every single edit
                         if (_this._forceValidation) {
                             validateAllFunc();
                         }
+
+                        // "noDynamicUpdates" mode - nothing else to do
                         return;
                     }
 
@@ -431,11 +488,16 @@ define([
 
                     var method = _this.fieldMap[field.name]['function'];
 
+                    // fire an "update" event: either a "pedigree:node:setproperty" or a "pedigree:node:modify",
+                    // depending on the name of the function specified for this field ("setXXX" is presumed to
+                    // require a "pedigree:node:setproperty" event, everything else a "pedigree:node:modify")
+                    // FIXME: this logic is non-obvious and can be improved
                     if (method.indexOf("set") == 0 && typeof(target[method]) == 'function') {
                         var properties = {};
                         properties[method] = _this.fieldMap[field.name].crtValue;
                         // note: properties which fail validation are allowed to be set for technical reasons (since this is the
-                        // (only) way patrtial data can be stored), but unvalidated states will be excluded from undo/redo sequence
+                        //  only way partial data can be communicated to the rest of pedigree editor in the "yes dynamic updates" mode),
+                        //  but the state will be marked as "failedValidation" so that it is excluded from the undo/redo sequence
                         var fireEvent = { "nodeID": target.getID(), "properties": properties, "failedValidation": !allFieldsValid };
                         document.fire("pedigree:node:setproperty", fireEvent);
                     } else {
@@ -1172,16 +1234,19 @@ define([
             return qualifiers;
         },
 
-        // node: an object which should have a `getSummary()` method defined which is used to populate the inputs
-        //
-        //       if defined, an `onWidgetHide()` method is also used when this menu is closed
-        //
-        //       if defined, a `getProperties()` method is used when creating a new patient based on data entered in this dialog
-        //
-        //       if "dynamicUpdates" are on (by default) once a field is modified the node is checked for
-        //       presense of the setter function ("setXXX()") defined for the field. If a node has the function
-        //       with the given name a "pedigree:node:setproperty" event is fired, otherwise a "pedigree:node:modify"
-        //       event is fired (see this._attachFieldEventListeners()).
+        /**
+         * Displays the dialogue (which is hidden otherwise by default).
+         *
+         * @param {Object} node: an object which should have a `getSummary()` method defined which is used to populate the inputs
+         *
+         *      if defined, an `onWidgetHide()` method of the node object is used when this dialog is closed
+         *
+         *      if defined, a `getProperties()` method is used when creating a new patient based on data entered in this dialog
+         *
+         *      if defined, and if not in "noDynamicUpdates" mode (by default), getID() method is used to specify node id
+         *      when firing "pedigree:node:modify" or "pedigree:node:setproperty" events for fields that have
+         *      a setter function defined (see this._attachFieldEventListeners()).
+         */
         show : function(node, x, y) {
             var me = this;
             this._justOpened = true;

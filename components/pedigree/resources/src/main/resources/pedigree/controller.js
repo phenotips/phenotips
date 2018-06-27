@@ -275,7 +275,7 @@ define([
                 editor.getPatientDataLoader().load([newID], onLoaded);
             };
 
-            // once patient is created need to do a few things:and updated, need to load data for the patient, to meet the
+            // once patient is created need to do a few things:
             //   1) check that all required fields are set
             //   2) load patient data, since code outside of pedigree may have pre-populated patient with some
             //      data right after creation
