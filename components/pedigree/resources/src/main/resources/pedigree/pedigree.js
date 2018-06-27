@@ -109,6 +109,7 @@ define([
                                                      dateEditFormat: "YMD",
                                                      drawNodeShadows: true,
                                                      disabledFields: [],
+                                                     requiredFields: [],
                                                      replaceIdWithExternalID: false,
                                                      displayCancerLabels: true,
                                                      lineStyle: "regular" },
@@ -174,6 +175,7 @@ define([
                     this._nodeMenu = this.generateNodeMenu();
                     this._deceasedMenu = this.generateDeceasedMenu();
                     this._nodeGroupMenu = this.generateNodeGroupMenu();
+                    this._newPersonMenu = this.generateNewPersonMenu();
                     this._partnershipMenu = this.generatePartnershipMenu();
                     this._exportSelector = new ExportSelector();
                     this._printDialog = new PrintDialog();
@@ -611,23 +613,6 @@ define([
         },
 
         /**
-         * Returns the color of the gene for a given person (the color may be different for different people
-         * because the same gene my be causal for one person and candidate or rejected for another).
-         * If a gene does not belong to any legend "undefined" is returned.
-         */
-        getGeneColor: function(geneId, nodeID) {
-            var availableLegends = ["solved", "candidate", "carrier"];
-            for (var i = 0; i < availableLegends.length; i++) {
-                var colorInLegendForNode = this.getGeneLegend(availableLegends[i]).getGeneColor(geneId, nodeID);
-                if (colorInLegendForNode) {
-                    return colorInLegendForNode;
-                }
-            }
-            // none of the legends have it - return undefined;
-            return undefined;
-        },
-
-        /**
          * @method getCancerLegend
          * @return {Legend} Responsible for managing and displaying the common cancers legend
          */
@@ -811,10 +796,23 @@ define([
          */
         generateNodeMenu: function() {
             if (this.isReadOnlyMode()) return null;
-            var disabledFields = this.getPreferencesManager().getConfigurationOption("disabledFields");
-
-            var personMenuFields = NodeMenuFields.getPersonNodeMenuFields(disabledFields);
+            var personMenuFields = NodeMenuFields.getPersonNodeMenuFields();
             return new NodeMenu(personMenuFields, "person-node-menu");
+        },
+
+        /**
+         * Creates a menu to input data to populayte new patient with (e.g. required fields which
+         * should always be populated, even for new otherwise blank patients)
+         *
+         * @method generateNewPersonMenu
+         * @return {NodeMenu}
+         */
+        generateNewPersonMenu: function() {
+            if (this.isReadOnlyMode()) return null;
+            var newPersonMenuFields = NodeMenuFields.getNewPersonMenuFields();
+            return new NodeMenu(newPersonMenuFields, "new-person-node-menu",
+                    { "modalMode": true,
+                      "noDynamicUpdates": true });
         },
 
         /**
@@ -837,6 +835,14 @@ define([
         },
 
         /**
+         * @method getNewPersonMenu
+         * @return {NodeMenu} Context menu for filling data for creating new patients
+         */
+        getNewPersonMenu: function() {
+            return this._newPersonMenu;
+        },
+
+        /**
          * @method getDeceasedMenu
          * @return {DeceasedMenu} Deceased inputs menu for nodes
          */
@@ -852,8 +858,7 @@ define([
          */
         generateNodeGroupMenu: function() {
             if (this.isReadOnlyMode()) return null;
-            var disabledFields = this.getPreferencesManager().getConfigurationOption("disabledFields");
-            var groupMenuFields = NodeMenuFields.getGroupNodeMenuFields(disabledFields);
+            var groupMenuFields = NodeMenuFields.getGroupNodeMenuFields();
             return new NodeMenu(groupMenuFields, "group-node-menu");
         },
 
@@ -873,8 +878,7 @@ define([
          */
         generatePartnershipMenu: function() {
             if (this.isReadOnlyMode()) return null;
-            var disabledFields = this.getPreferencesManager().getConfigurationOption("disabledFields");
-            var relationshipMenuFields = NodeMenuFields.getRelationshipMenuFields(disabledFields);
+            var relationshipMenuFields = NodeMenuFields.getRelationshipMenuFields();
             return new NodeMenu(relationshipMenuFields, "relationship-menu");
         },
 

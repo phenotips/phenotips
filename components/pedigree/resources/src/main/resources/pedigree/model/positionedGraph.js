@@ -3036,19 +3036,6 @@ define([
                 rankY[r] = rankY[r-1] + yDistance + this.options.yExtraPerHorizontalLine*(Math.max(this.vertLevel.rankVerticalLevels[r-1],1) - 1);
             }
 
-            if (oldRanks && oldRankY) {
-                // attempt to keep the old Y coordinate for the proband node to minimize UI redraws
-                var nodeID = (this.probandId == -1) ? 0 : this.probandId;
-                var oldRank = oldRanks[nodeID];
-                var newRank = this.ranks[nodeID];
-                var oldY = oldRankY[oldRank];
-                var newY = rankY[newRank];
-                var shiftAmount = newY - oldY;
-                for ( var r = 0; r <= this.maxRank; r++ ) {
-                    rankY[r] -= shiftAmount;
-                }
-            }
-
             return rankY;
         },
 

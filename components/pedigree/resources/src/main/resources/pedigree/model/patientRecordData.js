@@ -24,6 +24,7 @@ define([], function(){
             this._patientRecordData = {};
 
             document.observe("pedigree:patient:deleted", this.handlePatientRecordDeleted.bind(this));
+            document.observe("pedigree:patient:removedfromfamily", this.handlePatientRecordDeleted.bind(this));
         },
 
         hasPatient: function(phenotipsPatientID) {

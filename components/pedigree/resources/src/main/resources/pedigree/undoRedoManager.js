@@ -45,7 +45,9 @@ define([
                     }
 
                     // trySetAllProperties
-                    if (state.eventToGetToThisState.memo.modifications.trySetAllProperties) {
+                    if (state.eventToGetToThisState
+                        && state.eventToGetToThisState.memo
+                        && state.eventToGetToThisState.memo.modifications.trySetAllProperties) {
                         if (state.eventToGetToThisState.memo.modifications.trySetAllProperties.pedigreeProperties
                             && state.eventToGetToThisState.memo.modifications.trySetAllProperties.pedigreeProperties.phenotipsId) {
                             delete state.eventToGetToThisState.memo.modifications.trySetAllProperties.pedigreeProperties.phenotipsId;
@@ -162,9 +164,11 @@ define([
          *
          * This method takes the current state of pedigree and makes the last undo/redo history state be equal to this state.
          */
-        updateLastState: function() {
+        updateLastState: function(invalidState) {
             this._stack[this._currentState - 1].serializedState = editor.getGraph().toUndoRedoState();
             this._stack[this._currentState - 1].eventToGetToThisState = null;
+            this._stack[this._currentState - 1].eventToUndo = null;
+            this._stack[this._currentState - 1].invalidState = invalidState;
         },
 
         /**
@@ -221,23 +225,39 @@ define([
             }
             //console.log("Serialized state: " + Helpers.stringifyObject(serializedState));
 
-            var state = new State( serializedState, eventToGetToThisState, eventToUndo );
+            var currentStateIsInvalid = eventToGetToThisState && eventToGetToThisState.hasOwnProperty("memo")
+                                        ? eventToGetToThisState.memo.failedValidation
+                                        : false;
 
-            // 3. push this new state to the array and increment the current index
+            var state = new State( serializedState, eventToGetToThisState, eventToUndo, currentStateIsInvalid );
 
-            // spcial case: consequtive name property changes are combined into one property change
+            // 3. check if the state should be combined with the previous state to avoid ever getting back
+            //    to the previous state: either because the sate is not valid, or because it is an intermediate
+            //    state, e.g. half-completed name
+
             var currentState = this._getCurrentState();
-            if (eventToGetToThisState &&
-                 currentState && currentState.eventToGetToThisState &&
-                 currentState.eventToGetToThisState.eventName == "pedigree:node:setproperty" &&
-                 this._combinableEvents(currentState.eventToGetToThisState, eventToGetToThisState) ) {
-                //console.log("[UNDOREDO] combining state changes");
+
+            // top priority: states should be combined if the previous state is invalid
+            if (currentState && currentState.invalidState) {
+                //console.log("[UNDOREDO] combining state changes based on invalid intermediate state");
+                this.updateLastState(currentStateIsInvalid);
+                //this._debug_print_states();
+                return;
+            }
+
+            if (eventToGetToThisState
+                && currentState
+                && currentState.eventToGetToThisState
+                && currentState.eventToGetToThisState.eventName == "pedigree:node:setproperty"
+                && this._combinableEvents(currentState.eventToGetToThisState, eventToGetToThisState)) {
+                //console.log("[UNDOREDO] combining state changes based on same property");
                 currentState.eventToGetToThisState = eventToGetToThisState;
                 currentState.serializedState       = serializedState;
                 //this._debug_print_states();
                 return;
             }
 
+            // 4. push this new state to the array and increment the current index
             this._addNewest(state);
 
             if (this._size() > this._MAXUNDOSIZE) {
@@ -251,35 +271,40 @@ define([
         /**
          * Returns true iff undo/redo should combine event1 and event2,
          * e.g. name change from "some_old_value" to "Abc" and then to "Abcd" will be combined into
-         *      one name chnage from "some_old_value" to "Abcd"
+         *      one name change from "some_old_value" to "Abcd"
          *
-         * @method _size
-         * @return {Number}
+         * @return {Boolean}
          */
         _combinableEvents: function ( event1, event2 ) {
             if (!event1.hasOwnProperty("memo") || !event2.hasOwnProperty("memo")) {
                 return false;
             }
-            if (!event1.memo.hasOwnProperty("nodeID") || !event2.memo.hasOwnProperty("nodeID") || event1.memo.nodeID != event2.memo.nodeID)
+            if (!event1.memo.hasOwnProperty("nodeID") || !event2.memo.hasOwnProperty("nodeID") || event1.memo.nodeID != event2.memo.nodeID) {
                 return false;
+            }
             if (!event1.memo.hasOwnProperty("properties") || !event2.memo.hasOwnProperty("properties")) {
                 return false;
             }
             if (event1.memo.properties.hasOwnProperty("setFirstName") &&
-                event2.memo.properties.hasOwnProperty("setFirstName") )
+                event2.memo.properties.hasOwnProperty("setFirstName") ) {
                 return true;
+            }
             if (event1.memo.properties.hasOwnProperty("setLastName") &&
-                event2.memo.properties.hasOwnProperty("setLastName") )
+                event2.memo.properties.hasOwnProperty("setLastName") ) {
                 return true;
+            }
             if (event1.memo.properties.hasOwnProperty("setLastNameAtBirth") &&
-                event2.memo.properties.hasOwnProperty("setLastNameAtBirth") )
+                event2.memo.properties.hasOwnProperty("setLastNameAtBirth") ) {
                 return true;
+            }
             if (event1.memo.properties.hasOwnProperty("setComments") &&
-                event2.memo.properties.hasOwnProperty("setComments") )
+                event2.memo.properties.hasOwnProperty("setComments") ) {
                 return true;
+            }
             if (event1.memo.properties.hasOwnProperty("setChildlessReason") &&
-                event2.memo.properties.hasOwnProperty("setChildlessReason") )
+                event2.memo.properties.hasOwnProperty("setChildlessReason") ) {
                 return true;
+            }
             return false;
         },
 
@@ -361,10 +386,11 @@ define([
      * @constructor
      */
     var State = Class.create({
-      initialize: function( serializedState, eventToGetToThisState, eventToUndo ) {
+      initialize: function( serializedState, eventToGetToThisState, eventToUndo, invalidState ) {
           this.serializedState       = serializedState;
           this.eventToGetToThisState = eventToGetToThisState;
           this.eventToUndo           = eventToUndo;
+          this.invalidState          = invalidState;
       }
     });
 

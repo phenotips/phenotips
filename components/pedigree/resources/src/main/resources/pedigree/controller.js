@@ -240,19 +240,74 @@ define([
 
         handleCreatePatientRecord: function(event)
         {
+            var requiredFields = editor.getPreferencesManager().getConfigurationOption("requiredFields");
+
+            // TODO: change the format of the data passed, see comments for NodeMenu._getDataForNewPatient()
+            var patientData = event.memo.patientData;
+
+            if (requiredFields.length > 0) {
+                var missing = false;
+                requiredFields.forEach(function(field) {
+                    if (!patientData || !patientData.includedFields || !patientData.includedFields.hasOwnProperty(field)) {
+                        missing = true;
+                    }
+                });
+
+                if (missing) {
+                    var newPersonMenu = editor.getNewPersonMenu();
+                    var positionX = window.innerWidth/2 - newPersonMenu.getDialogWidth()/2;
+                    newPersonMenu.show({"getSummary": function() { return {}; } }, positionX, 100);
+                    return;
+                }
+            }
+
             var onCreatedHandler = event.memo.onCreatedHandler;
             var onFailureHandler = event.memo.onFailureHandler
                                    ? event.memo.onFailureHandler
                                    : (function() { editor.getOkCancelDialogue().showError("Can not create a new patient", "Can not create", "OK"); });
 
-            // once patient is created need to load data for the patient, to meet the
+            // once patient is created and updated, need to load data for the patient, to meet the
             // assumption that data for all patients is always loaded
-            var onCreated = function(newID) {
+            var onCreatedAndUpdated = function(newID) {
                 var onLoaded = function(data) {
-                    onCreatedHandler(newID, data[newID]);
+                    onCreatedHandler && onCreatedHandler(newID, data[newID]);
                 }
                 editor.getPatientDataLoader().load([newID], onLoaded);
             };
+
+            // once patient is created need to do a few things:
+            //   1) check that all required fields are set
+            //   2) load patient data, since code outside of pedigree may have pre-populated patient with some
+            //      data right after creation
+            var onCreated = function(newID) {
+
+                // 1. check required fields and update, if necessary
+                if (requiredFields.length > 0) {
+
+                    // generate PhenotipsJSON based on available data
+                    var phenotipsPatientJSON = PhenotipsJSON.internalToPhenotipsJSON(patientData.pedigreeJSON, {});
+
+                    var createPatientURL = editor.getExternalEndpoint().getPatientUpdateURL(newID);
+                    document.fire("pedigree:blockinteraction:start", {"message": "Updating required fields for the new patient record..."});
+                    new Ajax.Request(createPatientURL, {
+                        contentType: "application/json",
+                        postBody: JSON.stringify(phenotipsPatientJSON),
+                        method: 'POST',
+                        onSuccess: function(response) {
+                            if (response.status == editor.getExternalEndpoint().getPatientUpdateOKStatusCode()) {
+                                console.log("Updated patient: " + newID + " with required field(s) data");
+                                onCreatedAndUpdated(newID)
+                            } else {
+                                onFailureHandler();
+                            }
+                        },
+                        onFailure: onFailureHandler,
+                        onComplete: function() { document.fire("pedigree:blockinteraction:finish"); }
+                    });
+                } else {
+                    onCreatedAndUpdated(newID);
+                }
+            }
 
             var createPatientURL = editor.getExternalEndpoint().getFamilyNewPatientURL();
             document.fire("pedigree:blockinteraction:start", {"message": "Waiting for the patient record to be created..."});

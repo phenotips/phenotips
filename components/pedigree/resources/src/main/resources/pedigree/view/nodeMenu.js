@@ -1,25 +1,68 @@
 /**
- * NodeMenu is a UI Element containing options for AbstractNode elements
+ * NodeMenu is a UI dialogue that allows editing of multiple data fields of various types.
+ * The data will be displayed in a tabbed dialogue, with field parameters determining which data goes to which tab.
+ *
+ * The dialog is supposed to be initialized once with a list of all posible fields (at which point
+ * all the DOM elements for all the fields are created, and the dialog is hidden), and then displayed
+ * when necessary using the `show()` method which takes a `node` object as a parameter and populates
+ * the fields based on the data obtained via the `node.getSummary()` method (at which point some fields
+ * may be hidden or disabled, depending on the data specific to the node).
  *
  * @class NodeMenu
  * @constructor
- * @param {Array} data Contains objects corresponding to different menu items
+ * @param {Array} data - a list of objects each representing one input field (in the field definition format described below)
+ * @param {String} additionalCSSClass - additional CSS added to the main dialog container/div element
+ * @param {Object} options - a set of (optional) parameters modifying some aspects of dialog behaviour (in the format described below)
  *
- {
- [
-    {
-        'name' : the name of the menu item,
-        'label' : the text label above this menu option,
-        'type' : the type of form input. (eg. 'radio', 'date-picker', 'text', 'textarea', 'disease-picker', 'select'),
-        'values' : [
-                    {'actual' : actual value of the option, 'displayed' : the way the option will be seen in the menu} ...
-                    ]
-    }, ...
- ]
- }
-
- Note: when an item is specified as "inactive" it is completely removed from the menu; when it
-       is specified as "disabled" it is greyed-out and does not allow selection, but is still visible.
+ * Field definition format:
+ *   [
+ *      {
+ *          'name'    : the internal name of the menu item,
+ *          'label'   : the text label above the input element for this item,
+ *          'type'    : determines what kind of input element is rendered for this input field, and sets its behaviour;
+ *                      supported types are:
+ *                         - generic: 'radio', 'text', 'textarea', 'date-picker', 'select'
+ *                         - phenotips specific: 'phenotipsid-picker', 'gene-picker', 'disease-picker'
+ *                      the type determines what kind of input element is rendered for this input field,
+ *          'tab'     : name of the tab to display the data on. The set of tabs presented is determined based on the tabs specified
+ *                      in this field,
+ *          'function': (optional) the method name of a Node object which is used to set the value of this type of data;
+ *                      if the function name starts with a 'set' (e.g. "setXXX") a "pedigree:node:setproperty" event will be
+ *                      triggered for each edit of the field, otherwise a "pedigree:node:modify" is triggered for each edit;
+ *                      note: events are not triggered in the "noDynamicUpdates" mode, see `options` description below)
+ *          'default' : (optional) default value of the field, if none is provided when the dialog is displayed via `show()`
+ *
+ *          Some of the data types support additional parameters:
+ *
+ *          'values'  : specifies the set of options for the `radio`-typed inputs, should be an array of objects in the format below:
+ *                      [
+ *                        {'actual' : actual value of the option, 'displayed' : the way the option will be displayed in the dialog},
+ *                        ...
+ *                      ]
+ *      }, ...
+ *   ]
+ *
+ * `getSummary()` format which is used to set the value of the fields when dialog is displayed:
+ *
+ *   {
+ *     name: {                     // should match the name of a field as specified in the field definition array above
+ *       'value' : ...,            // the value that the element of this type (specified in the field definiton array) knows how to render
+ *       'disabled': boolean,      // (optional) when true, the element is displayed but grayed out and not available for edit
+ *       'inactive': boolean },    // (optional) when true, the element is not displayed at all
+ *     ...
+ *   }
+ *
+ * `options` object format:
+ *   {
+ *     'modalMode'       : boolean (optional),  // when true, the dialog is displayed as modal, and can only be closed by
+ *                                              //            pressing a dedicated button (e.g. "cancel" or "create new patient" buttons)
+ *     'noDynamicUpdates': boolean (optional),  // when true, no events are fired after every edit, and the only way to get the
+ *                                              //            data entered in the dialog is by processing events triggered by
+ *                                              //            special buttons such as the "create new patient" button
+ *                                              // when false (default) an event is fired for every edit of every field that has a
+ *                                              //            'function' property set (either "pedigree:node:modify"
+ *                                              //            or "pedigree:node:setproperty", depending on function name, see above)
+ *   }
  */
 define([
         "pedigree/disorder",
@@ -41,21 +84,33 @@ define([
         AgeCalc
     ){
     NodeMenu = Class.create({
-        initialize : function(data, otherCSSClass) {
+        initialize : function(data, additionalCSSClass, options) {
 
             var tabs = this._findActiveTabs(data);
 
             //console.log("nodeMenu initialize");
             this._justOpened = false;
+            this._forceValidation = false;
+
+            this._modalMode = options && options.hasOwnProperty("modalMode") ? options.modalMode : false;
+            this._noDynamicUpdates = options && options.hasOwnProperty("noDynamicUpdates") ? options.noDynamicUpdates : false;
+
+            this._notValidMessageOnCurrentTab = options && options.hasOwnProperty("sameTabInvalidMessage")
+                                                ? options.sameTabInvalidMessage
+                                                : "All the required fields should be filled before the data can be saved";
+            this._notValidMessageOnOtherTab = options && options.hasOwnProperty("otherTabInvalidMessage")
+                                              ? options.otherTabInvalidMessage
+                                              : "All the required fields on another tab should be filled before the data can be saved";
+
+            "All the required fields on another tab should be filled before the data can be saved"
             this.canvas = editor.getWorkspace().canvas || $('body');
-            var cssClass = 'menu-box';
-            if (otherCSSClass) cssClass += " " + otherCSSClass;
+            var cssClass = 'menu-box' + (additionalCSSClass ? (" " + additionalCSSClass) : "");
             this.menuBox = new Element('div', {'class' : cssClass});
             // width: 27em with 3 tabs, add 6.5em for each additional tab
             var menuWidthEM = 27 + Math.max(0,(tabs.length - 3))*6.5;
             this.menuBox.style.width = menuWidthEM + "em";
 
-            this.closeButton = new Element('span', {'class' : 'close-button'}).update('×');
+            this.closeButton = new Element('span', {'class' : 'close-button field-no-user-select'}).update('×');
             this.menuBox.insert({'top': this.closeButton});
             this.closeButton.observe('click', this.hide.bindAsEventListener(this));
 
@@ -68,7 +123,12 @@ define([
                 for (var i = 0; i < tabs.length; i++) {
                     var tabName = tabs[i];
                     var activeClass = (i == 0) ? "active" : "";
-                    this.tabs[tabName] = new Element('div', {'id': 'tab_' + tabName, 'class': 'content ' + activeClass});
+                    this.tabs[tabName] = new Element('div', {'id': 'tab_' + tabName.replace(' ',''), 'class': 'content ' + activeClass});
+
+                    this.tabs[tabName].messageContainer = new Element('div', {'class': 'tab-message-container'});
+                    this.tabs[tabName].messageContainer.hide();
+                    this.tabs[tabName].insert(this.tabs[tabName].messageContainer);
+
                     this.form.insert(this.tabs[tabName]);
 
                     this.tabHeaders[tabName] = new Element('dd', {"class": activeClass}).insert("<a>" + tabName + "</a>");
@@ -115,8 +175,13 @@ define([
             });
 
             // Insert in document
-            this.hide();
+            this.menuBox.hide();
             editor.getWorkspace().getWorkArea().insert(this.menuBox);
+
+
+            this.invalidValueScreen = new Element('div', {'class' : 'invalidValueScreen'});
+            this.invalidValueScreen.hide();
+            editor.getWorkspace().getWorkArea().insert(this.invalidValueScreen);
 
             this._onClickOutside = this._onClickOutside.bindAsEventListener(this);
 
@@ -296,8 +361,7 @@ define([
                         resultCategory : "term_category",
                         resultInfo : {},
                         resultParent : "is_a",
-                        tooltip: 'phenotype-info',
-                        parentContainer: $('tab_Cancers').up('.tabholder')
+                        tooltip: 'phenotype-info'
                     },
                     'patients' : {
                         script: editor.getExternalEndpoint().getPatientSuggestServiceURL(),
@@ -357,38 +421,84 @@ define([
             result.insert(label).insert(result.inputsContainer);
             this.fieldMap[data.name] = {
                 'type' : data.type,
+                'tab'  : data.tab,
                 'element' : result,
                 'default' : data["default"] || '',
                 'crtValue' : data["default"] || '',
                 'function' : data['function'],
-                'inactive' : false
+                'inactive' : false,
+                'required' : data["required"] || false
             };
             return result;
         },
 
         _attachFieldEventListeners : function (field, eventNames, values) {
+
+            // for each field, this.fieldMap[field_name].element is the container
+            // which contains all UI elements for this data. But sometimes the element that is
+            // the actual input element is needed to be known (e.g. for validation to highlight it),
+            // so this.fieldMap[field_name].inputElement stores that element
+            this.fieldMap[field.name].inputElement = field;
+
+            var validateAllFunc = this._validateAllFields.bind(this);
+
             var _this = this;
             eventNames.each(function(eventName) {
+
+                //-------------------------------------------------------------------------------------------
+                // this is the function which is called for each and every change of the value for the field
+                // (e.g. radio value i schanged or any single charatcer is added or removed in a text field
+                //-------------------------------------------------------------------------------------------
                 field.observe(eventName, function(event) {
                     _this._saveCursorPositionIfNecessary(field);
                     if (_this._updating) return; // otherwise a field change triggers an update which triggers field change etc
-                    var target = _this.targetNode;
-                    if (!target) return;
+
+                    // update the internal representation of the data
                     if (event.hasOwnProperty("memo") && event.memo.hasOwnProperty("useValue")) {
                         _this.fieldMap[field.name].crtValue = event.memo.useValue;
                     } else {
                         _this.fieldMap[field.name].crtValue = field._getValue && field._getValue()[0];
                     }
-                    var method = _this.fieldMap[field.name]['function'];
 
+                    // normally for every change an event is fired so that the change can be immediately reflected
+                    // on the pedigree image. In the "noDynamicUpdates" mode the change is stored intenrally but
+                    // nothing happens until an explicit update is triggered by some dedicated "submit" button is
+                    // pressed (currently the only suported button is a 'create patient' field/button)
+                    if (_this._noDynamicUpdates) {
+
+                        // normally in the "noDynamicUpdates" mode no validations are done until the dedicated
+                        // "submit" button is pressed. However if vlaidations are forced they are still done
+                        // after every single edit
+                        if (_this._forceValidation) {
+                            validateAllFunc();
+                        }
+
+                        // "noDynamicUpdates" mode - nothing else to do
+                        return;
+                    }
+
+                    var target = _this.targetNode;
+                    if (!target) return;
                     if (target.getSummary()[field.name].value == _this.fieldMap[field.name].crtValue) {
                         return;
                     }
 
+                    // validate all fields as they are after this change
+                    var allFieldsValid = validateAllFunc();
+
+                    var method = _this.fieldMap[field.name]['function'];
+
+                    // fire an "update" event: either a "pedigree:node:setproperty" or a "pedigree:node:modify",
+                    // depending on the name of the function specified for this field ("setXXX" is presumed to
+                    // require a "pedigree:node:setproperty" event, everything else a "pedigree:node:modify")
+                    // FIXME: this logic is non-obvious and can be improved
                     if (method.indexOf("set") == 0 && typeof(target[method]) == 'function') {
                         var properties = {};
                         properties[method] = _this.fieldMap[field.name].crtValue;
-                        var fireEvent = { "nodeID": target.getID(), "properties": properties };
+                        // note: properties which fail validation are allowed to be set for technical reasons (since this is the
+                        //  only way partial data can be communicated to the rest of pedigree editor in the "yes dynamic updates" mode),
+                        //  but the state will be marked as "failedValidation" so that it is excluded from the undo/redo sequence
+                        var fireEvent = { "nodeID": target.getID(), "properties": properties, "failedValidation": !allFieldsValid };
                         document.fire("pedigree:node:setproperty", fireEvent);
                     } else {
                         var properties = {};
@@ -402,6 +512,91 @@ define([
                     field.fire('pedigree:change');
                 });
             });
+        },
+
+        _validateAllFields: function(forceRequiredFieldValidation, forceErrorMessage) {
+            var validationFailed = false;
+
+            var hasLinkedRecord = (this.fieldMap["phenotipsid"] && this.fieldMap["phenotipsid"].crtValue);
+
+            var tabsWithMissingData = {};
+
+            for (var field in this.fieldMap) {
+                if (this.fieldMap.hasOwnProperty(field)) {
+                    var fieldData = this.fieldMap[field];
+                    var validationFunction = this._validateFieldValue[fieldData.type]
+
+                    // only apply "required" field validation for nodes which are linked to PhenoTips records,
+                    // or if validation is explicitly requested. If not, validate other stuff but not "required" status
+                    if (!hasLinkedRecord && !forceRequiredFieldValidation && !this._forceValidation) {
+                        fieldData = Helpers.cloneObject(fieldData);
+                        fieldData.required = false;
+                    }
+
+                    if (!validationFunction(fieldData.inputElement, fieldData, fieldData.crtValue)) {
+                        validationFailed = true;
+                        tabsWithMissingData[fieldData.tab] = true;
+                    }
+                }
+            }
+
+            if (validationFailed && (hasLinkedRecord || forceErrorMessage || this._forceValidation)) {
+                this._activateInvalidValueScreen(tabsWithMissingData);
+            } else {
+                this._deactivateInvalidValueScreen();
+            }
+
+            return !validationFailed;
+        },
+
+        _activateInvalidValueScreen: function(tabsWithMissingData, skipErrorMessage) {
+            this.closeButton.addClassName("no-mouse-interaction");
+            this.closeButton.addClassName("button-disabled");
+
+            if (!window.getComputedStyle) {
+                var invalidBlockerZIndex = document.defaultView.getComputedStyle(this.menuBox,null).getPropertyValue("z-index") - 1;
+                this.invalidValueScreen.style.zIndex = invalidBlockerZIndex-1;
+            }
+            this.invalidValueScreen.style.zIndex = invalidBlockerZIndex-1;
+            this.invalidValueScreen.show();
+
+            if (!skipErrorMessage) {
+                for (var tab in this.tabs) {
+                    if (this.tabs.hasOwnProperty(tab)) {
+                        var tabContainer = this.tabs[tab];
+                        tabContainer.messageContainer.addClassName("error-message-container");
+                        if (tabsWithMissingData.hasOwnProperty(tab)) {
+                            tabContainer.messageContainer.update(this._notValidMessageOnCurrentTab);
+                        } else {
+                            tabContainer.messageContainer.update(this._notValidMessageOnOtherTab);
+                        }
+                        tabContainer.messageContainer.show();
+                    }
+                }
+            }
+        },
+
+        _deactivateInvalidValueScreen: function(removeModalScreen) {
+            this.closeButton.removeClassName("no-mouse-interaction");
+            this.closeButton.removeClassName("button-disabled");
+
+            if (!this._modalMode || removeModalScreen) {
+                this.invalidValueScreen.hide();
+            }
+
+            for (var tab in this.tabs) {
+                if (this.tabs.hasOwnProperty(tab)) {
+                    var tabContainer = this.tabs[tab];
+                    tabContainer.messageContainer.removeClassName("error-message-container");
+                    if (!tabContainer.hasOwnProperty("tabMessage")) {
+                        tabContainer.messageContainer.hide();
+                    } else {
+                        tabContainer.messageContainer.addClassName("info-message-container");
+                        tabContainer.messageContainer.update(tabContainer.tabMessage);
+                        tabContainer.messageContainer.show();
+                    }
+                }
+            }
         },
 
         _saveCursorPositionIfNecessary: function(field) {
@@ -437,6 +632,8 @@ define([
                 }
                 delete this._updating;
             }
+
+            this._validateAllFields();
         },
 
         _attachDependencyBehavior : function(field, data) {
@@ -628,13 +825,69 @@ define([
                 }.bind(cancersPicker);
                 return result;
             },
+            'submit-cancel' : function(data) {
+                this.closeButton.hide();
+                var _this = this;
+
+                if (data.not_valid_message) {
+                    this._notValidMessageOnCurrentTab = data.not_valid_message;
+                }
+
+                if (data.tab_message && data.tab) {
+                    if (this.tabs.hasOwnProperty(data.tab)) {
+                        this.tabs[data.tab].tabMessage = data.tab_message;
+                    }
+                }
+
+                var newPatientButton = new Element('span', {'class': 'patient-menu-button patient-create-new-ok-button field-no-user-select'}).update("Create new patient");
+                newPatientButton.observe("click", function() {
+                    if (!_this._validateAllFields(true, true)) {
+                        // after one failed validation force re-validation after every input
+                        _this._forceValidation = true;
+                        return;
+                    }
+
+                    var onPatientCreated = function(newID) {
+                        // a newly linked patient record has no pedigree-specific properties yet
+                        var pedigreeProperties = {};
+                        editor.getPatientLegend().addCase(newID, pedigreeProperties);
+                    };
+
+                    var pedigreeData = _this._getDataForNewPatient();
+                    document.fire("pedigree:patient:createrequest", {"onCreatedHandler": onPatientCreated, "patientData": pedigreeData } );
+                    _this.hide();
+                });
+
+                var cancelButton = new Element('span', {'class': 'patient-menu-button patient-create-cancel-button field-no-user-select'}).update("Cancel");
+                cancelButton.observe("click", function() {
+                    _this.hide();
+                });
+
+                var result = this._generateEmptyField(data);
+                result.inputsContainer.insert(newPatientButton).insert(cancelButton);
+                return result;
+            },
             'phenotipsid-picker' : function (data) {
                 var result = this._generateEmptyField(data);
                 result.addClassName("pedigree_family_record_ui");
                 var patientNewLinkContainer = new Element('div', { 'class': 'patient-newlink-container'});
                 var patientPicker = new Element('input', {type: 'text', 'class': 'suggest suggest-patients', name: data.name});
-                var newPatientButton = new Element('span', {'class': 'patient-menu-button patient-create-button'}).update("Create new");
+                var newPatientButton = new Element('span', {'class': 'patient-menu-button patient-create-button field-no-user-select'}).update("Create new");
+                var _this = this;
                 newPatientButton.observe('click', function(event) {
+                    // force re-validation of all fields - to display red borders around incomplete required fields
+                    if (!_this._validateAllFields(true)) {
+                        var afterDialogClosed = function() {
+                            // re-validate again (this time without forcing) to dismiss red borders -
+                            // they are not relevant when patient record is not linked
+                            _this._validateAllFields();
+                        };
+
+                        editor.getOkCancelDialogue().showError("Can not create a new patient until all the required (highlighted) fields are populated",
+                                "Please populate all the required fields", "OK", afterDialogClosed);
+                        return;
+                    }
+
                     var setDoNotShow = function(checkBoxStatus) {
                         if (checkBoxStatus) {
                             editor.getPreferencesManager().setConfigurationOption("user", "hideShareConsentDialog", true);
@@ -648,7 +901,8 @@ define([
                     }
 
                     var processCreatePatient = function() {
-                        document.fire("pedigree:patient:createrequest", {"onCreatedHandler": _onPatientCreated } );
+                        var pedigreeData = _this._getDataForNewPatient();
+                        document.fire("pedigree:patient:createrequest", {"onCreatedHandler": _onPatientCreated, "patientData": pedigreeData } );
                     }
 
                     if (!editor.getPreferencesManager().getConfigurationOption("hideShareConsentDialog")) {
@@ -695,6 +949,7 @@ define([
             },
             'gene-picker' : function (data) {
                 var result = this._generateEmptyField(data);
+                result.setAttribute("legendName", data.legendName);
                 var genePicker = new Element('input', {type: 'text', 'class': 'suggest multi suggest-genes', name: data.name});
                 result.insert(genePicker);
                 genePicker._getValue = function() {
@@ -979,34 +1234,55 @@ define([
             return qualifiers;
         },
 
+        /**
+         * Displays the dialogue (which is hidden otherwise by default).
+         *
+         * @param {Object} node: an object which should have a `getSummary()` method defined which is used to populate the inputs
+         *
+         *      if defined, an `onWidgetHide()` method of the node object is used when this dialog is closed
+         *
+         *      if defined, a `getProperties()` method is used when creating a new patient based on data entered in this dialog
+         *
+         *      if defined, and if not in "noDynamicUpdates" mode (by default), getID() method is used to specify node id
+         *      when firing "pedigree:node:modify" or "pedigree:node:setproperty" events for fields that have
+         *      a setter function defined (see this._attachFieldEventListeners()).
+         */
         show : function(node, x, y) {
             var me = this;
             this._justOpened = true;
             setTimeout(function() { me._justOpened = false; }, 150);
 
+            this._forceValidation = false;
+
             this._onscreen = true;
             //console.log("nodeMenu show");
             this.targetNode = node;
-            this._setCrtData(node.getSummary());
+            this._setCrtData(this.targetNode.getSummary());
+
             this.menuBox.show();
             this.reposition(x, y);
             document.observe('mousedown', this._onClickOutside);
+            this._validateAllFields();
+            if (this._modalMode) {
+                this._activateInvalidValueScreen({}, true);
+            }
         },
 
         hide : function() {
-            if (this._justOpened) {
+            if (this._justOpened || !this._onscreen) {
                 return;
             }
             this.hideSuggestPicker();
             this._onscreen = false;
             //console.log("nodeMenu hide");
             document.stopObserving('mousedown', this._onClickOutside);
-            if (this.targetNode) {
+            if (this.targetNode && this.targetNode.onWidgetHide) {
                 this.targetNode.onWidgetHide();
-                delete this.targetNode;
             }
+            this.targetNode = undefined;
             this.menuBox.hide();
             this._clearCrtData();
+            this._deactivateInvalidValueScreen(true);
         },
 
         hideSuggestPicker: function() {
@@ -1015,6 +1291,49 @@ define([
                     item._suggest.clearSuggestions();
                 }
             });
+        },
+
+        // FIXME: it is better to reuse the standard way of converting node menu data to pedigree data;
+        //        however when creating a new patient which is not represented by a Person-type pedigree node
+        //        the standard way does not work (and needs a lot of refactoring to work)
+        //        (note: this method generally does not work for non-trivial data types, e.g. genes/HPO terms/cancers)
+        _getDataForNewPatient: function() {
+            var includedFields = {};
+            var pedigreeJSON = {};
+            var nodeMenuToPedigree = { "first_name": "fName",
+                                       "last_name": "lName",
+                                       "gender": "gender",
+                                       "external_id": "externalID",
+                                       "date_of_birth": "dob",
+                                       "date_of_death": "dod",
+                                       "state": "lifeStatus" };
+
+            for (var field in this.fieldMap) {
+                if (this.fieldMap.hasOwnProperty(field)) {
+                    if (this.fieldMap[field].required && this.fieldMap[field].crtValue != "" && this.fieldMap[field].crtValue != null) {
+                        includedFields[field] = this.fieldMap[field].crtValue;
+                        pedigreeJSON[nodeMenuToPedigree[field]] = this.fieldMap[field].crtValue;
+                    }
+                }
+            }
+
+            // if data is backed by a node which supports getProperties() use that instead of the hacki-sh conversion method
+            if (this.targetNode && this.targetNode.getProperties) {
+                pedigreeJSON = this.targetNode.getProperties();
+            }
+
+            return { "includedFields": includedFields, "pedigreeJSON": pedigreeJSON };
+        },
+
+        getDialogWidth: function() {
+            if (!this._onscreen) {
+                this.menuBox.show();
+                var width = this.menuBox.offsetWidth;
+                this.menuBox.hide();
+                return width;
+            }
+
+            return this.menuBox.offsetWidth;
         },
 
         isVisible: function() {
@@ -1027,9 +1346,11 @@ define([
                 this.hideSuggestPicker();
             }
             if (!event.findElement('.menu-box')
+                && !event.findElement('.msdialog-box')
                 && !event.findElement('.suggestItems')
                 && !event.findElement('.ok-cancel-dialogue')
-                && !event.findElement('.msdialog-screen')) {
+                && !event.findElement('.msdialog-screen')
+                && !event.findElement('.invalidValueScreen')) {
                 this.hide();
             }
         },
@@ -1104,7 +1425,7 @@ define([
                 _this.fieldMap[name].crtValue = data && data[name] && typeof(data[name].value) != "undefined" ? data[name].value : _this.fieldMap[name].crtValue || _this.fieldMap[name]["default"];
                 _this.fieldMap[name].inactive = (data && data[name] && (typeof(data[name].inactive) == 'boolean' || typeof(data[name].inactive) == 'object')) ? data[name].inactive : _this.fieldMap[name].inactive;
                 _this.fieldMap[name].disabled = (data && data[name] && (typeof(data[name].disabled) == 'boolean' || typeof(data[name].disabled) == 'object')) ? data[name].disabled : false;
-                _this._setFieldValue[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].crtValue);
+                _this._setFieldValue[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].crtValue, data);
                 _this._setFieldInactive[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].inactive);
                 _this._setFieldDisabled[_this.fieldMap[name].type].call(_this, _this.fieldMap[name].element, _this.fieldMap[name].disabled, _this.fieldMap[name].inactive, _this.fieldMap[name].crtValue);
                 //_this._updatedDependency(_this.fieldMap[name].element, _this.fieldMap[name].element);
@@ -1257,14 +1578,19 @@ define([
                     if (values) {
                         values.each(function(v) {
                             target._suggestPicker.addItem(v.id, v.gene, '');
-                            _this._updateGene(container, v.id, v.id, v.gene, editor.getGeneColor(v.id, _this.targetNode.getID()));
+                            var legendType = container.getAttribute("legendName");
+                            var geneColor = legendType ? editor.getGeneLegend(legendType).getGeneColor(v.id) : undefined;
+                            _this._updateGene(container, v.id, v.id, v.gene, geneColor);
                         })
                     }
                     target._silent = false;
                     target.value = '';
                 }
             },
-            'phenotipsid-picker' : function (container, value) {
+            'submit-cancel' : function (container, value) {
+                // this element is data-independent, nothing else to do
+            },
+            'phenotipsid-picker' : function (container, value, personData) {
                 var _this = this;
 
                 var suggestContainer = container.down('div.patient-newlink-container');
@@ -1287,7 +1613,7 @@ define([
                     suggestContainer.hide();
                     link.target = value;
                     link.href = editor.getExternalEndpoint().getPhenotipsPatientURL(value);
-                    var externalID = (_this.targetNode.getExternalID() == "") ? value : _this.targetNode.getExternalID();
+                    var externalID = (!personData.external_id || personData.external_id.value == "") ? value : personData.external_id.value;
                     link.innerHTML = editor.getPreferencesManager().getConfigurationOption("replaceIdWithExternalID") ? externalID : value;
                     linkContainer.show();
                 }
@@ -1423,6 +1749,9 @@ define([
             'gene-picker' : function (container, inactive) {
                 this._toggleFieldVisibility(container, inactive);
             },
+            'submit-cancel': function (container, inactive) {
+                // this element can't be set inactive, if present
+            },
             'phenotipsid-picker' : function (container, inactive) {
                 this._toggleFieldVisibility(container, inactive);
             },
@@ -1544,6 +1873,9 @@ define([
                     qualifiers.select(".action-edit", ".action-done", ".patient-details-add").invoke(disabled ? "hide" : "show");
                 });
             },
+            'submit-cancel': function (container, inactive) {
+                // this element can't be disabled, if present
+            },
             'phenotipsid-picker' : function (container, disabled, inactive, value) {
                 if (!disabled) {
                     this._toggleFieldVisibility(container, disabled);
@@ -1558,6 +1890,103 @@ define([
             },
             'hidden' : function (container, disabled) {
                 // FIXME: Not implemented
+            }
+        },
+
+        // checks if fields satisfy their requirements: at the moment only
+        // requirement suported is a "mandatory" field which should not be blankl
+        _validateFieldValue : {
+            'radio' : function (container, field_parameters, field_value) {
+                // radio can not be blank, so always valid
+                return true;
+            },
+            'checkbox' : function (container, field_parameters, field_value) {
+                // does not make sense to even have a checkbox if it has to be always selected, so always valid
+                return true;
+            },
+            'text' : function (container, field_parameters, field_value) {
+                if (field_parameters.required && !field_value) {
+                    container.style.border = "1px solid red";
+                    container.style.outline = "none";
+                    return false;
+                }
+                container.style.border = "";
+                container.style.outline = "";
+                return true;
+            },
+            'textarea' : function (container, field_parameters, field_value) {
+                if (field_parameters.required && !field_value) {
+                    container.style.border = "1px solid red";
+                    container.style.outline = "none";
+                    return false;
+                }
+                container.style.border = "";
+                container.style.outline = "";
+                return true;
+            },
+            'date-picker' : function (container, field_parameters, field_value) {
+                var checkDateComponent = function(name) {
+                    if (field_parameters.required
+                        && (!field_value || !field_value.hasOwnProperty(name) || !field_value[name])) {
+                        container.parentElement.select("." + name)[0].style.border="1px solid red";
+                        container.parentElement.select("." + name)[0].style.outline = "none";
+                        return false;
+                    } else {
+                        container.parentElement.select("." + name)[0].style.border="";
+                        container.parentElement.select("." + name)[0].style.outline = "";
+                        return true;
+                    }
+                }
+                var yearOK  = checkDateComponent("year");
+                var monthOK = checkDateComponent("month");
+                var dayOK   = checkDateComponent("day");
+                // note: can't use checkDateComponent("year") && checkDateComponent("month") swince if "year check"
+                //       fails "month check" will never be run, and we need side-effects (red borders) of a failed check
+                return yearOK && monthOK && dayOK;
+            },
+            'button' : function (container, field_parameters, field_value) {
+                // not supported
+                return true;
+            },
+            'disease-picker' : function (container, field_parameters, field_value) {
+                // not supported
+                return true;
+            },
+            'ethnicity-picker' : function (container, field_parameters, field_value) {
+                // not supported
+                return true;
+            },
+            'hpo-picker' : function (container, field_parameters, field_value) {
+                // not supported
+                return true;
+            },
+            'cancers-picker' : function (container, field_parameters, field_value) {
+                // not supported
+                return true;
+            },
+            'gene-picker' : function (container, field_parameters, field_value) {
+                // not supported
+                return true;
+            },
+            'submit-cancel' : function (container, field_parameters, field_value) {
+                // this element is always valid
+                return true;
+            },
+            'phenotipsid-picker' : function (container, field_parameters, field_value) {
+                // not supported
+                return true;
+            },
+            'select' : function (container, field_parameters, field_value) {
+                // not supported
+                return true;
+            },
+            'cancerlist' : function (container, field_parameters, field_value) {
+                // not supported
+                return true;
+            },
+            'hidden' : function (container, field_parameters, field_value) {
+                // non-user editable, so always valid
+                return true;
             }
         },
 

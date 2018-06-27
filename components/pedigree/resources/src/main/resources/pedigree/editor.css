@@ -126,7 +126,7 @@ input[type="radio"] {
   top: 10px;
   padding: 4px;
   opacity: .8;
-  z-index: 100000;
+  z-index: 50000;
 }
 .view-controls:hover {
   ##opacity: 1;
@@ -347,6 +347,10 @@ li.abnormality:hover, div.abnormality:hover {
   font-weight: bold;
   margin: 0.4em .3em 0 -1em;
 }
+.button-disabled {
+  color: #CCC !important;
+  cursor: default !important;
+}
 .legend-box .infomessage {
   padding-right: 24px;
 }
@@ -380,6 +384,29 @@ li.abnormality:hover, div.abnormality:hover {
   /*width: 27em;*/
   color: #000000;
   z-index: 100000;
+}
+.invalidValueScreen {
+  background: #000;
+  width: 100%;
+  height: 120%;
+  position: absolute;
+  top: -50px;
+  left: 0px;
+  opacity: 0.5;
+  z-index: 99999; /* one below z-index of .menu-box */
+}
+.menu-box .tab-message-container {
+  margin-top: 10px;
+  margin-right: 10px;
+  padding: 10px;
+  border: 1px solid #000;
+}
+.error-message-container {
+  border-color: #900 !important;
+  background-color: #fee !important;
+}
+.info-message-container {
+  background-color: #eed;
 }
 .menu-box select {
   padding: 0.15em 0 0.15em 0;
@@ -694,6 +721,12 @@ li.abnormality:hover, div.abnormality:hover {
 .field-inputs label {
   font-family: Arial,Verdana,sans-serif;
 }
+.menu-box .field-submit {
+  text-align: center;
+}
+.menu-box .field-submit .field-inputs {
+  padding-top: 1em;
+}
 .menu-box .field-cancers {
   margin-bottom: 5px;
   padding-top: 0.8em;
@@ -894,6 +927,7 @@ li.abnormality:hover, div.abnormality:hover {
   background: #D5D5D5;
   padding: 3px 9px 3px 9px;
   cursor: pointer;
+  display: inline-block;
 }
 .menu-box .patient-menu-button:hover {
   background: #B1C2E2;
@@ -1419,6 +1453,11 @@ div.field-box.field-cancers_picker {
   border-radius: 2px;
   padding: 3px 9px 3px 9px;
   cursor: pointer;
+  box-shadow: 0px 1px 1px #999;
+  background: #D5D5D5;
+  font-size: 14px;
+  border: 0px;
+  margin-left: 5px;
 }
 .add-family-member-button {
   box-shadow: 0px 1px 1px #CCC;
@@ -1431,6 +1470,7 @@ div.field-box.field-cancers_picker {
 }
 .add-link-to-existing-patient .suggest-patients {
   width: 30%;
+  margin-right: 5px;
 }
 .no-word-wrap {
   white-space: nowrap;

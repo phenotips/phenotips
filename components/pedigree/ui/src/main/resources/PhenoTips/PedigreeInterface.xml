@@ -70,6 +70,40 @@
   #end
   $jsontool.serialize($disabled)##
 #end
+#macro(__getRequiredFields)
+  #set ($recordConfiguration = $services.recordConfiguration.getConfiguration("patient"))
+  #set ($requiredFieldNames = [])
+  #foreach ($section in $recordConfiguration.enabledSections)
+    #foreach ($element in $section.enabledElements)
+      #set ($extension_required = ($element.extension.getParameters().get('required') == 'true'))
+      #if ($extension_required)
+        #set($fields = $element.extension.getParameters().get('fields').split("\s*,\s*"))
+        #foreach ($field in $fields)
+          #set ($discard = $requiredFieldNames.add($field))
+        #end
+      #end
+    #end
+  #end
+  ## TODO: the mapping of pedigree to PT fields is also hardcoded in the #__getDisabledFields macro above,
+  ## but using the same mapping does not work, because e.g. if "last_name" is disabled in PT both
+  ## ["last_name", "last_name_birth"] should be disabled in pedigree, but if "last_name" is required in PT
+  ## only "last_name" should be required in pedigree. Also there can be problems with genes which are
+  ## represented by multiple fields in pedigree, and so requiring that field is not supported for now
+  #set ($linkedFields = {
+    "external_id": ["external_id"],
+    "first_name": ["first_name"],
+    "last_name": ["last_name"],
+    "gender": ["gender"],
+    "date_of_birth": ["date_of_birth"],
+    "date_of_death": ["date_of_death"]
+  })
+  #set ($discard = $requiredFieldNames.retainAll($linkedFields.keySet()))
+  #set ($required = [])
+  #foreach ($f in $requiredFieldNames)
+    #set ($discard = $required.addAll($linkedFields.get($f)))
+  #end
+  $jsontool.serialize($required)##
+#end
 $response.setContentType('application/json')##
 {{html wiki="false" clean="false"}}
 ##
@@ -89,6 +123,7 @@ $response.setContentType('application/json')##
     },
     "global": {
             "disabledFields"               : #__getDisabledFields(),
+            "requiredFields"               : #__getRequiredFields(),
             "replaceIdWithExternalID"      : #if ($configPT &amp;&amp; "$!{configPT.getProperty('hideInternalIds').value}" == '1')true#else false#end
         #if ($config)
             ,
