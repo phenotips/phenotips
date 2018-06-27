@@ -3161,7 +3161,7 @@ ${host}${xwiki.getURL('XWiki.AccountValidation', 'view', "validkey=${validkey}&a
         <disabled>0</disabled>
         <displayFormType>checkbox</displayFormType>
         <name>allowOtherEids</name>
-        <number>1</number>
+        <number>2</number>
         <prettyName/>
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
@@ -3178,7 +3178,7 @@ ${host}${xwiki.getURL('XWiki.AccountValidation', 'view', "validkey=${validkey}&a
 {{/velocity}}</customDisplay>
         <disabled>0</disabled>
         <name>externalIdFormat</name>
-        <number>3</number>
+        <number>4</number>
         <picker>0</picker>
         <prettyName/>
         <size>30</size>
@@ -3195,22 +3195,35 @@ ${host}${xwiki.getURL('XWiki.AccountValidation', 'view', "validkey=${validkey}&a
         <displayFormType>checkbox</displayFormType>
         <displayType/>
         <name>hideInternalIds</name>
-        <number>2</number>
+        <number>3</number>
         <prettyName/>
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </hideInternalIds>
+      <validateExternalId>
+        <defaultValue>1</defaultValue>
+        <disabled>0</disabled>
+        <displayFormType>checkbox</displayFormType>
+        <name>validateExternalId</name>
+        <number>1</number>
+        <prettyName/>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </validateExternalId>
     </class>
     <property>
       <allowOtherEids>0</allowOtherEids>
     </property>
     <property>
+      <externalIdFormat>XXXXXXXXX</externalIdFormat>
+    </property>
+    <property>
       <hideInternalIds>0</hideInternalIds>
     </property>
     <property>
-      <externalIdFormat>XXXXXXXXX</externalIdFormat>
+      <validateExternalId>1</validateExternalId>
     </property>
   </object>
 </xwikidoc>

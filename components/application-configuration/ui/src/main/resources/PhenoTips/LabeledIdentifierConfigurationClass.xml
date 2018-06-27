@@ -73,6 +73,9 @@
 {{/html}}
   #__extradata_displayTable($labeledIdentifierSettings, {'counter' : false, 'labels' : false, 'mode' : 'edit', 'addedDisplaySheet' : $displayDocumentName})
 
+  $doc.display("validateExternalId", "edit", $targetObj) ##
+  #__labeledIdentifierConfig_label($targetObj "validateExternalId" '')
+
 
   $doc.display("allowOtherEids", "edit", $targetObj) ##
   #__labeledIdentifierConfig_label($targetObj "allowOtherEids" '')
