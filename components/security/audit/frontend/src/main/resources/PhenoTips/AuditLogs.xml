@@ -636,6 +636,9 @@ $xwiki.ssx.use('PhenoTips.AuditLogs')##
 }
 tbody.xwiki-livetable-display-body td:hover.linkeditor {
   background-image: none;
+}
+.extradata th.col-label, .viewbody td {
+  text-align: inherit;
 }</code>
     </property>
     <property>
