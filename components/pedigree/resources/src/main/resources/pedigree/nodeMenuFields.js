@@ -81,7 +81,8 @@ define([
                 'function' : 'setExternalID',
                 // UI fix: if 'last_name_birth' is disabled, left-floating externalID element does not
                 //         play nicely with ethnicities element; setting width to 100% fixes this
-                'addCSS': Helpers.arrayContains(disabledFields, 'last_name_birth') ? {"width":"100%"} : null
+                'addCSS': Helpers.arrayContains(disabledFields, 'last_name_birth') ? {"width":"100%"} : null,
+                'validators': ["uniqueExternalID"]
             },
             {
                 'name' : 'ethnicity',
