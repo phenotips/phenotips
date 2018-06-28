@@ -3182,7 +3182,6 @@ ${host}${xwiki.getURL('XWiki.AccountValidation', 'view', "validkey=${validkey}&a
         <picker>0</picker>
         <prettyName/>
         <size>30</size>
-        <sort>none</sort>
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
         <validationRegExp/>
