@@ -21,7 +21,20 @@
 define([], function(){
     var PatientRecordData = Class.create( {
         initialize: function() {
+            // for each patient record in the family, this object stores the last JSON loaded form the back-end
+            //
+            // note: it may be empty for patients not viewable by the current user - that is OK,
+            //       when needed, pedigree can use the version of the patient as stored in the pedigree object
+            //       to render pedigree nodes, and when saved pedigree will not update those patients
             this._patientRecordData = {};
+
+            // this object stored patient data as loded from the stored pedigree (when pedigree is initialized from
+            // a supported format). In the current version of PhenoTips it may be outdated, but it is useful to
+            // keep it around in case current user has no access to the latest data.
+            //
+            // note: It is kept separately so that it is clear that this data is (potentially) outdated and should only
+            //       be used as a backup in case up-to-data data is not accessible (e.g. due to the lack of permissions)
+            this._patientRecordDataFromPedigree = {};
 
             document.observe("pedigree:patient:deleted", this.handlePatientRecordDeleted.bind(this));
             document.observe("pedigree:patient:removedfromfamily", this.handlePatientRecordDeleted.bind(this));
@@ -35,7 +48,13 @@ define([], function(){
             if (!this.hasPatient(phenotipsPatientID)) {
                 console.log("[PatientRecordData] Requesting data for non-existent patient record " + phenotipsPatientID);
             }
-            return this._patientRecordData[phenotipsPatientID];
+
+            if (this._patientRecordData[phenotipsPatientID] != null) {
+                return this._patientRecordData[phenotipsPatientID];
+            }
+
+            // backup option
+            return this._patientRecordDataFromPedigree[phenotipsPatientID]
         },
 
         getAll: function(patientList) {
@@ -61,9 +80,15 @@ define([], function(){
             this._patientRecordData[phenotipsPatientID] = phenotipsJSON;
         },
 
+        updateFromPedigree: function(phenotipsPatientID, phenotipsJSON) {
+            console.log("[PatientRecordData] Updated loaded data for patient record " + phenotipsPatientID);
+            this._patientRecordDataFromPedigree[phenotipsPatientID] = phenotipsJSON;
+        },
+
         handlePatientRecordDeleted: function(event)
         {
             delete this._patientRecordData[event.memo.phenotipsPatientID];
+            delete this._patientRecordDataFromPedigree[event.memo.phenotipsPatientID];
         }
     });
 

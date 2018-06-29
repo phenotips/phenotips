@@ -1575,6 +1575,7 @@ define([
             // collect current node ranks so that the new layout can be made more similar to the current one
             var oldRanks = this.DG.ranks.slice(0);
 
+            // attempt to re-use existing ranks in order to keep the new layout as close as possible to the current layout
             var suggestedLayout = { "ranks": oldRanks };
 
             if (!this._initializeFromBaseGraphAndLayout(this.DG.GG, this.getProbandId(), suggestedLayout, this._unlinkedMembers)) {
@@ -1848,7 +1849,9 @@ define([
                 return null;  // incorrect input data, no import => no changes
             }
 
-            var unlinkedMembers = importData.unlinkedMembers ? Object.keys(importData.unlinkedMembers) : [];
+            if (!importData.unlinkedMembers) {
+                importData.unlinkedMembers = {};
+            }
 
             // FIXME: for now, we do not allow linking patients via import dialogue, so remove all links to all patients
             if (importOptions && importOptions.doNotLinkPatients) {
@@ -1863,8 +1866,8 @@ define([
             if (!this._initializeFromBaseGraphAndLayout( importData.baseGraph,
                                                          importData.probandNodeID,
                                                          importData.layout,
-                                                         unlinkedMembers)) {
-                return null;  // unable to genersate pedigree using import data, no import => no changes
+                                                         importData.unlinkedMembers)) {
+                return null;  // unable to generate pedigree using import data, no import => no changes
             }
 
             var newNodes = this._getAllNodes();
@@ -1874,9 +1877,7 @@ define([
             return {"new": newNodes, "removed": removedNodes, "unlinked": this._unlinkedMembers};
         },
 
-        // suggestedRanks: when provided, attempt to use the suggested rank for all nodes,
-        //                 in order to keep the new layout as close as possible to the previous layout
-        _initializeFromBaseGraphAndLayout: function (baseGraph, probandNodeID, suggestedLayout, unlinkedMembers)
+        _initializeFromBaseGraphAndLayout: function (baseGraph, probandNodeID, suggestedLayout, unlinkedMembersData)
         {
             try {
                 var newDG = new PositionedGraph( baseGraph,
@@ -1885,15 +1886,41 @@ define([
                                                  suggestedLayout );
                 this.DG = newDG;
 
-                this.setUnlinkedPatients(unlinkedMembers);
+                this.setUnlinkedPatients(Object.keys(unlinkedMembersData));
+
+                // for every patient record present in the family (either linked or unlinked)
+                // save/update the patient PhenoTips JSON as loaded from the pedigree: normally all patient record
+                // JSONs will be re-loaded separately from the back-end, but current user may not have
+                // view rights for some of them (however should still be able to view and edit the pedigree)
+                this._updatedPatientJSONsAsLoadedFromPedigree(baseGraph, unlinkedMembersData)
             } catch (e) {
-                console.log("ERROR creating a grpah from input data: " + e);
+                console.log("ERROR creating a pedigree from input data: " + e);
                 return false;
             }
 
             return true;
         },
 
+        _updatedPatientJSONsAsLoadedFromPedigree: function(baseGraph, unlinkedMembersData)
+        {
+            // linked patient records:
+            var personIDs = baseGraph.getAllPersons(true);
+            for (var p = 0; p < personIDs.length; p++) {
+                var linkedPatientRecordID = baseGraph.properties[personIDs[p]].phenotipsId;
+                if (linkedPatientRecordID) {
+                    var patientJSONInPedigree = baseGraph.rawJSONProperties[personIDs[p]];
+                    editor.getPatientRecordData().updateFromPedigree(linkedPatientRecordID, patientJSONInPedigree);
+                }
+            }
+
+            // unlinked patient records:
+            for (var patientRecordID in unlinkedMembersData) {
+                if (unlinkedMembersData.hasOwnProperty(patientRecordID)) {
+                    var patientJSONInPedigree = unlinkedMembersData[patientRecordID];
+                    editor.getPatientRecordData().updateFromPedigree(patientRecordID, patientJSONInPedigree);
+                }
+            }
+        },
 
         //=============================================================
 
