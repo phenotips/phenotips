@@ -96,111 +96,135 @@ define([
             // assigns node properties, either using loaded patient JSONs, or stored "raw JSON"s
             var finalizeCreation = function(loadedPatientData) {
 
-                // 1. for nodes linked to PT patients, update stored "raw JSON"s with the loaded values
-                if (loadedPatientData !== null) {
-                    var familyMemberIds = Object.keys(loadedPatientData);
+                try {
 
-                    var allLinkedNodes = editor.getGraph().getAllPatientLinks();
+                    // 1. for nodes linked to PT patients, update stored "raw JSON"s with the loaded values
+                    if (loadedPatientData !== null) {
+                        var familyMemberIds = Object.keys(loadedPatientData);
 
-                    if (dataSource && dataSource == "template") {
-                        if (familyMemberIds.length == 1 && allLinkedNodes.linkedPatients.length == 0) {
-                            var probandNodeID = editor.getGraph().getProbandId();
-                            var probandProperties = editor.getGraph().getProperties(probandNodeID);
-                            probandProperties["phenotipsId"] = familyMemberIds[0];
-                            editor.getGraph().setProperties(probandNodeID, probandProperties);
-                            allLinkedNodes = editor.getGraph().getAllPatientLinks();
-                        }
-                    }
+                        var allLinkedNodes = editor.getGraph().getAllPatientLinks();
 
-                    for (var patient in loadedPatientData) {
-                        if (loadedPatientData.hasOwnProperty(patient)) {
-                            var patientJSONObject = loadedPatientData[patient];
-
-                            if (patientJSONObject === null) {
-                                // no data for this patient: it is ok just don't set any properties
-                                // (may happen if a patient is deleted; we'll still keep the properties as stored in the pedigree)
-                                continue;
+                        if (dataSource && dataSource == "template") {
+                            if (familyMemberIds.length == 1 && allLinkedNodes.linkedPatients.length == 0) {
+                                var probandNodeID = editor.getGraph().getProbandId();
+                                var probandProperties = editor.getGraph().getProperties(probandNodeID);
+                                probandProperties["phenotipsId"] = familyMemberIds[0];
+                                editor.getGraph().setProperties(probandNodeID, probandProperties);
+                                allLinkedNodes = editor.getGraph().getAllPatientLinks();
                             }
+                        }
 
-                            if (!allLinkedNodes.patientToNodeMapping.hasOwnProperty(patient)) {
-                              continue;
+                        for (var patient in loadedPatientData) {
+                            if (loadedPatientData.hasOwnProperty(patient)) {
+                                var patientJSONObject = loadedPatientData[patient];
+
+                                if (!patientJSONObject) {
+                                    // no data for this patient: it is ok just don't update the stored RAW JSON
+                                    // (the already stored RAW JSON is the JSON found within loaded pedigree JSON, it may
+                                    // be out of date, but can still be used to render the pedigree node linked to the patient)
+                                    // (may happen if current user has no view rights for the patient)
+                                    continue;
+                                }
+
+                                if (!allLinkedNodes.patientToNodeMapping.hasOwnProperty(patient)) {
+                                  continue;
+                                }
+                                var nodeID = allLinkedNodes.patientToNodeMapping[patient];
+
+                                editor.getGraph().setRawJSONProperties(nodeID, patientJSONObject);
                             }
-                            var nodeID = allLinkedNodes.patientToNodeMapping[patient];
-
-                            editor.getGraph().setRawJSONProperties(nodeID, patientJSONObject);
                         }
                     }
-                }
 
-                // 2. for all node use stored "raw JSON" values to set pedigree properties
-                var unsupportedVersions = {};
-                var allPersonNodes = editor.getGraph().getAllPersonIDs();
-                for (var i = 0; i < allPersonNodes.length; i++) {
-                    var nodeID = allPersonNodes[i];
+                    // 2. for all node use stored "raw JSON" values to set pedigree properties
+                    var unsupportedVersions = {};
+                    var allPersonNodes = editor.getGraph().getAllPersonIDs();
+                    for (var i = 0; i < allPersonNodes.length; i++) {
+                        var nodeID = allPersonNodes[i];
 
-                    var rawJSON = editor.getGraph().getRawJSONProperties(nodeID);
+                        var rawJSON = editor.getGraph().getRawJSONProperties(nodeID);
 
-                    editor.getGraph().setPersonNodeDataFromPhenotipsJSON(nodeID, rawJSON);
+                        editor.getGraph().setPersonNodeDataFromPhenotipsJSON(nodeID, rawJSON);
 
-                    // do some basic version checking
-                    if (rawJSON.hasOwnProperty("phenotips_version")
-                        && !PhenotipsJSON.isVersionSupported(rawJSON.phenotips_version)) {
-                        if (!unsupportedVersions.hasOwnProperty(rawJSON.phenotips_version)) {
-                            unsupportedVersions[rawJSON.phenotips_version] = [];
-                        }
-                        unsupportedVersions[rawJSON.phenotips_version].push(nodeID);
-                    }
-                }
-
-                if (!Helpers.isObjectEmpty(unsupportedVersions)) {
-                    var warningString = "Some of the versions of loaded Patient JSONs are not supported:";
-                    for (var version in unsupportedVersions) {
-                        if (unsupportedVersions.hasOwnProperty(version)) {
-                            warningString += "\nversion " + version;
+                        // do some basic version checking
+                        if (rawJSON.hasOwnProperty("phenotips_version")
+                            && !PhenotipsJSON.isVersionSupported(rawJSON.phenotips_version)) {
+                            if (!unsupportedVersions.hasOwnProperty(rawJSON.phenotips_version)) {
+                                unsupportedVersions[rawJSON.phenotips_version] = [];
+                            }
+                            unsupportedVersions[rawJSON.phenotips_version].push(nodeID);
                         }
                     }
-                    alert(warningString);
-                }
 
-                // 3. add patients that are not in pedigree to the patient legend
-                for (var i = 0; i < changeSet.unlinked.length; i++) {
-                    var nextMemberID = changeSet.unlinked[i];
-                    editor.getPatientLegend().addCase(nextMemberID, {});
-                }
+                    if (!Helpers.isObjectEmpty(unsupportedVersions)) {
+                        var warningString = "Some of the versions of loaded Patient JSONs are not supported:";
+                        for (var version in unsupportedVersions) {
+                            if (unsupportedVersions.hasOwnProperty(version)) {
+                                warningString += "\nversion " + version;
+                            }
+                        }
+                        alert(warningString);
+                    }
 
-                // new loaded data may take up some space below some nodes, so need to recompute vertical positioning
-                editor.getGraph().updateYPositioning();
+                    // 3. add patients that are not in pedigree to the patient legend
+                    for (var i = 0; i < changeSet.unlinked.length; i++) {
+                        var nextMemberID = changeSet.unlinked[i];
+                        editor.getPatientLegend().addCase(nextMemberID, {});
+                    }
 
-                if (editor.getView().applyChanges(changeSet, false)) {
-                    editor.getWorkspace().adjustSizeToScreen();
-                }
+                    // new loaded data may take up some space below some nodes, so need to recompute vertical positioning
+                    editor.getGraph().updateYPositioning();
 
-                if (!noUndo && !editor.isReadOnlyMode()) {
-                    var undoRedoState = editor.getGraph().toUndoRedoState();
-                    editor.getUndoRedoManager().addState({"eventName": eventName}, null, undoRedoState);
-                }
+                    if (editor.getView().applyChanges(changeSet, false)) {
+                        editor.getWorkspace().adjustSizeToScreen();
+                    }
 
-                callbackWhenDataLoaded && callbackWhenDataLoaded();
+                    if (!noUndo && !editor.isReadOnlyMode()) {
+                        var undoRedoState = editor.getGraph().toUndoRedoState();
+                        editor.getUndoRedoManager().addState({"eventName": eventName}, null, undoRedoState);
+                    }
 
-                if (centerAroundProband) {
-                    editor.getWorkspace().centerAroundNode(editor.getGraph().getProbandId());
+                    callbackWhenDataLoaded && callbackWhenDataLoaded();
+
+                    if (centerAroundProband) {
+                        editor.getWorkspace().centerAroundNode(editor.getGraph().getProbandId());
+                    }
+                } catch (err) {
+                    var content = new Element('div', {'class' : 'box errormessage'});
+                    content.insert(new Element('p').update(new Element('strong').update("PEDIGREE INITIALIZATION FAILED")));
+                    content.insert(new Element('p').update("<br>This " + editor.getExternalEndpoint().getParentDocument().type.toLowerCase()
+                            + " has a pedigree but there was an internal error loading it.<br><br>"
+                            + "Please notify your PhenoTips administrator of this error."));
+                    var d = new PhenoTips.widgets.ModalPopup(content, '', {'titleColor' : '#000'});
+                    d.show();
                 }
 
                 document.fire("pedigree:blockinteraction:finish");
             };
 
             if (!noUndo && !editor.isReadOnlyMode()) {
-                // update to include nodes possibly added to the set of linked nodes above
+                //----------------------------------------------------------------------------------------
+                // update all linked patient records by loading their current (JSON) data from PhenoTips
+                //
+                // TODO: if/when pedigree JSON is updated whenever any of the patients are updated there will
+                //  be no more need to load patient JSONs separately. However patient modification is a very
+                //  common operation which may be up to 2x slower if pedigree JSON should be updated as well,
+                //  so there is a good (performance-related) reason not to implement that change
+                //----------------------------------------------------------------------------------------
+
+                // include all patients linked to all pedigree nodes
                 var allLinkedNodes = editor.getGraph().getAllPatientLinks();
 
-                // combine patients in the pedigree and unlinked patients
+                // ...add all loaded unlinked patients
                 var patientList = allLinkedNodes.linkedPatients.concat(changeSet.unlinked);
 
-                // add patients in the legend - e.g. when creating a new pedigree for a patient from a template the
-                // patient will be in the legend but not in the pedigree as it was loaded
+                // ...and add patients currently in the legend - e.g. when creating a new pedigree for a patient from a
+                // template the current patient will be in the legend but not in the pedigree and not in the loaded unlinked list
                 patientList = Helpers.filterUnique(patientList.concat(editor.getPatientLegend().getListOfPatientsInTheLegend()));
 
-                editor.getPatientDataLoader().load(patientList, finalizeCreation);
+                // load data and initialize pedigree once data is loaded
+                editor.getPatientDataLoader().load(patientList, finalizeCreation /* callback when data is loaded */);
+                //----------------------------------------------------------------------------------------
             } else {
                 finalizeCreation(null /* do not update nodes using data loaded from PhenoTips */);
             }
@@ -211,104 +235,112 @@ define([
                 return;   // Don't send parallel save requests
             }
 
-            editor.getView().unmarkAll();
-
-            var me = this;
-
-            me._notSaved = true;
-
-            var jsonData = this.getPedigreePhenotipsJSON();
-
-            console.log("[SAVE] data: " + Helpers.stringifyObject(jsonData));
-
-            var svg = editor.getWorkspace().getSVGCopy();
-            var svgText = svg.getSVGText();
-
             var savingNotification = new XWiki.widgets.Notification("Saving", "inprogress");
 
-            var familyServiceURL = editor.getExternalEndpoint().getSavePedigreeURL();
-            new Ajax.Request(familyServiceURL, {
-                method: 'POST',
-                onCreate: function() {
-                    me._saveInProgress = true;
-                    // Disable save and close buttons during a save
-                    var closeButton = $('action-close');
-                    var saveButton = $('action-save');
-                    Element.addClassName(saveButton, "disabled-menu-item");
-                    Element.removeClassName(saveButton, "menu-item");
-                    Element.addClassName(saveButton, "no-mouse-interaction");
-                    Element.addClassName(closeButton, "disabled-menu-item");
-                    Element.removeClassName(closeButton, "menu-item");
-                    Element.addClassName(closeButton, "no-mouse-interaction");
-                    // IE9 & IE10 do not support "no-mouse-interaction", so add JS to handle this
-                    Helpers.disableMouseclicks(closeButton);
-                    Helpers.disableMouseclicks(saveButton);
-                    // disable user interaction while save is in progress
-                    document.fire("pedigree:blockinteraction:start", {"message": "Saving pedigree..."});
-                },
-                onComplete: function() {
-                    me._saveInProgress = false;
-                    // Enable save and close buttons after a save
-                    var closeButton = $('action-close');
-                    var saveButton = $('action-save');
-                    Element.addClassName(saveButton, "menu-item");
-                    Element.removeClassName(saveButton, "disabled-menu-item");
-                    Element.removeClassName(saveButton, "no-mouse-interaction");
-                    Element.addClassName(closeButton, "menu-item");
-                    Element.removeClassName(closeButton, "disabled-menu-item");
-                    Element.removeClassName(closeButton, "no-mouse-interaction");
-                    // remove IE9/IE10 specific handlers
-                    Helpers.enableMouseclicks(closeButton);
-                    Helpers.enableMouseclicks(saveButton);
-                    // Re-enable user-interaction
-                    document.fire("pedigree:blockinteraction:finish");
-                    if (me._notSaved) {
-                        callAfterFailedSave && callAfterFailedSave();
-                    } else {
-                        callAfterSuccessfulSave && callAfterSuccessfulSave();
-                    }
-                },
-                // 0 is returned for network failures, except on IE which converts it to a strange large number (12031)
-                on0 : function(response) {
-                  response.request.options.onFailure(response);
-                },
-                onFailure : function(response) {
-                  var errorMessage = '';
-                  if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {
-                    errorMessage = 'Server not responding';
-                  } else if (response.getHeader('Content-Type').match(/^\s*text\/plain/)) {
-                    // Regard the body of plain text responses as custom status messages.
-                    errorMessage = response.responseText;
-                  } else {
-                    errorMessage = response.statusText;
-                  }
-                  savingNotification.replace(new XWiki.widgets.Notification("Saving failed: " + errorMessage));
-                  var content = new Element('div', {'class' : 'box errormessage'});
-                  content.insert(new Element('p').update(new Element('strong').update("SAVING FAILED: " + errorMessage)));
-                  content.insert(new Element('p').update("YOUR PEDIGREE IS NOT SAVED. To avoid losing your work, we recommend taking a screenshot of the pedigree and exporting the pedigree data as simple JSON using the 'Export' option in the menu at the top of the pedigree editor. Please notify your PhenoTips administrator of this error."));
-                  var d = new PhenoTips.widgets.ModalPopup(content, '', {'titleColor' : '#000'});
-                  d.show();
-                },
-                onSuccess: function(response) {
-                    if (response.responseJSON) {
-                        if (response.responseJSON.error) {
-                            savingNotification.replace(new XWiki.widgets.Notification("Pedigree was not saved"));
-                            SaveLoadEngine._displayFamilyPedigreeInterfaceError(response.responseJSON, "Error saving pedigree", "Unable to save pedigree: ");
+            var onSaveFailed = function (errorMessage) {
+                savingNotification.replace(new XWiki.widgets.Notification("Save failed: " + errorMessage));
+                var content = new Element('div', {'class' : 'box errormessage'});
+                content.insert(new Element('p').update(new Element('strong').update("SAVE FAILED: " + errorMessage)));
+                content.insert(new Element('p').update("YOUR PEDIGREE IS NOT SAVED. To avoid losing your work, we recommend taking a screenshot of the pedigree and exporting the pedigree data as simple JSON using the 'Export' option in the menu at the top of the pedigree editor. Please notify your PhenoTips administrator of this error."));
+                var d = new PhenoTips.widgets.ModalPopup(content, '', {'titleColor' : '#000'});
+                d.show();
+            }
+
+            try {
+                editor.getView().unmarkAll();
+
+                var me = this;
+
+                me._notSaved = true;
+
+                var jsonData = this.getPedigreePhenotipsJSON();
+
+                console.log("[SAVE] data: " + Helpers.stringifyObject(jsonData));
+
+                var svg = editor.getWorkspace().getSVGCopy();
+                var svgText = svg.getSVGText();
+
+                var familyServiceURL = editor.getExternalEndpoint().getSavePedigreeURL();
+                new Ajax.Request(familyServiceURL, {
+                    method: 'POST',
+                    onCreate: function() {
+                        me._saveInProgress = true;
+                        // Disable save and close buttons during a save
+                        var closeButton = $('action-close');
+                        var saveButton = $('action-save');
+                        Element.addClassName(saveButton, "disabled-menu-item");
+                        Element.removeClassName(saveButton, "menu-item");
+                        Element.addClassName(saveButton, "no-mouse-interaction");
+                        Element.addClassName(closeButton, "disabled-menu-item");
+                        Element.removeClassName(closeButton, "menu-item");
+                        Element.addClassName(closeButton, "no-mouse-interaction");
+                        // IE9 & IE10 do not support "no-mouse-interaction", so add JS to handle this
+                        Helpers.disableMouseclicks(closeButton);
+                        Helpers.disableMouseclicks(saveButton);
+                        // disable user interaction while save is in progress
+                        document.fire("pedigree:blockinteraction:start", {"message": "Saving pedigree..."});
+                    },
+                    onComplete: function() {
+                        me._saveInProgress = false;
+                        // Enable save and close buttons after a save
+                        var closeButton = $('action-close');
+                        var saveButton = $('action-save');
+                        Element.addClassName(saveButton, "menu-item");
+                        Element.removeClassName(saveButton, "disabled-menu-item");
+                        Element.removeClassName(saveButton, "no-mouse-interaction");
+                        Element.addClassName(closeButton, "menu-item");
+                        Element.removeClassName(closeButton, "disabled-menu-item");
+                        Element.removeClassName(closeButton, "no-mouse-interaction");
+                        // remove IE9/IE10 specific handlers
+                        Helpers.enableMouseclicks(closeButton);
+                        Helpers.enableMouseclicks(saveButton);
+                        // Re-enable user-interaction
+                        document.fire("pedigree:blockinteraction:finish");
+                        if (me._notSaved) {
+                            callAfterFailedSave && callAfterFailedSave();
                         } else {
-                            me._notSaved = false;
-                            editor.getUndoRedoManager().addSaveEvent();
-                            editor.getFamilyData().updateFromJSON(response.responseJSON.family);
-                            savingNotification.replace(new XWiki.widgets.Notification("Successfully saved"));
-                            document.fire("pedigree:save:finish");
+                            callAfterSuccessfulSave && callAfterSuccessfulSave();
                         }
-                    } else  {
-                        savingNotification.replace(new XWiki.widgets.Notification("Save attempt failed: server reply is incorrect"));
-                        editor.getOkCancelDialogue().showError('Server error - unable to save pedigree',
-                                'Error saving pedigree', "OK", undefined );
-                    }
-                },
-                parameters: {"family_id": editor.getFamilyData().getFamilyId(), "json": jsonData, "image": svgText}
-            });
+                    },
+                    // 0 is returned for network failures, except on IE which converts it to a strange large number (12031)
+                    on0 : function(response) {
+                      response.request.options.onFailure(response);
+                    },
+                    onFailure : function(response) {
+                      var errorMessage = '';
+                      if (response.statusText == '' /* No response */ || response.status == 12031 /* In IE */) {
+                        errorMessage = 'Server not responding';
+                      } else if (response.getHeader('Content-Type').match(/^\s*text\/plain/)) {
+                        // Regard the body of plain text responses as custom status messages.
+                        errorMessage = response.responseText;
+                      } else {
+                        errorMessage = response.statusText;
+                      }
+                      onSaveFailed(errorMessage);
+                    },
+                    onSuccess: function(response) {
+                        if (response.responseJSON) {
+                            if (response.responseJSON.error) {
+                                savingNotification.replace(new XWiki.widgets.Notification("Pedigree was not saved"));
+                                SaveLoadEngine._displayFamilyPedigreeInterfaceError(response.responseJSON, "Error saving pedigree", "Unable to save pedigree: ");
+                            } else {
+                                me._notSaved = false;
+                                editor.getUndoRedoManager().addSaveEvent();
+                                editor.getFamilyData().updateFromJSON(response.responseJSON.family);
+                                savingNotification.replace(new XWiki.widgets.Notification("Successfully saved"));
+                                document.fire("pedigree:save:finish");
+                            }
+                        } else  {
+                            savingNotification.replace(new XWiki.widgets.Notification("Save attempt failed: server reply is incorrect"));
+                            editor.getOkCancelDialogue().showError('Server error - unable to save pedigree',
+                                    'Error saving pedigree', "OK", undefined );
+                        }
+                    },
+                    parameters: {"family_id": editor.getFamilyData().getFamilyId(), "json": jsonData, "image": svgText}
+                });
+            } catch (err) {
+                onSaveFailed("internal pedigree error");
+            }
         },
 
         load: function(familyOrPatientId) {
