@@ -6,7 +6,8 @@ define([
         "pedigree/model/edgeOptimization",
         "pedigree/model/helpers",
         "pedigree/model/ordering",
-        "pedigree/model/queues",
+        "pedigree/model/queue",
+        "pedigree/model/stack",
         "pedigree/model/xcoordclass",
         "pedigree/model/layoutHeuristics",
         "pedigree/view/ageCalc"
@@ -16,6 +17,7 @@ define([
         Helpers,
         Ordering,
         Queue,
+        Stack,
         XCoord,
         Heuristics,
         AgeCalc
