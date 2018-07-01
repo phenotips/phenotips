@@ -596,7 +596,9 @@
 
         // enable new owner input on click
         this._newOwnerClickArea.observe('click', function(event) {
-          _this._newOwnerOption.down('input[type="radio"]').click();
+          _this._newOwnerOption.down('input[type="radio"]').checked = true;
+          _this._newOwnerInput.enable();
+          _this._newOwnerInput.focus();
         });
       }
     },
