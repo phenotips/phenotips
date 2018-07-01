@@ -71,6 +71,7 @@ import com.xpn.xwiki.objects.BaseProperty;
  * @version $Id$
  * @since 1.0RC1
  */
+@SuppressWarnings("checkstyle:ClassFanOutComplexity")
 public abstract class AbstractComplexController<T> implements PatientDataController<T>
 {
     /** Logging helper object. */

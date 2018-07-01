@@ -57,7 +57,6 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.BaseProperty;
-
 import net.jcip.annotations.NotThreadSafe;
 
 import static org.hamcrest.Matchers.contains;

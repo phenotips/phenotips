@@ -206,7 +206,7 @@ public class SolvedControllerTest
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
 
         this.component.writeJSON(this.patient, json, selectedFields);
-        Assert.assertFalse(json.getJSONObject(DATA_NAME).has("status"));
+        Assert.assertFalse(json.has(DATA_NAME));
     }
 
     @Test

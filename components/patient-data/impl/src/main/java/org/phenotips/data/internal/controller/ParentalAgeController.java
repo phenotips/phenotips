@@ -80,7 +80,7 @@ public class ParentalAgeController implements PatientDataController<Integer>
     @Override
     public String getName()
     {
-        return "parentalAge";
+        return ENABLING_FIELD_NAME;
     }
 
     @Override
@@ -183,16 +183,12 @@ public class ParentalAgeController implements PatientDataController<Integer>
             return;
         }
 
-        JSONObject container = json.optJSONObject(getJsonPropertyName());
-        if (container == null) {
-            container = new JSONObject();
-        }
+        final JSONObject container = json.optJSONObject(getJsonPropertyName()) != null
+            ? json.optJSONObject(getJsonPropertyName()) : new JSONObject();
 
-        for (String propertyName : this.getProperties()) {
-            if (data.get(propertyName) != null) {
-                container.put(propertyName, data.get(propertyName));
-            }
-        }
+        this.getProperties().stream()
+            .filter(propertyName -> data.get(propertyName) != null)
+            .forEach(propertyName -> container.put(propertyName, data.get(propertyName)));
 
         if (container.length() > 0) {
             json.put(getJsonPropertyName(), container);

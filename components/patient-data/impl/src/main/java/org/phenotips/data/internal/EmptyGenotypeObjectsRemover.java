@@ -27,9 +27,10 @@ import org.xwiki.model.reference.EntityReference;
 import org.xwiki.observation.AbstractEventListener;
 import org.xwiki.observation.event.Event;
 
-import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -38,7 +39,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-import com.xpn.xwiki.objects.BaseStringProperty;
 
 /**
  * Removes gene and variant objects from the document if key fields are empty, gene field for genes and cdna field for
@@ -75,54 +75,28 @@ public class EmptyGenotypeObjectsRemover extends AbstractEventListener
         List<BaseObject> variantXWikiObjects = doc.getXObjects(VARIANT_CLASS_REFERENCE);
 
         if (geneXWikiObjects == null || geneXWikiObjects.isEmpty()) {
-            if (variantXWikiObjects != null && !variantXWikiObjects.isEmpty()) {
-                // delete all variants
-                doc.removeXObjects(VARIANT_CLASS_REFERENCE);
-            }
+            // Delete all variants
+            doc.removeXObjects(VARIANT_CLASS_REFERENCE);
             return;
         }
 
-        // get list of patient genes
-        Set<String> genes = new HashSet<>();
-        for (BaseObject geneObject : geneXWikiObjects) {
-            if (geneObject == null) {
-                continue;
-            }
-
-            BaseStringProperty field = (BaseStringProperty) geneObject.getField(GENE_KEY);
-            // remove gene object from the document if key "gene" field is empty
-            if (field == null || StringUtils.isEmpty(field.getValue())) {
-                doc.removeXObject(geneObject);
-                continue;
-            }
-
-            genes.add(field.getValue());
-        }
+        // Remove gene object from the document if key "gene" field is empty
+        geneXWikiObjects.stream().filter(Objects::nonNull)
+            .filter(gene -> StringUtils.isBlank(gene.getStringValue(GENE_KEY)))
+            .forEach(gene -> doc.removeXObject(gene));
 
         if (variantXWikiObjects == null || variantXWikiObjects.isEmpty()) {
-            // nothing to remove
+            // Nothing else to remove
             return;
         }
+        // Get list of patient genes
+        Set<String> genes = geneXWikiObjects.stream().filter(Objects::nonNull)
+            .map(gene -> gene.getStringValue(GENE_KEY)).collect(Collectors.toSet());
 
-        // loop through variants to detect those who do not correspond to any gene and delete them
-        for (BaseObject variantObject : variantXWikiObjects) {
-            if (variantObject == null) {
-                continue;
-            }
-
-            BaseStringProperty variantField = (BaseStringProperty) variantObject.getField(VARIANT_KEY);
-            // remove variant object from the document if key "cdna" field is empty
-            if (variantField == null || StringUtils.isEmpty(variantField.getValue())) {
-                doc.removeXObject(variantObject);
-                continue;
-            }
-
-            // remove variant object from the document if its gene is not in patient genes
-            BaseStringProperty geneField = (BaseStringProperty) variantObject.getField(GENE_KEY);
-            if (!genes.contains(geneField.getValue())) {
-                doc.removeXObject(variantObject);
-            }
-        }
-
+        // Remove variants without CDNA, or which belonging to a gene not set for the patient
+        variantXWikiObjects.stream().filter(Objects::nonNull)
+            .filter(variant -> StringUtils.isBlank(variant.getStringValue(VARIANT_KEY))
+                || !genes.contains(variant.getStringValue(GENE_KEY)))
+            .forEach(variant -> doc.removeXObject(variant));
     }
 }

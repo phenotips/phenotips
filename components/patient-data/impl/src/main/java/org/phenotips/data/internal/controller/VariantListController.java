@@ -178,6 +178,26 @@ public class VariantListController extends AbstractComplexController<Map<String,
 
     private static final List<String> REFERENCE_GENOME_VALUES = Arrays.asList("GRCh37", "GRCh38", "NCBI36");
 
+    private static final Map<String, String> INTERNAL_TO_JSON_KEYS = new HashMap<>();
+    static {
+        INTERNAL_TO_JSON_KEYS.put(JSON_VARIANT_KEY, INTERNAL_VARIANT_KEY);
+        INTERNAL_TO_JSON_KEYS.put(JSON_GENE_KEY, INTERNAL_GENE_KEY);
+        INTERNAL_TO_JSON_KEYS.put(JSON_PROTEIN_KEY, INTERNAL_PROTEIN_KEY);
+        INTERNAL_TO_JSON_KEYS.put(JSON_TRANSCRIPT_KEY, INTERNAL_TRANSCRIPT_KEY);
+        INTERNAL_TO_JSON_KEYS.put(JSON_DBSNP_KEY, INTERNAL_DBSNP_KEY);
+        INTERNAL_TO_JSON_KEYS.put(JSON_ZYGOSITY_KEY, INTERNAL_ZYGOSITY_KEY);
+        INTERNAL_TO_JSON_KEYS.put(JSON_EFFECT_KEY, INTERNAL_EFFECT_KEY);
+        INTERNAL_TO_JSON_KEYS.put(JSON_INTERPRETATION_KEY, INTERNAL_INTERPRETATION_KEY);
+        INTERNAL_TO_JSON_KEYS.put(JSON_INHERITANCE_KEY, INTERNAL_INHERITANCE_KEY);
+        INTERNAL_TO_JSON_KEYS.put(JSON_EVIDENCE_KEY, INTERNAL_EVIDENCE_KEY);
+        INTERNAL_TO_JSON_KEYS.put(JSON_SEGREGATION_KEY, INTERNAL_SEGREGATION_KEY);
+        INTERNAL_TO_JSON_KEYS.put(JSON_SANGER_KEY, INTERNAL_SANGER_KEY);
+        INTERNAL_TO_JSON_KEYS.put(JSON_CHROMOSOME_KEY, INTERNAL_CHROMOSOME_KEY);
+        INTERNAL_TO_JSON_KEYS.put(JSON_START_POSITION_KEY, INTERNAL_START_POSITION_KEY);
+        INTERNAL_TO_JSON_KEYS.put(JSON_END_POSITION_KEY, INTERNAL_END_POSITION_KEY);
+        INTERNAL_TO_JSON_KEYS.put(JSON_REFERENCE_GENOME_KEY, INTERNAL_REFERENCE_GENOME_KEY);
+    }
+
     /** The vocabulary manager that actually does all the work. */
     @Inject
     private VocabularyManager vocabularyManager;
@@ -271,19 +291,14 @@ public class VariantListController extends AbstractComplexController<Map<String,
             return fields.getTextValue();
         } else if (INTERNAL_START_POSITION_KEY.equals(property) || INTERNAL_END_POSITION_KEY.equals(property)) {
             int value = variantObject.getIntValue(property, -1);
-            if (value == -1) {
-                return null;
-            }
-            return Integer.toString(value);
+            return value == -1 ? null : Integer.toString(value);
         } else {
             BaseStringProperty field = (BaseStringProperty) variantObject.getField(property);
-            if (field == null) {
-                return null;
-            }
-            return field.getValue();
+            return field == null ? null : field.getValue();
         }
     }
 
+    @SuppressWarnings("checkstyle:CyclomaticComplexity")
     @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
@@ -306,35 +321,17 @@ public class VariantListController extends AbstractComplexController<Map<String,
         json.put(getJsonPropertyName(), new JSONArray());
         JSONArray container = json.getJSONArray(getJsonPropertyName());
 
-        Map<String, String> internalToJSONkeys = new HashMap<>();
-        internalToJSONkeys.put(JSON_VARIANT_KEY, INTERNAL_VARIANT_KEY);
-        internalToJSONkeys.put(JSON_GENE_KEY, INTERNAL_GENE_KEY);
-        internalToJSONkeys.put(JSON_PROTEIN_KEY, INTERNAL_PROTEIN_KEY);
-        internalToJSONkeys.put(JSON_TRANSCRIPT_KEY, INTERNAL_TRANSCRIPT_KEY);
-        internalToJSONkeys.put(JSON_DBSNP_KEY, INTERNAL_DBSNP_KEY);
-        internalToJSONkeys.put(JSON_ZYGOSITY_KEY, INTERNAL_ZYGOSITY_KEY);
-        internalToJSONkeys.put(JSON_EFFECT_KEY, INTERNAL_EFFECT_KEY);
-        internalToJSONkeys.put(JSON_INTERPRETATION_KEY, INTERNAL_INTERPRETATION_KEY);
-        internalToJSONkeys.put(JSON_INHERITANCE_KEY, INTERNAL_INHERITANCE_KEY);
-        internalToJSONkeys.put(JSON_EVIDENCE_KEY, INTERNAL_EVIDENCE_KEY);
-        internalToJSONkeys.put(JSON_SEGREGATION_KEY, INTERNAL_SEGREGATION_KEY);
-        internalToJSONkeys.put(JSON_SANGER_KEY, INTERNAL_SANGER_KEY);
-        internalToJSONkeys.put(JSON_CHROMOSOME_KEY, INTERNAL_CHROMOSOME_KEY);
-        internalToJSONkeys.put(JSON_START_POSITION_KEY, INTERNAL_START_POSITION_KEY);
-        internalToJSONkeys.put(JSON_END_POSITION_KEY, INTERNAL_END_POSITION_KEY);
-        internalToJSONkeys.put(JSON_REFERENCE_GENOME_KEY, INTERNAL_REFERENCE_GENOME_KEY);
-
         while (iterator.hasNext()) {
             Map<String, String> item = iterator.next();
 
             if (!StringUtils.isBlank(item.get(INTERNAL_VARIANT_KEY))) {
                 JSONObject nextVariant = new JSONObject();
-                for (String key : internalToJSONkeys.keySet()) {
+                for (String key : INTERNAL_TO_JSON_KEYS.keySet()) {
                     if (!StringUtils.isBlank(item.get(key))) {
                         if (INTERNAL_EVIDENCE_KEY.equals(key)) {
-                            nextVariant.put(key, new JSONArray(item.get(internalToJSONkeys.get(key)).split("\\|")));
+                            nextVariant.put(key, new JSONArray(item.get(INTERNAL_TO_JSON_KEYS.get(key)).split("\\|")));
                         } else {
-                            nextVariant.put(key, item.get(internalToJSONkeys.get(key)));
+                            nextVariant.put(key, item.get(INTERNAL_TO_JSON_KEYS.get(key)));
                         }
                     }
                 }
@@ -378,7 +375,7 @@ public class VariantListController extends AbstractComplexController<Map<String,
                     || variantSymbols.contains(variantJson.getString(INTERNAL_VARIANT_KEY))
                     // storing variant without gene name is pointless as it can not be displayed
                     || StringUtils.isBlank(variantJson.optString(JSON_GENE_KEY))
-                    && StringUtils.isBlank(variantJson.optString(JSON_OLD_GENE_KEY))) {
+                        && StringUtils.isBlank(variantJson.optString(JSON_OLD_GENE_KEY))) {
                     continue;
                 }
 
@@ -422,6 +419,7 @@ public class VariantListController extends AbstractComplexController<Map<String,
         return singleVariant;
     }
 
+    @SuppressWarnings("checkstyle:CyclomaticComplexity")
     private void parseVariantProperty(String property, JSONObject variantJson, Map<String, List<String>> enumValues,
         Map<String, String> singleVariant, List<String> enumValueKeys)
     {
