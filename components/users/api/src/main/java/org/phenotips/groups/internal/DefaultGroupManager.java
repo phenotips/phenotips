@@ -99,14 +99,17 @@ public class DefaultGroupManager implements GroupManager
                     if (i > 0) {
                         qs.append(',');
                     }
-                    qs.append('?').append(i + 1);
+                    qs.append('?').append(i * 2 + 1).append(",?").append(i * 2 + 2);
                 }
                 qs.append(')');
                 q = this.qm.createQuery(qs.toString(), Query.XWQL);
                 for (int i = 0; i < nestedGroups.size(); ++i) {
                     String formalGroupName =
                         this.resolver.resolve(String.valueOf(nestedGroups.get(i)), GROUP_SPACE).toString();
-                    q.bindValue(i + 1, formalGroupName);
+                    String shortGroupName = this.compactSerializer
+                        .serialize(this.resolver.resolve(String.valueOf(nestedGroups.get(i)), GROUP_SPACE));
+                    q.bindValue(i * 2 + 1, formalGroupName);
+                    q.bindValue(i * 2 + 2, shortGroupName);
                 }
                 nestedGroups = q.execute();
                 nestedGroups.removeAll(groups);

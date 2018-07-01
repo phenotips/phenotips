@@ -58,7 +58,7 @@ public class DefaultGroupManagerTest
 
     @Rule
     public final MockitoComponentMockingRule<GroupManager> mocker =
-        new MockitoComponentMockingRule<GroupManager>(DefaultGroupManager.class);
+        new MockitoComponentMockingRule<>(DefaultGroupManager.class);
 
     /** Basic tests for {@link DefaultGroupManager#getGroupsForUser(org.xwiki.model.reference.DocumentReference)}. */
     @Test
@@ -77,7 +77,7 @@ public class DefaultGroupManagerTest
         when(q.bindValue("su", "XWiki.Admin")).thenReturn(q);
         when(qm.createQuery("from doc.object(XWiki.XWikiGroups) grp where grp.member in (:u, :su)", Query.XWQL))
             .thenReturn(q);
-        List<Object> groupNames = new LinkedList<Object>();
+        List<Object> groupNames = new LinkedList<>();
         groupNames.add("Groups.Group A");
         groupNames.add("Group B Administrators");
         when(q.<Object>execute()).thenReturn(groupNames);
@@ -91,10 +91,12 @@ public class DefaultGroupManagerTest
 
         q = mock(Query.class);
         when(q.bindValue(1, "xwiki:Groups.Group A")).thenReturn(q);
-        when(q.bindValue(2, "xwiki:Groups.Group B Administrators")).thenReturn(q);
-        when(qm.createQuery("from doc.object(XWiki.XWikiGroups) grp where grp.member in (?1,?2)", Query.XWQL))
+        when(q.bindValue(2, "Groups.Group A")).thenReturn(q);
+        when(q.bindValue(3, "xwiki:Groups.Group B Administrators")).thenReturn(q);
+        when(q.bindValue(4, "Groups.Group B Administrators")).thenReturn(q);
+        when(qm.createQuery("from doc.object(XWiki.XWikiGroups) grp where grp.member in (?1,?2,?3,?4)", Query.XWQL))
             .thenReturn(q);
-        groupNames = new LinkedList<Object>();
+        groupNames = new LinkedList<>();
         groupNames.add("Groups.Group B");
         when(q.<Object>execute()).thenReturn(groupNames);
 
@@ -102,14 +104,15 @@ public class DefaultGroupManagerTest
         DocumentReference b = new DocumentReference("xwiki", "Groups", "Group B");
         when(resolver.resolve(eq("Groups.Group B"), eq(GROUP_SPACE))).thenReturn(b);
         when(q.bindValue(1, "xwiki:Groups.Group B")).thenReturn(q);
-        when(qm.createQuery("from doc.object(XWiki.XWikiGroups) grp where grp.member in (?1)", Query.XWQL))
+        when(q.bindValue(2, "Groups.Group B")).thenReturn(q);
+        when(qm.createQuery("from doc.object(XWiki.XWikiGroups) grp where grp.member in (?1,?2)", Query.XWQL))
             .thenReturn(q);
         when(q.<Object>execute()).thenReturn(Collections.emptyList());
 
         q = mock(Query.class);
         when(qm.createQuery("from doc.object(XWiki.XWikiGroups) grp, doc.object(PhenoTips.PhenoTipsGroupClass) phgrp",
             Query.XWQL)).thenReturn(q);
-        groupNames = new LinkedList<Object>();
+        groupNames = new LinkedList<>();
         groupNames.add("Groups.Group A");
         groupNames.add("Groups.Group B");
         when(q.<Object>execute()).thenReturn(groupNames);
