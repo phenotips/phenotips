@@ -74,6 +74,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 /**
@@ -87,7 +88,9 @@ public class DefaultEntityAccessManagerTest
 
     private static final String DATA = "data";
 
-    private static final String SPACE_NAME = "Xwiki";
+    private static final String SPACE_NAME = "XWiki";
+
+    private static final String GROUP_SPACE_NAME = "Groups";
 
     private static final String PHENOTIPS = "PhenoTips";
 
@@ -127,7 +130,7 @@ public class DefaultEntityAccessManagerTest
 
     private static final String OTHER_USER_STR = "xwiki:XWiki.cxavier";
 
-    private static final String GROUP_STR = "xwiki:XWiki.collaborators";
+    private static final String GROUP_STR = "xwiki:Groups.collaborators";
 
     private static final String PATIENT_ID = "P0000001";
 
@@ -155,7 +158,8 @@ public class DefaultEntityAccessManagerTest
     private static final DocumentReference OTHER_USER = new DocumentReference(WIKI_NAME, SPACE_NAME, OTHER_USER_NAME);
 
     /** Group used as collaborator. */
-    private static final DocumentReference GROUP = new DocumentReference(WIKI_NAME, SPACE_NAME, COLLABORATORS_LABEL);
+    private static final DocumentReference GROUP =
+        new DocumentReference(WIKI_NAME, GROUP_SPACE_NAME, COLLABORATORS_LABEL);
 
     private static final DocumentReference OWNER_CLASS = new DocumentReference(WIKI_NAME, PHENOTIPS, OWNER_TITLE);
 
@@ -1122,6 +1126,15 @@ public class DefaultEntityAccessManagerTest
         when(this.helper.getCurrentUser()).thenReturn(OWNER);
         final boolean isAdmin = this.component.isAdministrator(this.entity);
         Assert.assertTrue(isAdmin);
+    }
+
+    @Test
+    public void isAdministratorReturnsFalseWithGroup()
+    {
+        when(this.helper.isGroup(GROUP)).thenReturn(true);
+        final boolean isAdmin = this.component.isAdministrator(this.entity, GROUP);
+        Assert.assertFalse(isAdmin);
+        verifyZeroInteractions(this.rights);
     }
 
     @Test

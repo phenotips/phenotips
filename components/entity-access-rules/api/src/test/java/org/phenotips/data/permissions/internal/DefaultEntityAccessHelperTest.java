@@ -18,7 +18,6 @@
 package org.phenotips.data.permissions.internal;
 
 import org.xwiki.bridge.DocumentAccessBridge;
-import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.EntityReference;
@@ -28,6 +27,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import com.xpn.xwiki.XWiki;
 import com.xpn.xwiki.doc.XWikiDocument;
@@ -47,9 +48,17 @@ public class DefaultEntityAccessHelperTest
 
     private static final String SPACE_NAME = "Xwiki";
 
+    private static final String GROUP_SPACE_NAME = "Groups";
+
+    private static final String COLLABORATORS_NAME = "collaborators";
+
     private static final String PADAMS = "padams";
 
     private static final String HMCCOY = "hmccoy";
+
+    private static final String XWIKI_USERS_LABEL = "XWikiUsers";
+
+    private static final String XWIKI_GROUPS_LABEL = "XWikiGroups";
 
     /** The user used as the owner of the patient. */
     private static final DocumentReference OWNER = new DocumentReference(WIKI_NAME, SPACE_NAME, PADAMS);
@@ -58,61 +67,116 @@ public class DefaultEntityAccessHelperTest
     private static final DocumentReference COLLABORATOR = new DocumentReference(WIKI_NAME, SPACE_NAME, HMCCOY);
 
     /** Group used as collaborator. */
-    private static final DocumentReference GROUP = new DocumentReference(WIKI_NAME, SPACE_NAME, "collaborators");
+    private static final DocumentReference GROUP = new DocumentReference(WIKI_NAME, GROUP_SPACE_NAME,
+        COLLABORATORS_NAME);
 
     @Rule
     public final MockitoComponentMockingRule<EntityAccessHelper> mocker =
         new MockitoComponentMockingRule<>(DefaultEntityAccessHelper.class);
 
+    @Mock
+    private XWikiDocument ownerDoc;
+
+    @Mock
+    private XWikiDocument groupDoc;
+
+    @Mock
+    private XWikiDocument collaboratorDoc;
+
     private DocumentAccessBridge bridge;
 
+    private EntityAccessHelper component;
+
     @Before
-    public void setup() throws ComponentLookupException
+    public void setup() throws Exception
     {
+        MockitoAnnotations.initMocks(this);
+        this.component = this.mocker.getComponentUnderTest();
         this.bridge = this.mocker.getInstance(DocumentAccessBridge.class);
+
+        when(this.bridge.getDocument(OWNER)).thenReturn(this.ownerDoc);
+        when(this.bridge.getDocument(GROUP)).thenReturn(this.groupDoc);
+        when(this.bridge.getDocument(COLLABORATOR)).thenReturn(this.collaboratorDoc);
+
+        when(this.ownerDoc.getXObject(new EntityReference(XWIKI_USERS_LABEL, EntityType.DOCUMENT,
+            new EntityReference(XWiki.SYSTEM_SPACE, EntityType.SPACE)))).thenReturn(mock(BaseObject.class));
+
+        when(this.groupDoc.getXObject(new EntityReference(XWIKI_USERS_LABEL, EntityType.DOCUMENT,
+            new EntityReference(XWiki.SYSTEM_SPACE, EntityType.SPACE)))).thenReturn(null);
+        when(this.groupDoc.getXObject(new EntityReference(XWIKI_GROUPS_LABEL, EntityType.DOCUMENT,
+            new EntityReference(XWiki.SYSTEM_SPACE, EntityType.SPACE)))).thenReturn(mock(BaseObject.class));
+
+        when(this.collaboratorDoc.getXObject(new EntityReference(XWIKI_USERS_LABEL, EntityType.DOCUMENT,
+            new EntityReference(XWiki.SYSTEM_SPACE, EntityType.SPACE)))).thenReturn(null);
+        when(this.collaboratorDoc.getXObject(new EntityReference(XWIKI_GROUPS_LABEL, EntityType.DOCUMENT,
+            new EntityReference(XWiki.SYSTEM_SPACE, EntityType.SPACE)))).thenReturn(null);
     }
 
     /** Basic tests for {@link EntityAccessHelper#getCurrentUser()}. */
     @Test
-    public void getCurrentUser() throws ComponentLookupException
+    public void getCurrentUser()
     {
         when(this.bridge.getCurrentUserReference()).thenReturn(OWNER);
-        Assert.assertSame(OWNER, this.mocker.getComponentUnderTest().getCurrentUser());
+        Assert.assertSame(OWNER, this.component.getCurrentUser());
     }
 
     /** {@link EntityAccessHelper#getCurrentUser()} returns null for guests. */
     @Test
-    public void getCurrentUserForGuest() throws ComponentLookupException
+    public void getCurrentUserForGuest()
     {
         when(this.bridge.getCurrentUserReference()).thenReturn(null);
-        Assert.assertNull(this.mocker.getComponentUnderTest().getCurrentUser());
+        Assert.assertNull(this.component.getCurrentUser());
     }
 
     /** Basic tests for {@link EntityAccessHelper#getType(EntityReference)}. */
     @Test
-    public void getType() throws Exception
+    public void getType()
     {
-        XWikiDocument doc = mock(XWikiDocument.class);
-        when(this.bridge.getDocument(OWNER)).thenReturn(doc);
-        when(doc.getXObject(new EntityReference("XWikiUsers", EntityType.DOCUMENT,
-            new EntityReference(XWiki.SYSTEM_SPACE, EntityType.SPACE)))).thenReturn(mock(BaseObject.class));
+        Assert.assertEquals("user", this.component.getType(OWNER));
+        Assert.assertEquals("group", this.component.getType(GROUP));
+        Assert.assertEquals("unknown", this.component.getType(COLLABORATOR));
+    }
 
-        doc = mock(XWikiDocument.class);
-        when(this.bridge.getDocument(GROUP)).thenReturn(doc);
-        when(doc.getXObject(new EntityReference("XWikiUsers", EntityType.DOCUMENT,
-            new EntityReference(XWiki.SYSTEM_SPACE, EntityType.SPACE)))).thenReturn(null);
-        when(doc.getXObject(new EntityReference("XWikiGroups", EntityType.DOCUMENT,
-            new EntityReference(XWiki.SYSTEM_SPACE, EntityType.SPACE)))).thenReturn(mock(BaseObject.class));
+    /** Basic tests for {@link EntityAccessHelper#isGroup(EntityReference)}, when entity reference is a user. */
+    @Test
+    public void isGroupWithUser()
+    {
+        Assert.assertFalse(this.component.isGroup(OWNER));
+    }
 
-        doc = mock(XWikiDocument.class);
-        when(this.bridge.getDocument(COLLABORATOR)).thenReturn(doc);
-        when(doc.getXObject(new EntityReference("XWikiUsers", EntityType.DOCUMENT,
-            new EntityReference(XWiki.SYSTEM_SPACE, EntityType.SPACE)))).thenReturn(null);
-        when(doc.getXObject(new EntityReference("XWikiGroups", EntityType.DOCUMENT,
-            new EntityReference(XWiki.SYSTEM_SPACE, EntityType.SPACE)))).thenReturn(null);
+    /** Basic tests for {@link EntityAccessHelper#isGroup(EntityReference)}, when entity reference is a group. */
+    @Test
+    public void isGroupWithGroup()
+    {
+        Assert.assertTrue(this.component.isGroup(GROUP));
+    }
 
-        Assert.assertEquals("user", this.mocker.getComponentUnderTest().getType(OWNER));
-        Assert.assertEquals("group", this.mocker.getComponentUnderTest().getType(GROUP));
-        Assert.assertEquals("unknown", this.mocker.getComponentUnderTest().getType(COLLABORATOR));
+    /** Basic tests for {@link EntityAccessHelper#isGroup(EntityReference)}, when entity reference is some other doc. */
+    @Test
+    public void isGroupWithSomeDoc()
+    {
+        Assert.assertFalse(this.component.isGroup(COLLABORATOR));
+    }
+
+    /** Basic tests for {@link EntityAccessHelper#isUser(EntityReference)}, when entity reference is a user. */
+    @Test
+    public void isUserWithUser()
+    {
+        Assert.assertTrue(this.component.isUser(OWNER));
+    }
+
+    /** Basic tests for {@link EntityAccessHelper#isUser(EntityReference)}, when entity reference is a group. */
+    @Test
+    public void isUserWithGroup()
+    {
+        Assert.assertFalse(this.component.isUser(GROUP));
+    }
+
+    /** Basic tests for {@link EntityAccessHelper#isUser(EntityReference)}, when entity reference is some other doc. */
+
+    @Test
+    public void isUserWithSomeDoc()
+    {
+        Assert.assertFalse(this.component.isUser(COLLABORATOR));
     }
 }

@@ -50,6 +50,22 @@ public interface EntityAccessHelper
     String getType(@Nullable EntityReference userOrGroup);
 
     /**
+     * Returns true iff the {@link EntityReference} is a group.
+     *
+     * @param userOrGroup an {@link EntityReference}
+     * @return true iff the {@code userOrGroup} is a group
+     */
+    boolean isGroup(@Nullable EntityReference userOrGroup);
+
+    /**
+     * Returns true iff the {@link EntityReference} is a user.
+     *
+     * @param userOrGroup an {@link EntityReference}
+     * @return true iff the {@code userOrGroup} is a user
+     */
+    boolean isUser(@Nullable EntityReference userOrGroup);
+
+    /**
      * Retrieves the entity document of {@code userOrGroup}.
      *
      * @param userOrGroup an {@link EntityReference} object representing a user or a group
