@@ -316,13 +316,35 @@ document.observe('xwiki:dom:loaded', function() {
     </property>
     <property>
       <code>var XWiki = (function(XWiki) {
+  // This function will be called before the date input validation happens
+  // to determine whether the date is complete when input is mandatory
+  var clearHiddenDateInputIfDateNotComplete = function(element){
+    // parse JSON value of hidden date input field
+    var dateJson = JSON.parse(element.next('input[type="hidden"]').value);
+    if (!(dateJson.hasOwnProperty("year") &amp;&amp; dateJson.hasOwnProperty("month") &amp;&amp; dateJson.hasOwnProperty("day"))) {
+      // if the date is required and not complete, clear the hidden date input before validation
+      element.value = '';
+    }
+  };
+
   var init = function(event) {
     ((event &amp;&amp; event.memo.elements) || [$('body')]).each(function(element) {
       element.select(".mandatory input[type='text']").each(function(element) {
         if (!element.__validation) {
-          element.__validation = new LiveValidation(element, {validMessage: '', wait : 500});
+          var options =  {validMessage: '', wait : 500};
+          var message = "$escapetool.javascript($services.localization.render('phenotips.PatientSheetCode.failureEnterValue'))";
+
+          if (element.up().down('.fuzzy-date-picker')) {
+            var validator = function() {
+              clearHiddenDateInputIfDateNotComplete(element);
+            };
+            options.beforeValidation = validator;
+            message = "$escapetool.javascript($services.localization.render('phenotips.PatientSheetCode.failureEnterFullDate'))";
+          }
+
+          element.__validation = new LiveValidation(element, options);
         }
-        element.__validation.add(Validate.Presence, {failureMessage: "$escapetool.javascript($services.localization.render('phenotips.PatientSheetCode.failureEnterValue'))"});
+        element.__validation.add(Validate.Presence, {failureMessage: message});
       });
       element.select(".mandatory input[type='checkbox']").each(function(element) {
         if (!element.__validation) {
@@ -424,7 +446,9 @@ document.observe('xwiki:dom:loaded', function()
   date_of_birth.observe('xwiki:date:changed', validate_birth_death_dates);
   date_of_death.observe('xwiki:date:changed', validate_birth_death_dates);
 
-  date_of_death.__validation = new LiveValidation(date_of_death, {validMessage: ''});
+  if (!date_of_death.__validation) {
+    date_of_death.__validation = new LiveValidation(date_of_death, {validMessage: ''});
+  }
   date_of_death.__validation.add(is_death_date_after_birth_date);
 
   // when date of death years are given as a decade, the value of that field is empty.
