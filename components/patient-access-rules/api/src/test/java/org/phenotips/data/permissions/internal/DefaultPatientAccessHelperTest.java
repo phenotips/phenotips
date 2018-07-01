@@ -39,6 +39,8 @@ import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.model.reference.EntityReferenceSerializer;
+import org.xwiki.security.authorization.AuthorizationManager;
+import org.xwiki.security.authorization.Right;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
 import java.lang.reflect.ParameterizedType;
@@ -64,6 +66,10 @@ import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.user.api.XWikiGroupService;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 /**
@@ -98,6 +104,14 @@ public class DefaultPatientAccessHelperTest
     private static final DocumentReference OTHER_USER = new DocumentReference("xwiki", "XWiki", "cxavier");
 
     private static final String OTHER_USER_STR = "xwiki:XWiki.cxavier";
+
+    private static final DocumentReference GROUP_REFERENCE = new DocumentReference("xwiki", "Groups", "group");
+
+    private static final EntityReference GROUP_CLASS = new EntityReference("XWikiGroups", EntityType.DOCUMENT,
+        new EntityReference(XWiki.SYSTEM_SPACE, EntityType.SPACE));
+
+    private static final EntityReference USER_CLASS = new EntityReference("XWikiUsers", EntityType.DOCUMENT,
+        new EntityReference(XWiki.SYSTEM_SPACE, EntityType.SPACE));
 
     /** Group used as collaborator. */
     private static final DocumentReference GROUP = new DocumentReference("xwiki", "XWiki", "collaborators");
@@ -134,6 +148,8 @@ public class DefaultPatientAccessHelperTest
 
     private XWikiContext context;
 
+    private AuthorizationManager rights;
+
     @Before
     public void setup() throws ComponentLookupException
     {
@@ -141,6 +157,7 @@ public class DefaultPatientAccessHelperTest
         this.partialEntityResolver = this.mocker.getInstance(this.entityResolverType, "currentmixed");
         this.stringEntityResolver = this.mocker.getInstance(this.stringResolverType, "currentmixed");
         this.stringEntitySerializer = this.mocker.getInstance(this.stringSerializerType);
+        this.rights = this.mocker.getInstance(AuthorizationManager.class);
 
         when(this.partialEntityResolver.resolve(Owner.CLASS_REFERENCE, PATIENT_REFERENCE)).thenReturn(
             OWNER_CLASS);
@@ -180,6 +197,48 @@ public class DefaultPatientAccessHelperTest
     {
         when(this.bridge.getCurrentUserReference()).thenReturn(OWNER);
         Assert.assertSame(OWNER, this.mocker.getComponentUnderTest().getCurrentUser());
+    }
+
+    /** Basic tests for {@link PatientAccessHelper#isAdministrator(Patient, DocumentReference)} for non-admin user. */
+    @Test
+    public void isAdministratorForNonAdminUser() throws Exception
+    {
+        final XWikiDocument xwikiDoc = mock(XWikiDocument.class);
+        final BaseObject userObject = mock(BaseObject.class);
+        when(this.bridge.getDocument(OWNER)).thenReturn(xwikiDoc);
+        when(xwikiDoc.getXObject(USER_CLASS)).thenReturn(userObject);
+        when(this.rights.hasAccess(Right.ADMIN, OWNER, PATIENT_REFERENCE)).thenReturn(false);
+        Assert.assertFalse(this.mocker.getComponentUnderTest().isAdministrator(this.patient, OWNER));
+        verify(xwikiDoc, times(1)).getXObject(USER_CLASS);
+        verify(xwikiDoc, never()).getXObject(GROUP_CLASS);
+    }
+
+    /** Basic tests for {@link PatientAccessHelper#isAdministrator(Patient, DocumentReference)} for admin user. */
+    @Test
+    public void isAdministratorForAdminUser() throws Exception
+    {
+        final XWikiDocument xwikiDoc = mock(XWikiDocument.class);
+        final BaseObject userObject = mock(BaseObject.class);
+        when(this.bridge.getDocument(OWNER)).thenReturn(xwikiDoc);
+        when(xwikiDoc.getXObject(USER_CLASS)).thenReturn(userObject);
+        when(this.rights.hasAccess(Right.ADMIN, OWNER, PATIENT_REFERENCE)).thenReturn(true);
+        Assert.assertTrue(this.mocker.getComponentUnderTest().isAdministrator(this.patient, OWNER));
+        verify(xwikiDoc, times(1)).getXObject(USER_CLASS);
+        verify(xwikiDoc, never()).getXObject(GROUP_CLASS);
+    }
+
+    /** Basic tests for {@link PatientAccessHelper#isAdministrator(Patient, DocumentReference)} for group. */
+    @Test
+    public void isAdministratorForGroup() throws Exception
+    {
+        final XWikiDocument xwikiDoc = mock(XWikiDocument.class);
+        final BaseObject groupObject = mock(BaseObject.class);
+        when(this.bridge.getDocument(GROUP_REFERENCE)).thenReturn(xwikiDoc);
+        when(xwikiDoc.getXObject(GROUP_CLASS)).thenReturn(groupObject);
+        Assert.assertFalse(this.mocker.getComponentUnderTest().isAdministrator(this.patient, GROUP_REFERENCE));
+        verifyZeroInteractions(this.rights);
+        verify(xwikiDoc, times(1)).getXObject(USER_CLASS);
+        verify(xwikiDoc, times(1)).getXObject(GROUP_CLASS);
     }
 
     /** {@link PatientAccessHelper#getCurrentUser()} returns null for guests. */
