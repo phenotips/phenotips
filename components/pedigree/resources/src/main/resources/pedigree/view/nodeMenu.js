@@ -102,7 +102,6 @@ define([
                                               ? options.otherTabInvalidMessage
                                               : "All the required fields on another tab should be filled before the data can be saved";
 
-            "All the required fields on another tab should be filled before the data can be saved"
             this.canvas = editor.getWorkspace().canvas || $('body');
             var cssClass = 'menu-box' + (additionalCSSClass ? (" " + additionalCSSClass) : "");
             this.menuBox = new Element('div', {'class' : cssClass});
