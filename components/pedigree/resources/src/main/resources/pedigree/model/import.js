@@ -1352,7 +1352,7 @@ define([
            var currentObject = [];
 
            for (var i = 0; i < inputLines.length; i++) {
-               var nextLine = inputLines[i].replace(/[^a-zA-Z0-9.\@\/\-\s*]/g, ' ').replace(/^\s+|\s+$/g, ''); // sanitize + trim
+               var nextLine = inputLines[i].replace(/[^a-zA-Z0-9.@/\-\s*]/g, ' ').replace(/^\s+|\s+$/g, ''); // sanitize + trim
 
                var words = inputLines[i].split(/\s+/);
                var parts = words.splice(0,2);
