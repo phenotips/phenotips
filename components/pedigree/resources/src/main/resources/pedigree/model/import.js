@@ -11,7 +11,7 @@ define([
       Ordering,
       Helpers
     ){
-    PedigreeImport = function () {
+    var PedigreeImport = function () {
     };
 
     PedigreeImport.prototype = {
@@ -1776,7 +1776,7 @@ define([
     /*
      * Helper class which keeps track of relationships already seen in pedigree being imported
      */
-    RelationshipTracker = function (newG) {
+    var RelationshipTracker = function (newG) {
         this.newG = newG;
 
         this.relationships = {};

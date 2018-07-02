@@ -8,7 +8,7 @@ define([
     //
     // _vOrder: (optional) 1D array: for each nodeID vOrder[nodeID] == order within the rank
     //          _vOrder can be derived from the `order` above, and is provided optionally for performance reasons
-    Ordering = function (order, _vOrder) {
+    var Ordering = function (order, _vOrder) {
         this.order = order;
 
         if (_vOrder) {

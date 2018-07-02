@@ -6,7 +6,7 @@ define([
     ], function(
         Helpers
     ){
-    VerticalPosIntOptimizer = function ( pairScoreFunc, initLevels, minLevels ) {
+    var VerticalPosIntOptimizer = function ( pairScoreFunc, initLevels, minLevels ) {
         this.pairScoreFunc = pairScoreFunc;      // function(u, v, uLev, vLev) - returns penalty for interaction between two edges u and v when u's level is uLev and v's level is vLev
                                                  //                              (assumed to be symetrical, i.e. f(a,b,levA,levB) = f(b,a,levB,levA)
 

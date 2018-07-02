@@ -1,6 +1,6 @@
 define(["pedigree/model/helpers"], function(Helpers){
 
-    Heuristics = function( drawGraph )
+    var Heuristics = function( drawGraph )
     {
         this.DG = drawGraph;
     };
@@ -404,7 +404,7 @@ define(["pedigree/model/helpers"], function(Helpers){
                 // e.g. [1] [2] [3] NODE [4] [5] [6] gets sorted into [1,2,3, 6,5,4], so that edges that end up closer
                 // to the node can be inserted closer as wel, and end up below other edges thus eliminating any intersections
                 var _this = this;
-                byXcoord = function(v1,v2) {
+                var byXcoord = function(v1,v2) {
                         var rel1      = _this.DG.GG.downTheChainUntilNonVirtual(v1);
                         var rel2      = _this.DG.GG.downTheChainUntilNonVirtual(v2);
                         var position1 = _this.DG.positions[rel1];

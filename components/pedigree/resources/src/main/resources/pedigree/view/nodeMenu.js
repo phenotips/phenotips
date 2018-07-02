@@ -83,7 +83,7 @@ define([
         GraphicHelpers,
         AgeCalc
     ){
-    NodeMenu = Class.create({
+    var NodeMenu = Class.create({
         initialize : function(data, additionalCSSClass, options) {
 
             var tabs = this._findActiveTabs(data);
@@ -1037,7 +1037,7 @@ define([
                 }
                 optionHTML += "</select>";
                 span.innerHTML = optionHTML;
-                select = span.firstChild;
+                var select = span.firstChild;
                 result.inputsContainer.insert(span);
                 select._getValue = function() { return [(this.selectedIndex >= 0) && this.options[this.selectedIndex].value || '']; }.bind(select);
                 this._attachFieldEventListeners(select, ['change']);

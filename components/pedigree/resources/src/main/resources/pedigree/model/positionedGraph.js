@@ -23,7 +23,7 @@ define([
         AgeCalc
     ){
 
-    PositionedGraph = function( baseG,             // mandatory, BaseGraph
+    var PositionedGraph = function( baseG,             // mandatory, BaseGraph
                                 probandNodeId,     // optional, int (default: no proband)
                                 options,           // optional, object, see PositionedGraph.options
                                 suggestedLayout )  // optional, object

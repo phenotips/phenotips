@@ -12,7 +12,7 @@ define([
         PedigreeImport,
         PhenotipsJSON
     ){
-    DynamicPositionedGraph = function( drawGraph )
+    var DynamicPositionedGraph = function( drawGraph )
     {
         this.DG = drawGraph;
 

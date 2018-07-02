@@ -14,7 +14,7 @@ define([
     ){
 
     // options: Object (optional), see this.options
-    BaseGraph = function (options)
+    var BaseGraph = function (options)
     {
         this.v        = [];        // for each V lists (as unordered arrays of ids) vertices connected from V
         this.inedges  = [];        // for each V lists (as unordered arrays of ids) vertices connecting to V

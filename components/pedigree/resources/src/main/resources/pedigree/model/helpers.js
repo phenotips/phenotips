@@ -439,7 +439,7 @@ define ([], function(){
         console.log( _printObjectInternal(obj, 0) );
     }
 
-    _printObjectInternal = function(o, level) {
+    var _printObjectInternal = function(o, level) {
         if (level > 10) return "...[too deep, possibly a recursive object]...";
 
         var output = '';

@@ -9,7 +9,7 @@ define([
     ], function(
         GraphicHelpers
     ){
-    DeceasedMenu = Class.create({
+    var DeceasedMenu = Class.create({
         initialize : function() {
             this._justOpened = false;
             this.canvas = editor.getWorkspace().canvas || $('body');

@@ -5,7 +5,7 @@ define([
     PedigreeDate,
     Helpers
   ){
-  PedigreeExport = function () {
+  var PedigreeExport = function () {
   };
 
   PedigreeExport.prototype = {

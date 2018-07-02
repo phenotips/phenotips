@@ -8,7 +8,7 @@ define([
     /*
      * xinit: coordinates of _center_ of every vertex, or null
      */
-    XCoord = function(xinit, graph, doNotValidate, _halfWidth)
+    var XCoord = function(xinit, graph, doNotValidate, _halfWidth)
     {
         // local copies just for convenience & performance
         if (_halfWidth) {

@@ -6,7 +6,7 @@ define([
       PedigreeDate
     ){
 
-    PhenotipsJSON = function () {
+    var PhenotipsJSON = function () {
     };
 
     PhenotipsJSON.supportedPhenotipsVersionsRegexps = {
