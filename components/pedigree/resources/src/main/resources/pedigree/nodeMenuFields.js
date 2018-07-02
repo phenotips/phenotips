@@ -470,7 +470,6 @@ define([
                 'name' : 'adopted',
                 'label' : 'Adopted status',
                 'type' : 'radio',
-                'tab': 'Personal',
                 'columns': 3,
                 'values' : [
                     { 'actual' : '',           'displayed' : 'Not adopted' },
