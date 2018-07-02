@@ -1560,7 +1560,7 @@ define([
                                    properties["comments"] = "(untested)\n" + properties["comments"];
                                }
                                break;
-                           case "O":
+                           case "C":
                                // TODO: proband
                                break;
                            }
