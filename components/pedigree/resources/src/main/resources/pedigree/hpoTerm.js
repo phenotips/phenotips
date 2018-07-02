@@ -70,7 +70,7 @@ define([
     });
 
     HPOTerm.isValidID = function(id) {
-        var pattern = /^HP\:(\d)+$/i;
+        var pattern = /^HP:(\d)+$/i;
         return pattern.test(id);
     }
 
