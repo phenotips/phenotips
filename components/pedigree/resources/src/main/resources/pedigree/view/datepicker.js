@@ -250,7 +250,7 @@ define([
               values.push({'value': v, 'text' : ("0" + v).slice(-2)});
           }
       } else {
-          for (var v = end; v <= start; --v) {
+          for (var v = start; v >= end; --v) {
               values.push({'value': v, 'text' : ("0" + v).slice(-2)});
           }
       }
