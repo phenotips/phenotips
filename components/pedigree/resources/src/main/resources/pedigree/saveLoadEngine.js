@@ -6,9 +6,11 @@
  */
 
 define([
-        "pedigree/model/helpers"
+        "pedigree/model/helpers",
+        "pedigree/model/phenotipsJSON"
     ], function(
-        Helpers
+        Helpers,
+        PhenotipsJSON
     ){
     var SaveLoadEngine = Class.create( {
 

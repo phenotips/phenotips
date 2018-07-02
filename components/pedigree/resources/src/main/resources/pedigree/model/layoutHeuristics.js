@@ -1,4 +1,14 @@
-define(["pedigree/model/helpers"], function(Helpers){
+define([
+        "pedigree/model/baseGraph",
+        "pedigree/model/helpers",
+        "pedigree/model/queue",
+        "pedigree/model/xcoordclass"
+    ], function(
+        BaseGraph,
+        Helpers,
+        Queue,
+        XCoord
+    ){
 
     var Heuristics = function( drawGraph )
     {

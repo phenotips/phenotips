@@ -8,7 +8,11 @@
  * @param {Number} y The y coordinate on the canvas
  * @param {Number} [id] The id of the node
  */
-define([], function(){
+define([
+        "pedigree/view/abstractNodeVisuals"
+    ], function(
+        AbstractNodeVisuals
+    ){
     var AbstractNode = Class.create( {
 
         initialize: function(x, y, id) {

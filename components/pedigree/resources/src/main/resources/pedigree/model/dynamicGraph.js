@@ -4,13 +4,17 @@ define([
         "pedigree/model/positionedGraph",
         "pedigree/model/helpers",
         "pedigree/model/import",
-        "pedigree/model/phenotipsJSON"
+        "pedigree/model/ordering",
+        "pedigree/model/phenotipsJSON",
+        "pedigree/model/queue"
     ], function(
         BaseGraph,
         PositionedGraph,
         Helpers,
         PedigreeImport,
-        PhenotipsJSON
+        Ordering,
+        PhenotipsJSON,
+        Queue
     ){
     var DynamicPositionedGraph = function( drawGraph )
     {

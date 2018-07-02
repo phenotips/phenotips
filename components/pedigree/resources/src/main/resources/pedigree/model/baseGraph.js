@@ -8,9 +8,11 @@
 // BaseGraph contains only the information found in the pedigree (plus possibly
 //           some cached data), i.e. there is no layout data here.
 define([
-        "pedigree/model/helpers"
+        "pedigree/model/helpers",
+        "pedigree/model/queue"
     ], function(
-        Helpers
+        Helpers,
+        Queue
     ){
 
     // options: Object (optional), see this.options

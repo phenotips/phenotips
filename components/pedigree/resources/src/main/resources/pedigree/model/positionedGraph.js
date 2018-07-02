@@ -3,6 +3,7 @@
 
 define([
         "pedigree/pedigreeDate",
+        "pedigree/model/dynamicGraph",
         "pedigree/model/edgeOptimization",
         "pedigree/model/helpers",
         "pedigree/model/ordering",
@@ -13,6 +14,7 @@ define([
         "pedigree/view/ageCalc"
     ], function(
         PedigreeDate,
+        DynamicPositionedGraph,
         VerticalPosIntOptimizer,
         Helpers,
         Ordering,

@@ -7,9 +7,11 @@
 
 define([
         "pedigree/model/helpers",
+        "pedigree/model/phenotipsJSON",
         "pedigree/saveLoadEngine",
     ], function(
         Helpers,
+        PhenotipsJSON,
         SaveLoadEngine
     ){
     var Controller = Class.create({

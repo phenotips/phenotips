@@ -16,6 +16,7 @@
 define([
         "pedigree/pedigreeDate",
         "pedigree/model/helpers",
+        "pedigree/model/phenotipsJSON",
         "pedigree/view/abstractPerson",
         "pedigree/view/childlessBehavior",
         "pedigree/view/childlessBehaviorVisuals",
@@ -24,6 +25,7 @@ define([
     ], function(
         PedigreeDate,
         Helpers,
+        PhenotipsJSON,
         AbstractPerson,
         ChildlessBehavior,
         ChildlessBehaviorVisuals,
