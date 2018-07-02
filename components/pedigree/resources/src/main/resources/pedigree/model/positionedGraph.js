@@ -9,7 +9,9 @@ define([
         "pedigree/model/ordering",
         "pedigree/model/queue",
         "pedigree/model/stack",
+        "pedigree/model/verticalLevels",
         "pedigree/model/xcoordclass",
+        "pedigree/model/xcoordScore",
         "pedigree/model/layoutHeuristics",
         "pedigree/view/ageCalc"
     ], function(
@@ -20,7 +22,9 @@ define([
         Ordering,
         Queue,
         Stack,
+        VerticalLevels,
         XCoord,
+        XCoordScore,
         Heuristics,
         AgeCalc
     ){
