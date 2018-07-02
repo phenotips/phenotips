@@ -74,8 +74,8 @@ define([
             return clist;
         },
 
-        _isSupportedCancer: function(cancerId) {
-            return this._customCancerColors.hasOwnProperty(cancerId);
+        _isSupportedCancer: function(cancerID) {
+            return this._customCancerColors.hasOwnProperty(cancerID);
         },
 
         /**
@@ -87,7 +87,7 @@ define([
          */
         getCancer: function(cancerID) {
             if (!this._termCache.hasOwnProperty(cancerID)) {
-                var whenNameIsLoaded = function() { this._updateCancerName(cancerId); };
+                var whenNameIsLoaded = function() { this._updateCancerName(cancerID); };
                 var name = this._predefinedCancers.hasOwnProperty(cancerID) ? this._predefinedCancers[cancerID].shortName : null;
                 this._termCache[cancerID] = new HPOTerm(cancerID, name, whenNameIsLoaded.bind(this));
             }
