@@ -275,7 +275,7 @@ define([
          */
         getAllSettings: function() {
             var settings = {};
-            for (id in this._objectColors) {
+            for (var id in this._objectColors) {
                 if (this._objectColors.hasOwnProperty(id)) {
                     settings[id] = {"color": this._objectColors[id],
                                     "name": this.getName(id),

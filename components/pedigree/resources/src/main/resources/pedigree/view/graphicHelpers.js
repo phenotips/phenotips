@@ -195,8 +195,8 @@
         raphaelPath    += " C " + (xFrom + dist1x)  + " " + (yFrom) +
                             " " + (xTo   - dist1x)  + " " + (yTo) +
                             " " + (xTo)             + " " + (yTo);
-        
-        curve = editor.getPaper().path(raphaelPath).attr(attr).toBack();
+
+        var curve = editor.getPaper().path(raphaelPath).attr(attr).toBack();
         if (doubleCurve) {
             var curve2 = curve.clone().toBack();
             curve .transform("t " + shiftx1  + "," + shifty1 + "...");

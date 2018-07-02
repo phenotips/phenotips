@@ -320,7 +320,7 @@ define([
          */
         toggleMenu: function(isMenuToggled) {
             if (this._justClosedMenu) return;
-            _this = this;
+            var _this = this;
             this._isMenuToggled = isMenuToggled;
 
             // do not display menu if current user has no view permission for this patient
