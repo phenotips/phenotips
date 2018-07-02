@@ -75,7 +75,7 @@ define([
             // find all connected components, for now - using plain (and likely non-optimal) O(n^2) algo
             // (as a side effect can compute minimum posible penalty score)
 
-            var components = new Complonents();   // mapping between edges and connected components; see Components class
+            var components = new Components();   // mapping between edges and connected components; see Components class
 
             var crosses = [];                     // for each edge the list of edges it directly intersects with
 
@@ -553,7 +553,7 @@ define([
     };
 
 
-    Complonents = function() {
+    var Components = function() {
         this.components         = []; // arrat[arrat[int]] - for each component -> a list of edges
         this.minPossiblePenalty = []; // array[double]     - for each component min possible penalty per component
 
@@ -562,7 +562,7 @@ define([
         this.edgeComponents = [];  // array[int] - for each edge -> component ID
     };
 
-    Complonents.prototype = {
+    Components.prototype = {
         getNumComponents: function() {
             return this.components.length;
         },
