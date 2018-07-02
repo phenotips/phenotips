@@ -2222,7 +2222,7 @@ define([
                     var leftNodePos = o-1;
                     while (leftNodePos > 0 && this.DG.GG.isVirtual(this.DG.order.order[rank][leftNodePos]))
                         leftNodePos--;
-                    rightNodePos = o;
+                    var rightNodePos = o;
                     while (rightNodePos < this.DG.order.order[rank].length-1 && this.DG.GG.isVirtual(this.DG.order.order[rank][rightNodePos]))
                         rightNodePos--;
                     var nodeToTheLeft  = this.DG.order.order[rank][leftNodePos];

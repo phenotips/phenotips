@@ -307,7 +307,7 @@ define([
         // are ranked on every second rank (need a gap between generations to insert childhubs on their own rank)
         var rankCopy = Helpers.filterUnique(ranks);
         rankCopy.sort(function(a, b) { return a - b; });  // numeric sort
-        rankToAdjustedRank = {};
+        var rankToAdjustedRank = {};
         for (var i = 0; i < rankCopy.length; i++) {
             rankToAdjustedRank[rankCopy[i]] = i*2 + 1;
         }

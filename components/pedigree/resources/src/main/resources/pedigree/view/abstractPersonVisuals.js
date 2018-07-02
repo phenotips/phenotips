@@ -230,7 +230,7 @@ define([
                     var x2    = this.getX() + ((0.9) * r);
                     var coeff = -2.5;
                 }
-                brackets = "M" + x1 + " " + y + "l" + r/(coeff) +
+                var brackets = "M" + x1 + " " + y + "l" + r/(coeff) +
                     " " + 0 + "l0 " + (2.6 * r - 4) + "l" + r/(-coeff) + " 0M" + x2 +
                     " " + y + "l" + r/(-coeff) + " 0" + "l0 " + (2.6 * r - 4) + "l" +
                     (r)/(coeff) + " 0";

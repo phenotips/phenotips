@@ -529,7 +529,7 @@ define([
 
          var is_affected = false;
          for (var c = 0; c < cancerSequence.length; c++) {
-             cancerID = cancerSequence[c];
+             var cancerID = cancerSequence[c];
 
              if (!cancerIndex.hasOwnProperty(cancerID)) {
                  output += "0\t";
