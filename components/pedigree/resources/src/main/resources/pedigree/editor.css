@@ -129,7 +129,7 @@ input[type="radio"] {
   z-index: 50000;
 }
 .view-controls:hover {
-  ##opacity: 1;
+  /* opacity: 1; */
 }
 .cursor-move {
   cursor: move;
