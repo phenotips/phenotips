@@ -3608,8 +3608,7 @@ define([
                     checked[next] = true;
                     chain.push(next);
                     next = this.GG.getOutEdges(next)[0];
-                }
-                while (this.GG.isVirtual(next));;
+                } while (this.GG.isVirtual(next));
 
                 console.log("Found long edge " + Helpers.stringifyObject(chain));
                 longEdges.push(chain);

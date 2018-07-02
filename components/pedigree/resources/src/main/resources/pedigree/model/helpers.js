@@ -388,7 +388,7 @@ define ([], function(){
             }
             var key = keyValue[0].trim();
             if (!keyPrefix || (key.indexOf(keyPrefix) == 0 && (key = key.substring(keyPrefix.length, key.length)))) {
-                result[key] = keyValue[1].trim();;
+                result[key] = keyValue[1].trim();
             }
         }
         return result;

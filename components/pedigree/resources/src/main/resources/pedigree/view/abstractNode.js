@@ -154,9 +154,10 @@ define([
          */
         getProperties: function() {
             var info = {};
-            if (this.getComments() != "")
+            if (this.getComments() != "") {
                 info['comments'] = this.getComments();
-            return info;;
+            }
+            return info;
         },
 
         /**

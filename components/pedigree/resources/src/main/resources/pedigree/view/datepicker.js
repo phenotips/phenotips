@@ -112,7 +112,9 @@ define([
     initialize : function (input, inputFormat) {
       this.inputFormat = inputFormat ? inputFormat : "YMD";
 
-      if (!input) {return};
+      if (!input) {
+        return
+      }
       this.__input = input;
       this.__input.hide();
 
