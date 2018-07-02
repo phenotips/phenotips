@@ -37,8 +37,9 @@ define([], function(){
          * @param {String} reason Explanation for the condition (eg. "By Choice", "Vasectomy" etc)
          */
         setChildlessReason: function(reason) {
-            if(this.getChildlessStatus() == null)
-                reson = "";        
+            if(this.getChildlessStatus() == null) {
+                reason = "";
+            }
             this._childlessReason = reason;
             this.getGraphics().updateChildlessStatusLabel();
         }
