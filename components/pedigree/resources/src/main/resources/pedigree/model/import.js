@@ -1395,7 +1395,6 @@ define([
                        currentObject[level]["value"] = parts[2];
                    }
                }
-               currentLevel = parts[0];
            }
 
            return obj;

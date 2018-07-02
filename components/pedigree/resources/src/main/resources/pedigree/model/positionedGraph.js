@@ -3,7 +3,6 @@
 
 define([
         "pedigree/pedigreeDate",
-        "pedigree/model/dynamicGraph",
         "pedigree/model/edgeOptimization",
         "pedigree/model/helpers",
         "pedigree/model/ordering",
@@ -16,7 +15,6 @@ define([
         "pedigree/view/ageCalc"
     ], function(
         PedigreeDate,
-        DynamicPositionedGraph,
         VerticalPosIntOptimizer,
         Helpers,
         Ordering,
@@ -3156,24 +3154,6 @@ define([
 
         //=[position]========================================================================
 
-        displayGraph: function(xcoord, message)
-        {
-            TIME_DRAWING_DEBUG = 0;
-            if (!DISPLAY_POSITIONING_DEBUG) return;
-
-            var debugTimer = new Helpers.Timer();
-
-            var renderPackage = { convertedG: this.GG,
-                                  ranks:      this.ranks,
-                                  ordering:   this.order,
-                                  positions:  xcoord,
-                                  consangr:   this.consangr };
-
-            debug_display_processed_graph(renderPackage, 'output', true, message);
-
-            TIME_DRAWING_DEBUG = debugTimer.report();
-        },
-
         position: function()
         {
             var longEdges = this.find_long_edges();  // pre-find long edges for performance reasons
@@ -3181,13 +3161,10 @@ define([
             var xcoord = new XCoord(null, this);
             //Helpers.printObject(xcoord.xcoord);
 
-            //this.displayGraph(xcoord.xcoord, 'init');
-
             this.try_shift_right(xcoord, true, false);
             this.try_shift_right(xcoord, false, true);
             xcoord.normalize();
 
-            //this.displayGraph(xcoord.xcoord, 'firstAdj');
             Helpers.printObject(xcoord.xcoord);
 
             var xbest     = xcoord.copy();
@@ -3198,7 +3175,6 @@ define([
                 this.try_shift_right(xcoord, true, true);
                 this.try_straighten_long_edges(longEdges, xcoord);
 
-                //this.displayGraph(xcoord.xcoord, 'Adj' + i);
                 xcoord.normalize();
 
                 var score = this.xcoord_score(xcoord);
@@ -3211,7 +3187,6 @@ define([
                     break;
             }
 
-            //this.displayGraph(xbest.xcoord, 'final');
             Helpers.printObject(xbest.xcoord);
 
             return xbest.xcoord;
@@ -3329,7 +3304,6 @@ define([
             // Since we are not guaranteed the strictly increasing/decreasing score "smart" searches
             // such as binary search might not work well.
 
-            //this.displayGraph( xcoord.xcoord, "shiftright-start" );
             for (var rr = 0; rr <= this.maxRank; rr++) {
 
                 // go from top to bottom or bottom to top depending on which ranks (above or below)
@@ -3381,10 +3355,6 @@ define([
                     var bestScore = this.xcoord_score(xcoord, r, considerEdgesFromAbove, considerEdgesToBelow, i);
                     var shiftAmount = maxShift;
 
-                    //if (v==28)
-                    //    console.log("InitScore: " + Helpers.stringifyObject(bestScore));
-                    //if ( r == 7 ) this.displayGraph( xcoord.xcoord, "shiftright-rank-" + r + "-v-" + v + "(before)");
-
                     do
                     {
                         var newScore;
@@ -3417,10 +3387,7 @@ define([
                     if (bestShift > 0) {
                         xcoord.shiftRightAndShiftOtherIfNecessary(v, bestShift);
                     }
-                    //if ( r == 7 ) this.displayGraph( xcoord.xcoord, "shiftright-rank-" + r + "-v-" + v );
                 }
-
-                //this.displayGraph( xcoord.xcoord, "shiftright-rank-" + r + "-end");
             }
         },
 
@@ -3616,28 +3583,6 @@ define([
             return longEdges;
         }
     };
-
-
-    //-------------------------------------------------------------
-
-    var DISPLAY_POSITIONING_DEBUG = false;
-    var TIME_DRAWING_DEBUG        = 0;
-
-    function make_dynamic_positioned_graph( inputG, probandNodeId, debugOutput )
-    {
-        var timer = new Helpers.Timer();
-
-        if (debugOutput)
-            DISPLAY_POSITIONING_DEBUG = true;
-        else
-            DISPLAY_POSITIONING_DEBUG = false;
-
-        var drawGraph = new PositionedGraph( inputG, probandNodeId );
-
-        console.log( "=== Running time: " + timer.report() + "ms ==========" );
-
-        return new DynamicPositionedGraph(drawGraph);
-    }
 
     return PositionedGraph;
 });
