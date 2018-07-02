@@ -469,7 +469,7 @@ define([
             var newNodeMap = {};
 
             // change all IDs at once so that have both new and old references at the same time
-            for (oldID in this._nodeMap) {
+            for (var oldID in this._nodeMap) {
                 var node  = this.getNode(oldID);
 
                 var newID = changedIdsSet.hasOwnProperty(oldID) ? changedIdsSet[oldID] : oldID;

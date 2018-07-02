@@ -747,7 +747,7 @@ define([
 
             //var allProperties = node.getProperties();
 
-            for (modificationType in modifications) {
+            for (var modificationType in modifications) {
                 if (modifications.hasOwnProperty(modificationType)) {
                     var modValue = modifications[modificationType];
 
