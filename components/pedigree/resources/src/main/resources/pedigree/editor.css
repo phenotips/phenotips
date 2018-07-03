@@ -1203,6 +1203,13 @@ li.abnormality:hover, div.abnormality:hover {
 .msdialog-box .content {
   text-align: center;
 }
+.study-selection-dialog .xform {
+  text-align: left;
+}
+.xform .xHint {
+  color: #336699;
+  padding-left: 1.7em;
+}
 .pedigree-okcancel {
   width: 680px !important;
 }

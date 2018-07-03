@@ -42,6 +42,7 @@ define([
         "pedigree/view/tabbedSelector",
         "pedigree/view/printDialog",
         "pedigree/view/addMemberDialog",
+        "pedigree/view/studySelectionDialog",
     ],
     function(
         PedigreeExtensionManager,
@@ -78,7 +79,8 @@ define([
         TemplateSelector,
         TabbedSelector,
         PrintDialog,
-        AddNewMemberDialog
+        AddNewMemberDialog,
+        StudySelectionDialog
 ){
 
     var PedigreeEditor = Class.create({
@@ -100,8 +102,9 @@ define([
             //  drawNodeShadows:              {true|false}   - display small shadow under node graphic; default: "true"
             //  disabledFields:               [array]        - list of node-menu fields disabled for this installation
             //  replaceIdWithExternalID:      {true|false}   - when true, patient links display external ID as the link text (instead of PT ids)
-            //  displayCancerLabels:          {true|false}   - display labels for each afecting cancer; default: "true"
+            //  displayCancerLabels:          {true|false}   - display labels for each affecting cancer; default: "true"
             //  lineStyle:                    {"thin"|"regular"|"bold"} - controls the thickness of all lines in pedigree
+            //  studies:                      [array]        - array of all available studies
             //
             this._defaultPreferences = { global:   { nonStandardAdoptedOutGraphic: false,
                                                      propagateFatherLastName: true,
@@ -112,7 +115,8 @@ define([
                                                      requiredFields: [],
                                                      replaceIdWithExternalID: false,
                                                      displayCancerLabels: true,
-                                                     lineStyle: "regular" },
+                                                     lineStyle: "regular",
+                                                     studies: []},
                                          user:     { hideDraggingHint: false,
                                                      hidePatientDraggingHint: false,
                                                      hideShareConsentDialog: false,
@@ -179,6 +183,8 @@ define([
                     this._partnershipMenu = this.generatePartnershipMenu();
                     this._exportSelector = new ExportSelector();
                     this._printDialog = new PrintDialog();
+                    var studies = editor.getPreferencesManager().getConfigurationOption("studies");
+                    this._studySelectionDialog = new StudySelectionDialog(studies);
 
                     var newPatientId = window.self.location.href.toQueryParams().new_patient_id;
 
@@ -907,6 +913,14 @@ define([
          */
         startAutoSave: function(intervalInSeconds) {
             setInterval(function(){editor.getSaveLoadEngine().save(false)}, intervalInSeconds*1000);
+        },
+
+        /**
+         * @method getStudySelectionDialog
+         * @return {StudySelectionDialog} The dialog to select study
+         */
+        getStudySelectionDialog: function() {
+            return this._studySelectionDialog;
         }
     });
 

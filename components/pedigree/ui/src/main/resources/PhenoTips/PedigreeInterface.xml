@@ -37,7 +37,9 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
-  <content>{{velocity}}
+  <content>{{include reference="PhenoTips.StudiesMacros"/}}
+
+{{velocity}}
 #macro(__convertToBooleanString $value)
   #if ($value == "1")
     true##
@@ -104,6 +106,29 @@
   #end
   $jsontool.serialize($required)##
 #end
+##
+##
+#macro(__getSerializedStudies)
+  ## getStudies() collects all available studies into the $studies variable
+  #__getStudies()##
+  #set($studiesWithDescription = [])
+  #foreach ($sName in $studies)
+    #set ($s = $xwiki.getDocument($sName))
+    #if (!$s.isNew())
+      #set ($config = $s.getObject('PhenoTips.StudyClass'))
+      #set ($configTitle = '')
+      #if ("$!{s.plainTitle}" != '')
+        #set ($configTitle = "$s.plainTitle")
+      #else
+        #set ($configTitle = "${s.name}")
+      #end
+      #set ($discard = $studiesWithDescription.add({"id": ${escapetool.xml($services.model.serialize($s.documentReference, 'default'))}, "name": $escapetool.xml($configTitle), "description": $!{escapetool.xml($s.content)}}))
+    #end
+  #end
+$jsontool.serialize($studiesWithDescription)##
+#end
+##
+##
 $response.setContentType('application/json')##
 {{html wiki="false" clean="false"}}
 ##
@@ -124,7 +149,8 @@ $response.setContentType('application/json')##
     "global": {
             "disabledFields"               : #__getDisabledFields(),
             "requiredFields"               : #__getRequiredFields(),
-            "replaceIdWithExternalID"      : #if ($configPT &amp;&amp; "$!{configPT.getProperty('hideInternalIds').value}" == '1')true#else false#end
+            "replaceIdWithExternalID"      : #if ($configPT &amp;&amp; "$!{configPT.getProperty('hideInternalIds').value}" == '1')true#else false#end,
+            "studies"                      : #__getSerializedStudies()
         #if ($config)
             ,
             "dateDisplayFormat"            : "$!{config.getProperty('dateDisplayFormat').value}",
