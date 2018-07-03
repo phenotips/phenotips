@@ -878,7 +878,7 @@ define([
                                         } else if (age === "before_10") {
                                             dx += ", <10";
                                         } else {
-                                            dx += (age.indexOf('before_') > -1) ? ", " + (parseInt(age.substring(7))-10) + "\'s": ", >100";
+                                            dx += (age.indexOf('before_') > -1) ? ", " + (parseInt(age.substring(7))-10) + "'s": ", >100";
                                         }
                                     } else {
                                         dx += ", " + age;
