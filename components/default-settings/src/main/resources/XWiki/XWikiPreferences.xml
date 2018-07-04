@@ -1388,7 +1388,7 @@
       <dateInputFormat>YMD</dateInputFormat>
     </property>
     <property>
-      <displayFamilyMembers>0</displayFamilyMembers>
+      <displayFamilyMembers>1</displayFamilyMembers>
     </property>
     <property>
       <lineStyle>regular</lineStyle>
