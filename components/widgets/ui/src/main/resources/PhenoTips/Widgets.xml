@@ -2330,7 +2330,7 @@ return PhenoTips;
       <use>onDemand</use>
     </property>
   </object>
-    <object>
+  <object>
     <name>PhenoTips.Widgets</name>
     <number>3</number>
     <className>XWiki.JavaScriptExtension</className>
@@ -5552,7 +5552,17 @@ document.observe("xwiki:dom:updated", init);
     initialize: function(form) {
       this.form = form;
       this.form.observe('submit', this.lockForm.bindAsEventListener(this));
+      // Caveat: submit such a form, get to a new page, go Back in browsing history -&gt; form disabled
+      // Work around this problem by re-activating the form when the page is shown again
       window.addEventListener('pageshow', this.unlockForm.bindAsEventListener(this));
+      // Caveat: sometimes, when the form is submitted, the navigation is confirmed in order to prevent unsaved data loss; but in this case, the form wasn't really successfully submitted -&gt; form disabled
+      // Work around this problem by checking if a confirmation was requested, but this only works if this event listener is executed after the one requesting the confirmation
+      window.addEventListener('beforeunload', function(event) {
+          if (event.returnValue != '') {
+            this.unlockForm()
+          }
+        }.bindAsEventListener(this));
+      // In case the previous workaround didn't work, the form may be re-enabled when the data is saved
       document.observe('xwiki:actions:save', this.unlockForm.bindAsEventListener(this));
     },
     lockForm: function(event) {
