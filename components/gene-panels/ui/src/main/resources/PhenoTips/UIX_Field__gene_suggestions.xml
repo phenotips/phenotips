@@ -196,7 +196,7 @@ $xwiki.ssfx.use('js/xwiki/table/livetable.css', true)##
 {{/velocity}}</content>
     </property>
     <property>
-      <extensionPointId>org.phenotips.patientSheet.section.gene-panels</extensionPointId>
+      <extensionPointId>org.phenotips.patientSheet.section.gene-suggestions</extensionPointId>
     </property>
     <property>
       <name>org.phenotips.patientSheet.field.gene_suggestions</name>

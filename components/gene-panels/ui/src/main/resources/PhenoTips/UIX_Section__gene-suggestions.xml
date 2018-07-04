@@ -20,7 +20,7 @@
 
 <xwikidoc version="1.1">
   <web>PhenoTips</web>
-  <name>UIX_Section__gene-panels</name>
+  <name>UIX_Section__gene-suggestions</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
@@ -39,7 +39,7 @@
   <hidden>true</hidden>
   <content/>
   <object>
-    <name>PhenoTips.UIX_Section__gene-panels</name>
+    <name>PhenoTips.UIX_Section__gene-suggestions</name>
     <number>0</number>
     <className>XWiki.UIExtensionClass</className>
     <guid>652eb96e-844f-4110-93e2-c3702271d257</guid>
@@ -114,11 +114,11 @@
       <extensionPointId>org.phenotips.patientSheet.content</extensionPointId>
     </property>
     <property>
-      <name>org.phenotips.patientSheet.section.gene-panels</name>
+      <name>org.phenotips.patientSheet.section.gene-suggestions</name>
     </property>
     <property>
       <parameters>title=$services.localization.render('phenotips.UIXSection.genePanels')
-enabled=false
+enabled=true
 required=
 order=7</parameters>
     </property>
