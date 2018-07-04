@@ -200,6 +200,7 @@ define([
                 }
 
                 document.fire("pedigree:blockinteraction:finish");
+                document.fire("pedigree:initialization:finish");
             };
 
             if (!noUndo && !editor.isReadOnlyMode()) {

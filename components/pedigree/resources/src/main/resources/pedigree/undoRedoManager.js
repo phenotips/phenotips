@@ -106,6 +106,11 @@ define([
             this._savedUnlinkedState = this.computeUnlinkedState();
         },
 
+        markAsUnsaved: function() {
+            this._savedState = null;
+            this._savedUnlinkedState = null;
+        },
+
         computeUnlinkedState: function() {
             // converts the current state of all unlinked patient into a string
             var unlinked = editor.getPatientLegend().getPatientsInTheLegendData();
