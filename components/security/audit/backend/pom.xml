@@ -28,7 +28,7 @@
   <artifactId>phenotips-audit-backend</artifactId>
   <name>PhenoTips - Security - Auditing support - Backend code</name>
   <properties>
-    <coverage.instructionRatio>0.60</coverage.instructionRatio>
+    <coverage.instructionRatio>0.99</coverage.instructionRatio>
   </properties>
   <dependencies>
     <dependency>

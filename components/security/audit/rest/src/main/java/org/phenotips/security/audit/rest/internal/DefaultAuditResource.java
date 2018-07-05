@@ -20,7 +20,7 @@ package org.phenotips.security.audit.rest.internal;
 import org.phenotips.Constants;
 import org.phenotips.security.audit.AuditEvent;
 import org.phenotips.security.audit.AuditStore;
-import org.phenotips.security.audit.rest.AuditStoreResource;
+import org.phenotips.security.audit.rest.AuditResource;
 import org.phenotips.security.authorization.AuthorizationService;
 
 import org.xwiki.component.annotation.Component;
@@ -34,6 +34,7 @@ import org.xwiki.users.UserManager;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -49,16 +50,18 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
- * Default implementation for {@link AuditStoreResource} using XWiki's support for REST resources.
+ * Default implementation for {@link AuditResource} using XWiki's support for REST resources.
  *
  * @version $Id$
  * @since 1.4
  */
 @Component
-@Named("org.phenotips.security.audit.rest.internal.HibernateAuditStoreResource")
+@Named("org.phenotips.security.audit.rest.internal.DefaultAuditResource")
 @Singleton
-public class HibernateAuditStoreResource extends XWikiResource implements AuditStoreResource
+public class DefaultAuditResource extends XWikiResource implements AuditResource
 {
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
+
     @Inject
     private AuditStore auditStore;
 
@@ -78,7 +81,7 @@ public class HibernateAuditStoreResource extends XWikiResource implements AuditS
     private DocumentReferenceResolver<String> resolverd;
 
     @Override
-    @SuppressWarnings("ParameterNumber")
+    @SuppressWarnings("checkstyle:ParameterNumber")
     public Response listEvents(int start, int number, String action, String userId, String ip, String entityId,
         String fromTime, String toTime)
     {
@@ -115,24 +118,22 @@ public class HibernateAuditStoreResource extends XWikiResource implements AuditS
 
     private List<AuditEvent> getResults(AuditEvent eventTemplate, String fromTime, String toTime, int start, int number)
     {
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
-        Calendar from = Calendar.getInstance();
-
+        Calendar from = null;
         try {
-            from.setTime(sdf.parse(fromTime));
+            Date d = DATE_FORMAT.parse(fromTime);
+            from = Calendar.getInstance();
+            from.setTime(d);
         } catch (Exception e) {
-            from.setTimeInMillis(0);
+            // Nothing to do for bad input, leave it as null
         }
 
-        Calendar to = Calendar.getInstance();
+        Calendar to = null;
         try {
-            if (to.after(from)) {
-                to.setTime(sdf.parse(toTime));
-            } else {
-                to.setTimeInMillis(System.currentTimeMillis());
-            }
+            Date d = DATE_FORMAT.parse(toTime);
+            to = Calendar.getInstance();
+            to.setTime(d);
         } catch (Exception e) {
-            to.setTimeInMillis(System.currentTimeMillis());
+            // Nothing to do for bad input, leave it as null
         }
 
         List<AuditEvent> results = this.auditStore.getEvents(eventTemplate, from, to, start, number);

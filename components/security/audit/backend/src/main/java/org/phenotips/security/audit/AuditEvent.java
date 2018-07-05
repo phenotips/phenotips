@@ -193,12 +193,12 @@ public class AuditEvent
     public JSONObject toJSON()
     {
         JSONObject event = new JSONObject();
-        event.put("user", this.user == null ? null : this.user.getName());
+        event.put("user", this.user == null ? null : this.user.getId());
         event.put("ip", this.ip);
         event.put("action", this.action);
         event.put("extra", this.extra);
-        event.put("entity", this.entity == null ? null : this.entity.getName());
-        event.put("time", this.time == null ? null : this.time.toString());
+        event.put("entity", this.entity == null ? null : this.entity.toString());
+        event.put("time", this.time == null ? null : this.time.toInstant().toString());
         return event;
     }
 }

@@ -18,7 +18,7 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
 
-<xwikidoc version="1.1">
+<xwikidoc version="1.2" reference="PhenoTips.AuditLogs" locale="">
   <web>PhenoTips</web>
   <name>AuditLogs</name>
   <language/>
@@ -37,9 +37,7 @@
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
-  <content>{{include reference="PhenoTips.TabelarDataMacros"/}}
-
-{{include reference="PhenoTips.AuditFilters" /}}
+  <content>{{include reference="PhenoTips.AuditFilters" /}}
 
 {{velocity}}
 $xwiki.ssfx.use('uicomponents/suggest/suggestPicker.css', true)##
@@ -50,8 +48,6 @@ $xwiki.ssx.use('PhenoTips.DatabaseFilters')##
 $xwiki.ssx.use('PhenoTips.Skin', {'colorTheme' : "$xwiki.getSpacePreference('colorTheme')"})##
 $xwiki.jsx.use('PhenoTips.DBWebHomeSheet')##
 $xwiki.ssx.use('PhenoTips.DBWebHomeSheet')##
-$xwiki.jsfx.use('uicomponents/widgets/exportData.js', true)####
-$xwiki.ssfx.use('uicomponents/widgets/exportData.css', true)####
 $xwiki.ssx.use('PhenoTips.Widgets')##
 $xwiki.jsx.use('PhenoTips.Widgets')##
 $xwiki.jsx.use('XWiki.DateTimePicker')##
@@ -65,7 +61,7 @@ $xwiki.ssx.use('PhenoTips.AuditLogs')##
   #set ($columnsProperties = {})
   #foreach ($column in $columns)
     #set ($link = "#if ($column == 'user' || $column == 'entity')field#{else}editor#end")
-    #set ($discard = $columnsProperties.put($column, { 'type' : "text", 'link' : $link, 'size' : 7, 'filterable' : false, 'sortable': true  }))
+    #set ($discard = $columnsProperties.put($column, { 'type' : "text", 'link' : $link, 'size' : 7, 'filterable' : false, 'sortable': false  }))
   #end
 ##
 ##
@@ -115,6 +111,19 @@ $xwiki.ssx.use('PhenoTips.AuditLogs')##
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </advancedOnly>
+      <categoryIcon>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>categoryIcon</name>
+        <number>11</number>
+        <picker>0</picker>
+        <prettyName>categoryIcon</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </categoryIcon>
       <categoryPriority>
         <customDisplay/>
         <disabled>0</disabled>
@@ -170,6 +179,19 @@ $xwiki.ssx.use('PhenoTips.AuditLogs')##
         <validationRegExp/>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
       </configureGlobally>
+      <displayBeforeCategory>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>displayBeforeCategory</name>
+        <number>10</number>
+        <picker>0</picker>
+        <prettyName>displayBeforeCategory</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </displayBeforeCategory>
       <displayInCategory>
         <customDisplay/>
         <disabled>0</disabled>
@@ -256,6 +278,19 @@ $xwiki.ssx.use('PhenoTips.AuditLogs')##
         <values/>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </propertiesToShow>
+      <sectionOrder>
+        <customDisplay/>
+        <disabled>0</disabled>
+        <name>sectionOrder</name>
+        <number>12</number>
+        <numberType>integer</numberType>
+        <prettyName>sectionOrder</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <classType>com.xpn.xwiki.objects.classes.NumberClass</classType>
+      </sectionOrder>
       <sectionPriority>
         <customDisplay/>
         <disabled>0</disabled>
@@ -553,7 +588,7 @@ $xwiki.ssx.use('PhenoTips.AuditLogs')##
         <displayType>select</displayType>
         <multiSelect>0</multiSelect>
         <name>cache</name>
-        <number>5</number>
+        <number>6</number>
         <prettyName>Caching policy</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
@@ -566,7 +601,7 @@ $xwiki.ssx.use('PhenoTips.AuditLogs')##
       <code>
         <disabled>0</disabled>
         <name>code</name>
-        <number>2</number>
+        <number>3</number>
         <prettyName>Code</prettyName>
         <rows>20</rows>
         <size>50</size>
@@ -579,7 +614,7 @@ $xwiki.ssx.use('PhenoTips.AuditLogs')##
         <displayType>select</displayType>
         <multiSelect>0</multiSelect>
         <name>contentType</name>
-        <number>6</number>
+        <number>1</number>
         <prettyName>Content Type</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>
@@ -592,7 +627,7 @@ $xwiki.ssx.use('PhenoTips.AuditLogs')##
       <name>
         <disabled>0</disabled>
         <name>name</name>
-        <number>1</number>
+        <number>2</number>
         <prettyName>Name</prettyName>
         <size>30</size>
         <unmodifiable>0</unmodifiable>
@@ -603,7 +638,7 @@ $xwiki.ssx.use('PhenoTips.AuditLogs')##
         <displayFormType>select</displayFormType>
         <displayType>yesno</displayType>
         <name>parse</name>
-        <number>4</number>
+        <number>5</number>
         <prettyName>Parse content</prettyName>
         <unmodifiable>0</unmodifiable>
         <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
@@ -614,7 +649,7 @@ $xwiki.ssx.use('PhenoTips.AuditLogs')##
         <displayType>select</displayType>
         <multiSelect>0</multiSelect>
         <name>use</name>
-        <number>3</number>
+        <number>4</number>
         <prettyName>Use this extension</prettyName>
         <relationalStorage>0</relationalStorage>
         <separator> </separator>

@@ -27,19 +27,26 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.users.User;
 
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.classic.Session;
+import org.hibernate.criterion.BetweenExpression;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Example;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.RowCountProjection;
+import org.hibernate.criterion.SimpleExpression;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -109,7 +116,17 @@ public class HibernateAuditStoreTest
     }
 
     @Test
-    public void hibernateExceptionIsCaught()
+    public void storeSkipsIgnoredActions()
+    {
+        for (String action : new String[] { "ssx", "jsx", "temp", "skin" }) {
+            when(this.event.getAction()).thenReturn(action);
+            this.store.store(this.event);
+            Mockito.verifyZeroInteractions(this.session);
+        }
+    }
+
+    @Test
+    public void storeCatchesHibernateException()
     {
         when(this.session.save(this.event)).thenThrow(new HibernateException("failed"));
         this.store.store(this.event);
@@ -185,10 +202,81 @@ public class HibernateAuditStoreTest
         Calendar from = Calendar.getInstance();
         Calendar to = Calendar.getInstance();
         AuditEvent eventTemplate = new AuditEvent(this.user, "127.0.0.1", "action", null, null, null);
-        this.store.getEvents(eventTemplate, from, to, 0, 25);
-        Mockito.verify(this.criteria).add(criterion.capture());
-        Example ex = (Example) criterion.getValue();
+        when(this.criteria.list()).thenReturn(Collections.singletonList(this.event));
+        List<AuditEvent> result = this.store.getEvents(eventTemplate, from, to, 0, 0);
+        Assert.assertEquals(Collections.singletonList(this.event), result);
+        Mockito.verify(this.criteria, Mockito.times(2)).add(criterion.capture());
+        Example ex = (Example) criterion.getAllValues().get(0);
         Assert.assertEquals("example (wiki:XWiki.user (127.0.0.1): action on null at null)", ex.toString());
+        BetweenExpression between = (BetweenExpression) criterion.getAllValues().get(1);
+        Assert.assertEquals("time between " + from.toString() + " and " + to.toString(), between.toString());
+    }
+
+    @Test
+    public void getEventsAcceptsNullTemplate()
+    {
+        this.store.getEvents(null, null, null, 0, 0);
+        Mockito.verify(this.criteria, Mockito.never()).add(Matchers.any());
+    }
+
+    @Test
+    public void getEventsWithStartAndCound()
+    {
+        ArgumentCaptor<Criterion> criterion = ArgumentCaptor.forClass(Criterion.class);
+        Calendar from = Calendar.getInstance();
+        Calendar to = Calendar.getInstance();
+        AuditEvent eventTemplate = new AuditEvent(this.user, "127.0.0.1", "action", null, null, null);
+        this.store.getEvents(eventTemplate, from, to, 100, 25);
+        Mockito.verify(this.criteria, Mockito.times(2)).add(criterion.capture());
+        Example ex = (Example) criterion.getAllValues().get(0);
+        Assert.assertEquals("example (wiki:XWiki.user (127.0.0.1): action on null at null)", ex.toString());
+        BetweenExpression between = (BetweenExpression) criterion.getAllValues().get(1);
+        Assert.assertEquals("time between " + from.toString() + " and " + to.toString(), between.toString());
+        Mockito.verify(this.criteria).setFirstResult(100);
+        Mockito.verify(this.criteria).setMaxResults(25);
+        ArgumentCaptor<Order> order = ArgumentCaptor.forClass(Order.class);
+        Mockito.verify(this.criteria).addOrder(order.capture());
+        Assert.assertEquals("time desc", order.getValue().toString());
+    }
+
+    @Test
+    public void getEventsIgnoresNegativeStart()
+    {
+        ArgumentCaptor<Criterion> criterion = ArgumentCaptor.forClass(Criterion.class);
+        Calendar from = Calendar.getInstance();
+        Calendar to = Calendar.getInstance();
+        AuditEvent eventTemplate = new AuditEvent(this.user, "127.0.0.1", "action", null, null, null);
+        this.store.getEvents(eventTemplate, from, to, -100, 25);
+        Mockito.verify(this.criteria, Mockito.times(2)).add(criterion.capture());
+        Example ex = (Example) criterion.getAllValues().get(0);
+        Assert.assertEquals("example (wiki:XWiki.user (127.0.0.1): action on null at null)", ex.toString());
+        BetweenExpression between = (BetweenExpression) criterion.getAllValues().get(1);
+        Assert.assertEquals("time between " + from.toString() + " and " + to.toString(), between.toString());
+        Mockito.verify(this.criteria, Mockito.never()).setFirstResult(Matchers.anyInt());
+        Mockito.verify(this.criteria).setMaxResults(25);
+    }
+
+    @Test
+    public void getEventsIgnoresNegativeCount()
+    {
+        ArgumentCaptor<Criterion> criterion = ArgumentCaptor.forClass(Criterion.class);
+        Calendar from = Calendar.getInstance();
+        Calendar to = Calendar.getInstance();
+        AuditEvent eventTemplate = new AuditEvent(this.user, "127.0.0.1", "action", null, null, null);
+        this.store.getEvents(eventTemplate, from, to, 0, -25);
+        Mockito.verify(this.criteria, Mockito.times(2)).add(criterion.capture());
+        Example ex = (Example) criterion.getAllValues().get(0);
+        Assert.assertEquals("example (wiki:XWiki.user (127.0.0.1): action on null at null)", ex.toString());
+        BetweenExpression between = (BetweenExpression) criterion.getAllValues().get(1);
+        Assert.assertEquals("time between " + from.toString() + " and " + to.toString(), between.toString());
+        Mockito.verify(this.criteria, Mockito.never()).setMaxResults(Matchers.anyInt());
+    }
+
+    @Test
+    public void getEventsCatchesHibernateException()
+    {
+        when(this.criteria.list()).thenThrow(new HibernateException(""));
+        Assert.assertTrue(this.store.getEvents(null, null, null, 0, 0).isEmpty());
     }
 
     @Test
@@ -196,6 +284,7 @@ public class HibernateAuditStoreTest
     {
         ArgumentCaptor<Criterion> criterion = ArgumentCaptor.forClass(Criterion.class);
         long count = this.store.countEventsForEntity(this.doc);
+        Mockito.verify(this.criteria).setProjection(Matchers.any(RowCountProjection.class));
         Mockito.verify(this.criteria).add(criterion.capture());
         Example ex = (Example) criterion.getValue();
         Assert.assertEquals("example (null (null): null on wiki:Space.Page at null)", ex.toString());
@@ -207,6 +296,7 @@ public class HibernateAuditStoreTest
     {
         ArgumentCaptor<Criterion> criterion = ArgumentCaptor.forClass(Criterion.class);
         long count = this.store.countEventsForEntity(this.doc, "action");
+        Mockito.verify(this.criteria).setProjection(Matchers.any(RowCountProjection.class));
         Mockito.verify(this.criteria).add(criterion.capture());
         Example ex = (Example) criterion.getValue();
         Assert.assertEquals("example (null (null): action on wiki:Space.Page at null)", ex.toString());
@@ -218,6 +308,7 @@ public class HibernateAuditStoreTest
     {
         ArgumentCaptor<Criterion> criterion = ArgumentCaptor.forClass(Criterion.class);
         long count = this.store.countEventsForUser(this.user);
+        Mockito.verify(this.criteria).setProjection(Matchers.any(RowCountProjection.class));
         Mockito.verify(this.criteria).add(criterion.capture());
         Example ex = (Example) criterion.getValue();
         Assert.assertEquals("example (wiki:XWiki.user (null): null on null at null)", ex.toString());
@@ -229,6 +320,7 @@ public class HibernateAuditStoreTest
     {
         ArgumentCaptor<Criterion> criterion = ArgumentCaptor.forClass(Criterion.class);
         long count = this.store.countEventsForUser(this.user, "127.0.0.1");
+        Mockito.verify(this.criteria).setProjection(Matchers.any(RowCountProjection.class));
         Mockito.verify(this.criteria).add(criterion.capture());
         Example ex = (Example) criterion.getValue();
         Assert.assertEquals("example (wiki:XWiki.user (127.0.0.1): null on null at null)", ex.toString());
@@ -240,6 +332,7 @@ public class HibernateAuditStoreTest
     {
         ArgumentCaptor<Criterion> criterion = ArgumentCaptor.forClass(Criterion.class);
         long count = this.store.countEventsForUser(this.user, "127.0.0.1", "action");
+        Mockito.verify(this.criteria).setProjection(Matchers.any(RowCountProjection.class));
         Mockito.verify(this.criteria).add(criterion.capture());
         Example ex = (Example) criterion.getValue();
         Assert.assertEquals("example (wiki:XWiki.user (127.0.0.1): action on null at null)", ex.toString());
@@ -247,16 +340,81 @@ public class HibernateAuditStoreTest
     }
 
     @Test
-    public void countEvents()
+    public void countEventsWithNoTimeRange()
+    {
+        ArgumentCaptor<Criterion> criterion = ArgumentCaptor.forClass(Criterion.class);
+        AuditEvent eventTemplate = new AuditEvent(this.user, "127.0.0.1", "action", null, null, null);
+        long count = this.store.countEvents(eventTemplate, null, null);
+        Mockito.verify(this.criteria).setProjection(Matchers.any(RowCountProjection.class));
+        Mockito.verify(this.criteria, Mockito.times(1)).add(criterion.capture());
+        Assert.assertEquals(0, count);
+        Example ex = (Example) criterion.getAllValues().get(0);
+        Assert.assertEquals("example (wiki:XWiki.user (127.0.0.1): action on null at null)", ex.toString());
+    }
+
+    @Test
+    public void countEventsWithLowerTimeLimit()
+    {
+        ArgumentCaptor<Criterion> criterion = ArgumentCaptor.forClass(Criterion.class);
+        Calendar from = Calendar.getInstance();
+        AuditEvent eventTemplate = new AuditEvent(this.user, "127.0.0.1", "action", null, null, null);
+        long count = this.store.countEvents(eventTemplate, from, null);
+        Mockito.verify(this.criteria).setProjection(Matchers.any(RowCountProjection.class));
+        Mockito.verify(this.criteria, Mockito.times(2)).add(criterion.capture());
+        Assert.assertEquals(0, count);
+        Example ex = (Example) criterion.getAllValues().get(0);
+        Assert.assertEquals("example (wiki:XWiki.user (127.0.0.1): action on null at null)", ex.toString());
+        SimpleExpression timeFilter = (SimpleExpression) criterion.getAllValues().get(1);
+        Assert.assertEquals("time>=" + from.toString(), timeFilter.toString());
+    }
+
+    @Test
+    public void countEventsWithUpperTimeLimit()
+    {
+        when(this.criteria.list()).thenReturn(Collections.singletonList(42L));
+        ArgumentCaptor<Criterion> criterion = ArgumentCaptor.forClass(Criterion.class);
+        Calendar to = Calendar.getInstance();
+        AuditEvent eventTemplate = new AuditEvent(this.user, "127.0.0.1", "action", null, null, null);
+        long count = this.store.countEvents(eventTemplate, null, to);
+        Mockito.verify(this.criteria).setProjection(Matchers.any(RowCountProjection.class));
+        Mockito.verify(this.criteria, Mockito.times(2)).add(criterion.capture());
+        Assert.assertEquals(42, count);
+        Example ex = (Example) criterion.getAllValues().get(0);
+        Assert.assertEquals("example (wiki:XWiki.user (127.0.0.1): action on null at null)", ex.toString());
+        SimpleExpression timeFilter = (SimpleExpression) criterion.getAllValues().get(1);
+        Assert.assertEquals("time<=" + to.toString(), timeFilter.toString());
+    }
+
+    @Test
+    public void countEventsWithTimeRange()
     {
         ArgumentCaptor<Criterion> criterion = ArgumentCaptor.forClass(Criterion.class);
         Calendar from = Calendar.getInstance();
         Calendar to = Calendar.getInstance();
         AuditEvent eventTemplate = new AuditEvent(this.user, "127.0.0.1", "action", null, null, null);
         long count = this.store.countEvents(eventTemplate, from, to);
-        Mockito.verify(this.criteria).add(criterion.capture());
-        Example ex = (Example) criterion.getValue();
-        Assert.assertEquals("example (wiki:XWiki.user (127.0.0.1): action on null at null)", ex.toString());
+        Mockito.verify(this.criteria).setProjection(Matchers.any(RowCountProjection.class));
+        Mockito.verify(this.criteria, Mockito.times(2)).add(criterion.capture());
         Assert.assertEquals(0, count);
+        Example ex = (Example) criterion.getAllValues().get(0);
+        Assert.assertEquals("example (wiki:XWiki.user (127.0.0.1): action on null at null)", ex.toString());
+        BetweenExpression timeFilter = (BetweenExpression) criterion.getAllValues().get(1);
+        Assert.assertEquals("time between " + from.toString() + " and " + to.toString(), timeFilter.toString());
+    }
+
+    @Test
+    public void countEventsAcceptsNullTemplate()
+    {
+        long count = this.store.countEvents(null, null, null);
+        Mockito.verify(this.criteria).setProjection(Matchers.any(RowCountProjection.class));
+        Mockito.verify(this.criteria, Mockito.never()).add(Matchers.any());
+        Assert.assertEquals(0, count);
+    }
+
+    @Test
+    public void countEventsCatchesHibernateException()
+    {
+        when(this.criteria.list()).thenThrow(new HibernateException(""));
+        Assert.assertEquals(-1, this.store.countEvents(null, null, null));
     }
 }

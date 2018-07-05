@@ -1,1 +1,1 @@
-org.phenotips.security.audit.rest.internal.HibernateAuditStoreResource
+org.phenotips.security.audit.rest.internal.DefaultAuditResource

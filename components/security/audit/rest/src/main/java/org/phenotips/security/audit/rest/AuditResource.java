@@ -17,6 +17,11 @@
  */
 package org.phenotips.security.audit.rest;
 
+import org.phenotips.rest.ParentResource;
+import org.phenotips.rest.RequiredAccess;
+
+import org.xwiki.rest.resources.RootResource;
+
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -29,8 +34,9 @@ import javax.ws.rs.core.Response;
  * @version $Id$
  * @since 1.4
  */
-@Path("/audit")
-public interface AuditStoreResource
+@Path("/security/audit")
+@ParentResource(RootResource.class)
+public interface AuditResource
 {
     /**
      * Retrieves audit events for filter parameters. Parameters fromTime and toTime define an interval for the time
@@ -49,7 +55,8 @@ public interface AuditStoreResource
      * @return a list of audited events, may be empty
      */
     @GET
-    @SuppressWarnings("ParameterNumber")
+    @SuppressWarnings("checkstyle:ParameterNumber")
+    @RequiredAccess("admin")
     Response listEvents(
         @QueryParam("start") @DefaultValue("0") int start,
         @QueryParam("number") @DefaultValue("50") int number,

@@ -18,7 +18,7 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
 
-<xwikidoc version="1.1">
+<xwikidoc version="1.2" reference="PhenoTips.AuditResults" locale="">
   <web>PhenoTips</web>
   <name>AuditResults</name>
   <language/>
@@ -38,6 +38,9 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content>{{velocity wiki="false"}}
+#if ($xcontext.action != 'get')
+  #break
+#end
 $response.setContentType('application/json')
 #set ($dateFormat = "yyyy/mm/dd hh:mm")
 #set($map = {})
@@ -53,7 +56,7 @@ $response.setContentType('application/json')
 #set($entity = $request.get('record'))
 #set($fromTime = $request.get('fromTime'))
 #set($toTime = $request.get('toTime'))
-#set($data = $services.audit.getEvents($offset, $limit, $action, $user, $ip, $entity, $fromTime, $toTime))
+#set($data = $services.audit.getEvents($mathtool.sub($offset, 1), $limit, $action, $user, $ip, $entity, $fromTime, $toTime))
 #set($totalrows = $services.audit.countEvents($action, $user, $ip, $entity, $fromTime, $toTime))
 #foreach($item in $data)
   #set($row = {})
@@ -75,7 +78,7 @@ $response.setContentType('application/json')
 #set($discard = $map.put('rows', $rows))
 #set($discard = $map.put('reqNo', $mathtool.toInteger($request.reqNo)))
 #set($discard = $map.put('totalrows', $totalrows))
-#set($discard = $map.put('returnedrows', $mathtool.min($totalrows, $limit)))
+#set($discard = $map.put('returnedrows', $data.size()))
 #set($discard = $map.put('offset', $offset))
 $jsontool.serialize($map)
 {{/velocity}}</content>
