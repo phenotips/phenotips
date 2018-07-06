@@ -1900,13 +1900,15 @@ define([
                                                  suggestedLayout );
                 this.DG = newDG;
 
-                this.setUnlinkedPatients(Object.keys(unlinkedMembersData));
+                if (unlinkedMembersData) {
+                    this.setUnlinkedPatients(Object.keys(unlinkedMembersData));
 
-                // for every patient record present in the family (either linked or unlinked)
-                // save/update the patient PhenoTips JSON as loaded from the pedigree: normally all patient record
-                // JSONs will be re-loaded separately from the back-end, but current user may not have
-                // view rights for some of them (however should still be able to view and edit the pedigree)
-                this._updatedPatientJSONsAsLoadedFromPedigree(baseGraph, unlinkedMembersData)
+                    // for every patient record present in the family (either linked or unlinked)
+                    // save/update the patient PhenoTips JSON as loaded from the pedigree: normally all patient record
+                    // JSONs will be re-loaded separately from the back-end, but current user may not have
+                    // view rights for some of them (however should still be able to view and edit the pedigree)
+                    this._updatedPatientJSONsAsLoadedFromPedigree(baseGraph, unlinkedMembersData)
+                } // else: keep unlinked set "as is"
             } catch (e) {
                 console.log("ERROR creating a pedigree from input data: " + e);
                 return false;
