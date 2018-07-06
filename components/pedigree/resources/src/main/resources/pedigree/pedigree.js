@@ -186,10 +186,23 @@ define([
                     if (newPatientId && newPatientId != "") {
                         // since this is a new patient, we do not want to load that patient's data, we explicitly
                         // want to load the family document (either new family or existing), and add new patient
-                        // to the un-linked patients legend (note: in case it is a new family and a template is
-                        // loaded, patient may be auto-assigned to a node in the template)
+                        // to the un-linked patients legend
+
+                        // note: in case it is a new family and a template is loaded, patient may be auto-assigned
+                        // to a node in the template - for that to happen it should be added to the patient legend
+                        // before the template is loaded
                         this.getPatientLegend().addCase(newPatientId);
+
                         this._saveLoadEngine.load(XWiki.currentDocument.page);
+
+                        // normally once a pedigree is loaded from disk it is assumed to have no changes,
+                        // but when a new patient is added to an existing family there is an unsaved change
+                        // (and it is easier to mark it as such than to complicate the logic in the load code)
+                        var markAsUnsaved = function() {
+                            editor.getUndoRedoManager().markAsUnsaved();
+                            document.stopObserving("pedigree:initialization:finish", markAsUnsaved);
+                        }
+                        document.observe("pedigree:initialization:finish", markAsUnsaved);
                     } else {
                         var documentId = editor.getGraph().getCurrentPatientId();
                         this._saveLoadEngine.load(documentId);
