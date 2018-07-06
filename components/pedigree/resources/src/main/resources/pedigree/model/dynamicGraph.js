@@ -1775,9 +1775,13 @@ define([
             for (var i = 0; i < this._unlinkedMembers.length; i++) {
                 var ptID = this._unlinkedMembers[i];
                 var id = nextFreeID++;
+                var patientJSON = Helpers.cloneObject(editor.getPatientRecordData().get(ptID));
+                if (options && options.hasOwnProperty("includePatientLinks") && !options.includePatientLinks) {
+                    delete patientJSON.id;
+                }
                 output.members.push( { "id": id,
                                        "notInPedigree": true,
-                                       "properties": editor.getPatientRecordData().get(ptID) } );
+                                       "properties": patientJSON } );
             }
 
             // note: everything else can be recomputed based on the information above
