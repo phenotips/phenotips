@@ -731,20 +731,21 @@ define([
         },
 
         /**
-         * Returns the list of {id: "...", name: "...", identifier: "..."} of all the patients which
-         * were part of this patient's family at the time pedigree was last (re-)loaded
-         * @method getFamilyMembersBeforeChanges
+         * Returns the set of PhenoTips patient IDs as {id1: true, id2: true} object
+         * @method getAllLinkedPatients
          * @return {Object}
          */
-        getFamilyMembersBeforeChanges: function() {
-            return this.getFamilyData().getAllFamilyMembersList();
+        getAllLinkedPatients: function() {
+            var allLinkedNodes = editor.getGraph().getAllPatientLinks();
+            var patientList = Helpers.filterUnique(allLinkedNodes.linkedPatients.concat(editor.getPatientLegend().getListOfPatientsInTheLegend()));
+            return patientList;
         },
 
         /**
-         * Returns iff the given patient is a member of the current family
+         * Returns iff the given patient is already a member of the current family
          */
         isFamilyMember: function(patientID) {
-            return this.getFamilyData().isFamilyMember(patientID);
+            return Helpers.arrayContains(this.getAllLinkedPatients(), patientID);
         },
 
         /**

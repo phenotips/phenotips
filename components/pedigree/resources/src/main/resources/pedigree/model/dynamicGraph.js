@@ -1853,13 +1853,27 @@ define([
                 importData.unlinkedMembers = {};
             }
 
-            // FIXME: for now, we do not allow linking patients via import dialogue, so remove all links to all patients
+            // TODO: for now, we do not allow linking patients via import dialogue, so remove
+            //       all links to all patients records that are not laready in the family
             if (importOptions && importOptions.doNotLinkPatients) {
-                unlinkedMembers = [];
+                // remove all unlinked patients loaded form import data that are not already in family:
+                for (var patientRecordId in importData.unlinkedMembers) {
+                    if (importData.unlinkedMembers.hasOwnProperty(patientRecordId)) {
+                        if (!editor.isFamilyMember(patientRecordId)) {
+                            console.log("Ignoring a link to patient record " + patientRecordId);
+                            delete importData.unlinkedMembers[patientRecordId];
+                        }
+                    }
+                }
+                // remove all linked patients loaded form import data that are not already in family:
                 var personIDs = importData.baseGraph.getAllPersons(true);
                 for (var p = 0; p < personIDs.length; p++) {
-                    delete importData.baseGraph.rawJSONProperties[personIDs[p]].id;
-                    delete importData.baseGraph.properties[personIDs[p]].phenotipsId;
+                    var patientRecordId = importData.baseGraph.properties[personIDs[p]].phenotipsId;
+                    if (patientRecordId !== undefined && !editor.isFamilyMember(patientRecordId)) {
+                        console.log("Ignoring a link to patient record " + patientRecordId);
+                        delete importData.baseGraph.rawJSONProperties[personIDs[p]].id;
+                        delete importData.baseGraph.properties[personIDs[p]].phenotipsId;
+                    }
                 }
             }
 
