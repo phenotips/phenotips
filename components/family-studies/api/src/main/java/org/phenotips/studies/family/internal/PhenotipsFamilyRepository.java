@@ -260,6 +260,19 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
             throw new PTInternalErrorException();
         }
 
+        // add patient to the stored pedigree JSON
+        if (!batchUpdate) {
+            Pedigree pedigree = family.getPedigree();
+            if (pedigree != null) {
+                pedigree.addLink(patientId);
+                if (!this.setPedigreeObject(family, pedigree, context)) {
+                    this.logger.error("Could not add patient [{}] to pedigree in the family [{}]",
+                        patientId, family.getId());
+                    throw new PTInternalErrorException();
+                }
+            }
+        }
+
         // Add member to the list of family members
         members.add(patientLinkString(patient));
         BaseObject familyObject = family.getXDocument().getXObject(Family.CLASS_REFERENCE);

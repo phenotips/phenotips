@@ -94,8 +94,12 @@ define([
                 if (!nextPerson.hasOwnProperty("properties") || typeof nextPerson.properties != 'object') {
                     throw "Unable to import pedigree: a not-in-pedigree member of the family has no PhenoTips ID";
                 }
-                var id = nextPerson.properties[KEY_PROPERTIES_PHENOTIPSID];
-                unlinkedMembers[id] = nextPerson.properties;
+                if (nextPerson.properties.hasOwnProperty(KEY_PROPERTIES_PHENOTIPSID)) {
+                    var id = nextPerson.properties[KEY_PROPERTIES_PHENOTIPSID];
+                    unlinkedMembers[id] = nextPerson.properties;
+                }
+                // else: this is an unlinked patient with no patient record ID: ignore,
+                // must be an unlinked patient removed from the family
                 continue;
             }
 
