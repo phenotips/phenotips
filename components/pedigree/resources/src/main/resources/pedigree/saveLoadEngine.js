@@ -172,6 +172,12 @@ define([
                         editor.getPatientLegend().addCase(nextMemberID, {});
                     }
 
+                    // 4. synchronize the list of unlinked patients between the legend and the model:
+                    //    if any patients were added or removed to the legend at step 3) those are already
+                    //    synchronized, but it is possible a patient was in the legend before step 3, and
+                    //    the operation of loading a pedigree reset the list of unlinked patients in the model
+                    editor.getPatientLegend().updateDataModel();
+
                     // new loaded data may take up some space below some nodes, so need to recompute vertical positioning
                     editor.getGraph().updateYPositioning();
 
