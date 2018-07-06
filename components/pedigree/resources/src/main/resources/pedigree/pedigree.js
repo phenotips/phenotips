@@ -104,7 +104,7 @@ define([
             //  replaceIdWithExternalID:      {true|false}   - when true, patient links display external ID as the link text (instead of PT ids)
             //  displayCancerLabels:          {true|false}   - display labels for each affecting cancer; default: "true"
             //  lineStyle:                    {"thin"|"regular"|"bold"} - controls the thickness of all lines in pedigree
-            //  studies:                      [array]        - array of all available studies
+            //  studies:                      [array]        - array of available study objects in the following format: {"id": ..., "name": ..., "description": ...}
             //
             this._defaultPreferences = { global:   { nonStandardAdoptedOutGraphic: false,
                                                      propagateFatherLastName: true,
@@ -183,8 +183,7 @@ define([
                     this._partnershipMenu = this.generatePartnershipMenu();
                     this._exportSelector = new ExportSelector();
                     this._printDialog = new PrintDialog();
-                    var studies = editor.getPreferencesManager().getConfigurationOption("studies");
-                    this._studySelectionDialog = new StudySelectionDialog(studies);
+                    this._studySelectionDialog = new StudySelectionDialog();
 
                     var newPatientId = window.self.location.href.toQueryParams().new_patient_id;
 

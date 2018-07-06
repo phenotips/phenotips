@@ -1,23 +1,24 @@
 /**
  * The UI Element for displaying prompts to the user in a movable/semi-transparent dialogue for study selection
  *
- * @class OkCancelDialogue
+ * @class StudySelectionDialog
  */
 define([], function(){
   var StudySelectionDialog = Class.create( {
 
-      initialize: function(studies) {
+      initialize: function() {
           var _this = this;
 
-          this.studies = studies;
+          this.studies = editor.getPreferencesManager().getConfigurationOption("studies");
 
           var mainDiv = new Element('div', {'class' : "study-selection-dialog"});
           var container = new Element('div', {'class' : 'xform'});
 
           mainDiv.insert(container);
 
-          var submitButton = new Element('input', {type : 'button', value : "Submit", 'class' : 'button'});
-          mainDiv.insert(submitButton);
+          var buttonWrapper = new Element('div', {'class' : 'buttonwrapper'});
+          var submitButton = new Element('input', {type : 'button', value : "Create", 'class' : 'button'});
+          buttonWrapper.insert(submitButton);
           submitButton.observe('click', function(event) {
               selectedStudies = $$('.study-selection-dialog input[type="radio"].study-input');
               var studyName = "";
@@ -26,15 +27,16 @@ define([], function(){
                       studyName = item.value;
                   }
               });
-              _this.submit(studyName);
+              _this.submit && _this.submit(studyName);
               _this.hide();
           });
 
           var cancelButton = new Element('input', {type : 'button', value : "Cancel", 'class' : 'button secondary'});
-          mainDiv.insert(' ').insert(cancelButton);
+          buttonWrapper.insert(' ').insert(cancelButton);
           cancelButton.observe('click', function(event) {
         	  _this.hide();
           });
+          mainDiv.insert(buttonWrapper);
 
           var studiesContainer = new Element('dl');
           var header = new Element('dt').update('Please select one of the available studies');
@@ -81,15 +83,6 @@ define([], function(){
        * @method hide
        */
       hide: function() {
-          this.dialog.closeDialog();
-      },
-      
-      /**
-       * Default 
-       *
-       * @method hide
-       */
-      submit: function() {
           this.dialog.closeDialog();
       }
   });

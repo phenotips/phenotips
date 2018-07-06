@@ -263,7 +263,7 @@ define([
 
             var callPatientCreate = function(studyName) {
                 var createPatientURL = editor.getExternalEndpoint().getFamilyNewPatientURL();
-                if (studyName && studyName.length > 0) {
+                if (studyName) {
                     createPatientURL += "&studyName=" + studyName;
                 }
                 document.fire("pedigree:blockinteraction:start", {"message": "Waiting for the patient record to be created..."});
