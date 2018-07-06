@@ -21,8 +21,10 @@ import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.users.User;
 
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 
+import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -143,5 +145,27 @@ public class AuditEventTest
 
         Assert.assertNotEquals(new AuditEvent().hashCode(), e1.hashCode());
         Assert.assertEquals(new AuditEvent().hashCode(), new AuditEvent().hashCode());
+    }
+
+    @Test
+    public void toJSONOutputsAllInfo()
+    {
+        Calendar c = Calendar.getInstance();
+        AuditEvent e = new AuditEvent(this.user, "127.0.0.1", "view", "extra", this.doc, c);
+        JSONObject result = e.toJSON();
+        Assert.assertEquals("wiki:XWiki.user", result.get("user"));
+        Assert.assertEquals("127.0.0.1", result.get("ip"));
+        Assert.assertEquals("view", result.get("action"));
+        Assert.assertEquals("extra", result.get("extra"));
+        Assert.assertEquals("wiki:Space.Page", result.get("entity"));
+        Assert.assertEquals(DateTimeFormatter.ISO_INSTANT.format(c.toInstant()), result.get("time"));
+    }
+
+    @Test
+    public void toJSONSkipsUnknownInformation()
+    {
+        AuditEvent e = new AuditEvent(null, null, null, null, null, null);
+        JSONObject result = e.toJSON();
+        Assert.assertEquals(0, result.length());
     }
 }

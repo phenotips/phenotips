@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+-->
+
+<xwikidoc version="1.2" reference="PhenoTips.AuditResults" locale="">
+  <web>PhenoTips</web>
+  <name>AuditResults</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1401822196000</creationDate>
+  <parent>PhenoTips.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1401822196000</date>
+  <contentUpdateDate>1401822196000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content>{{velocity wiki="false"}}
+#if ($xcontext.action != 'get')
+  #break
+#end
+$response.setContentType('application/json')
+#set ($dateFormat = "yyyy/mm/dd hh:mm")
+#set($map = {})
+#set($rows = [])
+#set($offset = $mathtool.toInteger($request.get('offset')))
+#set($limit = $mathtool.toInteger($request.get('limit')))
+#if (!$limit)
+  #set ($limit = 25)
+#end
+#set($user = $request.get('user'))
+#set($ip = $request.get('ip'))
+#set($action = $request.get('action'))
+#set($entity = $request.get('record'))
+#set($fromTime = $request.get('fromTime'))
+#set($toTime = $request.get('toTime'))
+#set($data = $services.audit.getEvents($mathtool.sub($offset, 1), $limit, $action, $user, $ip, $entity, $fromTime, $toTime))
+#set($totalrows = $services.audit.countEvents($action, $user, $ip, $entity, $fromTime, $toTime))
+#foreach($item in $data)
+  #set($row = {})
+  #set($discard = $row.put('time', $!xwiki.formatDate($item.getTime().getTime(), $dateFormat)))
+  #set($discard = $row.put('user', $item.getUser().getName()))
+  #set($discard = $row.put('user_url', $xwiki.getURL($item.getUser().getProfileDocument(), 'view')))
+  #set($discard = $row.put('ip', $item.getIp()))
+  #set($discard = $row.put('action', $item.getAction()))
+  #set($discard = $row.put('entity', $item.getEntity().getName()))
+  #set($discard = $row.put('entity_url', $xwiki.getURL($item.getEntity(), 'view')))
+  #set($discard = $row.put('doc_viewable', true))
+  #if($item.getExtraInformation())
+    #set($discard = $row.put('extra', $item.getExtraInformation()))
+  #else
+    #set($discard = $row.put('extra', ''))
+  #end
+  #set($discard = $rows.add($row))
+#end
+#set($discard = $map.put('rows', $rows))
+#set($discard = $map.put('reqNo', $mathtool.toInteger($request.reqNo)))
+#set($discard = $map.put('totalrows', $totalrows))
+#set($discard = $map.put('returnedrows', $data.size()))
+#set($discard = $map.put('offset', $offset))
+$jsontool.serialize($map)
+{{/velocity}}</content>
+</xwikidoc>

@@ -33,6 +33,7 @@ import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 import org.junit.Assert;
@@ -91,6 +92,9 @@ public class AuditScriptServiceTest
         DocumentReferenceResolver<EntityReference> resolver =
             this.mocker.getInstance(DocumentReferenceResolver.TYPE_REFERENCE, "currentmixed");
         when(resolver.resolve(Constants.XWIKI_SPACE_REFERENCE)).thenReturn(this.xwikiPreferences);
+        DocumentReferenceResolver<String> resolverd =
+            this.mocker.getInstance(DocumentReferenceResolver.TYPE_STRING, "current");
+        when(resolverd.resolve("Space.Page")).thenReturn(this.doc);
     }
 
     @Test
@@ -139,5 +143,103 @@ public class AuditScriptServiceTest
         when(this.store.getEventsForUser(this.user, "ip")).thenReturn(this.events);
         when(this.auth.hasAccess(this.user, Right.ADMIN, this.xwikiPreferences)).thenReturn(true);
         Assert.assertSame(this.events, this.scriptService.getEventsForUser("user", "ip"));
+    }
+
+    @Test
+    public void getEventsWithoutAdminAccessReturnsEmptyList()
+    {
+        when(this.auth.hasAccess(this.user, Right.ADMIN, this.xwikiPreferences)).thenReturn(false);
+        Assert.assertTrue(this.scriptService.getEvents(0, 0, null, null, null, null, null, null).isEmpty());
+        Mockito.verifyZeroInteractions(this.store);
+    }
+
+    @Test
+    public void getEventsForwardsCall()
+    {
+        Calendar from = Calendar.getInstance();
+        from.clear();
+        from.set(2010, 0, 1, 0, 0, 0);
+        Calendar to = Calendar.getInstance();
+        to.clear();
+        to.set(2011, 0, 1, 0, 0, 0);
+        AuditEvent template = new AuditEvent(this.user, "ip", "action", null, this.doc, null);
+        when(this.store.getEvents(template, from, to, 20, 10)).thenReturn(this.events);
+        when(this.auth.hasAccess(this.user, Right.ADMIN, this.xwikiPreferences)).thenReturn(true);
+        List<AuditEvent> result =
+            this.scriptService.getEvents(20, 10, "action", "user", "ip", "Space.Page", "01/01/2010", "01/01/2011");
+        Mockito.verify(this.store).getEvents(template, from, to, 20, 10);
+        Assert.assertSame(this.events, result);
+    }
+
+    @Test
+    public void getEventsAcceptsNullFilters()
+    {
+        AuditEvent template = new AuditEvent(null, null, null, null, null, null);
+        when(this.store.getEvents(template, null, null, 0, 0)).thenReturn(this.events);
+        when(this.auth.hasAccess(this.user, Right.ADMIN, this.xwikiPreferences)).thenReturn(true);
+        List<AuditEvent> result =
+            this.scriptService.getEvents(0, 0, null, null, null, null, null, null);
+        Mockito.verify(this.store).getEvents(template, null, null, 0, 0);
+        Assert.assertSame(this.events, result);
+    }
+
+    @Test
+    public void getEventsAcceptsBlankFilters()
+    {
+        AuditEvent template = new AuditEvent(null, null, null, null, null, null);
+        when(this.store.getEvents(template, null, null, 0, 0)).thenReturn(this.events);
+        when(this.auth.hasAccess(this.user, Right.ADMIN, this.xwikiPreferences)).thenReturn(true);
+        List<AuditEvent> result =
+            this.scriptService.getEvents(0, 0, " ", " ", " ", " ", " ", " ");
+        Mockito.verify(this.store).getEvents(template, null, null, 0, 0);
+        Assert.assertSame(this.events, result);
+    }
+
+    @Test
+    public void countEventsWithoutAdminAccessReturnsEmptyList()
+    {
+        when(this.auth.hasAccess(this.user, Right.ADMIN, this.xwikiPreferences)).thenReturn(false);
+        Assert.assertEquals(-1, this.scriptService.countEvents(null, null, null, null, null, null));
+        Mockito.verifyZeroInteractions(this.store);
+    }
+
+    @Test
+    public void countEventsForwardsCall()
+    {
+        Calendar from = Calendar.getInstance();
+        from.clear();
+        from.set(2010, 0, 1, 0, 0, 0);
+        Calendar to = Calendar.getInstance();
+        to.clear();
+        to.set(2011, 0, 1, 0, 0, 0);
+        AuditEvent template = new AuditEvent(this.user, "ip", "action", null, this.doc, null);
+        when(this.store.countEvents(template, from, to)).thenReturn(42L);
+        when(this.auth.hasAccess(this.user, Right.ADMIN, this.xwikiPreferences)).thenReturn(true);
+        long result =
+            this.scriptService.countEvents("action", "user", "ip", "Space.Page", "01/01/2010", "01/01/2011");
+        Mockito.verify(this.store).countEvents(template, from, to);
+        Assert.assertEquals(42L, result);
+    }
+
+    @Test
+    public void countEventsAcceptsNullFilters()
+    {
+        AuditEvent template = new AuditEvent(null, null, null, null, null, null);
+        when(this.store.countEvents(template, null, null)).thenReturn(42L);
+        when(this.auth.hasAccess(this.user, Right.ADMIN, this.xwikiPreferences)).thenReturn(true);
+        long result = this.scriptService.countEvents(null, null, null, null, null, null);
+        Mockito.verify(this.store).countEvents(template, null, null);
+        Assert.assertEquals(42L, result);
+    }
+
+    @Test
+    public void countEventsAcceptsBlankFilters()
+    {
+        AuditEvent template = new AuditEvent(null, null, null, null, null, null);
+        when(this.store.countEvents(template, null, null)).thenReturn(42L);
+        when(this.auth.hasAccess(this.user, Right.ADMIN, this.xwikiPreferences)).thenReturn(true);
+        long result = this.scriptService.countEvents(" ", " ", " ", " ", " ", " ");
+        Mockito.verify(this.store).countEvents(template, null, null);
+        Assert.assertEquals(42L, result);
     }
 }
