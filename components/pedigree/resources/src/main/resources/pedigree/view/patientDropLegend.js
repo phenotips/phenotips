@@ -142,7 +142,7 @@ define([
                 this._deletePatientElement(phenotipsPatientID);
                 delete this._notLinkedPatients[phenotipsPatientID];
 
-                this._updateDataModel();
+                this.updateDataModel();
             }
         },
 
@@ -223,14 +223,18 @@ define([
 
                 this._list_unlinked.insert(listElement);
 
-                this._updateDataModel();
+                this.updateDataModel();
             }
 
             // show legend in any case when addCase() is invoked
             this.legendContainer.show();
         },
 
-        _updateDataModel: function() {
+        /**
+         * Synchronizes the list of unlinked patients in the data model and in this UI widget
+         * (the data in this widget is assumed to be correct)
+         */
+        updateDataModel: function() {
             var unlinked = [];
             for (var phenotipsPatientID in this._notLinkedPatients) {
                 if (this._notLinkedPatients.hasOwnProperty(phenotipsPatientID)) {
