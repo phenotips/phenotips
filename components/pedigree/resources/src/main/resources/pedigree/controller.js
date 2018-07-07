@@ -261,35 +261,6 @@ define([
                 }
             }
 
-            var callPatientCreate = function(studyName) {
-                var createPatientURL = editor.getExternalEndpoint().getFamilyNewPatientURL();
-                if (studyName) {
-                    createPatientURL += "&studyName=" + studyName;
-                }
-                document.fire("pedigree:blockinteraction:start", {"message": "Waiting for the patient record to be created..."});
-                new Ajax.Request(createPatientURL, {
-                    method: "GET",
-                    onSuccess: function(response) {
-                        if (response.responseJSON && response.responseJSON.hasOwnProperty("newID")) {
-                            console.log("Created new patient: " + Helpers.stringifyObject(response.responseJSON));
-                            onCreated(response.responseJSON.newID)
-                        } else {
-                            onFailureHandler();
-                        }
-                    },
-                    onFailure: onFailureHandler,
-                    onComplete: function() { document.fire("pedigree:blockinteraction:finish"); }
-                });
-            };
-
-            var studies = editor.getPreferencesManager().getConfigurationOption("studies");
-            if (studies.length > 0) {
-                var studySelectionDialog = editor.getStudySelectionDialog();
-                studySelectionDialog.show(callPatientCreate);
-            } else {
-                callPatientCreate();
-            }
-
             var onCreatedHandler = event.memo.onCreatedHandler;
             var onFailureHandler = event.memo.onFailureHandler
                                    ? event.memo.onFailureHandler
@@ -336,6 +307,35 @@ define([
                 } else {
                     onCreatedAndUpdated(newID);
                 }
+            }
+
+            var callPatientCreate = function(studyName) {
+                var createPatientURL = editor.getExternalEndpoint().getFamilyNewPatientURL();
+                if (studyName) {
+                    createPatientURL += "&studyName=" + studyName;
+                }
+                document.fire("pedigree:blockinteraction:start", {"message": "Waiting for the patient record to be created..."});
+                new Ajax.Request(createPatientURL, {
+                    method: "GET",
+                    onSuccess: function(response) {
+                        if (response.responseJSON && response.responseJSON.hasOwnProperty("newID")) {
+                            console.log("Created new patient: " + Helpers.stringifyObject(response.responseJSON));
+                            onCreated(response.responseJSON.newID)
+                        } else {
+                            onFailureHandler();
+                        }
+                    },
+                    onFailure: onFailureHandler,
+                    onComplete: function() { document.fire("pedigree:blockinteraction:finish"); }
+                });
+            };
+
+            var studies = editor.getPreferencesManager().getConfigurationOption("studies");
+            if (studies.length > 0) {
+                var studySelectionDialog = editor.getStudySelectionDialog();
+                studySelectionDialog.show(callPatientCreate);
+            } else {
+                callPatientCreate();
             }
         },
 
