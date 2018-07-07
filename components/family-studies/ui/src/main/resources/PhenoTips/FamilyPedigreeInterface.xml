@@ -62,7 +62,15 @@
 #elseif ("$!request.action" == "createpatient")
   #set($patient = $services.patients.create())
   #if ($patient)
-    { "newID": "$patient.getId()" }
+    #if ("$!request.studyName" != "")
+      #set ($patientDoc = $patient.getSecureDocument())
+      #set ($studyClassObj = $patientDoc.getObject('PhenoTips.StudyBindingClass', true))
+      #if ($studyClassObj)
+        #set ($discard = $studyClassObj.set('studyReference', "$!request.studyName"))
+        #set ($discard = $patientDoc.save())
+      #end
+    #end
+    { "newID": "$patient.getId()", "study" : "$!request.studyName" }
   #else
     { "newID": null }
   #end
