@@ -1944,7 +1944,7 @@ define([
                             container.style.outline = "none";
                             var errorField = container.up().down("span");
                             if (errorField) {
-                                errorField.update("this identifier already exists");
+                                errorField.update("This identifier already exists");
                                 errorField.show();
                             }
                         };

@@ -123,6 +123,10 @@ define([
             return this.patientSuggestService + "?permission=edit&maxResults=12&";
         },
 
+        getPatientExternalIDValidationURL: function() {
+            return new XWiki.Document('CheckID', 'PhenoTips').getURL('get');
+        },
+
         // contextaction is optional parameter
         getPhenotipsPatientURL: function(patientId, contextaction) {
             return new XWiki.Document(patientId, 'data').getURL(contextaction);
