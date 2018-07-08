@@ -48,6 +48,8 @@ public class DefaultPedigree extends AbstractBasePedigree implements Pedigree
 
     private static final String PATIENT_DATA_NAMES_LASTNAME_KEY = "last_name";
 
+    private static final String PATIENT_NOTINPEDIGREE_KEY = "notInPedigree";
+
     /**
      * Create a new default pedigree from data (in "old internal" format) and image (a text representing SVG).
      *
@@ -88,24 +90,73 @@ public class DefaultPedigree extends AbstractBasePedigree implements Pedigree
     public List<JSONObject> extractPatientJSONProperties()
     {
         List<JSONObject> extractedObjects = new LinkedList<>();
-        JSONArray members = (JSONArray) this.data.opt(PEDIGREE_JSON_MEMBERS_KEY);
+        JSONArray members = this.data.optJSONArray(PEDIGREE_JSON_MEMBERS_KEY);
+        if (members == null) {
+            return extractedObjects;
+        }
+
         // letting it throw a null exception on purpose
         for (Object nodeObj : members) {
             JSONObject node = (JSONObject) nodeObj;
 
-            JSONObject properties = (JSONObject) node.opt(PATIENT_DATA_JSON_KEY);
+            JSONObject properties = node.optJSONObject(PATIENT_DATA_JSON_KEY);
             if (properties == null || properties.length() == 0) {
                 continue;
             }
 
-            Object id = properties.opt(DefaultPedigree.PATIENT_DATA_PHENOTIPSID_KEY);
-            if (id == null || StringUtils.isBlank(id.toString())) {
+            String id = properties.optString(DefaultPedigree.PATIENT_DATA_PHENOTIPSID_KEY);
+            if (StringUtils.isBlank(id)) {
                 continue;
             }
 
             extractedObjects.add(properties);
         }
         return extractedObjects;
+    }
+
+    @Override
+    public void addLink(String patientId)
+    {
+        int maxExistingPedigreeID = 0;
+
+        // go through all members to find first unused ID, and to check if the patient
+        // is already in the pedigree
+        JSONArray members = this.data.optJSONArray(PEDIGREE_JSON_MEMBERS_KEY);
+        if (members == null) {
+            return;
+        }
+
+        for (Object nodeObj : members) {
+            JSONObject node = (JSONObject) nodeObj;
+
+            maxExistingPedigreeID = Math.max(maxExistingPedigreeID, node.optInt(PATIENT_NODEID_JSON_KEY, 0));
+
+            JSONObject properties = node.optJSONObject(PATIENT_DATA_JSON_KEY);
+            if (properties == null || properties.length() == 0) {
+                continue;
+            }
+            String id = properties.optString(DefaultPedigree.PATIENT_DATA_PHENOTIPSID_KEY);
+            if (StringUtils.isBlank(id)) {
+                continue;
+            }
+            if (patientId.equals(id)) {
+                // patient record is already included in the pedigree JSON
+                return;
+            }
+        }
+
+        // create empty patient JSON containing only a link to the patient record
+        // TODO: review, maybe add actual full JSON obtained from a patient here?
+        JSONObject ptProperties = new JSONObject();
+        ptProperties.put(PATIENT_DATA_PHENOTIPSID_KEY, patientId);
+
+        // add new patient with ID equal to (maxExistingPedigreeID + 1)
+        JSONObject patientData = new JSONObject();
+        patientData.put(PATIENT_NODEID_JSON_KEY, maxExistingPedigreeID + 1);
+        patientData.put(PATIENT_DATA_JSON_KEY, ptProperties);
+        patientData.put(PATIENT_NOTINPEDIGREE_KEY, true);
+        members.put(patientData);
+        this.data.put(PEDIGREE_JSON_MEMBERS_KEY, members);
     }
 
     @Override

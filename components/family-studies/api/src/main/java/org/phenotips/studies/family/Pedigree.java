@@ -99,9 +99,18 @@ public interface Pedigree
     List<JSONObject> extractPatientJSONProperties();
 
     /**
-     * Remove a link to a PhenoTips patient from the pedigree (the pedigree node stays).
+     * Removes a link to a PhenoTips patient from the pedigree (the pedigree node stays).
+     * If the patient is not in the pedigree no action is taken.
      *
-     * @param linkedPatientId id of the linked patient to be removed
+     * @param linkedPatientId PhenoTips id of the linked patient to be removed
      */
     void removeLink(String linkedPatientId);
+
+    /**
+     * Adds a PhenoTips patient to the pedigree as an "unlinked" patient.
+     * If a patient is already in the pedigree no action is taken.
+     *
+     * @param patientId PhenoTips id of the patient to be added
+     */
+    void addLink(String patientId);
 }
