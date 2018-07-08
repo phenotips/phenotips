@@ -427,7 +427,8 @@ define([
                 'crtValue' : data["default"] || '',
                 'function' : data['function'],
                 'inactive' : false,
-                'required' : data["required"] || false
+                'required' : data["required"] || false,
+                'validators': data["validators"] || []
             };
             return result;
         },
@@ -518,13 +519,14 @@ define([
             var validationFailed = false;
 
             var hasLinkedRecord = (this.fieldMap["phenotipsid"] && this.fieldMap["phenotipsid"].crtValue);
+            var phenotipsRecordID = hasLinkedRecord ? this.fieldMap["phenotipsid"].crtValue : null;
 
             var tabsWithMissingData = {};
 
             for (var field in this.fieldMap) {
                 if (this.fieldMap.hasOwnProperty(field)) {
                     var fieldData = this.fieldMap[field];
-                    var validationFunction = this._validateFieldValue[fieldData.type]
+                    var validationFunction = this._validateFieldValue[fieldData.type].bind(this);
 
                     // only apply "required" field validation for nodes which are linked to PhenoTips records,
                     // or if validation is explicitly requested. If not, validate other stuff but not "required" status
@@ -533,7 +535,14 @@ define([
                         fieldData.required = false;
                     }
 
-                    if (!validationFunction(fieldData.inputElement, fieldData, fieldData.crtValue)) {
+                    // only apply "uniqueExternalID" validator to nodes linkied to PhenoTips records
+                    if (!hasLinkedRecord && fieldData.validators && Helpers.arrayContains(fieldData.validators, "uniqueExternalID")) {
+                        fieldData = Helpers.cloneObject(fieldData);
+                        fieldData.validators = fieldData.validators.slice();
+                        Helpers.removeFirstOccurrenceByValue(fieldData.validators, "uniqueExternalID");
+                    }
+
+                    if (!validationFunction(fieldData.inputElement, fieldData, fieldData.crtValue, phenotipsRecordID)) {
                         validationFailed = true;
                         tabsWithMissingData[fieldData.tab] = true;
                     }
@@ -707,7 +716,10 @@ define([
                     text.placeholder = data.tip;
                 }
                 result.inputsContainer.insert(text);
-                text.wrap('span');
+                var span = text.wrap('span');
+                var inputErrorDescription = new Element('span', {'class': 'text-field-input-error'});
+                inputErrorDescription.hide();
+                span.insert(inputErrorDescription);
                 text._getValue = function() { return [this.value]; }.bind(text);
                 //this._attachFieldEventListeners(text, ['keypress', 'keyup'], [true]);
                 this._attachFieldEventListeners(text, ['keyup'], [true]);
@@ -1893,18 +1905,77 @@ define([
             }
         },
 
+        _checkExternalID : function(patientID, externalID, onValid, onInvalid) {
+            var serviceUrl = editor.getExternalEndpoint().getPatientExternalIDValidationURL();
+            new Ajax.Request(serviceUrl, {
+              parameters : { outputSyntax: 'plain', eid: externalID, id: patientID, entity : "patients"},
+              on200 : onValid,
+              on403 : onInvalid,
+              on404 : onValid,
+              on409 : onInvalid
+            });
+        },
+
         // checks if fields satisfy their requirements: at the moment only
         // requirement suported is a "mandatory" field which should not be blankl
         _validateFieldValue : {
-            'radio' : function (container, field_parameters, field_value) {
+            'radio' : function (container, field_parameters, field_value, linkedRecordID) {
                 // radio can not be blank, so always valid
                 return true;
             },
-            'checkbox' : function (container, field_parameters, field_value) {
+            'checkbox' : function (container, field_parameters, field_value, linkedRecordID) {
                 // does not make sense to even have a checkbox if it has to be always selected, so always valid
                 return true;
             },
-            'text' : function (container, field_parameters, field_value) {
+            'text' : function (container, field_parameters, field_value, linkedRecordID) {
+                if (field_parameters.required && !field_value) {
+                    container.style.border = "1px solid red";
+                    container.style.outline = "none";
+                    return false;
+                }
+                if (field_value && field_parameters.validators && Helpers.arrayContains(field_parameters.validators, "uniqueExternalID")) {
+                    if (!this._extIDValidationInProgress) {
+                        // store the node for which the request is being made: the response may return after the current node is changed
+                        this._idCheckForNode = this.targetNode;
+                        this._extIDValidationInProgress = true;
+                        var _this = this;
+                        var markBadID = function() {
+                            container.style.border = "1px solid red";
+                            container.style.outline = "none";
+                            var errorField = container.up().down("span");
+                            if (errorField) {
+                                errorField.update("This identifier already exists");
+                                errorField.show();
+                            }
+                        };
+                        var markGoodID = function() {
+                            container.style.border = "";
+                            container.style.outline = "";
+                            var errorField = container.up().down("span");
+                            if (errorField) {
+                                errorField.update("");
+                                errorField.hide();
+                            }
+                        }
+                        var onValidID = function() {
+                            markGoodID();
+                            _this._extIDValidationInProgress = false;
+                        };
+                        var onInvalidID = function() {
+                            if (_this._idCheckForNode == _this.targetNode) {
+                                // request returned for the same id we are showing node menu for
+                                markBadID();
+                            }
+                            _this._extIDValidationInProgress = false;
+                        };
+                        this._checkExternalID(linkedRecordID, field_value, onValidID, onInvalidID);
+                    }
+                }
+                container.style.border = "";
+                container.style.outline = "";
+                return true;
+            },
+            'textarea' : function (container, field_parameters, field_value, linkedRecordID) {
                 if (field_parameters.required && !field_value) {
                     container.style.border = "1px solid red";
                     container.style.outline = "none";
@@ -1914,17 +1985,7 @@ define([
                 container.style.outline = "";
                 return true;
             },
-            'textarea' : function (container, field_parameters, field_value) {
-                if (field_parameters.required && !field_value) {
-                    container.style.border = "1px solid red";
-                    container.style.outline = "none";
-                    return false;
-                }
-                container.style.border = "";
-                container.style.outline = "";
-                return true;
-            },
-            'date-picker' : function (container, field_parameters, field_value) {
+            'date-picker' : function (container, field_parameters, field_value, linkedRecordID) {
                 var checkDateComponent = function(name) {
                     if (field_parameters.required
                         && (!field_value || !field_value.hasOwnProperty(name) || !field_value[name])) {
@@ -1944,47 +2005,47 @@ define([
                 //       fails "month check" will never be run, and we need side-effects (red borders) of a failed check
                 return yearOK && monthOK && dayOK;
             },
-            'button' : function (container, field_parameters, field_value) {
+            'button' : function (container, field_parameters, field_value, linkedRecordID) {
                 // not supported
                 return true;
             },
-            'disease-picker' : function (container, field_parameters, field_value) {
+            'disease-picker' : function (container, field_parameters, field_value, linkedRecordID) {
                 // not supported
                 return true;
             },
-            'ethnicity-picker' : function (container, field_parameters, field_value) {
+            'ethnicity-picker' : function (container, field_parameters, field_value, linkedRecordID) {
                 // not supported
                 return true;
             },
-            'hpo-picker' : function (container, field_parameters, field_value) {
+            'hpo-picker' : function (container, field_parameters, field_value, linkedRecordID) {
                 // not supported
                 return true;
             },
-            'cancers-picker' : function (container, field_parameters, field_value) {
+            'cancers-picker' : function (container, field_parameters, field_value, linkedRecordID) {
                 // not supported
                 return true;
             },
-            'gene-picker' : function (container, field_parameters, field_value) {
+            'gene-picker' : function (container, field_parameters, field_value, linkedRecordID) {
                 // not supported
                 return true;
             },
-            'submit-cancel' : function (container, field_parameters, field_value) {
+            'submit-cancel' : function (container, field_parameters, field_value, linkedRecordID) {
                 // this element is always valid
                 return true;
             },
-            'phenotipsid-picker' : function (container, field_parameters, field_value) {
+            'phenotipsid-picker' : function (container, field_parameters, field_value, linkedRecordID) {
                 // not supported
                 return true;
             },
-            'select' : function (container, field_parameters, field_value) {
+            'select' : function (container, field_parameters, field_value, linkedRecordID) {
                 // not supported
                 return true;
             },
-            'cancerlist' : function (container, field_parameters, field_value) {
+            'cancerlist' : function (container, field_parameters, field_value, linkedRecordID) {
                 // not supported
                 return true;
             },
-            'hidden' : function (container, field_parameters, field_value) {
+            'hidden' : function (container, field_parameters, field_value, linkedRecordID) {
                 // non-user editable, so always valid
                 return true;
             }
