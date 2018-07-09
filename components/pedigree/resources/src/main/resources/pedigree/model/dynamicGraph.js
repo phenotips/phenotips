@@ -1578,7 +1578,7 @@ define([
             // attempt to re-use existing ranks in order to keep the new layout as close as possible to the current layout
             var suggestedLayout = { "ranks": oldRanks };
 
-            if (!this._initializeFromBaseGraphAndLayout(this.DG.GG, this.getProbandId(), suggestedLayout, this._unlinkedMembers)) {
+            if (!this._initializeFromBaseGraphAndLayout(this.DG.GG, this.getProbandId(), suggestedLayout)) {
                 return {};  // no changes
             }
 
