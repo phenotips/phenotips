@@ -187,7 +187,7 @@ define([
 
                     var newPatientId = window.self.location.href.toQueryParams().new_patient_id;
 
-                    // finally, load the pedigree
+                    // finally, initialize the pedigree (if exists load from disk, otherwise from template or from import)
                     if (newPatientId && newPatientId != "") {
                         // since this is a new patient, we do not want to load that patient's data, we explicitly
                         // want to load the family document (either new family or existing), and add new patient
@@ -212,6 +212,26 @@ define([
                         var documentId = editor.getGraph().getCurrentPatientId();
                         this._saveLoadEngine.load(documentId);
                     }
+
+                    // regardless of the way pedigree is initialized (loaded from disk, via a template, etc.)
+                    // and regardless if it was done from a patient page or a family page, make sure all family
+                    // members not already in the pedigree are added as un-linked members
+                    // (e.g. when a pedigree is created for a family which already has members but no pedigree)
+                    var addMissingFamilyMembers = function() {
+                        // the list of linked patient records that pedigree already knows about:
+                        var linkedPatients = Helpers.toObjectWithTrue(editor.getAllLinkedPatients());
+                        // the list of patients that family page has:
+                        var membersInTheFamily = editor.getFamilyData().getLoadedFamilyMembers();
+                        membersInTheFamily.forEach(function(familyMember) {
+                            var phenotipsID = familyMember.id;
+                            if (!linkedPatients.hasOwnProperty(phenotipsID)) {
+                                editor.getPatientLegend().addCase(phenotipsID);
+                            }
+                        });
+                        document.stopObserving("pedigree:initialization:finish", addMissingFamilyMembers);
+                    }
+                    document.observe("pedigree:initialization:finish", addMissingFamilyMembers);
+
                 }.bind(this) );
 
             this._controller = new Controller();
@@ -736,9 +756,9 @@ define([
         },
 
         /**
-         * Returns the set of PhenoTips patient IDs as {id1: true, id2: true} object
+         * Returns a list of of all PhenoTips patient record IDs currently present in the family.
          * @method getAllLinkedPatients
-         * @return {Object}
+         * @return {Array}
          */
         getAllLinkedPatients: function() {
             var allLinkedNodes = editor.getGraph().getAllPatientLinks();

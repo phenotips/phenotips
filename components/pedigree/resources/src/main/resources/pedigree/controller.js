@@ -1311,7 +1311,7 @@ define([
 
                             var processLinking = function(topMessage, notesMessage) {
                                 var alreadyWasInFamily = editor.isFamilyMember(linkID);
-                                var firstPatientInFamily = (editor.getFamilyData().getAllFamilyMembersList.length == 0) &&
+                                var firstPatientInFamily = (editor.getAllLinkedPatients().length == 0) &&
                                                            (linkID == editor.getGraph().getCurrentPatientId());
                                 if ( !firstPatientInFamily
                                      && !alreadyWasInFamily

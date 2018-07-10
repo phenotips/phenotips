@@ -741,9 +741,14 @@ define([
             'date-picker' : function (data) {
                 var result = this._generateEmptyField(data);
                 var datePicker = new Element('input', {type: 'text', 'class': 'fuzzy-date', name: data.name, 'title': data.format || '', alt : '' });
-                result.inputsContainer.insert(datePicker);
                 datePicker._getValue = function() { /*console.log("DATE UPDATE: " + this.value);*/ return [new PedigreeDate(JSON.parse(this.value))]; }.bind(datePicker);
                 this._attachFieldEventListeners(datePicker, ['xwiki:date:changed']);
+
+                var inputErrorDescription = new Element('span', {'class': 'date-field-input-error'});
+                inputErrorDescription.hide();
+
+                result.inputsContainer.insert(datePicker);
+                result.insert(inputErrorDescription);
                 return result;
             },
             'disease-picker' : function (data) {
@@ -1928,9 +1933,31 @@ define([
                 return true;
             },
             'text' : function (container, field_parameters, field_value, linkedRecordID) {
+                var errorField = container.up().down(".text-field-input-error");
+                var addBadFieldComment = function(message) {
+                    container.style.border = "1px solid red";
+                    container.style.outline = "none";
+                    if (errorField) {
+                        errorField.update(message);
+                        errorField.show();
+                    }
+                };
+                var removeBadFieldComment = function() {
+                    container.style.border = "";
+                    container.style.outline = "";
+                    if (errorField) {
+                        errorField.update("");
+                        errorField.hide();
+                    }
+                }
+                removeBadFieldComment();
+
                 if (field_parameters.required && !field_value) {
                     container.style.border = "1px solid red";
                     container.style.outline = "none";
+                    // FIXME: can not use `addBadFieldComment("This field is required")` here due to nodeMenu layout problems:
+                    // when e.g. last_name has this message, and first_name does not, the field below first_name gets shifted
+                    // in an ugly way
                     return false;
                 }
                 if (field_value && field_parameters.validators && Helpers.arrayContains(field_parameters.validators, "uniqueExternalID")) {
@@ -1939,32 +1966,14 @@ define([
                         this._idCheckForNode = this.targetNode;
                         this._extIDValidationInProgress = true;
                         var _this = this;
-                        var markBadID = function() {
-                            container.style.border = "1px solid red";
-                            container.style.outline = "none";
-                            var errorField = container.up().down("span");
-                            if (errorField) {
-                                errorField.update("This identifier already exists");
-                                errorField.show();
-                            }
-                        };
-                        var markGoodID = function() {
-                            container.style.border = "";
-                            container.style.outline = "";
-                            var errorField = container.up().down("span");
-                            if (errorField) {
-                                errorField.update("");
-                                errorField.hide();
-                            }
-                        }
                         var onValidID = function() {
-                            markGoodID();
+                            removeBadFieldComment();
                             _this._extIDValidationInProgress = false;
                         };
                         var onInvalidID = function() {
                             if (_this._idCheckForNode == _this.targetNode) {
                                 // request returned for the same id we are showing node menu for
-                                markBadID();
+                                addBadFieldComment("This identifier already exists");
                             }
                             _this._extIDValidationInProgress = false;
                         };
@@ -1986,6 +1995,21 @@ define([
                 return true;
             },
             'date-picker' : function (container, field_parameters, field_value, linkedRecordID) {
+                var errorField = container.up().up().down(".date-field-input-error");
+                var addBadFieldComment = function(message) {
+                    if (errorField) {
+                        errorField.update(message);
+                        errorField.show();
+                    }
+                };
+                var removeBadFieldComment = function() {
+                    if (errorField) {
+                        errorField.update("");
+                        errorField.hide();
+                    }
+                }
+                removeBadFieldComment();
+
                 var checkDateComponent = function(name) {
                     if (field_parameters.required
                         && (!field_value || !field_value.hasOwnProperty(name) || !field_value[name])) {
@@ -2003,7 +2027,13 @@ define([
                 var dayOK   = checkDateComponent("day");
                 // note: can't use checkDateComponent("year") && checkDateComponent("month") swince if "year check"
                 //       fails "month check" will never be run, and we need side-effects (red borders) of a failed check
-                return yearOK && monthOK && dayOK;
+                var result = yearOK && monthOK && dayOK;
+                if (!result) {
+                    if (yearOK || monthOK || dayOK) {
+                        addBadFieldComment("Please enter full date");
+                    }
+                }
+                return result;
             },
             'button' : function (container, field_parameters, field_value, linkedRecordID) {
                 // not supported

@@ -777,8 +777,8 @@ li.abnormality:hover, div.abnormality:hover {
   float: right;
   padding: .5em 0 0.9em;
 }
-.text-field-input-error {
-  display: block;
+.text-field-input-error, .date-field-input-error {
+  display: block !important;
   font-size: .8em;
   line-height: 1.8em;
   color: #CC3333;
@@ -787,13 +787,16 @@ li.abnormality:hover, div.abnormality:hover {
 .menu-box .field-date_of_birth {
   width: 49%;
   float: left;
-  margin-bottom: 6px;
+  margin-bottom: 1px;
 }
 .menu-box .field-date_of_death {
   width: 48%;
   float: right;
   margin-top: -5px; /* TODO: investigate why elements float below its intended position */
-  margin-bottom: 7px;
+  margin-bottom: 1px;
+}
+.menu-box .field-state {
+  clear: both;
 }
 .menu-box .accepted-suggestions {
   margin: 0px 0px 0.3em !important;
