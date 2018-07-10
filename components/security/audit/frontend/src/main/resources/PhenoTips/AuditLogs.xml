@@ -42,6 +42,7 @@
 {{velocity}}
 $xwiki.ssfx.use('uicomponents/suggest/suggestPicker.css', true)##
 $xwiki.jsfx.use('uicomponents/suggest/suggestPicker.js', true)##
+$xwiki.ssfx.use('uicomponents/widgets/exportData.css', true)##
 $xwiki.ssfx.use('uicomponents/widgets/userpicker/userPicker.css', true)##
 $xwiki.jsfx.use('uicomponents/widgets/userpicker/userPicker.js', true)##
 $xwiki.ssx.use('PhenoTips.DatabaseFilters')##
@@ -445,12 +446,22 @@ $xwiki.ssx.use('PhenoTips.AuditLogs')##
       // Clear the previously selected record in single selection mode.
       this.input.hasClassName('multipleSelection') || this.list.update('');
       $super(suggestion);
+      Event.fire(this.input, 'xwiki:form:field-value-changed');
+    },
+
+    // @Override
+    removeItem: function($super, suggestion) {
+      $super(suggestion);
+      Event.fire(this.input, 'xwiki:form:field-value-changed');
     },
 
     // @Override
     displayItem: function(suggestion) {
-     var itemDisplay = this.suggest.createItemDisplay(suggestion, {});
-      itemDisplay.style.backgroundImage = suggestion.originalEvent.element().up('.results').down('.sourceName').style.backgroundImage;
+      var itemDisplay = this.suggest.createItemDisplay(suggestion, {});
+      // detect right patient or family icon
+      if (suggestion.originalEvent.element().up('.results')) {
+          itemDisplay.style.backgroundImage =  suggestion.originalEvent.element().up('.results').down('.sourceName').style.backgroundImage;
+      }
       itemDisplay.down('.value').insert(this.createDeleteTool());
       return new Element('li').insert(itemDisplay).insert(this.createItemInput(suggestion));
     },
@@ -486,7 +497,7 @@ $xwiki.ssx.use('PhenoTips.AuditLogs')##
     }
   });
 
-  var init = function() {
+  var init = function(event) {
     /*
     ## Iterate over the sources defined in the configuration document, and create a source array to be passed to the
     ## search suggest contructor.
@@ -665,9 +676,10 @@ $xwiki.ssx.use('PhenoTips.AuditLogs')##
     </property>
     <property>
       <code>.accepted-suggestions .record {
-  padding-left: 22px;
+  padding: 5px 0 5px 22px;
   background-repeat: no-repeat;
-  margin: 5px 5px 0 0;
+  background-image:url("$xwiki.getSkinFile('icons/datamodel/users.png')");
+  background-position: 0 40%;
 }
 tbody.xwiki-livetable-display-body td:hover.linkeditor {
   background-image: none;
@@ -683,7 +695,7 @@ tbody.xwiki-livetable-display-body td:hover.linkeditor {
       <name>Segmented Bar</name>
     </property>
     <property>
-      <parse>0</parse>
+      <parse>1</parse>
     </property>
     <property>
       <use>onDemand</use>
