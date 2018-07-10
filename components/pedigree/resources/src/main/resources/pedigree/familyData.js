@@ -57,7 +57,7 @@ define([
             return (this.warningMessage != "");
         },
 
-        getAllFamilyMembersList: function() {
+        getLoadedFamilyMembers: function() {
             return this.familyMembers;
         },
 
@@ -69,19 +69,19 @@ define([
             return this.familyMembersIndex.hasOwnProperty(patientID);
         },
 
-        getFamilyMemberByPatyientID: function(patientID) {
-            if (!this.isFamilyMember(patientID)) {
-                return null;
-            }
-            return this.familyMembers[this.familyMembersIndex[patientID]];
-        },
-
         getPatientAccessPermissions: function(patientID) {
-            var familyhMemberData = this.getFamilyMemberByPatyientID(patientID);
+            var familyhMemberData = this._getFamilyMemberDetails(patientID);
             if (familyhMemberData == null || !familyhMemberData.hasOwnProperty("permissions")) {
                 return null;
             }
             return familyhMemberData.permissions;
+        },
+
+        _getFamilyMemberDetails: function(patientID) {
+            if (!this.isFamilyMember(patientID)) {
+                return null;
+            }
+            return this.familyMembers[this.familyMembersIndex[patientID]];
         }
     });
 
