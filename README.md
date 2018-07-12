@@ -68,3 +68,4 @@ The standalone distribution comes packaged with a *Java Servlet Container*, [Jet
 
 PhenoTips and its related tools are distributed under the [AGPL version 3](http://www.gnu.org/licenses/agpl-3.0.html) (GNU Affero General Public License), a well known free software/open source license recognized both by the Free Software Foundation and the Open Source Initiative.
 This means that every change made to the code must also be distributed under AGPL, and any composite works that build on top of PhenoTips must use a compatible license.
+For more information, please see the [PhenoTips Licensing page](https://phenotips.org/Licensing).
