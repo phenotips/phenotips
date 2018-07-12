@@ -58,7 +58,7 @@
     #if ($owner.isGroup())
       #set ($adminGroup = $xcontext.getDatabase() + ":Groups." + $owner.getUsername() + " Administrators")
       #set ($managerGroup = $xcontext.getDatabase() + ":Groups." + $owner.getUsername() + " Managers")
-      #if (!$xwiki.getUser().isUserInGroup($adminGroup) || !$xwiki.getUser().isUserInGroup($managerGroup))
+      #if (!$xwiki.getUser().isUserInGroup($adminGroup) &amp;&amp; !$xwiki.getUser().isUserInGroup($managerGroup))
         #set ($canTransfer = false)
       #end
     #end
@@ -1527,7 +1527,7 @@ $xwiki.ssx.use($serviceDocName)
   #if ($owner.isGroup())
     #set ($adminGroup = $xcontext.getDatabase() + ":Groups." + $owner.getUsername() + " Administrators")
     #set ($managerGroup = $xcontext.getDatabase() + ":Groups." + $owner.getUsername() + " Managers")
-    #if (!$xwiki.getUser().isUserInGroup($adminGroup) || !$xwiki.getUser().isUserInGroup($managerGroup))
+    #if (!$xwiki.getUser().isUserInGroup($adminGroup) &amp;&amp; !$xwiki.getUser().isUserInGroup($managerGroup))
       #set ($canTransfer = false)
     #end
   #end
