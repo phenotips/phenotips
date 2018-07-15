@@ -590,7 +590,7 @@
         transfer.insert(this._defaultOwnerOption);
 
         this._newOwnerOption = _getTransferOption("group", "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.modifyOwnershipTransferUser'))", this._newOwnerSelector);
-        transfer.insert(this._newOwnerOption);
+        transfer.insert(this._newOwnerOption || '');
 
         this._ownershipManager.insert(transfer);
 
@@ -690,7 +690,7 @@
         var dataObj = {};
 
         // adding owner if owner was changed
-        if (_this._newOwnerOption.down('[name="transfer-to"]') &amp;&amp; _this._newOwnerOption.down('[name="transfer-to"]').checked) {
+        if (_this._newOwnerOption &amp;&amp; _this._newOwnerOption.down('[name="transfer-to"]') &amp;&amp; _this._newOwnerOption.down('[name="transfer-to"]').checked) {
           var newOwner;
           if (_this._newOwnerSelector &amp;&amp; _this._newOwnerSelector.down('.accepted-suggestions input')) {
             newOwner = _this._newOwnerSelector.down('.accepted-suggestions input').value;
