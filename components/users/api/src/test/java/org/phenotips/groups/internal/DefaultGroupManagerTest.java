@@ -58,7 +58,7 @@ public class DefaultGroupManagerTest
 
     @Rule
     public final MockitoComponentMockingRule<GroupManager> mocker =
-        new MockitoComponentMockingRule<>(DefaultGroupManager.class);
+        new MockitoComponentMockingRule<GroupManager>(DefaultGroupManager.class);
 
     /** Basic tests for {@link DefaultGroupManager#getGroupsForUser(org.xwiki.model.reference.DocumentReference)}. */
     @Test
