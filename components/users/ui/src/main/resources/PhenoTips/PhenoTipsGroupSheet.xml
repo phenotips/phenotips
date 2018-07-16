@@ -80,15 +80,11 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
 #else
 (% class="group-logo" %)(((#if ("$!{doc.getObject('PhenoTips.PhenoTipsGroupClass').getProperty('image').value}" != '')$doc.display('image')#{else}$xwiki.getDocument('PhenoTips.PhenoTipsGroupTemplate').display('image')#{end})))$doc.display('description')
 
-#set ($isMyGroup = $xwiki.user.isUserInGroup($doc.fullName) || $xwiki.user.isUserInGroup("${doc.fullName} Administrators"))
-##Check all groups that current user is a member of implicitly (e.g. if his group is a subgroup of another group)
-#if (!$isMyGroup)
-  #set ($groups = $services.groups.getGroupsForUser($services.users.getCurrentUser()))
-  #foreach ($g in $groups)
-    #if($g.getReference().getName() == $doc.name)
-      #set ($isMyGroup = true)
-      #break
-    #end
+#set ($isMyGroup = false)
+#foreach ($group in $services.groups.getGroupsForUser($services.users.getCurrentUser()))
+  #if ($doc.documentReference.equals($group.reference))
+    #set ($isMyGroup = true)
+    #break
   #end
 #end
 #if ($isMyGroup){{info}}{{translation key="phenotips.groups.selfMembership"/}}{{/info}}#end
