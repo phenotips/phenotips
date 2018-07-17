@@ -619,9 +619,6 @@
   margin-top: 0.5em;
   margin-left: 1em;
 }
-.family-info .pedigree-wrapper {
-  width: 33%;
-}
 #family-label {
   font-weight: bold;
   display: inline;
