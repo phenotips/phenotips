@@ -258,11 +258,11 @@ define([
             var replacePedigreeWarning = "Existing pedigree will be replaced by the selected one";
             var templatesButton = $('action-templates');
             templatesButton && templatesButton.on("click", function(event) {
-                editor.getTemplateImportSelector().show(0 /* tab 0 - templates */, true /* allow cancel */, replacePedigreeWarning, "box warningmessage");
+                editor.getTemplateImportSelector().show(0 /* tab 0 - templates */, true /* stay in editor on closing */, replacePedigreeWarning, "box warningmessage");
             });
             var importButton = $('action-import');
             importButton && importButton.on("click", function(event) {
-                editor.getTemplateImportSelector().show(1 /* tab1 - import */, true /* allow cancel */, replacePedigreeWarning, "box warningmessage");
+                editor.getTemplateImportSelector().show(1 /* tab1 - import */, true /* stay in editor on closing */, replacePedigreeWarning, "box warningmessage");
             });
             var exportButton = $('action-export');
             exportButton && exportButton.on("click", function(event) {
