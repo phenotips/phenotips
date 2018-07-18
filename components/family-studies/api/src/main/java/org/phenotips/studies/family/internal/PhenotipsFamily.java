@@ -31,10 +31,8 @@ import org.xwiki.model.reference.EntityReference;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -157,17 +155,6 @@ public class PhenotipsFamily extends AbstractPrimaryEntity implements Family
     public void updateFromJSON(final JSONObject json)
     {
         throw new UnsupportedOperationException("Updating family from JSON is not yet supported.");
-    }
-
-    @Override
-    public Map<String, Map<String, String>> getMedicalReports()
-    {
-        Map<String, Map<String, String>> allFamilyLinks = new HashMap<>();
-
-        for (Patient patient : getMembers()) {
-            allFamilyLinks.put(patient.getId(), PhenotipsFamily.familyExport.getMedicalReports(patient));
-        }
-        return allFamilyLinks;
     }
 
     @Override

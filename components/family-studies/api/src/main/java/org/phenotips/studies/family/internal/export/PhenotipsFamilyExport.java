@@ -19,7 +19,6 @@ package org.phenotips.studies.family.internal.export;
 
 import org.phenotips.configuration.RecordConfigurationManager;
 import org.phenotips.data.Patient;
-import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.security.authorization.AuthorizationService;
 import org.phenotips.studies.family.Family;
@@ -30,28 +29,20 @@ import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
 import org.xwiki.security.authorization.Right;
-import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 import org.xwiki.xml.XMLUtils;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
-
-import com.xpn.xwiki.XWikiContext;
 
 /**
  * Handles export of information about families.
@@ -64,17 +55,9 @@ public class PhenotipsFamilyExport
 {
     private static final String PATIENT_LABEL = "patient";
 
-    private static final String LAST_NAME = "last_name";
-
     private static final String FIRST_NAME = "first_name";
 
-    private static final String PERMISSIONS = "permissions";
-
     private static final String URL = "url";
-
-    private static final String REPORTS = "reports";
-
-    private static final String NAME = "name";
 
     private static final String IDENTIFIER = "identifier";
 
@@ -115,7 +98,7 @@ public class PhenotipsFamilyExport
     private RecordConfigurationManager configuration;
 
     @Inject
-    private Provider<XWikiContext> provider;
+    private PedigreePatientSummary pedigreePatientSummary;
 
     /**
      * Returns a list of families by the input search criteria. The user has to have requiredPermission on each family.
@@ -152,45 +135,12 @@ public class PhenotipsFamilyExport
 
         JSONArray patientsJSONArray = new JSONArray();
         for (Patient patient : family.getMembers()) {
-            JSONObject patientJSON = getPatientInformationAsJSON(patient);
+            JSONObject patientJSON = this.pedigreePatientSummary.getPatientSummaryForPedigree(patient);
             patientsJSONArray.put(patientJSON);
         }
         familyJSON.put(FAMILY_MEMBERS, patientsJSONArray);
 
         return familyJSON;
-    }
-
-    private JSONObject getPatientInformationAsJSON(Patient patient)
-    {
-        JSONObject patientJSON = new JSONObject();
-
-        // handle patient names
-        PatientData<String> patientNames = patient.getData("patientName");
-        String firstName = StringUtils.defaultString(patientNames.get(FIRST_NAME));
-        String lastName = StringUtils.defaultString(patientNames.get(LAST_NAME));
-        String patientNameForJSON = String.format("%s %s", firstName, lastName).trim();
-
-        // add data to json
-        patientJSON.put(ID, patient.getId());
-        patientJSON.put(IDENTIFIER, patient.getExternalId());
-        patientJSON.put(NAME, patientNameForJSON);
-        patientJSON.put(REPORTS, getMedicalReports(patient));
-
-        // Patient URL
-        XWikiContext context = this.provider.get();
-        String url = context.getWiki().getURL(patient.getDocumentReference(), "view", context);
-        patientJSON.put(URL, url);
-
-        // add permissions information
-        User currentUser = this.userManager.getCurrentUser();
-        JSONObject permissionJSON = new JSONObject();
-        permissionJSON.put("hasEdit",
-            this.authorizationService.hasAccess(currentUser, Right.EDIT, patient.getDocumentReference()));
-        permissionJSON.put("hasView",
-            this.authorizationService.hasAccess(currentUser, Right.VIEW, patient.getDocumentReference()));
-        patientJSON.put(PERMISSIONS, permissionJSON);
-
-        return patientJSON;
     }
 
     private void queryFamilies(String input, String requiredPermission, int resultsLimit, String orderField,
@@ -349,29 +299,5 @@ public class PhenotipsFamilyExport
             return xmlResult.toString();
         }
 
-    }
-
-    /**
-     * Returns all medical reports associated with a patient.
-     *
-     * @param patient to get medical reports for
-     * @return Map with medical reports
-     */
-    public Map<String, String> getMedicalReports(Patient patient)
-    {
-        PatientData<String> links = patient.getData("medicalreportslinks");
-        Map<String, String> mapOfLinks = new HashMap<>();
-
-        if (this.authorizationService.hasAccess(this.userManager.getCurrentUser(), Right.VIEW,
-            patient.getDocumentReference())) {
-            if (links != null) {
-                Iterator<Map.Entry<String, String>> iterator = links.dictionaryIterator();
-                while (iterator.hasNext()) {
-                    Map.Entry<String, String> entry = iterator.next();
-                    mapOfLinks.put(entry.getKey(), entry.getValue());
-                }
-            }
-        }
-        return mapOfLinks;
     }
 }

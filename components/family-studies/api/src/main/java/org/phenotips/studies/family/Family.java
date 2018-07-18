@@ -25,7 +25,6 @@ import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * TODO: refactor on top of Entities model. Split/re-arrange functionality between Family (Entity), FamilyRepository
@@ -68,13 +67,6 @@ public interface Family extends PrimaryEntity
      * @return true if a patient is a member of the family
      */
     boolean isMember(Patient patient);
-
-    /**
-     * Retrieves medical reports for all family members.
-     *
-     * @return patient ids mapped to medical reports, which in turn are maps of report name to its link
-     */
-    Map<String, Map<String, String>> getMedicalReports();
 
     /**
      * @return external id. Returns "" if id is not defined.

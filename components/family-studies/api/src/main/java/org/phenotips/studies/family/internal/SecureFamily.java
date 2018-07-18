@@ -27,7 +27,6 @@ import org.xwiki.model.reference.EntityReference;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.json.JSONObject;
@@ -112,12 +111,6 @@ public class SecureFamily implements Family
     public JSONObject toJSON()
     {
         return this.family.toJSON();
-    }
-
-    @Override
-    public Map<String, Map<String, String>> getMedicalReports()
-    {
-        return this.family.getMedicalReports();
     }
 
     @Override
