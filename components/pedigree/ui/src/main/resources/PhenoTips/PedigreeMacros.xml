@@ -611,13 +611,15 @@
 }
 .family-members {
   vertical-align: top;
-  margin-left: 1em;
-  margin-top: -1.9em;
+  margin-top: 10px;
 }
 .family-members ul {
   list-style: disc;
   margin-top: 0.5em;
   margin-left: 1em;
+}
+.family-info .pedigree-wrapper {
+  margin-right: 2em;
 }
 #family-label {
   font-weight: bold;
