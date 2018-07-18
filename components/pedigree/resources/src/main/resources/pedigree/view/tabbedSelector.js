@@ -85,7 +85,7 @@ define([
          *
          * @method show
          */
-        show: function(tabID, allowCancel, topMessage, topMessageCssClasses) {
+        show: function(tabID, stayInEditorOnClose, topMessage, topMessageCssClasses) {
             if (topMessage) {
                 this.topMessage.update(new Element('div', {'class': topMessageCssClasses ? topMessageCssClasses : ""}).update(topMessage));
                 this.topMessage.addClassName("margin-bottom-10px");
@@ -98,18 +98,25 @@ define([
 
             this.dialog.show();
 
-            if (!allowCancel) {
-                // hide close button and disable keyboard close shortcut
-                $(this.dialog.getBoxId()).down('.msdialog-close').hide();
-                this.dialog.unregisterShortcuts("close");
-            } else {
-                // show close button and enable keyboard close shortcut
-                $(this.dialog.getBoxId()).down('.msdialog-close').show();
-                this.dialog.registerShortcuts("close");
+            var closeButton = this.dialog.dialog.down('.msdialog-close');
+            var closeFunction = this.hide.bindAsEventListener(this);
+            if (!stayInEditorOnClose) {
+                closeFunction = function(event) {
+                    event.stop();
+                    new Ajax.Request(XWiki.currentDocument.getURL('delete', 'confirm=1&ajax=1&form_token=' + $$('meta[name="form_token"]')[0].content), {
+                        'method': 'GET',
+                        'onSuccess': function() { history.go(-1); }
+                    });
+                };
             }
+            closeButton.stopObserving('click');
+            closeButton.observe('click', closeFunction);
+            this.dialog.unregisterShortcuts('close');
+            this.dialog.shortcuts['close'].method = closeFunction;
+            this.dialog.registerShortcuts('close');
 
             for (var i = 0; i < this.tabContents.length; i++) {
-                this.tabContents[i].onShow(allowCancel);
+                this.tabContents[i].onShow(stayInEditorOnClose);
             }
         },
 
