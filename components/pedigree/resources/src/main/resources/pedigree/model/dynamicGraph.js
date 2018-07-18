@@ -278,7 +278,7 @@ define([
             return result;
         },
 
-        setPersonNodeDataFromPhenotipsJSON: function( id, patientObject )
+        setPersonNodeDataFromPhenotipsJSON: function( id, patientObject, updateParentRelationship )
         {
             if (!this.isPerson(id)) {
                 throw "Assertion failed: setPersonNodeDataFromPhenotipsJSON() is applied to a non-person";
@@ -287,6 +287,19 @@ define([
             if (patientObject != null && !patientObject.hasOwnProperty("__ignore__")) {
                 var pedigreeOnlyProperties = this.getNodePropertiesNotStoredInPatientProfile(id);
                 this.setProperties(id, PhenotipsJSON.phenotipsJSONToInternal(patientObject, pedigreeOnlyProperties));
+
+                if (updateParentRelationship
+                    && patientObject.hasOwnProperty("family_history")
+                    && patientObject.family_history.hasOwnProperty("consanguinity")
+                    && patientObject.family_history.consanguinity) {
+                    // try to mark parent relationship as consanguineous
+                    var parentRel = this.getParentRelationship(id);
+                    if (parentRel != null) {
+                        var relProperties = this.getProperties(parentRel);
+                        relProperties.consangr = "Y";
+                        this.setProperties(parentRel, relProperties);
+                    }
+                }
             }
         },
 

@@ -144,7 +144,7 @@ define([
 
                         var rawJSON = editor.getGraph().getRawJSONProperties(nodeID);
 
-                        editor.getGraph().setPersonNodeDataFromPhenotipsJSON(nodeID, rawJSON);
+                        editor.getGraph().setPersonNodeDataFromPhenotipsJSON(nodeID, rawJSON, true);
 
                         // do some basic version checking
                         if (rawJSON.hasOwnProperty("phenotips_version")
