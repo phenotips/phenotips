@@ -123,14 +123,18 @@ define([
   //===============================================================================================
 
   /*
+   *  See http://zzz.bwh.harvard.edu/plink/data.shtml#ped,
+   *      https://gatkforums.broadinstitute.org/gatk/discussion/7696/pedigree-ped-files
+   *
    *  PED format:
-   *  (from http://pngu.mgh.harvard.edu/~purcell/plink/data.shtml#ped)
    *   Family ID
    *   Individual ID
    *   Paternal ID
    *   Maternal ID
    *   Sex (1=male; 2=female; other=unknown)
    *   Phenotype
+   *
+   *   Note: the IDs should be alphanumeric
    *
    *   Phenotype, by default, should be coded as:
    *      -9 missing
@@ -147,7 +151,7 @@ define([
 
      var familyID = XWiki.currentDocument.page;
 
-     var idToPedId = PedigreeExport.createNewIDs(pedigree, idGenerationPreference);
+     var idToPedId = PedigreeExport.createNewIDs(pedigree, idGenerationPreference, 20/* max ID length */, true /* forbid non-alphanum */);
 
      for (var i = 0; i <= pedigree.GG.getMaxRealVertexId(); i++) {
          if (!pedigree.GG.isPerson(i)) continue;
@@ -416,7 +420,10 @@ define([
 
          var id = idToBoadId[i];
 
-         var name = pedigree.GG.properties[i].hasOwnProperty("fName") ? pedigree.GG.properties[i]["fName"].substring(0,8).replace(/[^A-Za-z0-9]/g, '') : id;
+         var name = pedigree.GG.properties[i].hasOwnProperty("fName") ? pedigree.GG.properties[i]["fName"].substring(0,8).replace(/[^A-Za-z0-9]/g, '') : "";
+         if (name.length == 0) {
+             name = id;
+         }
 
          var proband = (i == editor.getGraph().getProbandId()) ? "1" : "0";
 

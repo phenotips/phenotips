@@ -515,7 +515,7 @@ define([
                 continue;
             }
 
-            inputLines[i] = inputLines[i].replace(/[^a-zA-Z0-9_.\-\s*]/g, ' ');
+            inputLines[i] = inputLines[i].replace(/[^a-zA-Z0-9_.\-\s*]/g, '');
             inputLines[i] = inputLines[i].replace(/^\s+|\s+$/g, '');  // trim()
 
             var parts = inputLines[i].split(/\s+/);

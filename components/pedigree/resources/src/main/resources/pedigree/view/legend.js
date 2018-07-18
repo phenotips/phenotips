@@ -697,9 +697,15 @@ define([
             }
             editor.getNodeMenu().hide();
             editor.getView().setCurrentDraggable(-1); // in drag mode but with no target
-            var divPos = editor.getWorkspace().viewportToDiv(event.pointerX(), event.pointerY());
-            var pos    = editor.getWorkspace().divToCanvas(divPos.x,divPos.y);
-            var node   = editor.getView().getPersonNodeNear(pos.x, pos.y);
+
+            // PhenoTips uses a modified version of the dragdrop.js library. The original does not pass the event into this method
+            if (event) {
+                var divPos = editor.getWorkspace().viewportToDiv(event.pointerX(), event.pointerY());
+                var pos    = editor.getWorkspace().divToCanvas(divPos.x,divPos.y);
+                var node   = editor.getView().getPersonNodeNear(pos.x, pos.y);
+            } else {
+                var node = undefined;
+            }
             if (node) {
                 node.getGraphics().getHoverBox().animateHideHoverZone();
                 node.getGraphics().getHoverBox().setHighlighted(true);
