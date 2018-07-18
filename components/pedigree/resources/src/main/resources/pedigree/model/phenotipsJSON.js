@@ -92,10 +92,14 @@ define([
         result["disorders"] = outputDisorders;
 
         if (relationshipProperties && relationshipProperties.consangr) {
-            var familyHistory = internalProperties.hasOwnProperty("family_history")
-            ? internalProperties["family_history"]
-            : {};
-            familyHistory["consanguinity"] = (relationshipProperties.consangr === "Y") ? true : false;
+            var familyHistory = result.hasOwnProperty("family_history")
+                                ? result["family_history"]
+                                : {};
+            // if on the patient form the patient was marked as consanguineous the status will be kept as such,
+            // otherwise it will be derived from the pedigree
+            if (!familyHistory.hasOwnProperty("consanguinity") || familyHistory["consanguinity"] == false) {
+                familyHistory["consanguinity"] = (relationshipProperties.consangr === "Y") ? true : false;
+            }
             result["family_history"] = familyHistory;
         }
 
