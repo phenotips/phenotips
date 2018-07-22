@@ -9,6 +9,7 @@
 define([
         "pedigree/extensionManager",
         "pedigree/externalEndpoints",
+        "pedigree/externalIdManager",
         "pedigree/undoRedoManager",
         "pedigree/controller",
         "pedigree/pedigreeEditorParameters",
@@ -47,6 +48,7 @@ define([
     function(
         PedigreeExtensionManager,
         ExternalEndpointsManager,
+        ExternalIdManager,
         UndoRedoManager,
         Controller,
         PedigreeEditorParameters,
@@ -144,6 +146,7 @@ define([
             this._familyData = new FamilyData();
             this._patientDataLoader = new PatientDataLoader();
             this._patientRecordData = new PatientRecordData();
+            this._externalIdManager = new ExternalIdManager();
 
             // load global pedigree preferences before a specific pedigree is loaded, since
             // preferences may affect the way it is rendered. Once preferences are loaded the
@@ -338,6 +341,20 @@ define([
          */
         checkAndSaveOrQuit: function(userWantsToQuit) {
 
+            // TODO: config option "force external ID uniqueness?
+            var duplicateIDReport = this.getExternalIdManager().duplicateIDPresent();
+            if (duplicateIDReport.dupliucateIDPresent) {
+                if (duplicateIDReport.involvesExternalPatient) {
+                    var duplicateIDMessage = "Can not save pedigree, a patient in the pedigree has the same ID ("
+                                             + duplicateIDReport.id + ") as some other patient";
+                } else {
+                    var duplicateIDMessage = "Can not save pedigree, some patient records in the pedigree have the same external IDs ("
+                                             + duplicateIDReport.id + ")";
+                }
+                editor.getOkCancelDialogue().showError(duplicateIDMessage, "Can not save pedigree", "OK", undefined);
+                return;
+            }
+
             var patientLinks = editor.getGraph().getAllPatientLinks();
             var currentPatientId = editor.getGraph().getCurrentPatientId();
 
@@ -489,6 +506,14 @@ define([
          */
         getPatientRecordData: function() {
             return this._patientRecordData;
+        },
+
+        /**
+         * @method getgetExternalIdManager
+         * @return {ExternalIdManager}
+         */
+        getExternalIdManager: function() {
+            return this._externalIdManager;
         },
 
         /**

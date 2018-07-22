@@ -1910,17 +1910,6 @@ define([
             }
         },
 
-        _checkExternalID : function(patientID, externalID, onValid, onInvalid) {
-            var serviceUrl = editor.getExternalEndpoint().getPatientExternalIDValidationURL();
-            new Ajax.Request(serviceUrl, {
-              parameters : { outputSyntax: 'plain', eid: externalID, id: patientID, entity : "patients"},
-              on200 : onValid,
-              on403 : onInvalid,
-              on404 : onValid,
-              on409 : onInvalid
-            });
-        },
-
         // checks if fields satisfy their requirements: at the moment only
         // requirement suported is a "mandatory" field which should not be blankl
         _validateFieldValue : {
@@ -1977,7 +1966,7 @@ define([
                             }
                             _this._extIDValidationInProgress = false;
                         };
-                        this._checkExternalID(linkedRecordID, field_value, onValidID, onInvalidID);
+                        editor.getExternalIdManager().isUniqueID(linkedRecordID, field_value, onValidID, onInvalidID);
                     }
                 }
                 container.style.border = "";
