@@ -248,6 +248,9 @@ public class SolvedData
         if (selectedFieldNames.contains(PUBMED_ID_PROPERTY_NAME)) {
             geneJson.put(PUBMED_ID_JSON_KEY, this.getPubmedIdsJson());
         }
+        if (geneJson.length() == 0) {
+            return null;
+        }
         return geneJson;
     }
 
