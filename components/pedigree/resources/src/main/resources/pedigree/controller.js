@@ -253,7 +253,7 @@ define([
                 };
                 var onValidID = function() {
                     this._handleCreatePatientRecordWithNoExtIDCheck(event);
-                };
+                }.bind(this);
                 editor.getExternalIdManager().isUniqueID("__NONEXISTENT_PATIENT_ID__", id, onValidID, onDuplicateID);
             } else {
                 this._handleCreatePatientRecordWithNoExtIDCheck(event);
@@ -302,6 +302,12 @@ define([
             //   2) load patient data, since code outside of pedigree may have pre-populated patient with some
             //      data right after creation
             var onCreated = function(newID) {
+
+                // if an external ID is provided and a patient record is created then we should record the fact that a
+                // patient record is associated with a given external ID in pedigree - even if that ID is not written to disk yet
+                if (patientData && patientData.pedigreeJSON && patientData.pedigreeJSON.hasOwnProperty("externalID")) {
+                    editor.getExternalIdManager().set(newID, patientData.pedigreeJSON.externalID);
+                }
 
                 // 1. check required fields and update, if necessary
                 if (requiredFields.length > 0) {
