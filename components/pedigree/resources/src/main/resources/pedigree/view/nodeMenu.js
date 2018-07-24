@@ -536,7 +536,8 @@ define([
                     }
 
                     // only apply "uniqueExternalID" validator to nodes linkied to PhenoTips records
-                    if (!hasLinkedRecord && fieldData.validators && Helpers.arrayContains(fieldData.validators, "uniqueExternalID")) {
+                    if (!hasLinkedRecord && !forceRequiredFieldValidation
+                        && fieldData.validators && Helpers.arrayContains(fieldData.validators, "uniqueExternalID")) {
                         fieldData = Helpers.cloneObject(fieldData);
                         fieldData.validators = fieldData.validators.slice();
                         Helpers.removeFirstOccurrenceByValue(fieldData.validators, "uniqueExternalID");

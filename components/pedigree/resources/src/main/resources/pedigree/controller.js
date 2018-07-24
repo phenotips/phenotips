@@ -24,7 +24,7 @@ define([
             document.observe("pedigree:node:setproperty",          this.handleSetProperty);
             document.observe("pedigree:node:modify",               this.handleModification);
             document.observe("pedigree:patient:deleterequest",     this.handleDeletePatientRecords);
-            document.observe("pedigree:patient:createrequest",     this.handleCreatePatientRecord);
+            document.observe("pedigree:patient:createrequest",     this.handleCreatePatientRecord.bind(this));
             document.observe("pedigree:patient:checklinkvalidity", this.handleCheckLinkValidity);
             document.observe("pedigree:person:drag:newparent",     this.handlePersonDragToNewParent);
             document.observe("pedigree:person:drag:newpartner",    this.handlePersonDragToNewPartner);
@@ -239,6 +239,28 @@ define([
         },
 
         handleCreatePatientRecord: function(event)
+        {
+            var patientData = event.memo.patientData;
+
+            if (editor.getPreferencesManager().getConfigurationOption("uniqueExternalID")
+                && patientData && patientData.includedFields && patientData.includedFields.hasOwnProperty("external_id")) {
+                // (only) if external_id is provided: check that it is unique
+                var id = patientData.pedigreeJSON.externalID;
+
+                var onDuplicateID = function() {
+                    editor.getOkCancelDialogue().showError("A patient with this external ID (\"" +
+                            id + "\") already exists: can not create a new patient", "Can not create", "OK");
+                };
+                var onValidID = function() {
+                    this._handleCreatePatientRecordWithNoExtIDCheck(event);
+                };
+                editor.getExternalIdManager().isUniqueID("__NONEXISTENT_PATIENT_ID__", id, onValidID, onDuplicateID);
+            } else {
+                this._handleCreatePatientRecordWithNoExtIDCheck(event);
+            }
+        },
+
+        _handleCreatePatientRecordWithNoExtIDCheck: function(event)
         {
             var requiredFields = editor.getPreferencesManager().getConfigurationOption("requiredFields");
 

@@ -104,6 +104,7 @@ define([
             //  drawNodeShadows:              {true|false}   - display small shadow under node graphic; default: "true"
             //  disabledFields:               [array]        - list of node-menu fields disabled for this installation
             //  replaceIdWithExternalID:      {true|false}   - when true, patient links display external ID as the link text (instead of PT ids)
+            //  uniqueExternalID:             {true|false}   - when true, patient records will not be allowed to have duplicate external IDs
             //  displayCancerLabels:          {true|false}   - display labels for each affecting cancer; default: "true"
             //  lineStyle:                    {"thin"|"regular"|"bold"} - controls the thickness of all lines in pedigree
             //  studies:                      [array]        - array of available study objects in the following format: {"id": ..., "name": ..., "description": ...}
@@ -116,6 +117,7 @@ define([
                                                      disabledFields: [],
                                                      requiredFields: [],
                                                      replaceIdWithExternalID: false,
+                                                     uniqueExternalID: false,
                                                      displayCancerLabels: true,
                                                      lineStyle: "regular",
                                                      studies: []},
@@ -341,20 +343,6 @@ define([
          */
         checkAndSaveOrQuit: function(userWantsToQuit) {
 
-            // TODO: config option "force external ID uniqueness?
-            var duplicateIDReport = this.getExternalIdManager().duplicateIDPresent();
-            if (duplicateIDReport.dupliucateIDPresent) {
-                if (duplicateIDReport.involvesExternalPatient) {
-                    var duplicateIDMessage = "Can not save pedigree, a patient in the pedigree has the same ID ("
-                                             + duplicateIDReport.id + ") as some other patient";
-                } else {
-                    var duplicateIDMessage = "Can not save pedigree, some patient records in the pedigree have the same external IDs ("
-                                             + duplicateIDReport.id + ")";
-                }
-                editor.getOkCancelDialogue().showError(duplicateIDMessage, "Can not save pedigree", "OK", undefined);
-                return;
-            }
-
             var patientLinks = editor.getGraph().getAllPatientLinks();
             var currentPatientId = editor.getGraph().getCurrentPatientId();
 
@@ -373,6 +361,22 @@ define([
 
             //-----------------
             var saveWithChecks = function(quitAfterSave) {
+
+                // when configured, do not allow saving pedigree if there are patient records with duplicate exterenal IDs
+                if (editor.getPreferencesManager().getConfigurationOption("uniqueExternalID")) {
+                    var duplicateIDReport = editor.getExternalIdManager().duplicateIDPresent();
+                    if (duplicateIDReport.dupliucateIDPresent) {
+                        if (duplicateIDReport.involvesExternalPatient) {
+                            var duplicateIDMessage = "Can not save pedigree, a patient record in the pedigree has the same ID (\""
+                                                     + duplicateIDReport.id + "\") as some other patient record in the system";
+                        } else {
+                            var duplicateIDMessage = "Can not save pedigree, some patient records in the pedigree have the same external ID (\""
+                                                     + duplicateIDReport.id + "\")";
+                        }
+                        editor.getOkCancelDialogue().showError(duplicateIDMessage, "Can not save pedigree", "OK", undefined);
+                        return;
+                    }
+                }
 
                 var saveAndQuitFunc = function() {
                     editor.getSaveLoadEngine().save(editor.closePedigree);

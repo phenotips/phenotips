@@ -67,6 +67,10 @@ define([
 
         isUniqueID: function(phenotipsID, candidateID, callbackOnYes, callbackOnNo)
         {
+            if (candidateID.length == 0) {
+                return true;
+            }
+
             if (this.externalIDs.hasOwnProperty(candidateID)) {
                 var recordsWithThisID = this.externalIDs[candidateID];
                 if (recordsWithThisID.length > 1) {
