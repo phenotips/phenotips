@@ -367,10 +367,10 @@ define([
                     var duplicateIDReport = editor.getExternalIdManager().duplicateIDPresent();
                     if (duplicateIDReport.dupliucateIDPresent) {
                         if (duplicateIDReport.involvesExternalPatient) {
-                            var duplicateIDMessage = "Can not save pedigree, a patient record in the pedigree has the same ID (\""
+                            var duplicateIDMessage = "Can not save pedigree, a patient record in the pedigree has the same identifier (\""
                                                      + duplicateIDReport.id + "\") as some other patient record in the system";
                         } else {
-                            var duplicateIDMessage = "Can not save pedigree, some patient records in the pedigree have the same external ID (\""
+                            var duplicateIDMessage = "Can not save pedigree, some patient records in the pedigree have the same identifier (\""
                                                      + duplicateIDReport.id + "\")";
                         }
                         editor.getOkCancelDialogue().showError(duplicateIDMessage, "Can not save pedigree", "OK", undefined);

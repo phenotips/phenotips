@@ -243,12 +243,12 @@ define([
             var patientData = event.memo.patientData;
 
             if (editor.getPreferencesManager().getConfigurationOption("uniqueExternalID")
-                && patientData && patientData.includedFields && patientData.includedFields.hasOwnProperty("external_id")) {
+                && patientData && patientData.pedigreeJSON && patientData.pedigreeJSON.hasOwnProperty("externalID")) {
                 // (only) if external_id is provided: check that it is unique
                 var id = patientData.pedigreeJSON.externalID;
 
                 var onDuplicateID = function() {
-                    editor.getOkCancelDialogue().showError("A patient with this external ID (\"" +
+                    editor.getOkCancelDialogue().showError("A patient with this identifier (\"" +
                             id + "\") already exists: can not create a new patient", "Can not create", "OK");
                 };
                 var onValidID = function() {
