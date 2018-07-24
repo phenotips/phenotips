@@ -145,7 +145,8 @@ $response.setContentType('application/json')##
   { "user": {
         "firstName" : "$!{user.getProperty('first_name').value}",
         "lastName" : "$!{user.getProperty('last_name').value}",
-        "hideDraggingHint": false
+        "hideDraggingHint": false,
+        "advancedUser": $isAdvancedUser
     },
     "global": {
             "disabledFields"               : #__getDisabledFields(),
