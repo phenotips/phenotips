@@ -7,12 +7,14 @@ define([
         "pedigree/filesaver/FileSaver",
         "pedigree/model/export",
         "pedigree/pedigreeEditorParameters",
-        "pedigree/view/graphicHelpers"
+        "pedigree/view/graphicHelpers",
+        "pedigree/model/helpers",
     ], function(
         FileSaver,
         PedigreeExport,
         PedigreeEditorParameters,
-        GraphicHelpers
+        GraphicHelpers,
+        Helpers
     ){
     var ExportSelector = Class.create( {
 
@@ -22,9 +24,9 @@ define([
 
             var _this = this;
 
-            var mainDiv = new Element('div', {'class': 'export-selector'});
+            var mainDiv = new Element('div', {'class': 'export-selector field-no-user-select'});
 
-            var _addTypeOption = function (checked, labelText, value) {
+            var _addTypeOption = function (checked, labelText, value, infoText) {
                 var optionWrapper = new Element('tr');
                 var input = new Element('input', {"type" : "radio", "value": value, "name": "export-type"});
                 input.observe('click', _this.disableEnableOptions.bind(_this));
@@ -33,15 +35,22 @@ define([
                 }
                 var label = new Element('label', {'class': 'import-type-label'}).insert(input).insert(labelText);
                 optionWrapper.insert(label.wrap('td'));
+
+                if (infoText) {
+                    var infoButton = new Element('span', {'class': 'option-info-button fa fa-question-circle'});
+                    var hint = _this._generateHint(infoButton, infoText, 'export-menu-tooltip');
+                    label.up().insert(infoButton).insert(hint);
+                }
+
                 return optionWrapper;
               };
             var typeListElement = new Element('table');
-            typeListElement.insert(_addTypeOption(true,  "PED", "ped"));
+            typeListElement.insert(_addTypeOption(true,  "PhenoTips JSON", "phenotipsJSON"));
+            typeListElement.insert(_addTypeOption(false, "PED", "ped"));
             typeListElement.insert(_addTypeOption(false, "BOADICEA", "BOADICEA"));
-            typeListElement.insert(_addTypeOption(false, "Simple JSON", "simpleJSON"));
-            typeListElement.insert(_addTypeOption(false, "PhenoTips JSON", "phenotipsJSON"));
+            typeListElement.insert(_addTypeOption(false, "Simple JSON (deprecated)", "simpleJSON",
+                    "This format is intended to be used only for compatibility with PhenoTips version 1.3 or earlier"));
             typeListElement.insert(_addTypeOption(false, "Image", "image"));
-            //TODO: typeListElement.insert(_addTypeOption(false, "Phenotips Pedigree JSON", "phenotipsJSON"));
 
             var fileDownload = new Element('a', {"id": 'downloadLink', "style": 'display:none'});
             mainDiv.insert(fileDownload);
@@ -88,6 +97,28 @@ define([
             this.dialog = new PhenoTips.widgets.ModalPopup(mainDiv, {close: {method : this.hide.bind(this), keys : closeShortcut}}, {extraClassName: "pedigree-import-chooser", title: "Pedigree export", displayCloseButton: false, verticalPosition: "top"});
 
             Event.observe(window, 'resize', GraphicHelpers.adjustPreviewWindowHeight.bind(_this, "pedigree-import-chooser", 'scrollable-container', this._minPreviewHeight, this._maxPreviewHeight));
+        },
+
+        // TODO: this shoul dbe refactored int oa standalone widget\helper, however before doing that
+        //       it is better to collect at least a few use cases
+        _generateHint: function(trigger, hintText, hintExtraCSS) {
+            var hint = new Element('div', {'class': 'xTooltip export-menu-tooltip'});
+            hint.insert(new Element('span', {'class': "hide-tool", 'title': "Hide"}).insert("x"));
+            hint.insert(new Element('div').update(hintText)).hide();
+
+            var hideHint = function() {
+                document.stopObserving('mousedown', hideHint);
+                hint.hide();
+            };
+            var showHint = function() {
+                hint.show();
+                document.observe('mousedown', hideHint);
+            };
+            trigger.observe('click', function(event) {
+                Helpers.stopEventPropagation(event);
+                showHint();
+            });
+            return hint;
         },
 
         /**

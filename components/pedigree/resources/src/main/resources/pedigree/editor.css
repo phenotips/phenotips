@@ -1517,3 +1517,14 @@ div.field-box.field-cancers_picker {
   background-color: #fdfeff;
   padding-bottom: 0.5em;
 }
+.option-info-button {
+  color: #666;
+  margin-left: -10px;
+}
+.option-info-button:hover {
+  color: #000;
+}
+.export-menu-tooltip {
+  text-align: left;
+  width: 60%;
+}
