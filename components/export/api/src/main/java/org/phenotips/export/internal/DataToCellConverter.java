@@ -25,6 +25,7 @@ import org.phenotips.data.Gene;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PhenoTipsDate;
+import org.phenotips.data.internal.SolvedData;
 import org.phenotips.translation.TranslationManager;
 import org.phenotips.vocabulary.internal.solr.SolrVocabularyTerm;
 
@@ -1363,23 +1364,32 @@ public class DataToCellConverter
             return null;
         }
         DataSection bodySection = new DataSection();
-        PatientData<String> patientData = patient.getData("solved");
+        PatientData<SolvedData> patientData = patient.getData("solved");
+        SolvedData data = patientData != null ? patientData.getValue() : null;
 
         int x = 0;
-        if (present.contains("solved")) {
-            String solved = patientData != null ? patientData.get("solved") : null;
+        if (present.contains(SolvedData.STATUS_PROPERTY_NAME)) {
+            String solved = data != null ? data.getStatus() : null;
             DataCell cell = new DataCell(solved != null ? ConversionHelpers.strIntegerToStrBool(solved) : "", x, 0);
             bodySection.addCell(cell);
             x++;
         }
-        if (present.contains("solved__pubmed_id")) {
-            String pubmedId = patientData != null ? patientData.get("solved__pubmed_id") : null;
-            DataCell cell = new DataCell(pubmedId != null ? pubmedId : "", x, 0);
-            bodySection.addCell(cell);
-            x++;
+
+        if (present.contains(SolvedData.PUBMED_ID_PROPERTY_NAME)) {
+            List<String> pubmedIds = data != null ? data.getPubmedIds() : Collections.emptyList();
+            if (!pubmedIds.isEmpty()) {
+                int y = 0;
+                for (String id : pubmedIds) {
+                    DataCell cell = new DataCell(StringUtils.isBlank(id) ? "" : id, x, y);
+                    bodySection.addCell(cell);
+                    y++;
+                }
+                x++;
+            }
         }
-        if (present.contains("solved__notes")) {
-            String solvedNotes = patientData != null ? patientData.get("solved__notes") : null;
+
+        if (present.contains(SolvedData.NOTES_PROPERTY_NAME)) {
+            String solvedNotes = data != null ? data.getNotes() : null;
             for (DataCell cell : ConversionHelpers.preventOverflow(solvedNotes, x, 0)) {
                 cell.setMultiline();
                 bodySection.addCell(cell);

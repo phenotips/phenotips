@@ -3645,8 +3645,11 @@ h1, h2, h3, h4 {
 .viewbody .family_study .half-width * {
   margin: 0 !important;
 }
-.omim_id.half-width p {
+.omim_id.half-width p, .clinical_diagnosis.half-width p {
   margin: 0;
+}
+.solved__pubmed_id ol.xwiki-free-multiselect {
+  margin-left: 1em;
 }
 /** ----------------------------------------------------------- */
 /** PubMed search box &amp; suggest */
@@ -4202,6 +4205,10 @@ h1, h2, h3, h4 {
 #omim-search-results ul li label input {
   vertical-align: middle;
 }
+.omim-search {
+  width: 48.5%;
+  float: right;
+}
 .background-search h4 {
   font-size: 1.2em;
   margin: 0;
@@ -4233,7 +4240,7 @@ h1, h2, h3, h4 {
   display: table-cell;
   vertical-align: middle;
 }
-.collapsed #diffDiagnosis-search-results &gt; * {
+.ncbi-search-box-content.collapsed, .collapsed #diffDiagnosis-search-results &gt; * {
   display: none;
 }
 

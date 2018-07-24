@@ -17,33 +17,32 @@
  */
 package org.phenotips.data.internal.controller;
 
-import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
+import org.phenotips.data.PatientWritePolicy;
+import org.phenotips.data.SimpleValuePatientData;
+import org.phenotips.data.internal.SolvedData;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.phase.Initializable;
-import org.xwiki.component.phase.InitializationException;
 import org.xwiki.model.reference.ObjectPropertyReference;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
+import org.slf4j.Logger;
 
+import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.objects.BaseProperty;
 
@@ -56,7 +55,7 @@ import com.xpn.xwiki.objects.BaseProperty;
 @Component(roles = { PatientDataController.class })
 @Named("solved")
 @Singleton
-public class SolvedController extends AbstractSimpleController implements Initializable
+public class SolvedController implements PatientDataController<SolvedData>
 {
     private static final String SOLVED_STRING = "solved";
 
@@ -64,27 +63,12 @@ public class SolvedController extends AbstractSimpleController implements Initia
 
     private static final String INTERNAL_PROPERTY_NAME = SOLVED_STRING;
 
-    private static final String STATUS_KEY = SOLVED_STRING;
+    /** Logging helper object. */
+    @Inject
+    private Logger logger;
 
-    private static final String STATUS_SOLVED = SOLVED_STRING;
-
-    private static final String STATUS_UNSOLVED = "unsolved";
-
-    private static final String STATUS_SOLVED_NUMERIC = "1";
-
-    private static final String STATUS_UNSOLVED_NUMERIC = "0";
-
-    private static final String STATUS_UNKNOWN = "";
-
-    private Map<String, String> fields = new LinkedHashMap<>();
-
-    @Override
-    public void initialize() throws InitializationException
-    {
-        this.fields.put(STATUS_KEY, "status");
-        this.fields.put("solved__pubmed_id", "pubmed_id");
-        this.fields.put("solved__notes", "notes");
-    }
+    @Inject
+    private Provider<XWikiContext> contextProvider;
 
     @Override
     public String getName()
@@ -93,150 +77,223 @@ public class SolvedController extends AbstractSimpleController implements Initia
     }
 
     @Override
-    protected String getJsonPropertyName()
+    public PatientData<SolvedData> load(Patient patient)
     {
-        return INTERNAL_PROPERTY_NAME;
-    }
+        try {
+            XWikiDocument doc = patient.getXDocument();
+            BaseObject data = doc.getXObject(Patient.CLASS_REFERENCE);
+            if (data == null) {
+                return null;
+            }
 
-    protected String getJsonPropertyName(String property)
-    {
-        String name = this.fields.get(property);
-        if (name == null) {
-            name = property;
+            String status = data.getStringValue(SolvedData.STATUS_PROPERTY_NAME);
+            String notes = data.getStringValue(SolvedData.NOTES_PROPERTY_NAME);
+            @SuppressWarnings("unchecked")
+            List<String> patientPubmedIds = data.getListValue(SolvedData.PUBMED_ID_PROPERTY_NAME);
+
+            SolvedData result = new SolvedData(status, notes, patientPubmedIds);
+
+            return new SimpleValuePatientData<>(this.getName(), result);
+        } catch (Exception e) {
+            this.logger.error(ERROR_MESSAGE_LOAD_FAILED, e.getMessage());
         }
-        return name;
+        return null;
     }
 
     @Override
-    protected List<String> getProperties()
+    public void save(Patient patient)
     {
-        Set<String> properties = this.fields.keySet();
-        return new ArrayList<>(properties);
+        save(patient, PatientWritePolicy.UPDATE);
     }
 
-    private String parseSolvedStatus(String status)
+    @Override
+    public void save(@Nonnull final Patient patient, @Nonnull final PatientWritePolicy policy)
     {
-        if ("1".equals(status)) {
-            return STATUS_SOLVED;
-        } else if ("0".equals(status)) {
-            return STATUS_UNSOLVED;
-        } else {
-            return STATUS_UNKNOWN;
+        try {
+            BaseObject xwikiDataObject = patient.getXDocument().getXObject(Patient.CLASS_REFERENCE, true,
+                this.contextProvider.get());
+            PatientData<SolvedData> data = patient.getData(getName());
+
+            if (data == null || data.getValue().isEmpty()) {
+                // For replace policy, if no controller data is provided, everything that's stored should be removed.
+                // otherwise - nothing happens
+                if (PatientWritePolicy.REPLACE.equals(policy)) {
+                    saveFieldValues(xwikiDataObject, null, policy);
+                }
+            } else {
+                saveControllerData(xwikiDataObject, data.getValue(), patient, policy);
+            }
+        } catch (final Exception ex) {
+            this.logger.error("Failed to save controller data: {}", ex.getMessage(), ex);
         }
     }
 
-    /** Given a status converts it back into `1` or `0`, or if status is unknown into an {@code null}. */
-    private String invertSolvedStatus(String status)
+    /**
+     * Saves {@code data}, according to the provided {@code policy}. For any controller extending this class,
+     * {@link PatientWritePolicy#UPDATE} and {@link PatientWritePolicy#MERGE} are not equivalent.
+     *
+     * @param xwikiDataObject the XWiki {@link BaseObject data object}
+     * @param data the {@link SolvedData} object containing data that needs to be saved, or null if policy is REPLCE and
+     *            data is null
+     * @param patient patient
+     * @param policy the policy, according to which patient data should be saved
+     */
+    private void saveControllerData(
+        @Nonnull final BaseObject xwikiDataObject,
+        @Nonnull final SolvedData data,
+        @Nonnull final Patient patient,
+        @Nonnull final PatientWritePolicy policy)
     {
-        if (STATUS_SOLVED.equals(status)) {
-            return STATUS_SOLVED_NUMERIC;
-        } else if (STATUS_UNSOLVED.equals(status)) {
-            return STATUS_UNSOLVED_NUMERIC;
+        if (PatientWritePolicy.MERGE.equals(policy)) {
+            SolvedData mergedData = getMergedData(data, patient);
+            this.saveFieldValues(xwikiDataObject, mergedData, policy);
         } else {
-            return "";
+            this.saveFieldValues(xwikiDataObject, data, policy);
+        }
+    }
+
+    private SolvedData getMergedData(@Nonnull SolvedData data, @Nonnull final Patient patient)
+    {
+        PatientData<SolvedData> savedData = load(patient);
+        if (savedData == null) {
+            return data;
+        }
+        SolvedData patientData = savedData.getValue();
+        // remain case solved or update to solved
+        if (data.isSolved() || StringUtils.isBlank(patientData.getStatus())) {
+            patientData.setStatus(data.getStatus());
+        }
+        // merge notes
+        String notes = data.getNotes();
+        if (StringUtils.isNotBlank(notes)) {
+            String patientNotes = patientData.getNotes();
+            if (StringUtils.isNotBlank(patientNotes)) {
+                patientNotes.concat("\n").concat(notes);
+                patientData.setNotes(patientNotes);
+            } else {
+                patientData.setNotes(notes);
+            }
+        }
+        // merge Pubmed IDs
+        List<String> patientPubmedIds = patientData.getPubmedIds();
+        List<String> newPubmedIds = data.getPubmedIds();
+        if (!newPubmedIds.isEmpty()) {
+            if (patientPubmedIds.isEmpty()) {
+                patientData.setPubmedIds(newPubmedIds);
+            } else {
+                // remove duplicates first
+                patientPubmedIds.retainAll(newPubmedIds);
+                patientPubmedIds.addAll(newPubmedIds);
+                patientData.setPubmedIds(patientPubmedIds);
+            }
+        }
+        return patientData;
+    }
+
+    /**
+     * Sets the {@code value} for a {@code property} field in {@code xwikiDataObject}.
+     *
+     * @param xwikiDataObject the {@link BaseObject} where data will be saved
+     * @param data the {@link SolvedData} object containing data that needs to be saved, or null if policy is REPLCE and
+     *            data is null
+     * @param policy policy : UPDATE, RERPLACE, MERGE
+     */
+    private void saveFieldValues(@Nonnull final BaseObject xwikiDataObject, SolvedData data, PatientWritePolicy policy)
+    {
+        if (data == null) {
+            xwikiDataObject.setDBStringListValue(SolvedData.PUBMED_ID_PROPERTY_NAME, null);
+        } else {
+            List<String> pubmedIds = data.getPubmedIds();
+            if (!PatientWritePolicy.UPDATE.equals(policy) || pubmedIds != null) {
+                xwikiDataObject.setDBStringListValue(SolvedData.PUBMED_ID_PROPERTY_NAME, pubmedIds);
+            }
+        }
+
+        List<String> stringProperties = Arrays.asList(SolvedData.STATUS_PROPERTY_NAME, SolvedData.NOTES_PROPERTY_NAME);
+        stringProperties.forEach(property -> this.setStringField(xwikiDataObject, data, property, policy));
+    }
+
+    private void setStringField(@Nonnull final BaseObject xwikiDataObject, SolvedData data, String property,
+        PatientWritePolicy policy)
+    {
+        @SuppressWarnings("unchecked")
+        BaseProperty<ObjectPropertyReference> field =
+            (BaseProperty<ObjectPropertyReference>) xwikiDataObject.getField(property);
+        if (field == null) {
+            return;
+        }
+        if (data == null) {
+            field.setValue(null);
+        } else {
+            String value = (SolvedData.STATUS_PROPERTY_NAME.equals(property)) ? data.getStatus() : data.getNotes();
+            if (value != null || PatientWritePolicy.REPLACE.equals(policy)) {
+                field.setValue(applyCast(value));
+            }
         }
     }
 
     @SuppressWarnings("checkstyle:CyclomaticComplexity")
     @Override
+    public void writeJSON(Patient patient, JSONObject json)
+    {
+        this.writeJSON(patient, json, null);
+    }
+
+    protected String getJsonPropertyName()
+    {
+        return INTERNAL_PROPERTY_NAME;
+    }
+
+    @Override
     public void writeJSON(Patient patient, JSONObject json, Collection<String> selectedFieldNames)
     {
-        PatientData<String> data = patient.getData(getName());
-        if (data == null || !data.isNamed()) {
-            if (selectedFieldNames != null && selectedFieldNames.contains(DATA_NAME)) {
-                json.put(getJsonPropertyName(), new JSONObject());
-            }
+        if (selectedFieldNames != null && !selectedFieldNames.contains(DATA_NAME)) {
             return;
         }
 
-        Iterator<Entry<String, String>> dataIterator = data.dictionaryIterator();
-        final JSONObject container = json.optJSONObject(getJsonPropertyName()) != null
-            ? json.optJSONObject(getJsonPropertyName()) : new JSONObject();
-
-        while (dataIterator.hasNext()) {
-            Entry<String, String> datum = dataIterator.next();
-            String key = datum.getKey();
-
-            if (selectedFieldNames == null || selectedFieldNames.contains(key)) {
-                // Parse value
-                String value = STATUS_KEY.equals(key) ? parseSolvedStatus(datum.getValue()) : datum.getValue();
-
-                if (StringUtils.isNotBlank(value)) {
-                    // Get internal property name
-                    String name = getJsonPropertyName(key);
-                    container.put(name, value);
-                }
+        PatientData<SolvedData> data = patient.getData(getName());
+        if (data == null) {
+            if (selectedFieldNames != null && selectedFieldNames.contains(DATA_NAME)) {
+                json.put(this.getJsonPropertyName(), new JSONObject());
             }
+            return;
         }
-
-        if (container.length() > 0) {
-            json.put(getJsonPropertyName(), container);
+        if (selectedFieldNames == null) {
+            json.put(DATA_NAME, data.getValue().toJSON());
+        } else {
+            json.put(DATA_NAME, data.getValue().toJSON(selectedFieldNames));
         }
     }
 
     @Override
-    public PatientData<String> readJSON(JSONObject json)
+    public PatientData<SolvedData> readJSON(JSONObject json)
     {
         if (!json.has(this.getJsonPropertyName())) {
             // no data supported by this controller is present in provided JSON
             return null;
         }
-        Map<String, String> result = new LinkedHashMap<>();
 
-        // since the loader always returns dictionary data, this should always be a block.
         Object jsonBlockObject = json.get(this.getJsonPropertyName());
         if (!(jsonBlockObject instanceof JSONObject)) {
             return null;
         }
         JSONObject jsonBlock = (JSONObject) jsonBlockObject;
-        for (String property : this.fields.values()) {
-            if (jsonBlock.has(property)) {
-                String value = jsonBlock.getString(property);
-                if (this.fields.get(STATUS_KEY).equals(property)) {
-                    value = invertSolvedStatus(value);
-                }
-                result.put(property, value);
-            }
-        }
+        SolvedData data = new SolvedData(jsonBlock);
 
-        return new DictionaryPatientData<>(this.getName(), result);
+        return new SimpleValuePatientData<>(this.getName(), data);
     }
 
-    @Override
-    void saveFieldValue(
-        @Nonnull final BaseObject xwikiDataObject,
-        @Nonnull final String property,
-        @Nullable final String value)
-    {
-        @SuppressWarnings("unchecked")
-        final BaseProperty<ObjectPropertyReference> field =
-            (BaseProperty<ObjectPropertyReference>) xwikiDataObject.getField(property);
-        if (field != null) {
-            field.setValue(applyCast(value));
-        }
-    }
-
-    @Override
-    String getValueForProperty(@Nonnull final PatientData<String> data, @Nonnull final String property)
-    {
-        return data.get(this.fields.get(property));
-    }
-
-    @Override
-    boolean containsProperty(@Nonnull final PatientData<String> data, @Nonnull final String property)
-    {
-        return data.containsKey(this.fields.get(property));
-    }
-
+    // Cast string statuses "0" and "1" to Integer representation before storing
     private Object applyCast(String value)
     {
         if (value == null) {
             return null;
         }
-        if (STATUS_SOLVED_NUMERIC.equals(value) || STATUS_UNSOLVED_NUMERIC.equals(value)) {
+        if (SolvedData.STATUS_VALUES.contains(value)) {
             return Integer.parseInt(value);
         } else {
             return value;
         }
     }
+
 }

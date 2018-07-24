@@ -17,26 +17,25 @@
  */
 package org.phenotips.data.internal.controller;
 
-import org.phenotips.data.DictionaryPatientData;
 import org.phenotips.data.IndexedPatientData;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientDataController;
 import org.phenotips.data.PatientWritePolicy;
 import org.phenotips.data.SimpleValuePatientData;
+import org.phenotips.data.internal.SolvedData;
 
 import org.xwiki.component.manager.ComponentLookupException;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
-import org.hamcrest.Matchers;
+import org.apache.commons.collections4.CollectionUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Before;
@@ -60,35 +59,33 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 /**
- * Test for the {@link SolvedController} Component, only the overridden methods from {@link AbstractSimpleController}
- * are tested here.
+ * Test for the {@link SolvedController} Component, only the overridden methods from {@link PatientDataController} are
+ * tested here.
  */
 public class SolvedControllerTest
 {
-    private static final String SOLVED_STRING = "solved";
+    private static final String SOLVED_STRING = SolvedData.STATUS_PROPERTY_NAME;
 
     private static final String DATA_NAME = SOLVED_STRING;
-
-    private static final String INTERNAL_PROPERTY_NAME = SOLVED_STRING;
 
     private static final String STATUS_KEY = SOLVED_STRING;
 
     private static final String STATUS_SOLVED = SOLVED_STRING;
 
-    private static final String STATUS_UNSOLVED = "unsolved";
+    private static final String STATUS_UNSOLVED = SolvedData.STATUS_UNSOLVED;
 
-    private static final String SOLVED_PUBMED_ID_STRING = "solved__pubmed_id";
+    private static final String SOLVED_PUBMED_ID_STRING = SolvedData.PUBMED_ID_PROPERTY_NAME;
 
-    private static final String SOLVED_NOTES_STRING = "solved__notes";
+    private static final String SOLVED_NOTES_STRING = SolvedData.NOTES_PROPERTY_NAME;
 
-    private static final String STATUS = "status";
+    private static final String STATUS = SolvedData.STATUS_JSON_KEY;
 
-    private static final String PUBMED_ID = "pubmed_id";
+    private static final String PUBMED_ID = SolvedData.PUBMED_ID_JSON_KEY;
 
-    private static final String NOTES = "notes";
+    private static final String NOTES = SolvedData.NOTES_JSON_KEY;
 
     @Rule
-    public MockitoComponentMockingRule<PatientDataController<String>> mocker =
+    public MockitoComponentMockingRule<PatientDataController<SolvedData>> mocker =
         new MockitoComponentMockingRule<>(SolvedController.class);
 
     @Mock
@@ -104,12 +101,9 @@ public class SolvedControllerTest
     private BaseProperty solvedField;
 
     @Mock
-    private BaseProperty pubmedIdField;
-
-    @Mock
     private BaseProperty notesField;
 
-    private PatientDataController<String> component;
+    private PatientDataController<SolvedData> component;
 
     @Before
     public void setUp() throws ComponentLookupException
@@ -120,10 +114,10 @@ public class SolvedControllerTest
         final DocumentReference patientDocRef = new DocumentReference("wiki", "patient", "00000001");
         when(this.patient.getDocumentReference()).thenReturn(patientDocRef);
         when(this.patient.getXDocument()).thenReturn(this.doc);
+        when(this.doc.getXObject(Patient.CLASS_REFERENCE)).thenReturn(this.dataHolder);
         when(this.doc.getXObject(eq(Patient.CLASS_REFERENCE), eq(true), any())).thenReturn(this.dataHolder);
 
         when(this.dataHolder.getField(SOLVED_STRING)).thenReturn(this.solvedField);
-        when(this.dataHolder.getField(SOLVED_PUBMED_ID_STRING)).thenReturn(this.pubmedIdField);
         when(this.dataHolder.getField(SOLVED_NOTES_STRING)).thenReturn(this.notesField);
     }
 
@@ -134,21 +128,20 @@ public class SolvedControllerTest
     }
 
     @Test
-    public void checkGetJsonPropertyName()
+    public void loadWorks() throws Exception
     {
-        Assert.assertEquals(INTERNAL_PROPERTY_NAME,
-            ((AbstractSimpleController) this.component).getJsonPropertyName());
-    }
+        when(this.dataHolder.getStringValue(SolvedData.STATUS_PROPERTY_NAME)).thenReturn("1");
+        when(this.dataHolder.getStringValue(SolvedData.NOTES_PROPERTY_NAME)).thenReturn("n1");
+        when(this.dataHolder.getListValue(SolvedData.PUBMED_ID_PROPERTY_NAME)).thenReturn(Arrays.asList("123", "abc"));
 
-    @Test
-    public void checkGetProperties()
-    {
-        List<String> result = ((AbstractSimpleController) this.component).getProperties();
+        PatientData<SolvedData> result = this.component.load(this.patient);
 
-        Assert.assertEquals(3, result.size());
-        Assert.assertThat(result, Matchers.hasItem(STATUS_KEY));
-        Assert.assertThat(result, Matchers.hasItem("solved__pubmed_id"));
-        Assert.assertThat(result, Matchers.hasItem("solved__notes"));
+        Assert.assertNotNull(result);
+        Assert.assertEquals(1, result.size());
+        Assert.assertEquals("1", result.getValue().getStatus());
+        Assert.assertEquals("n1", result.getValue().getNotes());
+        Assert.assertTrue(
+            CollectionUtils.isEqualCollection(Arrays.asList("123", "abc"), result.getValue().getPubmedIds()));
     }
 
     @Test
@@ -164,24 +157,10 @@ public class SolvedControllerTest
     }
 
     @Test
-    public void writeJSONWithSelectedFieldsReturnsWhenDataIsNotKeyValueBased()
-    {
-        PatientData<String> patientData = new SimpleValuePatientData<>(DATA_NAME, "datum");
-        doReturn(patientData).when(this.patient).getData(DATA_NAME);
-        JSONObject json = new JSONObject();
-        Collection<String> selectedFields = new LinkedList<>();
-
-        this.component.writeJSON(this.patient, json, selectedFields);
-
-        Assert.assertEquals(0, json.length());
-    }
-
-    @Test
     public void writeJSONWithSelectedFieldsConvertsSolvedStatus()
     {
-        Map<String, String> map = new LinkedHashMap<>();
-        map.put(STATUS_KEY, "1");
-        PatientData<String> patientData = new DictionaryPatientData<>(DATA_NAME, map);
+        SolvedData data = new SolvedData("1", null, null);
+        PatientData<SolvedData> patientData = new SimpleValuePatientData<>(DATA_NAME, data);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
@@ -190,19 +169,18 @@ public class SolvedControllerTest
         this.component.writeJSON(this.patient, json, selectedFields);
         Assert.assertEquals(STATUS_SOLVED, json.getJSONObject(DATA_NAME).get("status"));
 
-        map.clear();
+        data.setStatus("0");
         json = new JSONObject();
-        map.put(STATUS_KEY, "0");
-        patientData = new DictionaryPatientData<>(DATA_NAME, map);
+        patientData = new SimpleValuePatientData<>(DATA_NAME, data);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
 
         this.component.writeJSON(this.patient, json, selectedFields);
         Assert.assertEquals(STATUS_UNSOLVED, json.getJSONObject(DATA_NAME).get("status"));
 
-        map.clear();
         json = new JSONObject();
-        map.put(STATUS_KEY, "solved");
-        patientData = new DictionaryPatientData<>(DATA_NAME, map);
+        data = new SolvedData(null, null, null);
+        data.setStatus("solved");
+        patientData = new SimpleValuePatientData<>(DATA_NAME, data);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
 
         this.component.writeJSON(this.patient, json, selectedFields);
@@ -212,13 +190,10 @@ public class SolvedControllerTest
     @Test
     public void writeJSONWithSelectedFieldsAddsAllValuesAndConvertedJsonKeys()
     {
-        Map<String, String> map = new LinkedHashMap<>();
-        map.put(STATUS_KEY, "1");
-        String pubmedID = "pubmed:0001";
-        map.put("solved__pubmed_id", pubmedID);
         String notes = "some notes about the solved case";
-        map.put("solved__notes", notes);
-        PatientData<String> patientData = new DictionaryPatientData<>(DATA_NAME, map);
+        String pubmedID = "pubmed:0001";
+        SolvedData data = new SolvedData("1", notes, Arrays.asList(pubmedID));
+        PatientData<SolvedData> patientData = new SimpleValuePatientData<>(DATA_NAME, data);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
@@ -230,20 +205,17 @@ public class SolvedControllerTest
 
         JSONObject container = json.getJSONObject(DATA_NAME);
         Assert.assertEquals(STATUS_SOLVED, container.get("status"));
-        Assert.assertEquals(pubmedID, container.get("pubmed_id"));
+        Assert.assertEquals(pubmedID, ((JSONArray) container.get("pubmed_id")).get(0));
         Assert.assertEquals(notes, container.get("notes"));
     }
 
     @Test
     public void writeJSONWithSelectedFieldsAddsSelectedValues()
     {
-        Map<String, String> map = new LinkedHashMap<>();
-        map.put(STATUS_KEY, "1");
-        String pubmedID = "pubmed:0001";
-        map.put("solved__pubmed_id", pubmedID);
         String notes = "some notes about the solved case";
-        map.put("solved__notes", notes);
-        PatientData<String> patientData = new DictionaryPatientData<>(DATA_NAME, map);
+        String pubmedID = "pubmed:0001";
+        SolvedData data = new SolvedData("1", notes, Arrays.asList(pubmedID));
+        PatientData<SolvedData> patientData = new SimpleValuePatientData<>(DATA_NAME, data);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
         Collection<String> selectedFields = new LinkedList<>();
@@ -262,13 +234,10 @@ public class SolvedControllerTest
     @Test
     public void writeJSONWithSelectedFieldsAddsAllValuesWhenSelectedFieldsNull()
     {
-        Map<String, String> map = new LinkedHashMap<>();
-        map.put(STATUS_KEY, "1");
-        String pubmedID = "pubmed:0001";
-        map.put("solved__pubmed_id", pubmedID);
         String notes = "some notes about the solved case";
-        map.put("solved__notes", notes);
-        PatientData<String> patientData = new DictionaryPatientData<>(DATA_NAME, map);
+        String pubmedID = "pubmed:0001";
+        SolvedData data = new SolvedData("1", notes, Arrays.asList(pubmedID));
+        PatientData<SolvedData> patientData = new SimpleValuePatientData<>(DATA_NAME, data);
         doReturn(patientData).when(this.patient).getData(DATA_NAME);
         JSONObject json = new JSONObject();
 
@@ -276,23 +245,8 @@ public class SolvedControllerTest
 
         JSONObject container = json.getJSONObject(DATA_NAME);
         Assert.assertEquals(STATUS_SOLVED, container.get("status"));
-        Assert.assertEquals(pubmedID, container.get("pubmed_id"));
+        Assert.assertEquals(pubmedID, ((JSONArray) container.get("pubmed_id")).get(0));
         Assert.assertEquals(notes, container.get("notes"));
-    }
-
-    @Test
-    public void writeJSONAllowsForUnconvertedFields()
-    {
-        Map<String, String> map = new LinkedHashMap<>();
-        map.put("solved_new_field", "field_value");
-        PatientData<String> patientData = new DictionaryPatientData<>(DATA_NAME, map);
-        doReturn(patientData).when(this.patient).getData(DATA_NAME);
-        JSONObject json = new JSONObject();
-        Collection<String> selectedFields = new LinkedList<>();
-        selectedFields.add("solved_new_field");
-
-        this.component.writeJSON(this.patient, json, selectedFields);
-        Assert.assertEquals("field_value", json.getJSONObject(DATA_NAME).get("solved_new_field"));
     }
 
     @Test
@@ -309,7 +263,8 @@ public class SolvedControllerTest
     {
         when(this.doc.getXObject(eq(Patient.CLASS_REFERENCE), eq(true), any())).thenReturn(null);
 
-        final PatientData<String> data = new IndexedPatientData<>(this.component.getName(), Collections.emptyList());
+        final PatientData<SolvedData> data =
+            new IndexedPatientData<>(this.component.getName(), Collections.emptyList());
         doReturn(data).when(this.patient).getData(this.component.getName());
 
         this.component.save(this.patient);
@@ -352,172 +307,122 @@ public class SolvedControllerTest
         verify(this.doc, times(1)).getXObject(eq(Patient.CLASS_REFERENCE), eq(true), any());
 
         verify(this.dataHolder, times(1)).getField(SOLVED_STRING);
-        verify(this.dataHolder, times(1)).getField(SOLVED_PUBMED_ID_STRING);
         verify(this.dataHolder, times(1)).getField(SOLVED_NOTES_STRING);
 
         verify(this.solvedField, times(1)).setValue(null);
-        verify(this.pubmedIdField, times(1)).setValue(null);
         verify(this.notesField, times(1)).setValue(null);
+        verify(this.dataHolder, times(1)).setDBStringListValue(SOLVED_PUBMED_ID_STRING, null);
 
-        verifyNoMoreInteractions(this.doc, this.dataHolder, this.solvedField, this.pubmedIdField,
-            this.notesField);
+        verifyNoMoreInteractions(this.doc, this.dataHolder, this.solvedField, this.notesField);
     }
 
     @Test
     public void saveDoesNothingWhenDataIsEmptyAndPolicyIsUpdate()
     {
-        final PatientData<String> data = spy(new DictionaryPatientData<>(this.component.getName(),
-            Collections.emptyMap()));
-        doReturn(data).when(this.patient).getData(this.component.getName());
+        SolvedData data = new SolvedData(null, null, null);
+        final PatientData<SolvedData> patientData = spy(new SimpleValuePatientData<>(DATA_NAME, data));
+        doReturn(patientData).when(this.patient).getData(this.component.getName());
 
         this.component.save(this.patient, PatientWritePolicy.UPDATE);
 
         verify(this.doc, times(1)).getXObject(eq(Patient.CLASS_REFERENCE), eq(true), any());
 
-        verify(data, times(1)).containsKey(STATUS);
-        verify(data, times(1)).containsKey(PUBMED_ID);
-        verify(data, times(1)).containsKey(NOTES);
-        verify(data, times(1)).isNamed();
-
-        verifyNoMoreInteractions(this.doc, data);
-        verifyZeroInteractions(this.dataHolder);
+        verifyNoMoreInteractions(this.doc);
+        verifyZeroInteractions(this.solvedField, this.notesField);
     }
 
     @Test
     public void saveDoesNothingWhenDataIsEmptyAndPolicyIsMerge()
     {
-        final PatientData<String> data = spy(new DictionaryPatientData<>(this.component.getName(),
-            Collections.emptyMap()));
-        doReturn(data).when(this.patient).getData(this.component.getName());
+        SolvedData data = new SolvedData(null, null, null);
+        final PatientData<SolvedData> patientData = spy(new SimpleValuePatientData<>(DATA_NAME, data));
+        doReturn(patientData).when(this.patient).getData(this.component.getName());
 
         this.component.save(this.patient, PatientWritePolicy.MERGE);
 
         verify(this.doc, times(1)).getXObject(eq(Patient.CLASS_REFERENCE), eq(true), any());
 
-        verify(data, times(1)).containsKey(STATUS);
-        verify(data, times(1)).containsKey(PUBMED_ID);
-        verify(data, times(1)).containsKey(NOTES);
-        verify(data, times(1)).isNamed();
-
-        verifyNoMoreInteractions(this.doc, data);
+        verifyNoMoreInteractions(this.doc);
         verifyZeroInteractions(this.dataHolder);
     }
 
     @Test
     public void saveNullsAllSavedDataWhenDataIsEmptyAndPolicyIsReplace()
     {
-        final PatientData<String> data = spy(new DictionaryPatientData<>(this.component.getName(),
-            Collections.emptyMap()));
-        doReturn(data).when(this.patient).getData(this.component.getName());
+        SolvedData data = new SolvedData(null, null, null);
+        final PatientData<SolvedData> patientData = spy(new SimpleValuePatientData<>(DATA_NAME, data));
+        doReturn(patientData).when(this.patient).getData(this.component.getName());
 
         this.component.save(this.patient, PatientWritePolicy.REPLACE);
 
         verify(this.doc, times(1)).getXObject(eq(Patient.CLASS_REFERENCE), eq(true), any());
 
-        verify(data, times(1)).get(STATUS);
-        verify(data, times(1)).get(PUBMED_ID);
-        verify(data, times(1)).get(NOTES);
-        verify(data, times(1)).isNamed();
-
         verify(this.dataHolder, times(1)).getField(SOLVED_STRING);
-        verify(this.dataHolder, times(1)).getField(SOLVED_PUBMED_ID_STRING);
         verify(this.dataHolder, times(1)).getField(SOLVED_NOTES_STRING);
 
         verify(this.solvedField, times(1)).setValue(null);
-        verify(this.pubmedIdField, times(1)).setValue(null);
+        verify(this.dataHolder, times(1)).setDBStringListValue(SOLVED_PUBMED_ID_STRING, null);
         verify(this.notesField, times(1)).setValue(null);
 
-        verifyNoMoreInteractions(this.doc, data, this.dataHolder, this.solvedField, this.pubmedIdField,
-            this.notesField);
+        verifyNoMoreInteractions(this.doc, this.dataHolder, this.solvedField, this.notesField);
     }
 
     @Test
     public void saveWritesOnlySpecifiedPropertiesWhenPolicyIsUpdate()
     {
-        final Map<String, String> propertyMap = new LinkedHashMap<>();
-        propertyMap.put(STATUS, "0");
-        propertyMap.put(PUBMED_ID, "PMID23193287");
-        final PatientData<String> data = spy(new DictionaryPatientData<>(this.component.getName(), propertyMap));
-        doReturn(data).when(this.patient).getData(this.component.getName());
+        SolvedData data = new SolvedData("0", null, Arrays.asList("PMID23193287"));
+        final PatientData<SolvedData> patientData = spy(new SimpleValuePatientData<>(DATA_NAME, data));
+        doReturn(patientData).when(this.patient).getData(this.component.getName());
 
         this.component.save(this.patient, PatientWritePolicy.UPDATE);
 
         verify(this.doc, times(1)).getXObject(eq(Patient.CLASS_REFERENCE), eq(true), any());
 
-        verify(data, times(1)).containsKey(STATUS);
-        verify(data, times(1)).containsKey(PUBMED_ID);
-        verify(data, times(1)).containsKey(NOTES);
-        verify(data, times(1)).get(STATUS);
-        verify(data, times(1)).get(PUBMED_ID);
-        verify(data, times(1)).isNamed();
-
-        verify(this.dataHolder, times(1)).getField(SOLVED_STRING);
-        verify(this.dataHolder, times(1)).getField(SOLVED_PUBMED_ID_STRING);
-
         verify(this.solvedField, times(1)).setValue(0);
-        verify(this.pubmedIdField, times(1)).setValue("PMID23193287");
+        verify(this.dataHolder, times(1)).setDBStringListValue(SOLVED_PUBMED_ID_STRING, Arrays.asList("PMID23193287"));
 
         verifyZeroInteractions(this.notesField);
-        verifyNoMoreInteractions(this.doc, data, this.dataHolder, this.solvedField, this.pubmedIdField);
+        verifyNoMoreInteractions(this.doc, this.solvedField);
     }
 
     @Test
     public void saveWritesOnlySpecifiedPropertiesWhenPolicyIsMerge()
     {
-        final Map<String, String> propertyMap = new LinkedHashMap<>();
-        propertyMap.put(STATUS, "0");
-        propertyMap.put(PUBMED_ID, "PMID23193287");
-        final PatientData<String> data = spy(new DictionaryPatientData<>(this.component.getName(), propertyMap));
-        doReturn(data).when(this.patient).getData(this.component.getName());
+        SolvedData data = new SolvedData("0", null, Arrays.asList("PMID23193287"));
+        final PatientData<SolvedData> patientData = spy(new SimpleValuePatientData<>(DATA_NAME, data));
+        doReturn(patientData).when(this.patient).getData(this.component.getName());
 
         this.component.save(this.patient, PatientWritePolicy.MERGE);
 
         verify(this.doc, times(1)).getXObject(eq(Patient.CLASS_REFERENCE), eq(true), any());
 
-        verify(data, times(1)).containsKey(STATUS);
-        verify(data, times(1)).containsKey(PUBMED_ID);
-        verify(data, times(1)).containsKey(NOTES);
-        verify(data, times(1)).get(STATUS);
-        verify(data, times(1)).get(PUBMED_ID);
-        verify(data, times(1)).isNamed();
-
         verify(this.dataHolder, times(1)).getField(SOLVED_STRING);
-        verify(this.dataHolder, times(1)).getField(SOLVED_PUBMED_ID_STRING);
 
         verify(this.solvedField, times(1)).setValue(0);
-        verify(this.pubmedIdField, times(1)).setValue("PMID23193287");
+        verify(this.dataHolder, times(1)).setDBStringListValue(SOLVED_PUBMED_ID_STRING, Arrays.asList("PMID23193287"));
 
         verifyZeroInteractions(this.notesField);
-        verifyNoMoreInteractions(this.doc, data, this.dataHolder, this.solvedField, this.pubmedIdField);
+        verifyNoMoreInteractions(this.solvedField);
     }
 
     @Test
     public void saveWritesOnlySpecifiedPropertiesAndNullsTheRestWhenPolicyIsReplace()
     {
-        final Map<String, String> propertyMap = new LinkedHashMap<>();
-        propertyMap.put(STATUS, "0");
-        propertyMap.put(PUBMED_ID, "PMID23193287");
-        final PatientData<String> data = spy(new DictionaryPatientData<>(this.component.getName(), propertyMap));
-        doReturn(data).when(this.patient).getData(this.component.getName());
+        SolvedData data = new SolvedData("0", null, Arrays.asList("PMID23193287"));
+        final PatientData<SolvedData> patientData = spy(new SimpleValuePatientData<>(DATA_NAME, data));
+        doReturn(patientData).when(this.patient).getData(this.component.getName());
 
         this.component.save(this.patient, PatientWritePolicy.REPLACE);
 
         verify(this.doc, times(1)).getXObject(eq(Patient.CLASS_REFERENCE), eq(true), any());
 
-        verify(data, times(1)).get(STATUS);
-        verify(data, times(1)).get(PUBMED_ID);
-        verify(data, times(1)).get(NOTES);
-        verify(data, times(1)).isNamed();
-
         verify(this.dataHolder, times(1)).getField(SOLVED_STRING);
-        verify(this.dataHolder, times(1)).getField(SOLVED_PUBMED_ID_STRING);
         verify(this.dataHolder, times(1)).getField(SOLVED_NOTES_STRING);
 
         verify(this.solvedField, times(1)).setValue(0);
-        verify(this.pubmedIdField, times(1)).setValue("PMID23193287");
+        verify(this.dataHolder, times(1)).setDBStringListValue(SOLVED_PUBMED_ID_STRING, Arrays.asList("PMID23193287"));
         verify(this.notesField, times(1)).setValue(null);
 
-        verifyNoMoreInteractions(this.doc, data, this.dataHolder, this.solvedField, this.pubmedIdField,
-            this.notesField);
+        verifyNoMoreInteractions(this.doc, this.dataHolder, this.solvedField, this.notesField);
     }
 }
