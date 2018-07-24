@@ -51,9 +51,9 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
  * @since 1.4
  */
 @Component
-@Named("71510-PT-3663")
+@Named("76490-PT-3663")
 @Singleton
-public class R71510PhenoTips3663DataMigration extends AbstractHibernateDataMigration implements
+public class R74690PhenoTips3663DataMigration extends AbstractHibernateDataMigration implements
     XWikiHibernateBaseStore.HibernateCallback<Object>
 {
     private final String propertyName = "solved__pubmed_id";
@@ -83,7 +83,7 @@ public class R71510PhenoTips3663DataMigration extends AbstractHibernateDataMigra
     @Override
     public XWikiDBVersion getVersion()
     {
-        return new XWikiDBVersion(71510);
+        return new XWikiDBVersion(74690);
     }
 
     @Override
