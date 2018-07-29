@@ -92,7 +92,16 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
 #set ($filterWhere = "and collaboratorObj.name = doc.fullName and collaboratorObj.className = 'PhenoTips.CollaboratorClass' and collaborator.id.id = collaboratorObj.id and collaborator.value = '${escapetool.sql($doc.documentReference)}'")
 #if (!$isMyGroup)
   #set ($filterFrom = "${filterFrom}, BaseObject accessObj, StringProperty access")
-  #set ($filterWhere = "${filterWhere} and accessObj.name = doc.fullName and accessObj.className = 'PhenoTips.VisibilityClass' and access.id.id = accessObj.id and access.value = 'public'")
+  #set ($visibilityThreshold = $services.permissions.resolveVisibility('public').permissiveness)
+  #set ($publicVisibilities = [])
+  #foreach($visibility in $services.permissions.listVisibilityOptions())
+    #if ($visibility.permissiveness &gt;= $visibilityThreshold)
+      #set ($discard = $publicVisibilities.add($visibility.name))
+    #end
+  #end
+  #set ($publicVisibilities = $stringtool.join($publicVisibilities, "','"))
+  #set ($publicVisibilities = "'${publicVisibilities}'")
+  #set ($filterWhere = "${filterWhere} and accessObj.name = doc.fullName and accessObj.className = 'PhenoTips.VisibilityClass' and access.id.id = accessObj.id and access.value in (${publicVisibilities})")
 #end
 #set ($options = {
   'className'         : $patientClassName,
