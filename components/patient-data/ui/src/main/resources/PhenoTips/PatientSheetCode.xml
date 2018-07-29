@@ -3263,8 +3263,8 @@ document.observe('xwiki:dom:loaded', function()
       <footer>Page (% class="page-number" %)#(%%) of (% class="page-total" %)#(%%)
 
 {{velocity}}(% style="margin-top: 1em; font-size: 70%" %)(((
-$services.localization.render('phenotips.PatientSheetCode.PDFFooterDocInfo', [$xwiki.getUserName($tdoc.author, false), $!xwiki.formatDate($tdoc.date), $xwiki.getUserName($xcontext.user, false)])
-$services.localization.render('phenotips.PatientSheetCode.PDFFooterDisclaimer', [$xwiki.formatDate($util.date)]) [[PhenoTips&gt;&gt;$doc.getExternalURL()]].
+$services.localization.render('phenotips.PatientSheetCode.PDFFooterDocInfo', [$xwiki.getUserName($pdfExportedDoc.author, false), $!xwiki.formatDate($pdfExportedDoc.date), $xwiki.getUserName($xcontext.user, false)])
+$services.localization.render('phenotips.PatientSheetCode.PDFFooterDisclaimer', [$xwiki.formatDate($util.date)]) [[PhenoTips&gt;&gt;$pdfExportedDoc.getExternalURL()]].
 ))){{/velocity}}</footer>
     </property>
     <property>
@@ -3314,7 +3314,7 @@ $services.localization.render('phenotips.PatientSheetCode.PDFFooterDisclaimer', 
 &lt;/xsl:stylesheet&gt;</fopxsl>
     </property>
     <property>
-      <header>{{velocity}}$escapetool.xml($doc.name)#if ("$!{doc.getValue('external_id')}" != '') ($!{services.rendering.escape($doc.getValue('external_id'), $doc.syntax)})#end{{/velocity}}</header>
+      <header>{{velocity}}$escapetool.xml($pdfExportedDoc.name)#if ("$!{pdfExportedDoc.getValue('external_id')}" != '') ($!{services.rendering.escape($pdfExportedDoc.getValue('external_id'), $doc.syntax)})#end{{/velocity}}</header>
     </property>
     <property>
       <style>#template('colorThemeInit.vm')
