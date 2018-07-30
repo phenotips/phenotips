@@ -67,7 +67,11 @@ require(['jquery'], function ($)
             var numberMissing = 0;
             $.each(fieldsByPosition, function (index, fieldObject)
             {
-                if (fieldObject['field'][0].__validation && !fieldObject['field'][0].__validation.validate()) {
+                if (fieldObject['field'].parents('body').length == 0) {
+                    // The element has been removed, also remove the validation
+                    fieldObject['field'][0].__validation && fieldObject['field'][0].__validation.destroy();
+                    delete fieldObject['field'][0].__validation;
+                } else if (fieldObject['field'][0].__validation && !fieldObject['field'][0].__validation.validate()) {
                     fieldObject['parent'].removeClass('collapsed');
                     var position = fieldObject['field'].offset().top - (viewportHeight / 3);
                     position < 0 ? position = 0 : null;
