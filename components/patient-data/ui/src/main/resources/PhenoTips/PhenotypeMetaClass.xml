@@ -144,11 +144,11 @@
 #if ($type == 'edit')
   {{html wiki=true clean=false}}
   &lt;div class="top"&gt;
-    &lt;div class="date"&gt;
+    &lt;div class="date checked"&gt;
       &lt;label&gt;Date:&lt;/label&gt;
       $doc.display("_age_of_onset_date", $object)
     &lt;/div&gt;
-    &lt;div class="age"&gt;
+    &lt;div class="age checked"&gt;
       &lt;label&gt;Age:&lt;/label&gt;
       $doc.display("_age_of_onset_age", $object)
     &lt;/div&gt;
