@@ -48,8 +48,10 @@ define([
             typeListElement.insert(_addTypeOption(true,  "PhenoTips JSON", "phenotipsJSON"));
             typeListElement.insert(_addTypeOption(false, "PED", "ped"));
             typeListElement.insert(_addTypeOption(false, "BOADICEA", "BOADICEA"));
-            typeListElement.insert(_addTypeOption(false, "Simple JSON (deprecated)", "simpleJSON",
-                    "This format is intended to be used only for compatibility with PhenoTips version 1.3 or earlier"));
+            if (editor.getPreferencesManager().getConfigurationOption("advancedUser")) {
+                typeListElement.insert(_addTypeOption(false, "Simple JSON (deprecated)", "simpleJSON",
+                                       "This format is intended to be used only for compatibility with PhenoTips version 1.3 or earlier"));
+            }
             typeListElement.insert(_addTypeOption(false, "Image", "image"));
 
             var fileDownload = new Element('a', {"id": 'downloadLink', "style": 'display:none'});
@@ -99,7 +101,7 @@ define([
             Event.observe(window, 'resize', GraphicHelpers.adjustPreviewWindowHeight.bind(_this, "pedigree-import-chooser", 'scrollable-container', this._minPreviewHeight, this._maxPreviewHeight));
         },
 
-        // TODO: this shoul dbe refactored int oa standalone widget\helper, however before doing that
+        // TODO: this should be refactored into a standalone widget\helper, however before doing that
         //       it is better to collect at least a few use cases
         _generateHint: function(trigger, hintText, hintExtraCSS) {
             var hint = new Element('div', {'class': 'xTooltip export-menu-tooltip'});
@@ -109,6 +111,7 @@ define([
             var hideHint = function() {
                 document.stopObserving('mousedown', hideHint);
                 hint.hide();
+                Helpers.stopEventPropagation(event);
             };
             var showHint = function() {
                 hint.show();
@@ -311,13 +314,10 @@ define([
                 hasCancers && this._addPedOption("cancers", cancers, traitsContainner);
 
                 pedContainer.insert(traitsContainner.wrap('div', {'id': 'scrollable-container'}).wrap('td').wrap('tr', {'class': 'ped-special-options'}));
-
-                var exportType = $$('input:checked[type=radio][name="export-type"]')[0];
-                if (exportType && exportType.value != "ped") {
-                    $$('.ped-special-options').each( function(item) {item.hide();});
-                }
             }
+
             this.dialog.show();
+            this.disableEnableOptions();
             GraphicHelpers.adjustPreviewWindowHeight('pedigree-import-chooser', 'scrollable-container', this._minPreviewHeight, this._maxPreviewHeight);
         },
 
