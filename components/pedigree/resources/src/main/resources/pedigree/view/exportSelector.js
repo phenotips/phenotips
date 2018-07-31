@@ -57,12 +57,12 @@ define([
             var fileDownload = new Element('a', {"id": 'downloadLink', "style": 'display:none'});
             mainDiv.insert(fileDownload);
 
-            var promptType = new Element('div', {'class': 'import-section'}).update("Format:");
+            var promptType = new Element('div', {'class': 'import-section export-format'}).update("Format:");
             var dataSection2 = new Element('div', {'class': 'import-block'});
             dataSection2.insert(promptType).insert(typeListElement);
             mainDiv.insert(dataSection2);
 
-            var configListElementJSON = new Element('table', {"id": "jsonOptions", "style": 'display:none'});
+            var configListElementJSON = new Element('table', {"id": "piiOptions", "style": 'display:none'});
             configListElementJSON.insert(this._addConfigOption(true,  "export-options", "export-subconfig-label", "All data", "all"));
             configListElementJSON.insert(this._addConfigOption(false, "export-options", "export-subconfig-label", "Remove personal information (name and age)", "nopersonal"));
             configListElementJSON.insert(this._addConfigOption(false, "export-options", "export-subconfig-label", "Remove personal information and free-form comments", "minimal"));
@@ -72,11 +72,11 @@ define([
             configListElementPED.insert(this._addConfigOption(false, "ped-options", "export-subconfig-label", "Generate numeric labels instead of personal identifiers", "newid"));
             configListElementPED.insert(this._addConfigOption(false, "ped-options", "export-subconfig-label", "Use names, if available", "name"));
 
-            var configListElementImage = new Element('table', {"id": "imageOptions", "style": 'display:none'});
+            var configListElementImage = new Element('table', {"class": "export-image-options", "id": "imageOptions", "style": 'display:none'});
             configListElementImage.insert(this._addConfigOption(true,  "image-options", "export-subconfig-label", "Raster image (PNG)", "png"));
             configListElementImage.insert(this._addConfigOption(false, "image-options", "export-subconfig-label", "Scalable image (SVG)", "svg"));
 
-            var promptConfig = new Element('div', {'class': 'import-section'}).update("Options:");
+            var promptConfig = new Element('div', {'class': 'import-section export-options'}).update("Options:");
             var dataSection3 = new Element('div', {'class': 'import-block'});
             dataSection3.insert(promptConfig).insert(configListElementJSON).insert(configListElementPED).insert(configListElementImage);
             mainDiv.insert(dataSection3);
@@ -132,7 +132,7 @@ define([
 
             var pedOptionsTable = $("pedOptions");
             var pedSpecialOptions = $$('.ped-special-options');
-            var jsonOptionsTable = $("jsonOptions");
+            var piiOptionsTable = $("piiOptions");
             var imageOptionsTable = $("imageOptions");
 
             if (exportType == "ped" || exportType == "BOADICEA") {
@@ -149,17 +149,16 @@ define([
                     idgenerator.up().show();
                     pedSpecialOptions.each( function(item) {item.show();});
                 }
-                jsonOptionsTable.hide();
+                piiOptionsTable.hide();
                 imageOptionsTable.hide();
             } else {
                 pedOptionsTable.hide();
+                piiOptionsTable.show();
                 pedSpecialOptions.each( function(item) {item.hide();});
 
                 if (exportType == "simpleJSON" || exportType == "phenotipsJSON") {
-                    jsonOptionsTable.show();
                     imageOptionsTable.hide();
                 } else {
-                    jsonOptionsTable.hide();
                     imageOptionsTable.show();
                 }
             }
@@ -188,7 +187,16 @@ define([
                                    svgEl.firstChild
                 );
 
-                var svg = editor.getWorkspace().getSVGCopy();
+                var privacySetting = $$('input:checked[type=radio][name="export-options"]')[0].value;
+                var piiSettings = {};
+                if (privacySetting != 'all') {
+                    piiSettings.removePII = true;
+                }
+                if (privacySetting == 'minimal') {
+                    piiSettings.removeComments = true;
+                }
+
+                var svg = editor.getWorkspace().getSVGCopy(piiSettings);
                 var exportString = svg.getSVGText();
                 $('white-bbox-background').remove();
 

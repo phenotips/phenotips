@@ -30,11 +30,11 @@ define([
               };
             var typeListElement = new Element('table');
             //TODO: typeListElement.insert(_addTypeOption(true,  "Autodetect", "auto"));
-            typeListElement.insert(_addTypeOption(true,  "PED or LINKAGE (pre- or post- makeped)", "ped"));
+            typeListElement.insert(_addTypeOption(true,  "PhenoTips JSON", "phenotipsJSON"));
+            typeListElement.insert(_addTypeOption(false, "Simple JSON", "simpleJSON"));
+            typeListElement.insert(_addTypeOption(false, "PED or LINKAGE (pre- or post- makeped)", "ped"));
             typeListElement.insert(_addTypeOption(false, "GEDCOM", "gedcom"));
             typeListElement.insert(_addTypeOption(false, "BOADICEA", "BOADICEA"));
-            typeListElement.insert(_addTypeOption(false, "Simple JSON", "simpleJSON"));
-            typeListElement.insert(_addTypeOption(false, "PhenoTips JSON", "phenotipsJSON"));
 
             var promptType = new Element('div', {'class': 'import-section'}).update("Data format:");
             var dataSection2 = new Element('div', {'class': 'import-block'});
@@ -225,6 +225,7 @@ define([
             } else {
                 this.cancelButton.hide();
             }
+            this.disableEnableOptions();
         },
 
         onHide: function() {

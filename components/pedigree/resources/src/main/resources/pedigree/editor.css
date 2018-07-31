@@ -610,6 +610,9 @@ li.abnormality:hover, div.abnormality:hover {
   float: left;
   margin: 0 1em 0 2.5em;
 }
+.import-section.export-format, .import-section.export-options {
+  width: 4.5em;
+}
 .export-selector {
   margin: 1em 1em 1em 2em;
 }
@@ -617,9 +620,13 @@ li.abnormality:hover, div.abnormality:hover {
   float: left;
   margin: 0 1em 0 2.95em;
 }
+.export-image-options {
+  margin-top: 0.8em;
+  margin-left: 4.5em;
+}
 .export-subconfig-label {
   float: left;
-  margin: 0 1em 0 0.3em;
+  margin: 0 1em 0 0.8em;
   text-align: left;
 }
 .export-subconfig-label.ped-option {
