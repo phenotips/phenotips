@@ -108,6 +108,7 @@ define([
             //  displayCancerLabels:          {true|false}   - display labels for each affecting cancer; default: "true"
             //  lineStyle:                    {"thin"|"regular"|"bold"} - controls the thickness of all lines in pedigree
             //  studies:                      [array]        - array of available study objects in the following format: {"id": ..., "name": ..., "description": ...}
+            //  advancedUser:                 {true|false}   - some lesser used/more advanced/deprecated UI elements may only be shown to "advanced" users
             //
             this._defaultPreferences = { global:   { nonStandardAdoptedOutGraphic: false,
                                                      propagateFatherLastName: true,
@@ -125,7 +126,8 @@ define([
                                                      hidePatientDraggingHint: false,
                                                      hideShareConsentDialog: false,
                                                      firstName: "",
-                                                     lastName: "" },
+                                                     lastName: "",
+                                                     advancedUser: false },
                                          pedigree: {}
                                        };
             this._preferencesManager = new PreferencesManager(this._defaultPreferences);
