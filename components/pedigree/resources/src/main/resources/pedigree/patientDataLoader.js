@@ -48,6 +48,13 @@ define(["pedigree/model/helpers"], function(Helpers){
 
         _onAllDataAvailable: function(patientList, dataProcessorWhenReady) {
             var data = editor.getPatientRecordData().getAll(patientList);
+
+            // update external ID information according to the latest loaded data
+            patientList.forEach(function(patientRecordId) {
+                var extID = data[patientRecordId].hasOwnProperty("external_id") ? data[patientRecordId].external_id : "";
+                editor.getExternalIdManager().set(patientRecordId, extID);
+            });
+
             dataProcessorWhenReady && dataProcessorWhenReady(data);
             document.fire("pedigree:blockinteraction:finish");
         }

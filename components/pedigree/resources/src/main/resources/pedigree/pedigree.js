@@ -9,6 +9,7 @@
 define([
         "pedigree/extensionManager",
         "pedigree/externalEndpoints",
+        "pedigree/externalIdManager",
         "pedigree/undoRedoManager",
         "pedigree/controller",
         "pedigree/pedigreeEditorParameters",
@@ -47,6 +48,7 @@ define([
     function(
         PedigreeExtensionManager,
         ExternalEndpointsManager,
+        ExternalIdManager,
         UndoRedoManager,
         Controller,
         PedigreeEditorParameters,
@@ -102,6 +104,7 @@ define([
             //  drawNodeShadows:              {true|false}   - display small shadow under node graphic; default: "true"
             //  disabledFields:               [array]        - list of node-menu fields disabled for this installation
             //  replaceIdWithExternalID:      {true|false}   - when true, patient links display external ID as the link text (instead of PT ids)
+            //  uniqueExternalID:             {true|false}   - when true, patient records will not be allowed to have duplicate external IDs
             //  displayCancerLabels:          {true|false}   - display labels for each affecting cancer; default: "true"
             //  lineStyle:                    {"thin"|"regular"|"bold"} - controls the thickness of all lines in pedigree
             //  studies:                      [array]        - array of available study objects in the following format: {"id": ..., "name": ..., "description": ...}
@@ -114,6 +117,7 @@ define([
                                                      disabledFields: [],
                                                      requiredFields: [],
                                                      replaceIdWithExternalID: false,
+                                                     uniqueExternalID: false,
                                                      displayCancerLabels: true,
                                                      lineStyle: "regular",
                                                      studies: []},
@@ -144,6 +148,7 @@ define([
             this._familyData = new FamilyData();
             this._patientDataLoader = new PatientDataLoader();
             this._patientRecordData = new PatientRecordData();
+            this._externalIdManager = new ExternalIdManager();
 
             // load global pedigree preferences before a specific pedigree is loaded, since
             // preferences may affect the way it is rendered. Once preferences are loaded the
@@ -357,6 +362,22 @@ define([
             //-----------------
             var saveWithChecks = function(quitAfterSave) {
 
+                // when configured, do not allow saving pedigree if there are patient records with duplicate exterenal IDs
+                if (editor.getPreferencesManager().getConfigurationOption("uniqueExternalID")) {
+                    var duplicateIDReport = editor.getExternalIdManager().duplicateIDPresent();
+                    if (duplicateIDReport.dupliucateIDPresent) {
+                        if (duplicateIDReport.involvesExternalPatient) {
+                            var duplicateIDMessage = "Can not save pedigree, a patient record in the pedigree has the same identifier (\""
+                                                     + duplicateIDReport.id + "\") as some other patient record in the system";
+                        } else {
+                            var duplicateIDMessage = "Can not save pedigree, some patient records in the pedigree have the same identifier (\""
+                                                     + duplicateIDReport.id + "\")";
+                        }
+                        editor.getOkCancelDialogue().showError(duplicateIDMessage, "Can not save pedigree", "OK", undefined);
+                        return;
+                    }
+                }
+
                 var saveAndQuitFunc = function() {
                     editor.getSaveLoadEngine().save(editor.closePedigree);
                 }
@@ -489,6 +510,14 @@ define([
          */
         getPatientRecordData: function() {
             return this._patientRecordData;
+        },
+
+        /**
+         * @method getgetExternalIdManager
+         * @return {ExternalIdManager}
+         */
+        getExternalIdManager: function() {
+            return this._externalIdManager;
         },
 
         /**

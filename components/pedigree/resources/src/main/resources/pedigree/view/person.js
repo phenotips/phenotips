@@ -271,6 +271,9 @@ define([
          */
         setExternalID: function(externalID) {
             this._externalID = externalID;
+            if (this.getPhenotipsPatientId()) {
+                editor.getExternalIdManager().set(this.getPhenotipsPatientId(), externalID);
+            }
             this.getGraphics().updateExternalIDLabel();
         },
 

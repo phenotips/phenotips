@@ -24,7 +24,7 @@ define([
             document.observe("pedigree:node:setproperty",          this.handleSetProperty);
             document.observe("pedigree:node:modify",               this.handleModification);
             document.observe("pedigree:patient:deleterequest",     this.handleDeletePatientRecords);
-            document.observe("pedigree:patient:createrequest",     this.handleCreatePatientRecord);
+            document.observe("pedigree:patient:createrequest",     this.handleCreatePatientRecord.bind(this));
             document.observe("pedigree:patient:checklinkvalidity", this.handleCheckLinkValidity);
             document.observe("pedigree:person:drag:newparent",     this.handlePersonDragToNewParent);
             document.observe("pedigree:person:drag:newpartner",    this.handlePersonDragToNewPartner);
@@ -240,6 +240,28 @@ define([
 
         handleCreatePatientRecord: function(event)
         {
+            var patientData = event.memo.patientData;
+
+            if (editor.getPreferencesManager().getConfigurationOption("uniqueExternalID")
+                && patientData && patientData.pedigreeJSON && patientData.pedigreeJSON.hasOwnProperty("externalID")) {
+                // (only) if external_id is provided: check that it is unique
+                var id = patientData.pedigreeJSON.externalID;
+
+                var onDuplicateID = function() {
+                    editor.getOkCancelDialogue().showError("A patient with this identifier (\"" +
+                            id + "\") already exists: can not create a new patient", "Can not create", "OK");
+                };
+                var onValidID = function() {
+                    this._handleCreatePatientRecordWithNoExtIDCheck(event);
+                }.bind(this);
+                editor.getExternalIdManager().isUniqueID("__NONEXISTENT_PATIENT_ID__", id, onValidID, onDuplicateID);
+            } else {
+                this._handleCreatePatientRecordWithNoExtIDCheck(event);
+            }
+        },
+
+        _handleCreatePatientRecordWithNoExtIDCheck: function(event)
+        {
             var requiredFields = editor.getPreferencesManager().getConfigurationOption("requiredFields");
 
             // TODO: change the format of the data passed, see comments for NodeMenu._getDataForNewPatient()
@@ -281,8 +303,14 @@ define([
             //      data right after creation
             var onCreated = function(newID) {
 
+                // if an external ID is provided and a patient record is created then we should record the fact that a
+                // patient record is associated with a given external ID in pedigree - even if that ID is not written to disk yet
+                if (patientData && patientData.pedigreeJSON && patientData.pedigreeJSON.hasOwnProperty("externalID")) {
+                    editor.getExternalIdManager().set(newID, patientData.pedigreeJSON.externalID);
+                }
+
                 // 1. check required fields and update, if necessary
-                if (requiredFields.length > 0) {
+                if (requiredFields.length > 0 || patientData.pedigreeJSON.hasOwnProperty("externalID")) {
 
                     // generate PhenotipsJSON based on available data
                     var phenotipsPatientJSON = PhenotipsJSON.internalToPhenotipsJSON(patientData.pedigreeJSON, {});
