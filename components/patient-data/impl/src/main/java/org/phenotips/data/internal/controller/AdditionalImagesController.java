@@ -249,8 +249,10 @@ public class AdditionalImagesController implements PatientDataController<Attachm
             return;
         }
 
+        boolean includeAttachmentContent = (selectedFieldNames != null);
+
         for (Attachment image : images) {
-            result.put(image.toJSON());
+            result.put(image.toJSON(includeAttachmentContent));
         }
         json.put(DATA_NAME, result);
     }
@@ -265,7 +267,10 @@ public class AdditionalImagesController implements PatientDataController<Attachm
 
         JSONArray images = json.getJSONArray(DATA_NAME);
         for (Object image : images) {
-            result.add(this.adapter.fromJSON((JSONObject) image));
+            Attachment next = this.adapter.fromJSON((JSONObject) image);
+            if (next != null) {
+                result.add(next);
+            }
         }
 
         return new IndexedPatientData<>(getName(), result);

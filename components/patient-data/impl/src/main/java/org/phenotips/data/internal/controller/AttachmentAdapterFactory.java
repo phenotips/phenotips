@@ -78,7 +78,7 @@ public class AttachmentAdapterFactory
      * Construct a new attachment adapter from a JSON-serialized attachment.
      *
      * @param attachment the attachment to deserialize
-     * @return a new adapter
+     * @return a new adapter, or null if provided JSON is not valid or does not include attachment content
      */
     public Attachment fromJSON(JSONObject attachment)
     {
