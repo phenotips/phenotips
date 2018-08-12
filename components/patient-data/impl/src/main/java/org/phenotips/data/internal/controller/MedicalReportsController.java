@@ -234,8 +234,10 @@ public class MedicalReportsController implements PatientDataController<Attachmen
             return;
         }
 
+        boolean includeAttachmentContent = (selectedFieldNames != null);
+
         for (Attachment report : reports) {
-            result.put(report.toJSON());
+            result.put(report.toJSON(includeAttachmentContent));
         }
         json.put(DATA_NAME, result);
     }
@@ -250,7 +252,10 @@ public class MedicalReportsController implements PatientDataController<Attachmen
 
         JSONArray reports = json.getJSONArray(DATA_NAME);
         for (Object report : reports) {
-            result.add(this.adapter.fromJSON((JSONObject) report));
+            Attachment next = this.adapter.fromJSON((JSONObject) report);
+            if (next != null) {
+                result.add(next);
+            }
         }
 
         return new IndexedPatientData<>(getName(), result);

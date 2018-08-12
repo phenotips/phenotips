@@ -243,8 +243,10 @@ public class AdditionalDocumentsController implements PatientDataController<Atta
             return;
         }
 
+        boolean includeAttachmentContent = (selectedFieldNames != null);
+
         for (Attachment file : files) {
-            result.put(file.toJSON());
+            result.put(file.toJSON(includeAttachmentContent));
         }
         json.put(DATA_NAME, result);
     }
@@ -259,7 +261,10 @@ public class AdditionalDocumentsController implements PatientDataController<Atta
 
         JSONArray files = json.getJSONArray(DATA_NAME);
         for (Object file : files) {
-            result.add(this.adapter.fromJSON((JSONObject) file));
+            Attachment next = this.adapter.fromJSON((JSONObject) file);
+            if (next != null) {
+                result.add(next);
+            }
         }
 
         return new IndexedPatientData<>(getName(), result);

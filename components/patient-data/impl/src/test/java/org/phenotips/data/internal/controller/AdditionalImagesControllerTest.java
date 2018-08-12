@@ -140,7 +140,17 @@ public class AdditionalImagesControllerTest
 
     private AttachmentAdapterFactory adapter;
 
-    private JSONObject json1 = new JSONObject("{"
+    private JSONObject json1shallow = new JSONObject("{"
+        + "\"filename\":\"a1.png\","
+        + "\"filesize\":4,"
+        + "\"author\":\"Users.padams\","
+        + "\"date\":\"2017-01-01T12:00:00.000Z\","
+        + "\"link\":\"/download/data/abc.def\","
+        + "\"comments\":\"Comment 1\","
+        + "\"print\":1"
+        + "}");
+
+    private JSONObject json1full = new JSONObject("{"
         + "\"filename\":\"a1.png\","
         + "\"filesize\":4,"
         + "\"author\":\"Users.padams\","
@@ -150,7 +160,15 @@ public class AdditionalImagesControllerTest
         + "\"print\":1"
         + "}");
 
-    private JSONObject json2 = new JSONObject("{"
+    private JSONObject json2shallow = new JSONObject("{"
+        + "\"filename\":\"a2.png\","
+        + "\"filesize\":3,"
+        + "\"author\":\"genetics:Users.hmccoy\","
+        + "\"date\":\"2016-08-01T14:00:00.000Z\","
+        + "\"link\":\"/download/data/xyz.123\","
+        + "}");
+
+    private JSONObject json2full = new JSONObject("{"
         + "\"filename\":\"a2.png\","
         + "\"filesize\":3,"
         + "\"author\":\"genetics:Users.hmccoy\","
@@ -198,8 +216,10 @@ public class AdditionalImagesControllerTest
             .thenReturn(IOUtils.toInputStream("abcd", StandardCharsets.UTF_8));
         when(this.doc.getAttachment("a1.png")).thenReturn(this.xattachment1);
         when(this.adapter.fromXWikiAttachment(this.xattachment1)).thenReturn(this.attachment1);
-        when(this.adapter.fromJSON(this.json1)).thenReturn(this.attachment1);
-        when(this.attachment1.toJSON()).thenReturn(this.json1);
+        when(this.adapter.fromJSON(this.json1full)).thenReturn(this.attachment1);
+        when(this.adapter.fromJSON(this.json1shallow)).thenReturn(null);
+        when(this.attachment1.toJSON(true)).thenReturn(this.json1full);
+        when(this.attachment1.toJSON(false)).thenReturn(this.json1shallow);
         when(this.attachment1.getFilename()).thenReturn("a1.png");
         when(this.attachment1.getFilesize()).thenReturn(4L);
         when(this.attachment1.getAuthorReference()).thenReturn(this.author1);
@@ -219,8 +239,10 @@ public class AdditionalImagesControllerTest
             .thenReturn(IOUtils.toInputStream("xyz", StandardCharsets.UTF_8));
         when(this.doc.getAttachment("a2.png")).thenReturn(this.xattachment2);
         when(this.adapter.fromXWikiAttachment(this.xattachment2)).thenReturn(this.attachment2);
-        when(this.adapter.fromJSON(this.json2)).thenReturn(this.attachment2);
-        when(this.attachment2.toJSON()).thenReturn(this.json2);
+        when(this.adapter.fromJSON(this.json2full)).thenReturn(this.attachment2);
+        when(this.adapter.fromJSON(this.json2shallow)).thenReturn(null);
+        when(this.attachment2.toJSON(true)).thenReturn(this.json2full);
+        when(this.attachment2.toJSON(false)).thenReturn(this.json2shallow);
         when(this.attachment2.getFilename()).thenReturn("a2.png");
         when(this.attachment2.getFilesize()).thenReturn(3L);
         when(this.attachment2.getAuthorReference()).thenReturn(this.author2);
@@ -599,7 +621,7 @@ public class AdditionalImagesControllerTest
     }
 
     @Test
-    public void writeJSONAddsImages() throws ComponentLookupException
+    public void writeJSONAddsLinks() throws ComponentLookupException
     {
         JSONObject json = new JSONObject();
         this.mocker.getComponentUnderTest().writeJSON(this.patient, json);
@@ -607,8 +629,8 @@ public class AdditionalImagesControllerTest
         Assert.assertTrue(json.has(DATA_NAME));
         JSONArray result = json.getJSONArray(DATA_NAME);
         Assert.assertEquals(2, result.length());
-        Assert.assertSame(this.json1, result.getJSONObject(0));
-        Assert.assertSame(this.json2, result.getJSONObject(1));
+        Assert.assertSame(this.json1shallow, result.getJSONObject(0));
+        Assert.assertSame(this.json2shallow, result.getJSONObject(1));
     }
 
     @Test
@@ -620,8 +642,8 @@ public class AdditionalImagesControllerTest
         Assert.assertTrue(json.has(DATA_NAME));
         JSONArray result = json.getJSONArray(DATA_NAME);
         Assert.assertEquals(2, result.length());
-        Assert.assertSame(this.json1, result.getJSONObject(0));
-        Assert.assertSame(this.json2, result.getJSONObject(1));
+        Assert.assertSame(this.json1full, result.getJSONObject(0));
+        Assert.assertSame(this.json2full, result.getJSONObject(1));
     }
 
     @Test
@@ -671,8 +693,8 @@ public class AdditionalImagesControllerTest
     public void readJSONReturnsImages() throws ComponentLookupException
     {
         JSONArray a = new JSONArray();
-        a.put(this.json1);
-        a.put(this.json2);
+        a.put(this.json1full);
+        a.put(this.json2full);
         JSONObject json = new JSONObject();
         json.put(DATA_NAME, a);
 
@@ -680,6 +702,20 @@ public class AdditionalImagesControllerTest
         Assert.assertEquals(2, result.size());
         Assert.assertEquals(this.attachment1, result.get(0));
         Assert.assertEquals(this.attachment2, result.get(1));
+    }
+
+    @Test
+    public void readJSONSkipsAttachmentsWithNoContent() throws ComponentLookupException
+    {
+        JSONArray a = new JSONArray();
+        a.put(this.json1shallow);
+        a.put(this.json2full);
+        JSONObject json = new JSONObject();
+        json.put(DATA_NAME, a);
+
+        PatientData<Attachment> result = this.mocker.getComponentUnderTest().readJSON(json);
+        Assert.assertEquals(1, result.size());
+        Assert.assertEquals(this.attachment2, result.get(0));
     }
 
     @Test

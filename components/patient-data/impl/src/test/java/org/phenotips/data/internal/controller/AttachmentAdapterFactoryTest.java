@@ -188,7 +188,7 @@ public class AttachmentAdapterFactoryTest
         a1.addAttribute("boolkey", Boolean.FALSE);
         a1.addAttribute("boolkey", Boolean.TRUE);
         a1.addAttribute("numkey", Integer.valueOf(42));
-        JSONObject json1 = a1.toJSON();
+        JSONObject json1 = a1.toJSON(true);
 
         Assert.assertEquals("a1.pdf", json1.get(JSON_FIELD_FILENAME));
         Assert.assertEquals(4L, json1.get(JSON_FIELD_FILESIZE));
@@ -199,7 +199,7 @@ public class AttachmentAdapterFactoryTest
         Assert.assertEquals(true, json1.getBoolean("boolkey"));
         Assert.assertEquals(42, json1.getInt("numkey"));
 
-        JSONObject json2 = this.mocker.getComponentUnderTest().fromXWikiAttachment(this.attachment2).toJSON();
+        JSONObject json2 = this.mocker.getComponentUnderTest().fromXWikiAttachment(this.attachment2).toJSON(true);
         Assert.assertEquals("a2.pdf", json2.get(JSON_FIELD_FILENAME));
         Assert.assertEquals(3L, json2.get(JSON_FIELD_FILESIZE));
         Assert.assertEquals("genetics:Users.hmccoy", json2.get(JSON_FIELD_AUTHOR));
@@ -212,7 +212,7 @@ public class AttachmentAdapterFactoryTest
     {
         when(this.attachment1.getAuthorReference()).thenReturn(null);
 
-        JSONObject json = this.mocker.getComponentUnderTest().fromXWikiAttachment(this.attachment1).toJSON();
+        JSONObject json = this.mocker.getComponentUnderTest().fromXWikiAttachment(this.attachment1).toJSON(true);
 
         Assert.assertEquals("a1.pdf", json.get(JSON_FIELD_FILENAME));
         Assert.assertEquals(4L, json.get(JSON_FIELD_FILESIZE));
@@ -241,6 +241,13 @@ public class AttachmentAdapterFactoryTest
             + "\"date\":\"2016-08-01T14:00:00.000Z\","
             + "\"content\":\"eHl6\""
             + "}");
+        JSONObject jsonWithOnlyLink = new JSONObject("{"
+                + "\"filename\":\"a3.pdf\","
+                + "\"filesize\":3,"
+                + "\"author\":\"genetics:Users.hmccoy\","
+                + "\"date\":\"2016-08-01T14:00:00.000Z\","
+                + "\"link\":\"http://localhost/a3.pdf\""
+                + "}");
 
         Attachment expected1 = this.mocker.getComponentUnderTest().fromXWikiAttachment(this.attachment1);
         Attachment result1 = this.mocker.getComponentUnderTest().fromJSON(json1);
@@ -252,6 +259,8 @@ public class AttachmentAdapterFactoryTest
 
         Attachment expected2 = this.mocker.getComponentUnderTest().fromXWikiAttachment(this.attachment2);
         Assert.assertEquals(expected2, this.mocker.getComponentUnderTest().fromJSON(json2));
+
+        Assert.assertEquals(null, this.mocker.getComponentUnderTest().fromJSON(jsonWithOnlyLink));
     }
 
     @Test

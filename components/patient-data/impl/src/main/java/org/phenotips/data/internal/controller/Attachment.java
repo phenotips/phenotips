@@ -65,6 +65,8 @@ public class Attachment
 
     private static final String JSON_FIELD_CONTENT = "content";
 
+    private static final String JSON_FIELD_DOWNLOAD_LINK = "link";
+
     private static final DateTimeFormatter ISO_DATE_FORMAT = ISODateTimeFormat.dateTime().withZoneUTC();
 
     private final XWikiAttachment attachment;
@@ -210,21 +212,46 @@ public class Attachment
      * }
      * }
      * </pre>
+     * or
+     * <pre>
+     * {@code
+     * {
+     *   "filename": "file.ext",
+     *   "filesize": 123,
+     *   "author": "XWiki.Admin",
+     *   "date": "2017-07-01T12:00:00.000Z",
+     *   "link": "/download/data/file.ext"
+     * }
+     * }
+     * </pre>
      *
+     * @param includeConent when true, attachment content is included in the "content" field as a Base64-encoded string
+     *                      when false, a link for the attachment is included in the "link" field
      * @return a JSON object in the format described above
      */
-    public JSONObject toJSON()
+    public JSONObject toJSON(boolean includeConent)
     {
         JSONObject result = new JSONObject();
         result.put(JSON_FIELD_FILENAME, this.getFilename());
         result.put(JSON_FIELD_FILESIZE, this.getFilesize());
         result.put(JSON_FIELD_AUTHOR, this.userSerializer.serialize(this.getAuthorReference()));
         result.put(JSON_FIELD_DATE, ISO_DATE_FORMAT.print(this.getDate().getTime()));
-        try {
-            result.put(JSON_FIELD_CONTENT,
-                Base64.getEncoder().encodeToString(IOUtils.toByteArray(this.getContent())));
-        } catch (IOException ex) {
-            this.logger.warn("Failed to access attachment content: {}", ex.getMessage());
+        if (includeConent) {
+            // include actual content
+            try {
+                result.put(JSON_FIELD_CONTENT,
+                    Base64.getEncoder().encodeToString(IOUtils.toByteArray(this.getContent())));
+            } catch (Exception ex) {
+                this.logger.warn("Failed to generate attachment content: {}", ex.getMessage());
+            }
+        } else {
+            // include URL to download
+            try {
+                result.put(JSON_FIELD_DOWNLOAD_LINK,
+                        this.attachment.getDoc().getAttachmentURL(this.getFilename(), this.contextProvider.get()));
+            } catch (Exception ex) {
+                this.logger.warn("Failed to generate attachment link: {}", ex.getMessage());
+            }
         }
         for (Entry<String, Object> attribute : this.attributes.entrySet()) {
             result.put(attribute.getKey(), attribute.getValue());
@@ -236,6 +263,9 @@ public class Attachment
     {
         if (!json.has(JSON_FIELD_FILENAME) || !json.has(JSON_FIELD_CONTENT) || !json.has(JSON_FIELD_DATE)
             || !json.has(JSON_FIELD_FILESIZE)) {
+            this.logger.error("Incomplete attachment: FILENAME: {}, FILESIZE: {}, CONTENT: {}, DATE: {}",
+                    json.has(JSON_FIELD_FILENAME), json.has(JSON_FIELD_FILESIZE),
+                    json.has(JSON_FIELD_CONTENT), json.has(JSON_FIELD_DATE));
             throw new IllegalArgumentException("Invalid JSON, required fields are missing!");
         }
         this.attachment.setFilename(json.getString(JSON_FIELD_FILENAME));
@@ -250,7 +280,7 @@ public class Attachment
             this.attachment.setContent(
                 new ByteArrayInputStream(Base64.getDecoder().decode(json.getString(JSON_FIELD_CONTENT))));
         } catch (JSONException | IOException ex) {
-            this.logger.warn("Failed to set attachment content: {}", ex.getMessage());
+            this.logger.error("Failed to set attachment content: {}", ex.getMessage());
         }
         List<String> knownKeys = Arrays.asList(JSON_FIELD_AUTHOR, JSON_FIELD_CONTENT, JSON_FIELD_DATE,
             JSON_FIELD_FILENAME, JSON_FIELD_FILESIZE);

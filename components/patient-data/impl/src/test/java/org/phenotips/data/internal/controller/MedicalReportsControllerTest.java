@@ -128,15 +128,31 @@ public class MedicalReportsControllerTest
 
     private AttachmentAdapterFactory adapter;
 
-    private JSONObject json1 = new JSONObject("{"
+    private JSONObject json1shallow = new JSONObject("{"
         + "\"filename\":\"a1.pdf\","
         + "\"filesize\":4,"
         + "\"author\":\"Users.padams\","
         + "\"date\":\"2017-01-01T12:00:00.000Z\","
-        + "\"content\":\"YWJjZA==\""
+        + "\"link\":\"/download/data/abc.def\","
         + "}");
 
-    private JSONObject json2 = new JSONObject("{"
+    private JSONObject json1full = new JSONObject("{"
+            + "\"filename\":\"a1.pdf\","
+            + "\"filesize\":4,"
+            + "\"author\":\"Users.padams\","
+            + "\"date\":\"2017-01-01T12:00:00.000Z\","
+            + "\"content\":\"YWJjZA==\""
+            + "}");
+
+    private JSONObject json2shallow = new JSONObject("{"
+        + "\"filename\":\"a2.pdf\","
+        + "\"filesize\":3,"
+        + "\"author\":\"genetics:Users.hmccoy\","
+        + "\"date\":\"2016-08-01T14:00:00.000Z\","
+        + "\"link\":\"/download/data/xyz.123\","
+        + "}");
+
+    private JSONObject json2full = new JSONObject("{"
         + "\"filename\":\"a2.pdf\","
         + "\"filesize\":3,"
         + "\"author\":\"genetics:Users.hmccoy\","
@@ -178,8 +194,10 @@ public class MedicalReportsControllerTest
             .thenReturn(IOUtils.toInputStream("abcd", StandardCharsets.UTF_8));
         when(this.doc.getAttachment("a1.pdf")).thenReturn(this.attachment1);
         when(this.adapter.fromXWikiAttachment(this.attachment1)).thenReturn(this.a1);
-        when(this.adapter.fromJSON(this.json1)).thenReturn(this.a1);
-        when(this.a1.toJSON()).thenReturn(this.json1);
+        when(this.adapter.fromJSON(this.json1full)).thenReturn(this.a1);
+        when(this.adapter.fromJSON(this.json1shallow)).thenReturn(null);
+        when(this.a1.toJSON(true)).thenReturn(this.json1full);
+        when(this.a1.toJSON(false)).thenReturn(this.json1shallow);
         when(this.a1.getFilename()).thenReturn("a1.pdf");
         when(this.a1.getFilesize()).thenReturn(4L);
         when(this.a1.getAuthorReference()).thenReturn(this.author1);
@@ -197,8 +215,10 @@ public class MedicalReportsControllerTest
             .thenReturn(IOUtils.toInputStream("xyz", StandardCharsets.UTF_8));
         when(this.doc.getAttachment("a2.pdf")).thenReturn(this.attachment2);
         when(this.adapter.fromXWikiAttachment(this.attachment2)).thenReturn(this.a2);
-        when(this.adapter.fromJSON(this.json2)).thenReturn(this.a2);
-        when(this.a2.toJSON()).thenReturn(this.json2);
+        when(this.adapter.fromJSON(this.json2full)).thenReturn(this.a2);
+        when(this.adapter.fromJSON(this.json2shallow)).thenReturn(null);
+        when(this.a2.toJSON(true)).thenReturn(this.json2full);
+        when(this.a2.toJSON(false)).thenReturn(this.json2shallow);
         when(this.a2.getFilename()).thenReturn("a2.pdf");
         when(this.a2.getFilesize()).thenReturn(3L);
         when(this.a2.getAuthorReference()).thenReturn(this.author2);
@@ -435,8 +455,8 @@ public class MedicalReportsControllerTest
         Assert.assertTrue(json.has(DATA_NAME));
         JSONArray result = json.getJSONArray(DATA_NAME);
         Assert.assertEquals(2, result.length());
-        Assert.assertSame(this.json1, result.getJSONObject(0));
-        Assert.assertSame(this.json2, result.getJSONObject(1));
+        Assert.assertSame(this.json1shallow, result.getJSONObject(0));
+        Assert.assertSame(this.json2shallow, result.getJSONObject(1));
     }
 
     @Test
@@ -451,8 +471,8 @@ public class MedicalReportsControllerTest
         Assert.assertTrue(json.has(DATA_NAME));
         JSONArray result = json.getJSONArray(DATA_NAME);
         Assert.assertEquals(2, result.length());
-        Assert.assertSame(this.json1, result.getJSONObject(0));
-        Assert.assertSame(this.json2, result.getJSONObject(1));
+        Assert.assertSame(this.json1full, result.getJSONObject(0));
+        Assert.assertSame(this.json2full, result.getJSONObject(1));
     }
 
     @Test
@@ -467,8 +487,8 @@ public class MedicalReportsControllerTest
         Assert.assertTrue(json.has(DATA_NAME));
         JSONArray result = json.getJSONArray(DATA_NAME);
         Assert.assertEquals(2, result.length());
-        Assert.assertSame(this.json1, result.getJSONObject(0));
-        Assert.assertSame(this.json2, result.getJSONObject(1));
+        Assert.assertSame(this.json1full, result.getJSONObject(0));
+        Assert.assertSame(this.json2full, result.getJSONObject(1));
     }
 
     @Test
@@ -518,8 +538,8 @@ public class MedicalReportsControllerTest
     public void readJSONReturnsReports() throws ComponentLookupException
     {
         JSONArray a = new JSONArray();
-        a.put(this.json1);
-        a.put(this.json2);
+        a.put(this.json1full);
+        a.put(this.json2full);
         JSONObject json = new JSONObject();
         json.put(DATA_NAME, a);
 
@@ -527,6 +547,20 @@ public class MedicalReportsControllerTest
         Assert.assertEquals(2, result.size());
         Assert.assertEquals(this.a1, result.get(0));
         Assert.assertEquals(this.a2, result.get(1));
+    }
+
+    @Test
+    public void readJSONSkipsReportsWithNoContent() throws ComponentLookupException
+    {
+        JSONArray a = new JSONArray();
+        a.put(this.json1shallow);
+        a.put(this.json2full);
+        JSONObject json = new JSONObject();
+        json.put(DATA_NAME, a);
+
+        PatientData<Attachment> result = this.mocker.getComponentUnderTest().readJSON(json);
+        Assert.assertEquals(1, result.size());
+        Assert.assertEquals(this.a2, result.get(0));
     }
 
     @Test
