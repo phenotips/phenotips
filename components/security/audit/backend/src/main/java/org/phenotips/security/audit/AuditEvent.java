@@ -53,6 +53,7 @@ public class AuditEvent
     private UUID uuid;
 
     @Type(type = "org.phenotips.security.audit.internal.UserType")
+    @Column(name = "userRef")
     private User user;
 
     private String ip;
