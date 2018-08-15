@@ -103,8 +103,14 @@
       #set ($validGroup = true)
       ## Non-admin users can only transfer ownership to their own groups
       ## Check to see if user has permission to transfer ownership
-      #set ($adminGroup = $owner + ' Administrators')
-      #if (!$xwiki.getUser().isUserInGroup($owner) &amp;&amp; !$xwiki.getUser().isUserInGroup($adminGroup) &amp;&amp; !$hasAdmin)
+      #set ($isUsersGroup = false)
+      #foreach ($group in $services.groups.getGroupsForUser($services.users.getCurrentUser()))
+        #if ($ownerDocRef.equals($group.reference))
+          #set ($isUsersGroup = true)
+          #break
+        #end
+      #end
+      #if (!$isUsersGroup &amp;&amp; !$hasAdmin)
         #set ($cannotTransfer = true)
       #end
     #elseif ($services.query.xwql("from doc.object(XWiki.XWikiUsers) as user where user.name = :ownerName").bindValue("ownerName", "$owner").count() &gt; 0)
