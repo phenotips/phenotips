@@ -112,15 +112,17 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
 #macro (__getExtension $filename)$!{filename.substring($mathtool.add($filename.lastIndexOf('.'), 1)).toLowerCase()}#end
 
 #macro (__displaySelectableAttachment $attachment $targetDocument $selection)
-  {{html wiki=true clean=false}}&lt;div class="attachment-item #if($options.isImage) image #else #__getExtension(${attachment.filename})#{end}#if($selection.contains(${attachment.filename})) selected#{end}"&gt;
+  {{html wiki=false clean=false}}##
+  &lt;div class="attachment-item #if($options.isImage) image #else #__getExtension(${attachment.filename})#{end}#if($selection.contains(${attachment.filename})) selected#{end}"&gt;
   &lt;label for='${fieldName}_${escapetool.xml($attachment.filename)}' title='${escapetool.xml($attachment.filename)}'&gt;
-  {{html wiki=false clean=false}}&lt;input id='${fieldName}_${escapetool.xml($attachment.filename)}' type='${options.inputType}' name='${fieldName}' value='${escapetool.xml($attachment.filename)}'#if($selection.contains(${attachment.filename})) checked='checked'#{end}/&gt;{{/html}}${escapetool.xml($attachment.filename)} &lt;span class="size"&gt;(#dynamicsize($attachment.filesize))&lt;/span&gt;&lt;/label&gt;##
+  &lt;input id='${fieldName}_${escapetool.xml($attachment.filename)}' type='${options.inputType}' name='${fieldName}' value='${escapetool.xml($attachment.filename)}'#if($selection.contains(${attachment.filename})) checked='checked'#{end}/&gt;${escapetool.xml($attachment.filename)} &lt;span class="size"&gt;(#dynamicsize($attachment.filesize))&lt;/span&gt;&lt;/label&gt;##
   #if ($options.manage)
   &lt;a class='action delete fa fa-times-circle fa-lg fa-fw' href="$targetDocument.getAttachmentURL(${attachment.filename}, 'delattachment', "form_token=$!{services.csrf.getToken()}&amp;xredirect=$!{escapetool.url($doc.getURL($xcontext.action, $request.queryString))}")" title="$services.localization.render('phenotips.imageDisplayer.delete')"&gt;&lt;/a&gt;##
   #end
-  #if($options.isImage)(% class="attachment-preview" %)((([[image:${services.rendering.escape($targetDoc.fullName, $doc.syntax)}@${services.rendering.escape($attachment.filename, $doc.syntax)}||title="${services.rendering.escape($attachment.filename, $doc.syntax)}"]])))#else##
- #* *# &lt;a class='view #if($options.manage)hidden#end' target="_blank" href="$targetDocument.getAttachmentURL(${attachment.filename})" title="$services.localization.render('phenotips.imageDisplayer.openImage', [$!{attachment.filename}])"&gt;$services.localization.render('phenotips.imageDisplayer.open')&lt;/a&gt;#end##
-  &lt;/div&gt;{{/html}}##
+  #if($options.isImage)&lt;div class="attachment-preview"&gt;&lt;img src="$targetDocument.getAttachmentURL(${attachment.filename})" title="${escapetool.xml($attachment.filename)}" alt="${escapetool.xml($attachment.filename)}"&gt;&lt;/div&gt;#else##
+   &lt;a class='view #if($options.manage)hidden#end' target="_blank" href="$targetDocument.getAttachmentURL(${attachment.filename})" title="$services.localization.render('phenotips.imageDisplayer.openImage', [$!{attachment.filename}])"&gt;$services.localization.render('phenotips.imageDisplayer.open')&lt;/a&gt;#end##
+  &lt;/div&gt;##
+  {{/html}}##
 #end
 
 #macro (__displaySelectableAttachmentList $targetDocument $selection)
