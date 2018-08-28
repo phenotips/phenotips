@@ -1,0 +1,592 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+-->
+
+<xwikidoc version="1.1">
+  <web>XWiki</web>
+  <name>XWikiUserDataEntrySheet</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1364996782000</creationDate>
+  <parent>XWiki.XWikiUserSheet</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1366362037000</date>
+  <contentUpdateDate>1366361504000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.0</syntaxId>
+  <hidden>true</hidden>
+  <content>{{include reference="PhenoTips.DefaultPermissionsMacros"/}}
+
+{{velocity}}
+$xwiki.ssfx.use('uicomponents/suggest/suggestPicker.css', true)##
+$xwiki.jsfx.use('uicomponents/suggest/suggestPicker.js', true)##
+$xwiki.ssfx.use('uicomponents/widgets/userpicker/userPicker.css', true)##
+$xwiki.jsfx.use('uicomponents/widgets/userpicker/userPicker.js', true)##
+$xwiki.ssfx.use('js/xwiki/usersandgroups/usersandgroups.css', true)##
+$xwiki.ssx.use('XWiki.XWikiUserDataEntrySheet')##
+$xwiki.jsx.use('XWiki.XWikiUserDataEntrySheet')##
+#set($entityType = 'user')
+#set($obj = $doc.getObject("XWiki.XWikiUsers"))
+#if(!$obj)
+{{info}}$services.localization.render('xe.admin.users.applyonusers'){{/info}}##
+#else
+$doc.use($obj)
+$xwiki.ssx.use('XWiki.XWikiUserSheet')##
+{{html wiki="true"}}
+
+&lt;div class="#if($xcontext.action == 'view')half #{else}full #{end}column xform"&gt;
+  &lt;div class="dataEntry"&gt;
+    #if($xcontext.action == 'view' &amp;&amp; $hasEdit)
+      &lt;div class="editProfileCategory"&gt;&lt;a href="$doc.getURL('edit', 'category=dataEntry')"&gt;&lt;span class="hidden"&gt;$services.localization.render('platform.core.profile.category.dataEntry.edit')&lt;/span&gt;&lt;/a&gt;&lt;/div&gt;
+    #end
+    &lt;h3&gt;$services.localization.render('platform.core.profile.category.dataEntry.header')&lt;/h3&gt;
+#########################
+## Use my group's preferences
+#########################
+    &lt;dl&gt;
+      &lt;dt class="label"&gt;
+        &lt;h1&gt;
+        #if($xcontext.action == 'edit' &amp;&amp; $hasEdit)
+           $services.localization.render('platform.core.profile.category.dataEntry.groupsPreferences')
+        #else
+          $services.localization.render('platform.core.profile.category.dataEntry.mygroupsPreferences')
+        #end
+        &lt;/h1&gt;
+      &lt;/dt&gt;
+      &lt;dd&gt;
+        #__displayDefaultGroupPreference()
+      &lt;/dd&gt;
+    &lt;/dl&gt;
+#########################
+## Use my preferences
+#########################
+    &lt;dl class="user-prefs"&gt;
+      &lt;dt class="label"&gt;
+        &lt;h1"&gt;
+          #if($xcontext.action == 'edit' &amp;&amp; $hasEdit)
+            $services.localization.render('platform.core.profile.category.dataEntry.myPreferences')
+          #else
+            $services.localization.render('platform.core.profile.category.dataEntry.myMyPreferences')
+          #end
+        &lt;/h1&gt;
+      &lt;/dt&gt;
+      &lt;dt&gt;
+        &lt;h2&gt;$services.localization.render('platform.core.profile.category.dataEntry.defaultPermissions')&lt;/h2&gt;
+      &lt;/dt&gt;
+###### Owner preferences
+      &lt;dt class="label"&gt;
+        &lt;label&gt;$services.localization.render('platform.core.profile.category.dataEntry.owner')&lt;/label&gt;
+        &lt;p class="intro xHint"&gt;$services.localization.render('phenotips.accessRightsManagement.modifyOwnershipBody')&lt;/p&gt;
+      &lt;/dt&gt;
+      &lt;dd&gt;
+        #__displayDefaultOwnerPreference($entityType)
+      &lt;/dd&gt;
+###### Visibility preferences
+      &lt;dt class="label"&gt;
+        &lt;label&gt;$services.localization.render('platform.core.profile.category.dataEntry.visibility')&lt;/label&gt;
+        &lt;p class="intro xHint"&gt;$services.localization.render('phenotips.accessRightsManagement.modifyVisibilityBody')&lt;/p&gt;
+      &lt;/dt&gt;
+      &lt;dd&gt;
+        #__displayDefaultVisibilityPreference($entityType)
+      &lt;/dd&gt;
+###### Collaborators preferences
+      &lt;dt class="label"&gt;
+        &lt;label&gt;$services.localization.render('platform.core.profile.category.dataEntry.collaborators')&lt;/label&gt;
+        &lt;p class="intro xHint"&gt;$services.localization.render('phenotips.accessRightsManagement.modifyCollaboratorsBody')&lt;/p&gt;
+      &lt;/dt&gt;
+      &lt;dd&gt;
+        #__displayDefaultCollaboratorPreference($entityType)
+      &lt;/dd&gt;
+    &lt;/dl&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="clearfloats"&gt;&amp;nbsp;&lt;/div&gt;
+{{/html}}##
+#end
+{{/velocity}}</content>
+<object>
+    <name>XWiki.XWikiUserDataEntrySheet</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>db1b9a1d-8b26-4111-8e08-6c7928b3d8ab</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>document.observe('xwiki:dom:loaded', function() {
+    var ACCESS_LEVELS = [];
+    var COLLAB_OBJ_NAME_TEMPLATE = $('collaborators-suggest-input') &amp;&amp; $('collaborators-suggest-input').name.slice();
+    var SERVICE_URL = $('service-url') ? $('service-url').value : '';
+
+    var initCollaboratorsManager = function () {
+      var _this = this;
+
+      // Fetch existing access levels
+      $$('.dataEntry input[name="access-level"]').each(function (item) {
+          ACCESS_LEVELS.push({'id' : item.value, 'name' : item.alt, 'title' : item.title, 'icon' : item.next('span.fa') || ''});
+      });
+
+      var table = new Element('table', {'id' : 'collaborators'});
+      this._collaboratorsList = new Element('tbody');
+      this._collaboratorsManager = $('manage-collaborators');
+      this._collaboratorsManager.insert({before: table.insert(this._collaboratorsList)});
+
+      // Generate all already existing collaborators
+      $$('.default-collaborator').each( function(item) {
+          var newCollaborator = JSON.parse(item.value.replace(/\'/g,'\"'));
+          addCollaborator(newCollaborator, true, true);
+      });
+
+      // Disable/enable user preference section if default group preference is already selected
+      toggleUserPrefSection($('group-suggest-input'));
+
+      // Disable user preference section if default group preference is selected
+      $('group-suggest-input') &amp;&amp; $('group-suggest-input').observe('change', function(event) {
+          toggleUserPrefSection(event.element());
+      });
+
+      // Capture selection events
+      $('collaborators-suggest-input') &amp;&amp; $('collaborators-suggest-input').observe("xwiki:suggest:selected", function(event) {
+         if (event.memo) {
+           var id = event.memo.value;
+           var existingCollaborator = '';
+
+           // to identify whether the collaborator has been already added we compare resolved names
+           // to be independent on the entity name format passed by suggest widget or REST service
+           // (could be "xwiki:XWiki:Admin", or "XWiki:Admin", or "Admin")
+           var resolvedId = XWiki.Model.resolve(id, XWiki.EntityType.DOCUMENT).name;
+           _this._collaboratorsList.select('tr input[value*="' + id + '"]').each( function(item) {
+               if (XWiki.Model.resolve(item.value.split('^')[0], XWiki.EntityType.DOCUMENT).name === resolvedId) {
+                 existingCollaborator = item;
+               }
+           });
+
+           if (existingCollaborator) {
+             existingCollaborator.up('tr').addClassName('highlight');
+             // remove highlight after a while
+             new PeriodicalExecuter(function(pe) {
+                 existingCollaborator.up('tr').removeClassName('highlight');
+                 pe.stop();
+             }, 5);
+           } else {
+             var name = event.memo.info;
+             var type = id.startsWith("Groups.") ? "group" : "user";
+             var newCollaborator = {'id' : id , 'name' : name , 'type' : type, 'icon' : event.memo.icon, 'alias' : event.memo.id};
+             addCollaborator(newCollaborator, true, false);
+             event.findElement().value = '';
+           }
+         }
+      });
+    }
+
+    // Disable user preference section if default group preference is selected
+    var toggleUserPrefSection = function (el) {
+      var groupName = el &amp;&amp; el.value;
+      if (!groupName || groupName == '') {
+        $$('dl.user-prefs')[0] &amp;&amp; $$('dl.user-prefs')[0].removeClassName('disabled-section');
+        $$('dl.user-prefs input, dl.user-prefs select').each(function(el) { el.disabled = false; });
+        $$('dl.user-prefs span.delete-tool, dl.user-prefs span.delete.tool').each(function(el) { el.show(); });
+      } else {
+        $$('dl.user-prefs')[0] &amp;&amp; $$('dl.user-prefs')[0].addClassName('disabled-section');
+        $$('dl.user-prefs input, dl.user-prefs select').each(function(el) { el.disabled = true; });
+        $$('dl.user-prefs span.delete-tool, dl.user-prefs span.delete.tool').each(function(el) { el.hide(); });
+      }
+    }
+
+    var addCollaborator = function (c, highlight, isExisting) {
+      if (isExisting) {
+        this._collaboratorsList.insert(generateCollaborator(c, highlight, isExisting));
+        return;
+      }
+
+      new Ajax.Request(SERVICE_URL + "&amp;action=add_default_collaborator", {
+          contentType: "application/json",
+          onSuccess : function(response) {
+              var data = response.responseJSON;
+              if (!data || data.length == 0) { return; }
+              c.objNumber = data.objNumber;
+              this._collaboratorsList.insert(generateCollaborator(c, highlight, isExisting));
+          }
+      });
+    }
+
+    var generateCollaborationOptions = function (name, value) {
+      var selected = value || ACCESS_LEVELS[0].id;
+      var result = new Element('select', {'name' : name});
+      ACCESS_LEVELS.each(function (l) {
+          var o = new Element('option', {value : l.id}).update(l.name);
+          result.insert(o);
+      });
+      for (var i = 0; i &lt; result.options.length; i++ ) {
+        if (result.options[i].value == value) {
+          result.options[i].selected = true;
+          break;
+        }
+      }
+      return result;
+    }
+
+    var removeCollaboratorRow = function (e) {
+      var deleteTrigger = event.element();
+      if (deleteTrigger.disabled) {
+         return;
+      }
+      var hiddenCoaalbInput = e.findElement &amp;&amp; e.findElement('tr') &amp;&amp; e.findElement('tr').down('input[type="hidden"]');
+      var objNumber = parseInt(hiddenCoaalbInput.name &amp;&amp; hiddenCoaalbInput.name.split('_')[1]);
+      new Ajax.Request(SERVICE_URL + "&amp;action=delete_default_collaborator&amp;objnumber=" + objNumber, {
+          onCreate : function() {
+            deleteTrigger.disabled = true;
+          },
+          onSuccess : function() {
+            deleteTrigger.up('tr') &amp;&amp; deleteTrigger.up('tr').remove();
+          },
+          onComplete : function() {
+            deleteTrigger.disabled = false;
+          }
+      });
+    }
+
+    var generateCollaborator = function (c, highlight, isExisting) {
+      var row = new Element('tr', {'class' : (highlight === true ? 'new' : '')});
+      var iconEl = (c.icon) ? new Element('img', {'class' : 'user-avatar icon', 'src' : c.icon}) : new Element('span', {'class' : 'fa fa-' + c.type}).update(' ');
+      row.insert(new Element('td').insert(iconEl));
+      if (isExisting) {
+        var hiddenInput = new Element('input', {'type': 'hidden', 'name' : c['for'], 'value' : c['id'] + '^' + c.access});
+      } else {
+        var name = COLLAB_OBJ_NAME_TEMPLATE.replace('NUMBER', c.objNumber);
+        var hiddenInput = new Element('input', {'type': 'hidden', 'name' : name, 'value' : c['id'] + '^view'});
+        var alias = new Element('div', {'class' : 'user-alias'}).update(c.alias);
+      }
+      row.insert(new Element('td', {'class' : 'user'})
+              .insert(c.name)
+              .insert(hiddenInput)
+              .insert(alias)
+      );
+      var rights = generateCollaborationOptions('accessLevel', c.access);
+      rights.observe('change', function(event) {
+          el = event.element();
+          var accessRight = el &amp;&amp; el.value || '';
+          if (accessRight === '') { return; }
+          var hiddenInput = el.up('tr') &amp;&amp; el.up('tr').down('input[type="hidden"]');
+          if (!hiddenInput) { return; }
+          var inputValueArray = hiddenInput.value.split('^');
+          hiddenInput.value = inputValueArray[0] + '^' + accessRight;
+      });
+      row.insert(rights.wrap('td'));
+      var deleteTool = new Element('span', {'class' : 'tool delete fa fa-times', title : "Remove this collaborator"});
+      row.insert(deleteTool.wrap('td'));
+      deleteTool.observe('click', removeCollaboratorRow.bindAsEventListener(this));
+      return row;
+    }
+
+    if (XWiki.contextaction == "edit") {
+      initCollaboratorsManager();
+
+      // need to be correctly redirected on "save and view summary" action
+      var xredirectEl = $$('input[name="xredirect"]');
+      if (xredirectEl && xredirectEl.size() > 0) {
+        xredirectEl[0].value = XWiki.currentDocument.getURL('view', window.self.location.search.slice(1));
+      }
+    }
+})</code>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse/>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+  <object>
+    <name>XWiki.XWikiUserDataEntrySheet</name>
+    <number>0</number>
+    <className>XWiki.StyleSheetExtension</className>
+    <guid>9ecdf0df-db3b-45cb-8ce2-cdfe888fd7b4</guid>
+    <class>
+      <name>XWiki.StyleSheetExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <contentType>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>contentType</name>
+        <number>6</number>
+        <prettyName>Content Type</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>CSS|LESS</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </contentType>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>#template("colorThemeInit.vm")
+.dataEntry h3 {
+  margin: 5px 0;
+}
+.dataEntry h2 {
+  margin: 0;
+}
+.dataEntry dd {
+  margin-bottom: 1.4em;
+}
+#access-levels-table {
+  margin-bottom: 0;
+}
+#access-levels-table td {
+  border: 0 none;
+  text-align: left;
+  vertical-align: top;
+  padding: 0;
+}
+#access-levels-table label {
+  margin-right: 1em;
+  white-space: nowrap;
+}
+.dataEntry .xHint {
+  color: $theme.notificationInfoColor;
+  font-size: 87%;
+  margin-bottom: 10px;
+}
+.dataEntry .user-avatar-wrapper {
+  display: inline-block;
+}
+.dataEntry .user-avatar-wrapper a {
+  color: black;
+  margin-left: 5px;
+}
+.access-rights-info.visibility, .access-level-info {
+  border: 1px solid #fff;
+  box-shadow: inset 1px 1px 1px #e8e8e8, 1px 1px 1px #e8e8e8;
+  border-radius: 3px;
+  display: inline-block;
+  margin: 0 5px 0 0;
+  padding: 2px 3px;
+  cursor: default;
+}
+.dataEntry ul.accepted-suggestions {
+  margin: 10px 0!important;
+  width: 99%
+}
+.dataEntry .accepted-suggestions li .delete-tool, .dataEntry .accepted-suggestions li .clear-tool {
+  font-size: 140%;
+  margin: 0 .5em;
+}
+#collaborators {
+  margin: .5em 0;
+}
+#collaborators tbody td {
+  border: 0 none;
+  padding: .3em;
+  text-align: left;
+  border-bottom: 1px solid $theme.borderColor;
+  vertical-align: middle;
+}
+#collaborators .tool.delete {
+  color: $theme.notificationErrorColor;
+  cursor: pointer;
+}
+#collaborators .highlight {
+  background-color: $theme.highlightColor !important;
+  color: $theme.notificationErrorColor;
+}
+#collaborators .new {
+  background-color: $theme.highlightColor;
+}
+.dataEntry .user-avatar {
+  max-height: 30px;
+  max-width: 30px;
+}
+#manage-collaborators ul.accepted-suggestions {
+  display: none;
+}
+.disabled-section {
+  opacity: .8;
+}
+#collaborators td:first-child {
+  text-align: center;
+}
+#study-suggest-input {
+  margin-top: 1em;
+}</code>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>onDemand</use>
+    </property>
+  </object>
+</xwikidoc>

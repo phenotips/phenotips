@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+-->
+
+<xwikidoc version="1.1">
+  <web>PhenoTips</web>
+  <name>DefaultPermissionsMacros</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1401822205000</creationDate>
+  <parent>PhenoTips.WebHome</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1401822205000</date>
+  <contentUpdateDate>1401822205000</contentUpdateDate>
+  <version>1.1</version>
+  <title/>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.1</syntaxId>
+  <hidden>true</hidden>
+  <content>{{velocity}}
+#set($configClassName = 'XWiki.ConfigurationClass')
+##
+#macro(__displayVisibility $visibilityPref)
+#if ($visibilityPref &amp;&amp; "$!{visibilityPref}" != '')
+  #foreach ($l in $services.permissions.listVisibilityOptions())
+    #if("${l.name}" == "$!visibilityPref")
+      &lt;div class="access-rights-info visibility" title="$!{l.description}"&gt;{{icon name="${l.name}" /}}${l.name}&lt;/div&gt;
+    #end
+  #end
+#end
+#end
+##
+#macro(__displayCollabAccessLevel $accessLevel)
+#if ($accessLevel &amp;&amp; "$!{accessLevel}" != '')
+  #foreach ($l in $services.permissions.listAccessLevels())
+    #if("${l.name}" == "$!accessLevel")
+      &lt;div class="access-level-info" title="$!{l.description}"&gt;{{icon name="${l.name}" /}}${l.name}&lt;/div&gt;
+    #end
+  #end
+#end
+#end
+##
+#macro(__displayEntity $ref)
+#if ($ref &amp;&amp; "$!{ref}" != '')
+  #set($docRef = $services.model.resolveDocument($ref))
+  #set($edoc = $xwiki.getDocument($docRef))
+  ## A document can represent both a user and a group.
+  ## Is it a user?
+  #if ($edoc.getObject('XWiki.XWikiUsers'))
+    #set($name = $xwiki.getUserName($edoc.fullName, false))
+    #set($iconClass = "fa fa-user")
+  #else
+    #set($name = $edoc.getName())
+    #set($iconClass = "fa fa-group")
+  #end
+  &lt;div class="user-avatar-wrapper"&gt;
+    &lt;a href="$xwiki.getURL($ref)"&gt;
+      &lt;span class="$iconClass"&gt; &lt;/span&gt;$name
+    &lt;/a&gt;
+  &lt;/div&gt;
+#end
+#end
+##
+##
+## generate existing default collaborator JSON string to generate UI on load
+##
+#macro(__setCollabJSON $o $value)
+  #set ($prefix = "${configClassName}_${o.number}_value")
+  #set ($collabValue = "$!{o.getProperty('value').value}")
+  #set ($collabArray = $collabValue.split('\^'))
+  #set ($id = $collabArray[0])
+  #if($collabArray.size() &gt; 1)
+    #set ($access = $collabArray[1])
+  #else
+    #set ($access = 'view')
+  #end
+  #set ($docRef = $services.model.resolveDocument($id))
+  #set ($edoc = $xwiki.getDocument($docRef))
+  #if ($edoc.getObject('XWiki.XWikiUsers'))
+    #set ($type = 'user')
+    #set ($name = "$!{xwiki.getUserName($edoc.fullName, false)}")
+  #else
+    #set ($type = 'group')
+    #set ($name = "$!{edoc.getName()}")
+  #end
+  #if(!$edoc.attachmentList.isEmpty())
+    #set ($icon = $!{edoc.getAttachmentURL($edoc.attachmentList[0].filename,"download")})
+  #else
+    #set ($icon = "$xwiki.getSkinFile('icons/xwiki/noavatar.png')")
+  #end
+  #set ($value = "{'id' : '$id', 'name' : '$name', 'access' : '$access', 'for' : '$prefix', 'type' : '$type'#if($icon != ''), 'icon' : '$icon'#end}")
+#end
+##
+##
+#macro(__displayDefaultGroupPreference)
+  #if($xcontext.action == 'edit' &amp;&amp; $hasEdit)
+    #set ($userGroups = $services.groups.getGroupsForUser($services.users.getCurrentUser()))
+    #if($userGroups.size() &gt; 0)
+      #set ($defaultWorkgroupObject = $doc.getObject($configClassName, 'property', 'defaultWorkgroup', false))
+      #if (!$defaultWorkgroupObject)
+        #set ($defaultWorkgroupObject = $doc.newObject($configClassName))
+        #set ($discard = $defaultWorkgroupObject.set('property', 'defaultWorkgroup'))
+        #set ($discard = $defaultWorkgroupObject.set('value', ''))
+        #set ($discard = $doc.save('Added a workgroup reference configuration', true))
+      #end
+      #set ($defaultWorkgroupPreference = $defaultWorkgroupObject.getProperty('value').value)
+      #set ($prefix = "${configClassName}_${defaultWorkgroupObject.number}_value")
+      &lt;select id="group-suggest-input" name="${prefix}" size="1"&gt;
+        &lt;option #if($defaultWorkgroupPreference == '')selected="selected"#end value=""&gt;---&lt;/option&gt;
+        #foreach ($group in $userGroups)
+          &lt;option #if($group.reference == $defaultWorkgroupPreference)selected#end value="$group.reference"&gt;$group.getReference().getName()&lt;/option&gt;
+        #end
+      &lt;/select&gt;
+    #else
+      &lt;p class="intro xHint"&gt;$services.localization.render('platform.core.profile.category.dataEntry.noGroups')&lt;/p&gt;
+    #end
+  #else
+    #set ($defaultWorkgroupObject = $doc.getObject($configClassName, 'property', 'defaultWorkgroup', false))
+    #if ($defaultWorkgroupObject)
+      #set ($defaultWorkgroupPreference = $defaultWorkgroupObject.getProperty('value').value)
+      #if("$!{defaultWorkgroupPreference}" != '')
+        #__displayEntity($defaultWorkgroupPreference)
+      #end
+    #end
+  #end
+#end
+##
+##
+#macro(__displayDefaultOwnerPreference $entityType)
+  #if($xcontext.action == 'edit' &amp;&amp; $hasEdit)
+    #set ($c = 'platform.core.profile.category.dataEntry.' + ${entityType} + '.ownerText')
+    $services.localization.render($c)
+    #set ($defaultOwnerObject = $doc.getObject($configClassName, 'property', 'defaultOwner', false))
+    #if (!$defaultOwnerObject)
+      #set ($defaultOwnerObject = $doc.newObject($configClassName))
+      #set ($discard = $defaultOwnerObject.set('property', 'defaultOwner'))
+      #set ($defaultOwnerName = '')
+      #set ($discard = $defaultOwnerObject.set('value', $defaultOwnerName))
+      #set ($discard = $doc.save('Added a default owner preference configuration', true))
+    #else
+      #set ($defaultOwnerPreference = $defaultOwnerObject.getProperty('value').value)
+      #set ($defaultOwnerName = $services.model.resolveDocument($defaultOwnerPreference).getName())
+    #end
+    #set ($prefix = "${configClassName}_${defaultOwnerObject.number}_value")
+    &lt;input type="text" name="${prefix}" class="suggestUsersAndGroups" value="$defaultOwnerName"/&gt;
+  #else
+    #set ($defaultOwnerObject = $doc.getObject($configClassName, 'property', 'defaultOwner', false))
+    #if ($defaultOwnerObject)
+      #set ($defaultOwnerPreference = $defaultOwnerObject.getProperty('value').value)
+      #if("$!{defaultOwnerPreference}" != '')
+        #__displayEntity($defaultOwnerPreference)
+      #end
+    #end
+  #end
+#end
+##
+##
+##
+#macro(__displayDefaultVisibilityPreference $entityType)
+  #if($xcontext.action == 'edit' &amp;&amp; $hasEdit)
+    #set ($c = 'platform.core.profile.category.dataEntry.' + ${entityType} + '.visibilityText')
+    $services.localization.render($c)
+    #set ($defaultVisibilityObject = $doc.getObject($configClassName, 'property', 'defaultVisibility', false))
+    #if (!$defaultVisibilityObject)
+      #set ($defaultVisibilityObject = $doc.newObject($configClassName))
+      #set ($discard = $defaultVisibilityObject.set('property', 'defaultVisibility'))
+      #set ($discard = $defaultVisibilityObject.set('value', ''))
+      #set ($discard = $doc.save('Added a default visibility preference configuration', true))
+    #end
+    #set ($defaultVisibilityPreference = $defaultVisibilityObject.getProperty('value').value)
+    #set ($prefix = "${configClassName}_${defaultVisibilityObject.number}_value")
+    &lt;table id="access-levels-table"&gt;
+    #foreach ($option in $services.permissions.listVisibilityOptions())
+      &lt;tr&gt;
+        &lt;td&gt;{{icon name="${option.name}" /}}&lt;/td&gt;
+        &lt;td&gt;
+          &lt;label class="visibility" for="${prefix}_${option.name}"&gt;
+            &lt;input type="radio" name="${prefix}" value="${option.name}" id="${prefix}_${option.name}"#if ($option == $defaultVisibilityPreference) checked="checked"#end alt="$!{option.label}" title="$!{option.description}" /&gt;
+              $services.localization.render("phenotips.permissions.visibility.${option.name}.label")
+          &lt;/label&gt;
+        &lt;/td&gt;
+        &lt;td&gt;
+          &lt;p class="intro xHint"&gt;$!{option.description}&lt;/p&gt;
+        &lt;/td&gt;
+      &lt;/tr&gt;
+    #end
+    &lt;/table&gt;
+  #else
+    #set ($defaultVisibilityObject = $doc.getObject($configClassName, 'property', 'defaultVisibility', false))
+    #if ($defaultVisibilityObject)
+      #set ($defaultVisibilityPreference = $defaultVisibilityObject.getProperty('value').value)
+      #__displayVisibility($defaultVisibilityPreference)
+    #end
+  #end
+#end
+##
+##
+##
+#macro(__displayDefaultCollaboratorPreference $entityType)
+  #if($xcontext.action == 'edit' &amp;&amp; $hasEdit)
+    #set ($c = 'platform.core.profile.category.dataEntry.' + ${entityType} + '.collaboratorsText')
+    $services.localization.render($c)
+    ## List all defaultCollaborators as hidden inputs to generate selected suggestions in edit mode
+    #set ($defaultCollaboratorObjects = $doc.getObjects($configClassName, 'property', 'defaultCollaborator'))
+    #if ($defaultCollaboratorObjects &amp;&amp; !$defaultCollaboratorObjects.isEmpty())
+      #foreach ($o in $defaultCollaboratorObjects)
+        ## generate value as JSON string
+        #set ($value = "")
+        #__setCollabJSON($o $value)
+        &lt;input type="hidden" class="default-collaborator" value="$value" /&gt;
+      #end
+    #end
+    ##
+    ## List all access levels as hidden inputs
+    #foreach ($l in $services.permissions.listAccessLevels())
+      &lt;input type="hidden" name="access-level" value="${l.name}" alt="$!{l.description}" /&gt;
+    #end
+    ##
+    ## Save service URL with tocken
+    &lt;input type="hidden" id="service-url" value="$xwiki.getDocument('PhenoTips.UserProfileService').getURL('get', "config_classname=${configClassName}&amp;collab_namepropname=property&amp;collab_namepropvalue=defaultCollaborator&amp;form_token=$!{services.csrf.getToken()}&amp;page=$doc.fullName&amp;outputSyntax=plain")" /&gt;
+    ##
+    &lt;div id="manage-collaborators"&gt;&lt;input id="collaborators-suggest-input" type="text" name="${configClassName}_NUMBER_value" class="suggestUsersAndGroups" value=""/&gt;&lt;/div&gt;
+  #else
+    #set ($defaultCollaboratorObjects = $doc.getObjects($configClassName, 'property', 'defaultCollaborator'))
+    #if ($defaultCollaboratorObjects &amp;&amp; !$defaultCollaboratorObjects.isEmpty())
+      #foreach ($c in $defaultCollaboratorObjects)
+        #set ($defaultCollaboratorPreference = $c.getProperty('value').value)
+        #if ("$!{defaultCollaboratorPreference}" != '')
+          #set($collabSetting = $defaultCollaboratorPreference.split('\^'))
+          &lt;div&gt;
+            #__displayEntity($collabSetting[0])
+            #if ($collabSetting.size() &gt; 1)
+              #__displayCollabAccessLevel($collabSetting[1])
+            #else
+              #__displayCollabAccessLevel('view')
+            #end
+          &lt;/div&gt;
+        #end
+      #end
+    #end
+  #end
+#end
+{{/velocity}}
+</content>
+</xwikidoc>
