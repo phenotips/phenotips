@@ -310,7 +310,8 @@ define([
                 }
 
                 // 1. check required fields and update, if necessary
-                if (requiredFields.length > 0 || patientData.pedigreeJSON.hasOwnProperty("externalID")) {
+                if (requiredFields.length > 0
+                    || (patientData && patientData.pedigreeJSON && patientData.pedigreeJSON.hasOwnProperty("externalID"))) {
 
                     // generate PhenotipsJSON based on available data
                     var phenotipsPatientJSON = PhenotipsJSON.internalToPhenotipsJSON(patientData.pedigreeJSON, {});
