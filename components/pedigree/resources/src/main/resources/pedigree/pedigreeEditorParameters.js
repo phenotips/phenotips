@@ -88,6 +88,7 @@ define([], function(){
         boxOnHover : {fill: "gray", stroke: "none", opacity: 1, "fill-opacity":.35},
         menuBtnIcon : {fill: "#1F1F1F", stroke: "none"},
         deleteBtnIcon : {fill: "#990000", stroke: "none"},
+        moveBtnIcon : {fill: "#222222", stroke: "none"},
         btnMaskHoverOn : {opacity:.6, stroke: 'none'},
         btnMaskHoverOff : {opacity:0},
         btnMaskClick: {opacity:1},

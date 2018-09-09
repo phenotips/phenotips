@@ -43,7 +43,7 @@ define([
         "pedigree/view/tabbedSelector",
         "pedigree/view/printDialog",
         "pedigree/view/addMemberDialog",
-        "pedigree/view/studySelectionDialog",
+        "pedigree/view/studySelectionDialog"
     ],
     function(
         PedigreeExtensionManager,

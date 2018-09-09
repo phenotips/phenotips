@@ -118,6 +118,12 @@ define([
             //this.__arrow_svgPath = "M7.589,20.935l-6.87,6.869l2.476,2.476l6.869-6.869l1.858,1.857l2.258-8.428l-8.428,2.258L7.589,20.935z";
             this.__arrow_svgPath = "M8.348,23.029C8.348,23.029,0.791,30.584,0.791,30.584C0.791,30.584,3.515,33.308,3.515,33.308C3.515,33.308,11.07,25.752,11.0704,25.752C11.07,25.752,13.114,27.795,13.114,27.795C13.114,27.795,15.598,18.524,15.598,18.524C15.598,18.524,6.327,21.008,6.327,21.008C6.327,21.008,8.348,23.029,8.348,23.0285C8.348,23.029,8.348,23.029,8.348,23.029";
             this.__probandArrowPath = Raphael.transformPath(this.__arrow_svgPath, ["s", 1.3, 1.3, 0, 0]);
+
+            // 3) move node left/right buttons
+            this.__moveNodeLeft_svgPath  = "M0,0 L-10,10 L0,20 z";
+            this.__moveNodeLeft_BBox     = Raphael.pathBBox(this.__moveNodeLeft_svgPath);
+            this.__moveNodeRight_svgPath = "M-10,0 L0,10 L-10,20 z";
+            this.__moveNodeRight_BBox    = Raphael.pathBBox(this.__moveNodeRight_svgPath);
         },
 
         /**

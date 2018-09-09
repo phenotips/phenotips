@@ -894,7 +894,7 @@ li.abnormality:hover, div.abnormality:hover {
   background: #e0e0e0;
 }
 .menu-box .menu-fullWidthbutton {
-  display: block;
+  display: block !important;
   text-align: center;
 }
 .family-study .add-to-family-wrapper div {

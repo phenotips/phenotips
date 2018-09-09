@@ -303,11 +303,15 @@ define([
          * @param attributes The svg attributes
          * @param {Function} onClick Callback for the button
          * @param {String} className The class attribute for the button
-         *
+         * @param {Function} onMouseDown Action to be called when mouse button is pressed - this is different from onClick, since
+         *                               this action is performed before the button is released, allowing handling of dragging, etc.
          * @return {Raphael.st} The generated button
          */
-        createButton: function(x, y, svgPath, svgPathBBox, attributes, onClick, className, title) {
+        createButton: function(x, y, svgPath, svgPathBBox, attributes, onClick, className, title, onMouseDown) {
             var icon = editor.getPaper().path(svgPath).attr(attributes);
+            if (title) {
+                icon.attr({"title": title});
+            }
             icon.transform(["t" , x , y]);
 
             // manually compute the size of the mask because Raphael.transform() is exptremely slow
@@ -321,22 +325,31 @@ define([
             var button = editor.getPaper().set(mask, icon).toFront();
 
             var me = this;
-            var clickFunct = function() {
-                if (me._hidden) {
-                    button.isClicked = false;
-                    return;
-                }
-                button.isClicked = !button.isClicked;
-                if(button.isClicked) {
-                    mask.attr(PedigreeEditorParameters.attributes.btnMaskClick);
-                }
-                else {
-                    mask.attr(PedigreeEditorParameters.attributes.btnMaskHoverOn);
-                }
-                onClick && onClick();
-            };
-            button.click(clickFunct);
-            button.mousedown(function(){mask.attr(PedigreeEditorParameters.attributes.btnMaskClick)});
+
+            if (onClick) {
+                var clickFunct = function() {
+                    if (me._hidden) {
+                        button.isClicked = false;
+                        return;
+                    }
+                    button.isClicked = !button.isClicked;
+                    if(button.isClicked) {
+                        mask.attr(PedigreeEditorParameters.attributes.btnMaskClick);
+                    }
+                    else {
+                        mask.attr(PedigreeEditorParameters.attributes.btnMaskHoverOn);
+                    }
+                    onClick();
+                };
+                button.click(clickFunct);
+            }
+
+            if (onMouseDown) {
+                button.mousedown(onMouseDown);
+            } else {
+                button.mousedown(function(){mask.attr(PedigreeEditorParameters.attributes.btnMaskClick)});
+            }
+
             button.hover(function() {
                     //console.log("button hover");
                     mask.attr(PedigreeEditorParameters.attributes.btnMaskHoverOn);

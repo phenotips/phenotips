@@ -166,6 +166,8 @@ define([
                 if (this.getNode().getLifeStatus() == "alive" || this.getNode().getLifeStatus() == "deceased") {
                     this.generateAliveWell();
                 }
+
+                this.generateMoveNodeButton();
             }
 
             this._updateHoverBoxHeight();
@@ -202,6 +204,50 @@ define([
             this.disable();
             this.getFrontElements().push(genderShapedButton);
             this.enable();
+        },
+
+        generateMoveNodeButton: function() {
+            var me = this;
+
+            var canMoveLeft = editor.getGraph().allowManualNodeRepositionLeft(this.getNode().getID());
+            var canMoveRight = editor.getGraph().allowManualNodeRepositionRight(this.getNode().getID());
+
+            var onClick = function() {
+                me.animateHideHoverZone();
+                editor.getView().setCurrentDraggable("manual-move-" + me.getNode().getID());
+            };
+            var onClickLeft = function() {
+                onClick();
+                var event = { "nodeID": me.getNode().getID(), "moveAmount": -1 /* left */ };
+                document.fire("pedigree:person:move", event);
+            };
+            var onClickRight = function() {
+                onClick();
+                var event = { "nodeID": me.getNode().getID(), "moveAmount": +1 /* right */ };
+                document.fire("pedigree:person:move", event);
+            };
+
+            var attributes = PedigreeEditorParameters.attributes.moveBtnIcon;
+            var y = this.getY() + 10;
+            var currentX = this.getX() + 10 + this.getWidth()/40;
+
+            if (canMoveLeft) {
+                this.createButton(currentX, y, editor.getView().__moveNodeLeft_svgPath, editor.getView().__moveNodeLeft_BBox,
+                                  attributes, onClickLeft, "moveNodeLeft", "move person to the left");
+                currentX += editor.getView().__moveNodeLeft_BBox.width + 10;
+            }
+            if (canMoveRight) {
+                this.createButton(currentX, y, editor.getView().__moveNodeRight_svgPath, editor.getView().__moveNodeRight_BBox,
+                                  attributes, onClickRight, "moveNodeRight", "move person to the right");
+            }
+            // TODO: drag and drop, requires complicated UI work
+            // var onClick = null;
+            // var onMouseDown = function() {
+            //  me.animateHideHoverZone();
+            //  editor.getNodeRearrangeUI().show(me.getNode().getID());
+            // };
+            //this.createButton(x, y, editor.getView().__moveButton_svgPath, editor.getView().__moveButton_BBox,
+            //                  attributes, onClick, "dragNodeWithinRank", "move person right or left", onMouseDown);
         },
 
         /**

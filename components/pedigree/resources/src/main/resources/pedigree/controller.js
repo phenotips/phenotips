@@ -33,6 +33,7 @@ define([
             document.observe("pedigree:person:newsibling",         this.handlePersonNewSibling);
             document.observe("pedigree:person:newpartnerandchild", this.handlePersonNewPartnerAndChild);
             document.observe("pedigree:partnership:newchild",      this.handleRelationshipNewChild);
+            document.observe("pedigree:person:move",               this.handleMovePersonNode);
         },
 
         handleUndo: function(event)
@@ -49,6 +50,27 @@ define([
             //console.log("event: " + event.eventName + ", memo: " + Helpers.stringifyObject(event.memo));
             editor.getUndoRedoManager().redo();
             timer.printSinceLast("=== Redo runtime: ");
+        },
+
+        // moves the given person node to the left or to the right the given amound of "person nodes",
+        // e.g. "moveAmount == -2" means that given node will "jump" past its two left person node neighours
+        // note: all other kinds of nodes are not counted when considering the amount of movement, though some
+        // may be moved as as well (e.g. if a node being moved had a relationship node attached, it may be moved too)
+        handleMovePersonNode: function(event) {
+            var nodeID = event.memo.nodeID;
+            var moveAmount = event.memo.moveAmount;
+
+            editor.getView().setCurrentDraggable(null);
+
+            var changeSet = editor.getGraph().performNodeOrderChange(nodeID, moveAmount);
+
+            if (changeSet == null) {
+                return;
+            }
+
+            editor.getView().applyChanges(changeSet, false);
+
+            editor.getUndoRedoManager().addState({"eventName": "manual_input"});
         },
 
         handleRenumber: function(event)
