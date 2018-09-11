@@ -20,6 +20,7 @@ package org.phenotips.data.permissions.script;
 import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.EntityAccess;
 import org.phenotips.data.permissions.EntityPermissionsManager;
+import org.phenotips.data.permissions.EntityPermissionsPreferencesManager;
 import org.phenotips.data.permissions.Visibility;
 import org.phenotips.data.permissions.events.EntityRightsUpdatedEvent.RightsUpdateEventType;
 import org.phenotips.entities.PrimaryEntity;
@@ -27,6 +28,7 @@ import org.phenotips.entities.PrimaryEntityResolver;
 import org.phenotips.security.authorization.AuthorizationService;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.script.service.ScriptService;
 import org.xwiki.security.authorization.Right;
 import org.xwiki.users.UserManager;
@@ -61,6 +63,9 @@ public class EntityPermissionsManagerScriptService implements ScriptService
     /** Used for checking access rights. */
     @Inject
     private AuthorizationService access;
+
+    @Inject
+    private EntityPermissionsPreferencesManager preferencesManager;
 
     /**
      * Get the visibility options available, excluding {@link Visibility#isDisabled() disabled} ones.
@@ -185,5 +190,16 @@ public class EntityPermissionsManagerScriptService implements ScriptService
     public void fireStudyUpdateEvent(String targetEntityId, String newStudyId)
     {
         this.manager.fireStudyUpdateEvent(targetEntityId, newStudyId);
+    }
+
+    /**
+     * Gets the default study setting for the currently logged user.
+     *
+     * @return the default study {@code DocumentReference}
+     * @since 1.5M1
+     */
+    public DocumentReference getDefaultStudy()
+    {
+        return this.preferencesManager.getDefaultStudy(null);
     }
 }

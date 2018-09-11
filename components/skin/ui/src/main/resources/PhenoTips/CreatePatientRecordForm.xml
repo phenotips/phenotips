@@ -39,10 +39,13 @@
   <hidden>true</hidden>
   <content>{{include reference="PhenoTips.StudiesMacros"/}}
 
-{{velocity}}{{html clean=false}}
+{{velocity}}
 $xwiki.ssx.use('PhenoTips.Widgets')##
 $xwiki.jsx.use('PhenoTips.Widgets')##
+#set ($defaultStudy = $services.permissions.getDefaultStudy())
 #if ($xwiki.hasAccessLevel('edit', "data.$!{reservedDocumentName}"))
+#if(!$defaultStudy)
+  {{html clean=false}}
   &lt;form id="patient-creation-form" class="patient-creation-form x-single-submit-form" action="$xwiki.getURL('PhenoTips.CreatePatientRecord')" method="post"&gt;&lt;div&gt;
     &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
     &lt;input type="hidden" name="doCreate" value="1" /&gt;
@@ -62,8 +65,13 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
     #end
     &lt;label for="create-patient-record"&gt;&lt;input type="submit" id="create-patient-record" value="$services.localization.render('phenotips.globalHeader.createPatient')"/&gt;&lt;/label&gt;
   &lt;/div&gt;&lt;/form&gt;
+  {{/html}}
+#else
+#set($url = $xwiki.getURL('PhenoTips.CreatePatientRecord')+"?form_token=$!{services.csrf.getToken()}&amp;doCreate=1")
+  [[$services.localization.render('phenotips.globalHeader.createPatient')>>path:$url]]
 #end
-{{/html}}{{/velocity}}</content>
+#end
+{{/velocity}}</content>
   <object>
     <name>PhenoTips.CreatePatientRecordForm</name>
     <number>0</number>
