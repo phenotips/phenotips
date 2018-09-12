@@ -20,14 +20,17 @@
 
 <xwikidoc version="1.1">
   <web>PhenoTips</web>
-  <name>CreatePatientRecord</name>
+  <name>ChangeStudy</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
+  <creationDate>1401822203000</creationDate>
   <parent>PhenoTips.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <date>1401822203000</date>
+  <contentUpdateDate>1401822203000</contentUpdateDate>
   <version>1.1</version>
   <title/>
   <comment/>
@@ -35,30 +38,9 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content>{{velocity}}
-#if ($request.get('doCreate') == '1')
-  #if ($services.csrf.isTokenValid($request.form_token))
-    #set ($patient = $services.patients.create())
-    #if ("$!patient.id" != '')
-      ## FIXME Move this to a PatientRecordInitializer
-      #set ($formBindingClassName = 'PhenoTips.StudyBindingClass')
-      #set ($formBindingPropertyName = 'studyReference')
-      #set ($formBindingPropertyValue = $request.get("$!{formBindingClassName}_${formBindingPropertyName}"))
-      #if ($formBindingPropertyValue &amp;&amp; "$!formBindingPropertyValue" != '')
-        #set ($patientDoc = $patient.getSecureDocument())
-        #set ($formBindingObj = $patientDoc.getObject($formBindingClassName, true))
-        #if ($formBindingObj)
-          #set ($discard = $formBindingObj.set($formBindingPropertyName, $formBindingPropertyValue))
-          #set ($discard = $patientDoc.save())
-        #end
-      #end
-      $response.sendRedirect($xwiki.getURL($patient.getDocumentReference(), 'edit', ''))
-    #else
-      Cannot create patient
-    #end
-  #else
-    ## CSRF protection
-    $response.sendRedirect("$!{services.csrf.getResubmissionURL()}")
-  #end
+#if ($request.get('action') == 'fireStudyEvent' &amp;&amp; $request.get('patientId') != '' &amp;&amp; $request.get('studyId') != '')
+  $services.permissions.fireStudyUpdateEvent($request.get('patientId'), $request.get('studyId'))
 #end
-{{/velocity}}</content>
+{{/velocity}}
+</content>
 </xwikidoc>
