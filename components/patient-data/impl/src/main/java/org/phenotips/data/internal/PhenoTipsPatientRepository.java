@@ -33,6 +33,8 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 
@@ -114,14 +116,11 @@ public class PhenoTipsPatientRepository extends PatientEntityManager implements 
         try {
             XWikiContext context = this.xcontextProvider.get();
             Patient patient = super.create(creator);
-            XWikiDocument doc = patient.getXDocument();
+            XWikiDocument doc =
+                (XWikiDocument) this.bridge.getDocument(this.stringResolver.resolve(patient.getId(),
+                    Patient.DEFAULT_DATA_SPACE));
             doc.getXObject(Patient.CLASS_REFERENCE).setLongValue("identifier",
-                Integer.parseInt(patient.getId().replaceAll("\\D++", "")));
-            if (creator != null) {
-                doc.setCreatorReference(creator);
-                doc.setAuthorReference(creator);
-                doc.setContentAuthorReference(creator);
-            }
+                Integer.parseInt(patient.getId().replaceAll("\\D++", StringUtils.EMPTY)));
             context.getWiki().saveDocument(doc, context);
             for (PatientRecordInitializer initializer : this.initializers.get()) {
                 try {
