@@ -127,7 +127,8 @@ define([
                                                      hideShareConsentDialog: false,
                                                      firstName: "",
                                                      lastName: "",
-                                                     advancedUser: false },
+                                                     advancedUser: false,
+                                                     defaultStudy: ""},
                                          pedigree: {}
                                        };
             this._preferencesManager = new PreferencesManager(this._defaultPreferences);
