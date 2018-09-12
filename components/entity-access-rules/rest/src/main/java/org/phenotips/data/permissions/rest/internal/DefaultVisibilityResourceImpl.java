@@ -144,7 +144,7 @@ public class DefaultVisibilityResourceImpl extends XWikiResource implements Visi
             // todo. should this status be an internal server error, or a bad request?
             throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
         }
-        this.manager.fireRightsUpdateEvent(entityId);
+
         return Response.ok().build();
     }
 }
