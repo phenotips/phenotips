@@ -19,6 +19,7 @@ package org.phenotips.data.permissions.rest.internal;
 
 import org.phenotips.data.permissions.EntityAccess;
 import org.phenotips.data.permissions.EntityPermissionsManager;
+import org.phenotips.data.permissions.events.EntityRightsUpdatedEvent.RightsUpdateEventType;
 import org.phenotips.data.permissions.rest.DomainObjectFactory;
 import org.phenotips.data.permissions.rest.OwnerResource;
 import org.phenotips.data.permissions.rest.internal.utils.EntityAccessContext;
@@ -32,6 +33,8 @@ import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
 import org.xwiki.rest.XWikiResource;
+
+import java.util.Arrays;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -145,7 +148,7 @@ public class DefaultOwnerResourceImpl extends XWikiResource implements OwnerReso
             throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
         }
 
-        this.manager.fireRightsUpdateEvent(entityId);
+        this.manager.fireRightsUpdateEvent(Arrays.asList(RightsUpdateEventType.ENTITY_OWNER_UPDATED), entityId);
         return Response.ok().build();
     }
 }
