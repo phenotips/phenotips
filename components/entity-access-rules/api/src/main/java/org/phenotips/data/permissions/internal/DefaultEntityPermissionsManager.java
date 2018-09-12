@@ -22,13 +22,17 @@ import org.phenotips.data.permissions.EntityAccess;
 import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.Visibility;
 import org.phenotips.data.permissions.events.EntityRightsUpdatedEvent;
+import org.phenotips.data.permissions.events.EntityRightsUpdatedEvent.RightsUpdateEventType;
+import org.phenotips.data.permissions.events.EntityStudyUpdatedEvent;
 import org.phenotips.entities.PrimaryEntity;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.observation.ObservationManager;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -131,6 +135,21 @@ public class DefaultEntityPermissionsManager implements EntityPermissionsManager
     @Override
     public void fireRightsUpdateEvent(@Nonnull final String entityId)
     {
-        this.observationManager.notify(new EntityRightsUpdatedEvent(entityId), null);
+        List<RightsUpdateEventType> allEventTypes = Arrays.asList(RightsUpdateEventType.ENTITY_OWNER_UPDATED,
+            RightsUpdateEventType.ENTITY_COLLABORATORS_UPDATED, RightsUpdateEventType.ENTITY_VISIBILITY_UPDATED);
+        this.observationManager.notify(new EntityRightsUpdatedEvent(allEventTypes, entityId), null);
+    }
+
+    @Override
+    public void fireRightsUpdateEvent(@Nonnull final List<RightsUpdateEventType> eventTypes,
+        @Nonnull final String entityId)
+    {
+        this.observationManager.notify(new EntityRightsUpdatedEvent(eventTypes, entityId), null);
+    }
+
+    @Override
+    public void fireStudyUpdateEvent(@Nonnull final String entityId, @Nonnull final String studyId)
+    {
+        this.observationManager.notify(new EntityStudyUpdatedEvent(entityId, studyId), null);
     }
 }

@@ -21,6 +21,7 @@ import org.phenotips.data.permissions.AccessLevel;
 import org.phenotips.data.permissions.EntityAccess;
 import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.Visibility;
+import org.phenotips.data.permissions.events.EntityRightsUpdatedEvent.RightsUpdateEventType;
 import org.phenotips.entities.PrimaryEntity;
 import org.phenotips.entities.PrimaryEntityResolver;
 import org.phenotips.security.authorization.AuthorizationService;
@@ -31,6 +32,7 @@ import org.xwiki.security.authorization.Right;
 import org.xwiki.users.UserManager;
 
 import java.util.Collection;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -161,5 +163,27 @@ public class EntityPermissionsManagerScriptService implements ScriptService
     public void fireRightsUpdateEvent(String targetEntityId)
     {
         this.manager.fireRightsUpdateEvent(targetEntityId);
+    }
+
+    /**
+     * Fires a rights update event for the entity with {@code targetEntityId} for particular update events.
+     *
+     * @param eventTypes the types of this event, a list of {@link RightsUpdateEventType}s
+     * @param targetEntityId the ID for the {@link PrimaryEntity} of interest
+     */
+    public void fireRightsUpdateEvent(List<RightsUpdateEventType> eventTypes, String targetEntityId)
+    {
+        this.manager.fireRightsUpdateEvent(eventTypes, targetEntityId);
+    }
+
+    /**
+     * Fires a study update event for the entity with {@code targetEntityId}.
+     *
+     * @param targetEntityId the ID for the {@link PrimaryEntity} of interest
+     * @param newStudyId the ID for the new study the entity is getting assigned to
+     */
+    public void fireStudyUpdateEvent(String targetEntityId, String newStudyId)
+    {
+        this.manager.fireStudyUpdateEvent(targetEntityId, newStudyId);
     }
 }
