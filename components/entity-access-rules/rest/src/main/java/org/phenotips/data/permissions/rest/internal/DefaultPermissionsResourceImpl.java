@@ -18,7 +18,6 @@
 package org.phenotips.data.permissions.rest.internal;
 
 import org.phenotips.data.permissions.AccessLevel;
-import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.rest.CollaboratorsResource;
 import org.phenotips.data.permissions.rest.DomainObjectFactory;
 import org.phenotips.data.permissions.rest.OwnerResource;
@@ -64,9 +63,6 @@ public class DefaultPermissionsResourceImpl extends XWikiResource implements Per
 
     @Inject
     private Provider<Autolinker> autolinker;
-
-    @Inject
-    private EntityPermissionsManager manager;
 
     @Inject
     @Named("org.phenotips.data.permissions.rest.internal.DefaultOwnerResourceImpl")
@@ -133,7 +129,6 @@ public class DefaultPermissionsResourceImpl extends XWikiResource implements Per
         this.visibilityResource.setVisibility(permissions.getVisibility(), entityId, entityType);
         this.collaboratorsResource.setCollaborators(permissions.getCollaborators(), entityId, entityType);
 
-        this.manager.fireRightsUpdateEvent(entityId);
         return Response.ok().build();
     }
 
@@ -152,7 +147,7 @@ public class DefaultPermissionsResourceImpl extends XWikiResource implements Per
         if (permissions.getVisibility() != null) {
             this.visibilityResource.setVisibility(permissions.getVisibility(), entityId, entityType);
         }
-        this.manager.fireRightsUpdateEvent(entityId);
+
         return Response.ok().build();
     }
 }
