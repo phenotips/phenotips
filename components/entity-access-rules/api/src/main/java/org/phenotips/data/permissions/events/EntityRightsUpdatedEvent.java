@@ -22,6 +22,8 @@ import org.phenotips.entities.PrimaryEntity;
 import org.xwiki.observation.event.Event;
 import org.xwiki.stability.Unstable;
 
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -33,23 +35,43 @@ import org.apache.commons.lang3.StringUtils;
 @Unstable
 public class EntityRightsUpdatedEvent implements Event
 {
+    /**
+     * An enum of all the possible entity permissions event types.
+     *
+     * @since 1.4
+     */
+    public enum RightsUpdateEventType
+    {
+        /** Entity visibility updated event type. */
+        ENTITY_VISIBILITY_UPDATED,
+        /** Entity owner updated event type. */
+        ENTITY_OWNER_UPDATED,
+        /** Entity collaborators updated event type. */
+        ENTITY_COLLABORATORS_UPDATED;
+    }
+
     /** The affected entity id. */
     protected final String entityId;
+
+    /** The types of this event. */
+    protected final List<RightsUpdateEventType> eventTypes;
 
     /**
      * Constructor initializing the required fields.
      *
+     * @param eventTypes the types of this event
      * @param entityId the {@link PrimaryEntity#getId() identifier} of the affected entity
      */
-    public EntityRightsUpdatedEvent(String entityId)
+    public EntityRightsUpdatedEvent(List<RightsUpdateEventType> eventTypes, String entityId)
     {
         this.entityId = entityId;
+        this.eventTypes = eventTypes;
     }
 
     /** Default constructor, to be used for declaring the events a listener wants to observe. */
     public EntityRightsUpdatedEvent()
     {
-        this(null);
+        this(null, null);
     }
 
     @Override
@@ -57,7 +79,9 @@ public class EntityRightsUpdatedEvent implements Event
     {
         if (otherEvent instanceof EntityRightsUpdatedEvent) {
             EntityRightsUpdatedEvent otherRightsUpdateEvent = (EntityRightsUpdatedEvent) otherEvent;
-            return this.entityId == null || StringUtils.equals(otherRightsUpdateEvent.getEntityId(), this.entityId);
+            return this.entityId == null
+                || (StringUtils.equals(otherRightsUpdateEvent.getEntityId(), this.entityId) && otherRightsUpdateEvent
+                    .getEventTypes().equals(this.eventTypes));
         }
         return false;
     }
@@ -71,5 +95,15 @@ public class EntityRightsUpdatedEvent implements Event
     public String getEntityId()
     {
         return this.entityId;
+    }
+
+    /**
+     * Identifies the types of rights update actions performed on the entity record.
+     *
+     * @return a list of {@link RightsUpdateEventType}s
+     */
+    public List<RightsUpdateEventType> getEventTypes()
+    {
+        return this.eventTypes;
     }
 }
