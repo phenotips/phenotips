@@ -371,17 +371,32 @@
    cancelButton.observe('click', function(event) {
      modalBox.closeDialog();
    });
+
    submitButton.observe('click', function(event) {
+     event.stop();
+     var form = event.findElement('form');
      if (studyAssignmentTool.hasClassName('edit')) {
        //if in edit mode, save form first, then submit
-       event.stop();
-       var form = event.findElement('form');
        document.fire('xwiki:actions:save', {'continue' : true, 'form' : studyAssignmentTool.up('form')});
        document.observe('xwiki:document:saved', function () {
-          form.submit();
+         form.submit();
        });
+     } else {
+       form.submit();
      }
+     fireStudyUpdatedEvent(form.down('input:checked') &amp;&amp; form.down('input:checked').value);
    });
+
+   var fireStudyUpdatedEvent = function (studyId) {
+     if (!studyId || studyId == "") { return; }
+     var patientId = XWiki.currentDocument.page;
+     var fireStudyUpdatedURL = new XWiki.Document(patientId, XWiki.currentDocument.space).getURL('get') + '?sheet=PhenoTips.ChangeStudy';
+     new Ajax.Request(fireStudyUpdatedURL + '&amp;action=fireStudyEvent&amp;patientId=' + patientId + '&amp;studyId=' + studyId, {
+       onSuccess : function(response) {
+          console.log('Fired study updated event to assign ' + patientId + ' to ' + studyId + ' study');
+       }
+     });
+   };
 
    studyAssignmentTool.observe('click', function (event) {
      event.stop();

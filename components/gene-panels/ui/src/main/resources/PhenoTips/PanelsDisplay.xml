@@ -552,8 +552,8 @@
 }
 
 #panels-livetable input.button,
-#panels-livetable .buttonwrapper button, .buttonwrapper a:visited,
-#panels-livetable .buttonwrapper a:link, .buttonwrapper a:active {
+#panels-livetable .buttonwrapper button, #panels-livetable .buttonwrapper a:visited,
+#panels-livetable .buttonwrapper a:link, #panels-livetable .buttonwrapper a:active {
   color: $theme.buttonPrimaryTextColor !important;
 }
 

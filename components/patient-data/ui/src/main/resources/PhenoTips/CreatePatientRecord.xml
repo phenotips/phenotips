@@ -46,7 +46,7 @@
       #set ($formBindingClassName = 'PhenoTips.StudyBindingClass')
       #set ($formBindingPropertyName = 'studyReference')
       #set ($formBindingPropertyValue = $request.get("$!{formBindingClassName}_${formBindingPropertyName}"))
-      #if ($formBindingPropertyValue)
+      #if ($formBindingPropertyValue &amp;&amp; "$!formBindingPropertyValue" != '')
         #set ($patientDoc = $patient.getSecureDocument())
         #set ($formBindingObj = $patientDoc.getObject($formBindingClassName, true))
         #if ($formBindingObj)
