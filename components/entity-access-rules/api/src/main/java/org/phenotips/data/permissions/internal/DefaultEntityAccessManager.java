@@ -282,8 +282,8 @@ public class DefaultEntityAccessManager implements EntityAccessManager
         @Nullable final EntityReference newOwner) throws Exception
     {
         final String owner = newOwner != null
-                ? this.entitySerializer.serialize(this.partialEntityResolver.resolve(newOwner))
-                : StringUtils.EMPTY;
+            ? this.entitySerializer.serialize(this.partialEntityResolver.resolve(newOwner))
+            : StringUtils.EMPTY;
 
         final XWikiDocument entityXDoc = entity.getXDocument();
         this.helper.setProperty(entityXDoc, classReference, OWNER, owner);
@@ -370,6 +370,8 @@ public class DefaultEntityAccessManager implements EntityAccessManager
             final DocumentReference classReference = this.partialEntityResolver.resolve(Collaborator.CLASS_REFERENCE,
                 entity.getDocumentReference());
             final XWikiContext context = this.xcontextProvider.get();
+            final Owner owner = getOwner(entity);
+            final EntityReference ownerUser = (owner != null) ? owner.getUser() : null;
             patientDoc.removeXObjects(classReference);
             if (newCollaborators != null) {
                 newCollaborators.stream()
@@ -377,6 +379,8 @@ public class DefaultEntityAccessManager implements EntityAccessManager
                     .filter(Objects::nonNull)
                     // Don't want any collaborators that have no user name.
                     .filter(collaborator -> collaborator.getUser() != null)
+                    // Don't want any collaborators that are owner.
+                    .filter(collaborator -> owner != null && !collaborator.getUser().equals(ownerUser))
                     // Save the properties for each collaborator.
                     .forEach(collaborator -> saveCollaboratorData(collaborator, patientDoc, classReference, context));
             }
@@ -470,8 +474,7 @@ public class DefaultEntityAccessManager implements EntityAccessManager
     }
 
     /**
-     * Gets the collaborator {@link BaseObject} if it already exists in {@code entityDoc}, otherwise creates a new
-     * one.
+     * Gets the collaborator {@link BaseObject} if it already exists in {@code entityDoc}, otherwise creates a new one.
      *
      * @param entityRef the {@link DocumentReference} for entity of interest
      * @param entityDoc the {@link XWikiDocument} for {@code entity}
