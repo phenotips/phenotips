@@ -29,7 +29,7 @@
   <name>PhenoTips - Entity access rules - Java APIs</name>
 
   <properties>
-    <coverage.instructionRatio>0.86</coverage.instructionRatio>
+    <coverage.instructionRatio>0.59</coverage.instructionRatio>
   </properties>
 
   <dependencies>
@@ -119,6 +119,16 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>phenotips-entities-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>users-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-studies-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
