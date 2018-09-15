@@ -99,7 +99,7 @@
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <values>none=Unclassified|CNP|sv=Clinically significant</values>
+      <values>none=Unclassified|CNP=Copy number polymorphism|sv=Clinically significant</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </classification>
     <comments>
