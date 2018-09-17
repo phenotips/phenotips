@@ -57,10 +57,10 @@ public class UIXRecordElement implements RecordElement
     /** @see #getFields() */
     private final List<String> fields;
 
-    /** @see #getName(). */
+    /** @see #getName() */
     private final String name;
 
-    /** @see #isEnabled(). */
+    /** @see #isEnabled() */
     private boolean enabled;
 
     /**

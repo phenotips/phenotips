@@ -26,7 +26,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.xpn.xwiki.XWikiException;
-
 import net.jcip.annotations.NotThreadSafe;
 
 @NotThreadSafe

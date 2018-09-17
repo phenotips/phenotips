@@ -56,7 +56,6 @@ import org.mockito.MockitoAnnotations;
 
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
-
 import net.jcip.annotations.NotThreadSafe;
 
 import static org.mockito.Matchers.anyString;

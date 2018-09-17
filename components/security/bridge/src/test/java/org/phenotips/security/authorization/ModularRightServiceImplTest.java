@@ -40,7 +40,6 @@ import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.user.api.XWikiAuthService;
 import com.xpn.xwiki.user.api.XWikiUser;
 import com.xpn.xwiki.web.Utils;
-
 import net.jcip.annotations.NotThreadSafe;
 
 import static org.mockito.Mockito.mock;
