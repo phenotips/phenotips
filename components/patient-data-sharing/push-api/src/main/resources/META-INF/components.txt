@@ -1,3 +1,4 @@
 org.phenotips.data.push.internal.DefaultPushPatientData
 org.phenotips.data.push.internal.DefaultPushPatientService
+org.phenotips.data.push.internal.PushAuditEventProcessor
 org.phenotips.data.push.script.PushPatientScriptService
