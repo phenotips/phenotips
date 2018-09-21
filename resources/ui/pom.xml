@@ -191,13 +191,6 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>clinical-text-analysis-extension-ui</artifactId>
-      <version>${textAnalysis.version}</version>
-      <type>xar</type>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
       <artifactId>application-configuration-ui</artifactId>
       <version>${project.version}</version>
       <type>xar</type>
