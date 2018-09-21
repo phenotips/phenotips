@@ -1,0 +1,20 @@
+#if($isInServletMode)## Visible only in a page
+<div id="footerglobal" class="layoutsection">
+<div class="minwidth"></div>
+<hr/>
+  <div id="xwikilicence">$!copyright</div>
+  #set ($version = $xwiki.getSpacePreference('version'))
+  #if ("$!version" == "")
+    #set ($version = $xwiki.getXWikiPreference("version"))
+  #end
+  #if ("$!version" != "")
+    ## The version information coming from preferences is usually Velocity code, so make sure to evaluate it.
+    #set ($version = "#evaluate($version)")
+  #else
+    #set ($version = $!xwiki.version)
+  #end
+  <div id="xwikiplatformversion">$version</div>
+<hr/>
+</div>
+#end
+### TODO: Format the footer for pdf output
