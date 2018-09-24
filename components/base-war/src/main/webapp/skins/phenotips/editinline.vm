@@ -66,10 +66,13 @@ $!xwiki.getDocument('PhenoTips.DocumentMeta').getRenderedContent()
 <input type="hidden" name="xredirect" value="$!{escapetool.xml($request.get('xredirect'))}" />
 <input type="hidden" name="xnotification" value="$!{escapetool.xml($request.get('xnotification'))}" />
 <input type="hidden" name="template" value="$!{escapetool.xml($request.template)}" />
+## Originally, the presence of the "language" hidden input in the form for editing structured documents was justified as follows:
 ## We need to submit the language of the translated document because the inline edit mode is not limited to editing only
 ## the objects, which are shared by all translations. We can also edit the content or the title of the document which are
 ## specific to each translation and so we need to specify which translation is being edited.
-<input type="hidden" name="language" value="$!{escapetool.xml($tdoc.realLanguage)}" />
+## These situations don't currently apply to PhenoTips, and the support for translating structured documents
+## causes unwanted side effects such as PT-3826.
+##<input type="hidden" name="language" value="$!{escapetool.xml($tdoc.realLanguage)}" />
 #if("$!request.parent" != '')
   <input type="hidden" name="parent" value="$escapetool.xml($!request.parent)" />
 #end
