@@ -196,9 +196,14 @@ define([
                     piiSettings.removeComments = true;
                 }
 
+                // make output SVG scrollable
+                var prevOverflow = Element.getStyle(svgEl, 'overflow');
+                Element.setStyle(svgEl, { overflow: 'scroll' });
+
                 var svg = editor.getWorkspace().getSVGCopy(piiSettings);
                 var exportString = svg.getSVGText();
                 $('white-bbox-background').remove();
+                Element.setStyle(svgEl, { overflow: prevOverflow });
 
                 if (imageType == "png") {
                     // generate PNG image on the back end
