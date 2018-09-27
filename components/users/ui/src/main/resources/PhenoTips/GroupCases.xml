@@ -78,8 +78,7 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
   #set($columnFiltersContent = "${columnFiltersContent}&lt;input type='hidden' name='$escapetool.xml($f)' value='$escapetool.xml($columnFilters.get($f))'/&gt;")
 #end
 #foreach ($column in $columns)
-  #set ($isFilterable = ($column.toLowerCase().indexOf('date') &lt; 0) &amp;&amp; ($column != 'doc.creator') &amp;&amp; ($column != 'doc.author') &amp;&amp; ($column != 'owner'))
-  #set ($discard = $columnsProperties.put($column, { 'type' : 'text', 'link' : 'field', 'size' : 7, 'filterable' : $isFilterable, 'sortable': true }))
+  #set ($discard = $columnsProperties.put($column, { 'type' : 'text', 'link' : 'field', 'size' : 7, 'filterable' : false, 'sortable': true }))
 #end
 #set ($discard = $columnsProperties.get('doc.name').put('link', 'view'))
 #set ($discard = $columnsProperties.identifier.put('link', 'view'))
