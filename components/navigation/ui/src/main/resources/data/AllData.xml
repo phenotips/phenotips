@@ -90,8 +90,7 @@ $xwiki.ssx.use('PhenoTips.PatientConsent')##
   #set($columnFiltersContent = "${columnFiltersContent}&lt;input type='hidden' name='$escapetool.xml($f)' value='$escapetool.xml($columnFilters.get($f))'/&gt;")
 #end
 #foreach ($column in $columns)
-  #set ($isFilterable = ($column == 'doc.name' || $column == 'external_id' || $column == 'reference' || $column.endsWith('name')))
-  #set ($discard = $columnsProperties.put($column, { 'type' : 'text', 'link' : 'field', 'size' : 7, 'filterable' : $isFilterable, 'sortable': true }))
+  #set ($discard = $columnsProperties.put($column, { 'type' : 'text', 'link' : 'field', 'size' : 7, 'filterable' : false, 'sortable': true }))
 #end
 #set ($discard = $columnsProperties.get('doc.name').put('link', 'view'))
 #set ($discard = $columnsProperties.identifier.put('link', 'view'))
