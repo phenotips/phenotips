@@ -51,6 +51,7 @@
 #set($isMyProfile = ($services.model.resolveDocument($xcontext.user) == $doc.documentReference))
 #if($isMyProfile || $hasAdmin)
   #set($discard = $categories.add({'id':'preferences', 'sheet':'XWiki.XWikiUserPreferencesSheet', 'glyphicon': 'wrench'}))
+  #set($discard = $categories.add({'id':'dataEntry', 'sheet':'XWiki.XWikiUserDataEntrySheet', 'glyphicon': 'page_edit'}))
 #end
 #########################
 ## Current category
@@ -479,6 +480,10 @@ return XWiki;
   content: url("$xwiki.getSkinFile('icons/silk/chart_organisation.png')");
 }
 
+.profile-menu .user-menu-dataEntry:before{
+  content: url("$xwiki.getSkinFile('icons/silk/page_edit.png')");
+}
+
 .skin-colibri .profile-menu .group.user-menu-title{
   #set ($menuIcon = "url(${escapetool.S}$xwiki.getSkinFile('icons/silk/user.png')${escapetool.S})")
   #css3_backgroundIconAndLinearGradient($menuIcon, {
@@ -519,7 +524,7 @@ return XWiki;
 }
 
 div.profile-section,
-div.userInfo, div.userRecentChanges, div.userPreferences, div.passwordManagement, div.watchlistManagement, div.watchlistRss, div.watchlistElements,
+div.userInfo, div.userRecentChanges, div.userPreferences, div.userDataEntry, div.passwordManagement, div.watchlistManagement, div.watchlistRss, div.watchlistElements,
 div.userDashboard, #dashboardPane .dashboard {
   margin: 5px 10px 10px;
   padding: 5px 10px 10px;
@@ -535,14 +540,13 @@ td.recentChangesRight {
 }
 
 div.profile-section,
-div.userInfo, div.userRecentChanges, div.userPreferences, div.passwordManagement, div.watchlistManagement, div.watchlistRss, div.watchlistElements,
+div.userInfo, div.userRecentChanges, div.userPreferences, div.userDataEntry, div.passwordManagement, div.watchlistManagement, div.watchlistRss, div.watchlistElements,
 div.userDashboard, #dashboardPane .dashboard {
   margin: 5px 10px 10px;
   padding: 5px 10px 10px;
 }
 
-div.highlighted-profile-section,
-div.userInfo, div.userPreferences, div.watchlistManagement, div.userDashboard {
+div.highlighted-profile-section, div.userInfo, div.userPreferences, div.userDataEntry, div.watchlistManagement, div.userDashboard {
   background-color: $theme.backgroundSecondaryColor;
 }
 
