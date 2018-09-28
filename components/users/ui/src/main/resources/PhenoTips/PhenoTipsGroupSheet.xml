@@ -51,14 +51,15 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
   #set ($postfix = " Administrators")
 #end
 ##
-#if ($xcontext.action == 'edit')
+#if ($xcontext.action == 'edit' &amp;&amp; $!{request.s} != 'dataEntry')
 (% class="xform" %)(((
 ; {{html}}&lt;label&gt;$services.localization.render('phenotips.groups.name')&lt;/label&gt;{{/html}}
 : (% class="xHint" %)$services.localization.render('phenotips.groups.nameHint')
 : {{html}}&lt;input type="text" name="title" value="$!escapetool.xml($doc.title)"/&gt;{{/html}}
 ; {{html}}&lt;label&gt;$services.localization.render('phenotips.groups.image')&lt;/label&gt;{{/html}}
 : (% class="xHint" %)$services.localization.render('phenotips.groups.imageHint')
-: $doc.display('image')
+: #if ("$!{doc.getObject('PhenoTips.PhenoTipsGroupClass').getProperty('image').value}" != '')$doc.display('image')#{else}$xwiki.getDocument('PhenoTips.PhenoTipsGroupTemplate').display('image')#{end}
+
 ; {{html}}&lt;label&gt;$services.localization.render('phenotips.groups.description')&lt;/label&gt;{{/html}}
 : (% class="xHint" %)$services.localization.render('phenotips.groups.descriptionHint')
 : $doc.display('description')
@@ -84,7 +85,9 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
 
 )))
 #else
-(% class="group-logo" %)(((#if ("$!{doc.getObject('PhenoTips.PhenoTipsGroupClass').getProperty('image').value}" != '')$doc.display('image')#{else}$xwiki.getDocument('PhenoTips.PhenoTipsGroupTemplate').display('image')#{end})))$doc.display('description')
+#if ($xcontext.action == 'view' || $!{request.s} != 'dataEntry')
+  $doc.display('description')
+#end
 
 #set ($isMyGroup = false)
 #foreach ($group in $services.groups.getGroupsForUser($services.users.getCurrentUser()))
@@ -97,7 +100,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
 (% class="clearfloats" %)((()))
 #end
 
-#if ($xcontext.action == 'view')
+#if ($xcontext.action == 'view' || $!{request.s} == 'dataEntry')
 #set ($obj = $doc.getObject('PhenoTips.PhenoTipsGroupClass'))
 #set ($sections = [
   {'id' : 'members', 'name' : "$services.localization.render('phenotips.groups.menu.groupMembers')", 'icon' : 'users', 'content' : '{{include reference="XWiki.XWikiGroupSheet"/}}'},
@@ -109,6 +112,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
 #if ($xwiki.exists('PhenoTips.StudyClass'))
   #set ($discard = $sections.add({'id' : 'studies' ,   'name' : "$services.localization.render('phenotips.groups.menu.studies')",  'icon' : 'copy', 'content' : "((({{phenotips-studies filterby='group' filterval='${services.rendering.escape($doc.fullName, $doc.syntax)}' /}})))"}))
 #end
+#set($discard = $sections.add({'id':'dataEntry', 'name' : "$services.localization.render('phenotips.groups.menu.dataEntry')", 'icon': 'edit', 'content' : '{{include reference="PhenoTips.GroupDataEntrySheet"/}}'}))
 #set ($menu = [])
 #set ($contents = {})
 #foreach ($s in $sections)
@@ -133,6 +137,15 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
 #end
 #if ($menu.size() &gt; 1)
 (% class="vertical-menu $!{options.cssClass}" %)(((
+#if ($xcontext.action == 'view' || $!{request.s} != 'dataEntry')
+(% class="group-logo" %)(((
+  #if ("$!{doc.getObject('PhenoTips.PhenoTipsGroupClass').getProperty('image').value}" != '')$doc.display('image')
+  #{else}
+    #set ($groupImageFilename = $xwiki.getDocument('PhenoTips.PhenoTipsGroupTemplate').attachmentList[0].filename)
+    {{html wiki=false clean=false}}&lt;img src="$xwiki.getDocument('PhenoTips.PhenoTipsGroupTemplate').getAttachmentURL($groupImageFilename)" alt="$groupImageFilename" style="max-width:15em"&gt;{{/html}}
+  #{end})))$doc.display('description')##
+{{html}}&lt;div&gt;&amp;nbsp;&lt;/div&gt;{{/html}}
+#end
 #foreach ($i in $menu)
 * {{html clean=false wiki=false}}&lt;a href="$i.url" id="group-section-$i.id" #if ($i.id == $crtItem) class="current" #end&gt;$i.name&lt;/a&gt;{{/html}}
 #end
@@ -349,8 +362,22 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
 }
 .group-logo {
   float: left;
-  margin: 0 10px 10px 0;
-  max-width: 30%;
+  margin: 0;
+  width: 100%;
+}
+.group-logo p {
+  margin : 0;
+}
+.group-logo img {
+  border: 1px solid #e8e8e8;
+  border-radius: 5px 5px 5px 5px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+  margin: 0 auto;
+  padding: .3em;
+  width: 95%;
+}
+.box.infomessage {
+  margin-bottom: 1em;
 }
 .vertical-menu a {
   color: $theme.textColor !important;
@@ -361,7 +388,7 @@ $xwiki.ssfx.use('icons/font-awesome/css/font-awesome.min.css')##
   font-size: 1.2em;
 }
 .menu-section {
-  margin-left: 16em;
+  margin-left: 15em;
 }
 .menu-section h2 {
   margin-top: 0;
