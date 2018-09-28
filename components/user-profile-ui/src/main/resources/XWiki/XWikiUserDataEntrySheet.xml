@@ -39,6 +39,8 @@
   <hidden>true</hidden>
   <content>{{include reference="PhenoTips.DefaultPermissionsMacros"/}}
 
+{{include reference="PhenoTips.StudiesMacros"/}}
+
 {{velocity}}
 $xwiki.ssfx.use('uicomponents/suggest/suggestPicker.css', true)##
 $xwiki.jsfx.use('uicomponents/suggest/suggestPicker.js', true)##
@@ -118,6 +120,13 @@ $xwiki.ssx.use('XWiki.XWikiUserSheet')##
       &lt;/dt&gt;
       &lt;dd&gt;
         #__displayDefaultCollaboratorPreference($entityType)
+      &lt;/dd&gt;
+###### STUDY
+      &lt;dt&gt;
+        &lt;h2&gt;$services.localization.render('platform.core.profile.category.dataEntry.study')&lt;/h2&gt;
+      &lt;/dt&gt;
+      &lt;dd&gt;
+        #__displayDefaultStudyPreference($entityType)
       &lt;/dd&gt;
     &lt;/dl&gt;
   &lt;/div&gt;
