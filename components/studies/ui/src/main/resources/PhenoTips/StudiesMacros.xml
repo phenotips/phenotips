@@ -38,6 +38,8 @@
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>true</hidden>
   <content>{{velocity output=false}}
+## getStudies()
+## collects all available studies into the $studies variable
 #macro(__getStudies)
 #set ($studies = $collectionstool.sortedSet)
 #set ($studiesVisibilityPreference = $xwiki.getDocument('XWiki.XWikiPreferences').getObject('XWiki.ConfigurationClass', 'property', 'study-visibility-option', false).getProperty('value').value)
@@ -76,6 +78,62 @@
     #end
   #end
 #end
+#end
+##
+##
+##
+#macro(__displayDefaultStudyPreference $entityType)
+  #if($xcontext.action == 'edit' &amp;&amp; $hasEdit)
+    #set($c = 'platform.core.profile.category.dataEntry.' + ${entityType} + '.studyText')
+    $services.localization.render($c)
+    #__getStudies()
+    #if($studies.size() &gt; 0)
+      #set ($defaultStudyObject = $doc.getObject($configClassName, 'property', 'defaultStudy', false))
+      #if (!$defaultStudyObject)
+        #set ($defaultStudyObject = $doc.newObject($configClassName))
+        #set ($discard = $defaultStudyObject.set('property', 'defaultStudy'))
+        #set ($discard = $defaultStudyObject.set('value', ''))
+        #set ($discard = $doc.save('Added a study reference configuration', true))
+      #end
+      #set ($defaultStudyPreference = $defaultStudyObject.getProperty('value').value)
+      #set ($prefix = "${configClassName}_${defaultStudyObject.number}_value")
+      &lt;select id="study-suggest-input" name="${prefix}" size="1"&gt;
+        &lt;option #if($defaultStudyPreference == '')selected="selected"#end value=""&gt;---&lt;/option&gt;
+        #foreach ($sName in $studies)
+          #set ($s = $xwiki.getDocument($sName))
+          #if (!$s.isNew())
+            #set ($configTitle = '')
+            #if ("$!{s.plainTitle}" != '')
+              #set ($configTitle = "$s.plainTitle")
+            #else
+              #set ($configTitle = "${s.name}")
+            #end
+            #set ($id = ${escapetool.xml($services.model.serialize($s.documentReference, 'default'))})
+            &lt;option #if($id == $defaultStudyPreference)selected#end value="$id" title="$!{escapetool.xml($s.content)}"&gt;$escapetool.xml($configTitle)&lt;/option&gt;
+          #end
+        #end
+      &lt;/select&gt;
+    #else
+      &lt;p class="intro xHint"&gt;No studies are avaialble&lt;/p&gt;
+    #end
+  #else
+    #set ($defaultStudyObject = $doc.getObject($configClassName, 'property', 'defaultStudy', false))
+    #if ($defaultStudyObject)
+      #set ($defaultStudyPreference = $defaultStudyObject.getProperty('value').value)
+      #if("$!{defaultStudyPreference}" != '')
+        #set ($s = $xwiki.getDocument("$!{defaultStudyPreference}"))
+        #if (!$s.isNew())
+          #set ($configTitle = '')
+          #if ("$!{s.plainTitle}" != '')
+            #set ($configTitle = "$s.plainTitle")
+          #else
+            #set ($configTitle = "${s.name}")
+          #end
+          $escapetool.xml($configTitle)
+        #end
+      #end
+    #end
+  #end
 #end
 {{/velocity}}
 </content>
