@@ -4581,7 +4581,7 @@ document.observe("xwiki:dom:updated", init);
         container.show();
         expandableContainer.insert(elt('dt', '', label));
         values.each(function (item) {
-          expandableContainer.insert(elt('dd', '', item.label || item));
+          expandableContainer.insert(elt('dd', '', item.name_translated || item.label || item));
         });
         this._limitDefListSize(expandableContainer);
       }
