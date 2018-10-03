@@ -92,9 +92,15 @@ $xwiki.ssx.use('XWiki.XWikiUserSheet')##
       &lt;dd&gt;
         #__displayDefaultCollaboratorPreference($entityType)
       &lt;/dd&gt;
+###### STUDY
+      &lt;dt&gt;
+        &lt;h1&gt;$services.localization.render('platform.core.profile.category.dataEntry.study')&lt;/h1&gt;
+      &lt;/dt&gt;
+      &lt;dd&gt;
+        #__displayDefaultStudyPreference($entityType)
+      &lt;/dd&gt;
     &lt;/dl&gt;
   &lt;/div&gt;
-&lt;/div&gt;
 &lt;/div&gt;
 &lt;div class="clearfloats"&gt;&amp;nbsp;&lt;/div&gt;
 {{/html}}##
