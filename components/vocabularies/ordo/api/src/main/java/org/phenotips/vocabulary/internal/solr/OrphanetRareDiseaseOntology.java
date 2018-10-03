@@ -484,6 +484,9 @@ public class OrphanetRareDiseaseOntology extends AbstractOWLSolrVocabulary
      */
     private double getNumericPrevalenceValue(@Nonnull final String fieldValue)
     {
+        if ("Unknown_epidemiological_range".equals(fieldValue)) {
+            return -1;
+        }
         try {
             final Matcher matcher = PREV_PATTERN.matcher(fieldValue);
             if (matcher.find()) {
