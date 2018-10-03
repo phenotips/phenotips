@@ -218,7 +218,7 @@ public abstract class AbstractOWLSolrVocabulary extends AbstractSolrVocabulary
         if (StringUtils.isNotBlank(version)) {
             doc.addField(ID_FIELD_NAME, HEADER_INFO_LABEL);
             doc.addField(VERSION_FIELD_NAME, version);
-            this.externalServicesAccess.getSolrConnection(this).add(doc);
+            this.externalServicesAccess.getReplacementSolrConnection(this).add(doc);
             doc.clear();
         }
     }
