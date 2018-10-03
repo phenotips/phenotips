@@ -141,8 +141,7 @@ public class OrphanetRareDiseaseOntology extends AbstractOWLSolrVocabulary
     @Override
     public String getDefaultSourceLocation()
     {
-        return "http://data.bioontology.org/ontologies/ORDO/submissions/10/download"
-            + "?apikey=8b5b7825-538d-40e0-9e9e-5ab9274a9aeb";
+        return "https://data.bioontology.org/ontologies/ORDO/download?apikey=8ac0298d-99f4-4793-8c70-fb7d3400f279";
     }
 
     @Override
