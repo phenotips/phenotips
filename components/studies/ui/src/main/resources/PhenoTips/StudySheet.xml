@@ -44,7 +44,7 @@ $xwiki.jsx.use('PhenoTips.StudySheet')##
 #set ($groupsCount = $groups.count())
 #set ($casesCount = $services.query.xwql('from doc.object(PhenoTips.PatientClass) as p, doc.object(PhenoTips.StudyBindingClass) as o where o.studyReference = :study').bindValue('study', $services.model.serialize($doc.documentReference, 'default')).count())
 
-#if ($xcontext.action == 'edit')
+#if ($xcontext.action == 'edit' &amp;&amp; $!{request.s} != 'dataEntry')
 (% class="xform" %)(((
 ; {{html}}&lt;label&gt;$services.localization.render('phenotips.studySheet.studyName')&lt;/label&gt;{{/html}}
 : (% class="xHint" %)$services.localization.render('phenotips.studySheet.studyName.hint')
@@ -58,12 +58,13 @@ $xwiki.jsx.use('PhenoTips.StudySheet')##
 )))
 #else
 #if ("$!{doc.content}" != '')((($!doc.content)))#end
-#if ($xcontext.action == 'view')
+#if ($xcontext.action == 'view' || $!{request.s} == 'dataEntry')
 #set ($filterVal = $services.rendering.escape($doc.fullName, $doc.syntax))
 #set ($sections = [
   {'id' : 'cases',   'name' : "$services.localization.render('phenotips.studySheet.casesSection', [$casesCount])",  'icon' : 'folder-open', 'content' : '{{include reference="PhenoTips.StudyCases"/}}'},
   {'id' : 'members', 'name' : "$services.localization.render('phenotips.studySheet.groupsSection', [$groupsCount])", 'icon' : 'group',       'content' : "((({{phenotips-groups filterby='studies' filterval='$filterVal' /}})))"},
-  {'id' : 'form' ,   'name' : "$services.localization.render('phenotips.studySheet.formConfigSection')",  'icon' : 'cog',        'content' : "{{include reference='PhenoTips.FormDesigner' /}}"}
+  {'id' : 'form' ,   'name' : "$services.localization.render('phenotips.studySheet.formConfigSection')",  'icon' : 'cog',        'content' : "{{include reference='PhenoTips.FormDesigner' /}}"},
+  {'id':'dataEntry', 'name' : "$services.localization.render('phenotips.groups.menu.dataEntry')", 'icon': 'edit', 'content' : "{{include reference='PhenoTips.StudyDataEntrySheet' /}}"}
 ])
 #set ($menu = [])
 #set ($contents = {})
@@ -324,7 +325,7 @@ $xwiki.jsx.use('PhenoTips.StudySheet')##
   font-size: 1.2em;
 }
 .menu-section {
-  margin-left: 16em;
+  margin-left: 14em;
 }
 .menu-section h2 {
   margin-top: 0;
