@@ -28,7 +28,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.apache.commons.httpclient.HttpStatus;
+import org.apache.http.HttpStatus;
 
 /**
  * A service to add or remove a lock object to a record. The lock object will remove edit rights for all users on the
