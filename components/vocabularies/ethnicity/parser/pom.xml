@@ -26,6 +26,7 @@
     <version>1.4-SNAPSHOT</version>
   </parent>
   <artifactId>vocabulary-ethnicity-parser</artifactId>
+  <name>PhenoTips - Vocabularies - Ethnicity Ontology Integration - WikiPedia HTML parser</name>
 
   <properties>
     <checkstyle.suppressions.location>${basedir}/src/checkstyle/checkstyle-suppressions.xml</checkstyle.suppressions.location>

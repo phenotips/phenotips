@@ -29,7 +29,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 /**
- * Parses the HTML table obtained from {@link https://en.wikipedia.org/wiki/List_of_contemporary_ethnic_groups} and
+ * Parses the HTML table obtained from https://en.wikipedia.org/wiki/List_of_contemporary_ethnic_groups and
  * generate a document that can be sent to Solr for indexing.
  *
  * @version $Id$

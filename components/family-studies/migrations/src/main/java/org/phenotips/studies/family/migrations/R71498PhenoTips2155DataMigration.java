@@ -876,6 +876,7 @@ public class R71498PhenoTips2155DataMigration extends AbstractHibernateDataMigra
                 return result;
             }
 
+            @SuppressWarnings("checkstyle:NPathComplexity")
             public JSONArray getPedigreeJSON()
             {
                 // due to the way pedigree editor simpleJSON import works, siblings should

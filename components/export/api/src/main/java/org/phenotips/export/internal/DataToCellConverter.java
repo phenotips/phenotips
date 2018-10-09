@@ -59,8 +59,13 @@ import com.xpn.xwiki.doc.XWikiDocument;
  * @version $Id$
  * @since 1.0RC1
  */
+@SuppressWarnings({ "checkstyle:NPathComplexity", "checkstyle:CyclomaticComplexity", "checkstyle:JavadocMethod",
+    "checkstyle:ExecutableStatementCount", "checkstyle:MultipleStringLiterals", "checkstyle:JavaNCSS" })
 public class DataToCellConverter
 {
+    /** The maximum number of characters to allow in free-text cells; longer text is wrapped in shorter lines. */
+    public static final Integer MAX_CHARACTERS_PER_LINE = 100;
+
     private static final String ALLERGIES = "allergies";
 
     private Map<String, Set<String>> enabledHeaderIdsBySection = new HashMap<>();
@@ -68,8 +73,6 @@ public class DataToCellConverter
     private ConversionHelpers phenotypeHelper;
 
     private ConversionHelpers prenatalPhenotypeHelper;
-
-    public static final Integer MAX_CHARACTERS_PER_LINE = 100;
 
     private TranslationManager translationManager;
 
@@ -283,6 +286,9 @@ public class DataToCellConverter
                         break;
                     case "comments":
                         value = gene.getComment();
+                        break;
+                    default:
+                        // No other fields supported yet
                         break;
                 }
                 section.addCell(new DataCell(value, x++, y));
@@ -801,7 +807,7 @@ public class DataToCellConverter
         int hX = 0;
 
         for (String fieldId : fields) {
-            if (fieldId.equals("parentalAge")) {
+            if ("parentalAge".equals(fieldId)) {
                 for (String field : parentalFields) {
                     DataCell headerCell = new DataCell(this.translationManager
                         .translate("phenotips.export.excel.label.prenatalPerinatalHistory." + field),
@@ -809,7 +815,7 @@ public class DataToCellConverter
                     headerSection.addCell(headerCell);
                     hX++;
                 }
-            } else if (fieldId.equals("apgar1")) {
+            } else if ("apgar1".equals(fieldId)) {
                 for (String apgarId : apgarFields) {
                     DataCell headerCell = new DataCell(this.translationManager
                         .translate("phenotips.export.excel.label.prenatalPerinatalHistory." + apgarId),
@@ -817,7 +823,7 @@ public class DataToCellConverter
                     headerSection.addCell(headerCell);
                     hX++;
                 }
-            } else if (fieldId.equals("obstetricHistory")) {
+            } else if ("obstetricHistory".equals(fieldId)) {
                 for (String field : obstetricFields) {
                     DataCell headerCell = new DataCell(this.translationManager
                         .translate("phenotips.export.excel.label.prenatalPerinatalHistory." + field),

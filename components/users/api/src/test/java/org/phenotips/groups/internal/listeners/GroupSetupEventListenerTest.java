@@ -58,7 +58,6 @@ import com.xpn.xwiki.internal.model.reference.CurrentReferenceDocumentReferenceR
 import com.xpn.xwiki.internal.model.reference.CurrentReferenceEntityReferenceResolver;
 import com.xpn.xwiki.objects.BaseObject;
 import com.xpn.xwiki.web.Utils;
-
 import net.jcip.annotations.NotThreadSafe;
 
 import static org.mockito.Matchers.any;

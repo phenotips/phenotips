@@ -51,7 +51,7 @@ public class Styler
      * The {@link org.apache.poi.ss.usermodel.Workbook} can have only a limited number of styles. The cache prevents
      * creation of duplicates.
      */
-    private Map<Set<StyleOption>, CellStyle> styleCache = new HashMap<Set<StyleOption>, CellStyle>();
+    private Map<Set<StyleOption>, CellStyle> styleCache = new HashMap<>();
 
     /** Cached font. */
     private Font defaultFont;
@@ -82,8 +82,8 @@ public class Styler
     /**
      * Styles the bottom cells of the section. Creates new {@link org.phenotips.export.internal.DataCell}s, if missing.
      * This is a static function that is used outside of this class in the final stages of committing cells to a
-     * spreadsheet. For example, {@link org.phenotips.export.internal.SheetAssembler#SheetAssembler(java.util.Set,
-     * java.util.List)}.
+     * spreadsheet. For example,
+     * {@link org.phenotips.export.internal.SheetAssembler#SheetAssembler(java.util.Set, java.util.List)}.
      *
      * @param section cannot be null
      * @param style the style to apply
@@ -108,8 +108,8 @@ public class Styler
     }
 
     /**
-     * Styles the leftmost and rightmost cells of the section. Creates new {@link org.phenotips.export.internal
-     * .DataCell}s, if missing.
+     * Styles the leftmost and rightmost cells of the section. Creates new
+     * {@link org.phenotips.export.internal .DataCell}s, if missing.
      *
      * @param section cannot be null
      * @param styleLeft the style to apply to the leftmost cells
@@ -152,6 +152,7 @@ public class Styler
      * @param styles an array of styles to look for
      * @throws Exception if the section was not {@link DataSection#finalizeToMatrix()}
      */
+    @SuppressWarnings({ "checkstyle:NPathComplexity", "checkstyle:CyclomaticComplexity" })
     public static void extendStyleHorizontally(DataSection section, StyleOption... styles)
         throws Exception
     {
@@ -161,7 +162,7 @@ public class Styler
         }
 
         for (int y = 0; y <= section.getMaxY(); y++) {
-            Set<StyleOption> toExtend = new HashSet<StyleOption>();
+            Set<StyleOption> toExtend = new HashSet<>();
             Integer startingX = 0;
             Boolean found = false;
             for (int x = 0; x <= section.getMaxX(); x++) {
@@ -206,6 +207,7 @@ public class Styler
      * @param styles an array of styles to look for
      * @throws Exception if the section was not {@link DataSection#finalizeToMatrix()}
      */
+    @SuppressWarnings({ "checkstyle:NPathComplexity", "checkstyle:CyclomaticComplexity" })
     public static void extendStyleVertically(DataSection section, StyleOption... styles)
         throws Exception
     {
@@ -215,7 +217,7 @@ public class Styler
         }
 
         for (int x = 0; x <= section.getMaxX(); x++) {
-            Set<StyleOption> toExtend = new HashSet<StyleOption>();
+            Set<StyleOption> toExtend = new HashSet<>();
             Boolean found = false;
             for (int y = 0; y <= section.getMaxY(); y++) {
                 found = false;
@@ -286,8 +288,7 @@ public class Styler
     }
 
     /**
-     * In case a {@link org.phenotips.export.internal.DataCell} does not have its styles set, applies the default
-     * style.
+     * In case a {@link org.phenotips.export.internal.DataCell} does not have its styles set, applies the default style.
      */
     private boolean setDefaultStyle(Set<StyleOption> styles, Cell cell, CellStyle cellStyle)
     {
