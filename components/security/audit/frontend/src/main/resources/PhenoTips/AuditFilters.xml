@@ -66,6 +66,7 @@
                                                                            &lt;option value="get" &gt;$services.localization.render('phenotips.auditFilters.action.get')&lt;/option&gt;
                                                                            &lt;option value="export" &gt;$services.localization.render('phenotips.auditFilters.action.export')&lt;/option&gt;
                                                                            &lt;option value="download" &gt;$services.localization.render('phenotips.auditFilters.action.download')&lt;/option&gt;
+                                                                           &lt;option value="push" &gt;$services.localization.render('phenotips.auditFilters.action.push')&lt;/option&gt;
                                                                            &lt;option value="delete" &gt;$services.localization.render('phenotips.auditFilters.action.delete')&lt;/option&gt;
                                                                            &lt;option value="save" &gt;$services.localization.render('phenotips.auditFilters.action.save')&lt;/option&gt;
                                                                            &lt;option value="login" &gt;$services.localization.render('phenotips.auditFilters.action.login')&lt;/option&gt;
