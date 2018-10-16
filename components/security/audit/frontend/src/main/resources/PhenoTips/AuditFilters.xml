@@ -40,6 +40,56 @@
   <content>{{velocity output=false}}
 #set ($dateFormat = "MM/dd/yyyy")
 ##
+## PROCESS THE REQUEST FILTERS
+##
+## TIMESTAMP
+##
+#set ($fromTimeFilter = $request.fromTime)
+#set ($toTimeFilter = $request.fromTime)
+##
+## USER
+##
+#set ($userFilter = $request.user)
+#if ("$!userFilter" == '' || "$!{xwiki.getDocument($userFilter).getObject('XWiki.XWikiUsers')}" == '')
+  ## The requested user is not a real user. Try to see if we're on a user profile
+  #if ("$!{doc.getObject('XWiki.XWikiUsers')}" != '')
+    #set ($userFilter = $doc.documentReference)
+    #set ($hideUserFilter = true)
+  #else
+    ## Reset the user filter in case it was initialized with garbage from the request
+    #set ($userFilter = '')
+  #end
+#end
+##
+## IP
+## 
+#set ($ipFilter = $request.ip) 
+##
+## ACTION
+##
+#set ($supportedActions = ['view', 'edit', 'get', 'export', 'push', 'download', 'delete', 'save', 'login', 'logout', 'cancel'])
+#if ($supportedActions.contains("$!{request.action}"))
+  #set ($actionFilter = $request.action)
+  #set ($hideActionFilter = $request.hideActionFilter)
+#end
+##
+## RECORD
+##
+#set ($recordFilter = $request.record)
+#if ("$!{recordFilter}" == '' || $xwiki.getDocument($recordFilter).isNew())
+  ## TODO: fix the display of the record filter with value
+  ## The requested record does not exist. If we're not on the admin action, default to the current document
+  #if ($xcontext.action != 'admin')
+    #set ($recordFilter = $doc.documentReference)
+    #set ($hideRecordFilter = true)
+  #else
+    ## Reset the record filter in case it was initialized with garbage from the request
+    #set ($recordFilter = '')
+  #end
+#end
+##
+##
+##
 ##
 #macro (__filters_dateRange $dateStart $dateEnd)
 (% class="date-range" %)(((
@@ -56,24 +106,43 @@
 #macro(__filters_display $cssClass)
 {{html clean='false' wiki='true'}}&lt;span class='buttonwrapper'&gt;&lt;a class='button toggle-filters' href='#'&gt;{{icon name='filter' /}}&lt;span class='label'&gt;$services.localization.render('phenotips.allData.filterButton')&lt;/span&gt;&lt;input type="hidden" name="user-hash" value="$!{xcontext.userReference.hashCode()}"/&gt;{{icon name='angle-double-left' cssClass='collapse-marker' /}}{{icon name='angle-double-down' cssClass='expand-marker' /}}&lt;/a&gt;&lt;/span&gt;{{/html}}
 (% class="filters $!cssClass" %)
-* $services.localization.render('phenotips.auditFilters.timestamp') #__filters_dateRange()
-* $services.localization.render('phenotips.auditFilters.user') {{html clean=false}}&lt;input type="text" class="suggestUsers" name="user" value=""/&gt;{{/html}}
-* $services.localization.render('phenotips.auditFilters.ip') {{html clean=false}}&lt;input type="text" name="ip" value=""/&gt;{{/html}}
+##
+## TIMESTAMP FILTERS
+##
+* $services.localization.render('phenotips.auditFilters.timestamp') #__filters_dateRange($fromTimeFilter, $toTimeFilter)
+##
+## USER FILTER
+##
+#if ($hideUserFilter)
+* {{html clean=false}}&lt;input type="hidden" name="user" value="$!{userFilter}"/&gt;{{/html}}
+#else
+* $services.localization.render('phenotips.auditFilters.user') {{html clean=false}}&lt;input type="text" class="suggestUsers" name="user" value="$!{userFilter}"/&gt;{{/html}}
+#end
+##
+## IP FILTER
+##
+* $services.localization.render('phenotips.auditFilters.ip') {{html clean=false}}&lt;input type="text" name="ip" value="$!{ipFilter}"/&gt;{{/html}}
+##
+## ACTION FILTER
+##
+#if ($hideActionFilter)
+* {{html clean=false}}&lt;input type="hidden" name="action" value="$!{actionFilter}"/&gt;{{/html}}
+#else
 * $services.localization.render('phenotips.auditFilters.action') {{html clean=false}}&lt;select name="action"&gt;
                                                                            &lt;option value="" selected="selected"&gt;$services.localization.render('phenotips.auditFilters.action.all')&lt;/option&gt;
-                                                                           &lt;option value="view" &gt;$services.localization.render('phenotips.auditFilters.action.view')&lt;/option&gt;
-                                                                           &lt;option value="edit" &gt;$services.localization.render('phenotips.auditFilters.action.edit')&lt;/option&gt;
-                                                                           &lt;option value="get" &gt;$services.localization.render('phenotips.auditFilters.action.get')&lt;/option&gt;
-                                                                           &lt;option value="export" &gt;$services.localization.render('phenotips.auditFilters.action.export')&lt;/option&gt;
-                                                                           &lt;option value="download" &gt;$services.localization.render('phenotips.auditFilters.action.download')&lt;/option&gt;
-                                                                           &lt;option value="push" &gt;$services.localization.render('phenotips.auditFilters.action.push')&lt;/option&gt;
-                                                                           &lt;option value="delete" &gt;$services.localization.render('phenotips.auditFilters.action.delete')&lt;/option&gt;
-                                                                           &lt;option value="save" &gt;$services.localization.render('phenotips.auditFilters.action.save')&lt;/option&gt;
-                                                                           &lt;option value="login" &gt;$services.localization.render('phenotips.auditFilters.action.login')&lt;/option&gt;
-                                                                           &lt;option value="logout" &gt;$services.localization.render('phenotips.auditFilters.action.logout')&lt;/option&gt;
-                                                                           &lt;option value="cancel" &gt;$services.localization.render('phenotips.auditFilters.action.cancel')&lt;/option&gt;
+                                                                           #foreach ($a in $supportedActions)
+                                                                             &lt;option value="${a}" #if (${a} == $actionFilter) selected="selected" #end&gt;$services.localization.render("phenotips.auditFilters.action.${a}")&lt;/option&gt;
+                                                                           #end
                                                                           &lt;/select&gt;{{/html}}
+#end
+##
+## RECORD FILTER
+##
+#if ($hideRecordFilter)
+* {{html clean=false}}&lt;input type="hidden" name="record" value="$!{recordFilter}"/&gt;{{/html}}
+#else
 * $services.localization.render('phenotips.auditFilters.entity') {{html clean=false}}&lt;input type="text" class="suggestEntity" value=""/&gt;{{/html}}
+#end
 #end
 {{/velocity}}</content>
 </xwikidoc>
