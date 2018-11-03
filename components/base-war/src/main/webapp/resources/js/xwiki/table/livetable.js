@@ -181,6 +181,10 @@ XWiki.widgets.LiveTable = Class.create({
       {
         method: 'get',
         onComplete: function( transport ) {
+          if (transport.responseJSON && transport.responseJSON.reqNo < self.sendReqNo) {
+            // Results for a previous request, still waiting for the most recent request to complete
+            return;
+          }
           // Let code know loading is finished
           // 1. Named event (for code interested by that table only)
           document.fire("xwiki:livetable:" + self.domNodeName + ":loadingComplete", {
