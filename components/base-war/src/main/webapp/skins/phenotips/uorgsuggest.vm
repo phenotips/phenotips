@@ -10,7 +10,7 @@ $response.setContentType("text/xml")
   #if ($request.uorg == 'user')
     #set ($statement = "from doc.object(XWiki.XWikiUsers) as user where lower(doc.name) like :input or concat(concat(lower(user.first_name), ' '), lower(user.last_name)) like :input order by user.first_name, user.last_name")
   #else
-    #set ($statement = 'from doc.object(XWiki.XWikiGroups) as groups where lower(doc.name) like :input and doc.fullName <> ''XWiki.XWikiGroupTemplate'' order by doc.name')
+    #set ($statement = 'from doc.object(PhenoTips.PhenoTipsGroupClass) as groups where (lower(doc.name) like :input or lower(doc.title) like :input) and doc.fullName <> ''PhenoTips.PhenoTipsGroupTemplate'' order by doc.name')
   #end
   #set ($query = $services.query.xwql($statement).setWiki($wikiReference.name).addFilter('unique'))
   #set ($discard = $query.setOffset(0).setLimit(10).bindValue('input', "%$input%"))
