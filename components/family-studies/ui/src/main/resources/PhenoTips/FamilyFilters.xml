@@ -54,24 +54,37 @@
 #end
 
 #macro(__filters_display $cssClass $showHideButton)
+#if (!$!{exclusions})
+  #set ($exclusions = [])
+#end
 #if ($showHideButton)
 {{html clean='false' wiki='true'}}&lt;span class='buttonwrapper'&gt;&lt;a class='button toggle-filters' href='#'&gt;{{icon name='filter' /}}&lt;span class='label'&gt;$services.localization.render('phenotips.allData.filterButton')&lt;/span&gt;&lt;input type="hidden" name="user-hash" value="$!{xcontext.userReference.hashCode()}"/&gt;{{icon name='angle-double-left' cssClass='collapse-marker' /}}{{icon name='angle-double-down' cssClass='expand-marker' /}}&lt;/a&gt;&lt;/span&gt;{{/html}}
 #end
 (% class="filters $!cssClass" %)
-* $services.localization.render('phenotips.databaseFilters.externalID') {{html clean=false}}&lt;input type="text" name="external_id" value=""/&gt;{{/html}}
-#if (!$xwiki.getDocument('PhenoTips.VisibilityClass').isNew())
-  * $services.localization.render('phenotips.databaseFilters.visibility') {{html clean=false}}#foreach ($visibility in $services.permissions.listVisibilityOptions())&lt;br /&gt;&lt;label&gt;&lt;input type="checkbox" class="multipleSelection privacyExport" name="visibility" value="$visibility.name"#if ($visibility.name != 'hidden') checked="checked"#end /&gt; $visibility.label&lt;/label&gt;#end&lt;input type="hidden" name="visibility/class" value="PhenoTips.VisibilityClass"/&gt;{{/html}}
+#if (!$exclusions.contains('external_id'))
+  * $services.localization.render('phenotips.databaseFilters.externalID') {{html clean=false}}&lt;input type="text" name="external_id" value=""/&gt;{{/html}}
 #end
-* $services.localization.render('phenotips.databaseFilters.referrer') {{html clean=false}}&lt;input type="text" class="suggestUsers multipleSelection" name="doc.creator" value=""/&gt;{{/html}}
-#if (!$xwiki.getDocument('PhenoTips.OwnerClass').isNew())
+#if (!$exclusions.contains('visibility') &amp;&amp; !$xwiki.getDocument('PhenoTips.VisibilityClass').isNew())
+  * $services.localization.render('phenotips.databaseFilters.visibility') {{html clean=false}}#foreach ($visibility in $services.permissions.listVisibilityOptions())&lt;br /&gt;&lt;label&gt;&lt;input type="checkbox" class="multipleSelection privacyExport" name="visibility" value="$visibility.name"#if ($visibility.name != 'hidden') checked="checked"#end /&gt; $visibility.label&lt;/label&gt;#end&lt;input type="hidden" name="visibility/class" value="PhenoTips.VisibilityClass"/&gt;&lt;input type="hidden" value="exact" name="visibility/match" /&gt;{{/html}}
+#end
+#if (!$exclusions.contains('doc.creator'))
+  * $services.localization.render('phenotips.databaseFilters.referrer') {{html clean=false}}&lt;input type="text" class="suggestUsers multipleSelection" name="doc.creator" value=""/&gt;{{/html}}
+#end
+#if (!$exclusions.contains('owner') &amp;&amp; !$xwiki.getDocument('PhenoTips.OwnerClass').isNew())
   * $services.localization.render('phenotips.databaseFilters.owner') {{html clean=false}}&lt;input type="hidden" name="owner/class" value="PhenoTips.OwnerClass"/&gt;&lt;input type="hidden" name="owner/match" value="fullReference"/&gt;&lt;input type="text" class="suggestUsersAndGroups multipleSelection" name="owner" value=""/&gt;{{/html}}
 #end
-#if (!$xwiki.getDocument('PhenoTips.CollaboratorClass').isNew())
+#if (!$exclusions.contains('collaborator') &amp;&amp; !$xwiki.getDocument('PhenoTips.CollaboratorClass').isNew())
   * $services.localization.render('phenotips.databaseFilters.collaborator') {{html clean=false}}&lt;input type="hidden" name="collaborator/class" value="PhenoTips.CollaboratorClass"/&gt;&lt;input type="hidden" name="collaborator/match" value="fullReference"/&gt;&lt;input type="text" class="suggestUsersAndGroups multipleSelection" name="collaborator" value=""/&gt;&lt;input type='hidden' name='collaborator/join_mode' value='OR'/&gt;{{/html}}
 #end
-* $services.localization.render('phenotips.databaseFilters.author') {{html clean=false}}&lt;input type="text" class="suggestUsers multipleSelection" name="doc.author" value=""/&gt;{{/html}}
-* $services.localization.render('phenotips.databaseFilters.creationDate') #__filters_dateRange("doc.creationDate")
-* $services.localization.render('phenotips.databaseFilters.modificationDate') #__filters_dateRange("doc.date")
+#if (!$exclusions.contains('doc.author'))
+  * $services.localization.render('phenotips.databaseFilters.author') {{html clean=false}}&lt;input type="text" class="suggestUsers multipleSelection" name="doc.author" value=""/&gt;{{/html}}
+#end
+#if (!$exclusions.contains('doc.creationDate'))
+  * $services.localization.render('phenotips.databaseFilters.creationDate') #__filters_dateRange("doc.creationDate")
+#end
+#if (!$exclusions.contains('doc.date'))
+  * $services.localization.render('phenotips.databaseFilters.modificationDate') #__filters_dateRange("doc.date")
+#end
 #end
 {{/velocity}}</content>
 </xwikidoc>
