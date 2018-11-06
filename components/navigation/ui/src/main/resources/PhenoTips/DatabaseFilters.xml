@@ -107,7 +107,7 @@
 #__filters_labeledIdentifiers()
 #end
 #if (!$exclusions.contains('visibility') &amp;&amp; !$xwiki.getDocument('PhenoTips.VisibilityClass').isNew())
-  * $services.localization.render('phenotips.databaseFilters.visibility') {{html clean=false}}#foreach ($visibility in $services.permissions.listVisibilityOptions())&lt;br /&gt;&lt;label&gt;&lt;input type="checkbox" class="multipleSelection privacyExport" name="visibility" value="$visibility.name"#if ($visibility.name != 'hidden') checked="checked"#end /&gt; $visibility.label&lt;/label&gt;#end&lt;input type="hidden" name="visibility/class" value="PhenoTips.VisibilityClass"/&gt;{{/html}}
+  * $services.localization.render('phenotips.databaseFilters.visibility') {{html clean=false}}#foreach ($visibility in $services.permissions.listVisibilityOptions())&lt;br /&gt;&lt;label&gt;&lt;input type="checkbox" class="multipleSelection privacyExport" name="visibility" value="$visibility.name"#if ($visibility.name != 'hidden') checked="checked"#end /&gt; $visibility.label&lt;/label&gt;#end&lt;input type="hidden" name="visibility/class" value="PhenoTips.VisibilityClass"/&gt;&lt;input type="hidden" value="exact" name="visibility/match" /&gt;{{/html}}
 #end
 #if(!$exclusions.contains('doc.creator'))
   * $services.localization.render('phenotips.databaseFilters.referrer') {{html clean=false}}&lt;input type="text" class="suggestUsers multipleSelection" name="doc.creator" value=""/&gt;{{/html}}
