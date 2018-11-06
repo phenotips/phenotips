@@ -53,7 +53,7 @@
 {{html clean="false"}}&lt;label&gt;$label &lt;input class="xwiki-date" type="text" alt="#if($value)#formatdateISO($value)#end" value="$!xwiki.formatDate($value, $definedFormat)" name="${field_name}" title="${dateFormat}" /&gt;&lt;/label&gt;{{/html}}
 #end
 
-#macro(__filters_display $cssClass $showHideButton)
+#macro(__filters_display $cssClass $showHideButton $exclusions)
 #if (!$!{exclusions})
   #set ($exclusions = [])
 #end
