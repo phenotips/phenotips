@@ -111,11 +111,11 @@
       <content>{{velocity}}
 #if ($isGuest)
   #set ($availableData = $services.query.xwql(
-    "from doc.object(PhenoTips.FamilyClass) as family, doc.object(PhenoTips.OwnerClass) as owner where doc.fullName &lt;&gt; 'PhenoTips.FamilyTemplate' and (owner.owner = '' or owner.owner is null) and family.identifier &gt;= 0").addFilter(
+    "from doc.object(PhenoTips.FamilyClass) as family, doc.object(PhenoTips.OwnerClass) as owner where doc.fullName &lt;&gt; 'PhenoTips.FamilyTemplate' and (owner.owner = '' or owner.owner is null)").addFilter(
     'unique').count())
 #else
   #set ($availableData = $services.query.xwql(
-    "from doc.object(PhenoTips.FamilyClass) as family, doc.object(PhenoTips.OwnerClass) as owner where doc.fullName &lt;&gt; 'PhenoTips.FamilyTemplate' and owner.owner = :o and family.identifier &gt;= 0").bindValue(
+    "from doc.object(PhenoTips.FamilyClass) as family, doc.object(PhenoTips.OwnerClass) as owner where doc.fullName &lt;&gt; 'PhenoTips.FamilyTemplate' and owner.owner = :o").bindValue(
     'o', $services.model.serialize($xcontext.userReference, 'default')).addFilter('unique').count())
 #end
 #if ($availableData &gt; 0)
@@ -159,14 +159,14 @@
       'defaultOrder'      : 'asc',
       'resultPage'        : 'PhenoTips.LiveTableResults'
     })
-    #set ($filterFrom = ", BaseObject ownerObj, StringProperty ownerProp, LongProperty iid")
+    #set ($filterFrom = ", BaseObject ownerObj, StringProperty ownerProp")
     #if ($isGuest)
       #set ($filterWhere =
-        "and iid.id.id = obj.id and iid.id.name = 'identifier' and iid.value &gt;= 0 and ownerObj.name = doc.fullName and ownerObj.className = 'PhenoTips.OwnerClass' and ownerProp.id.id = ownerObj.id and (ownerProp.value = '' or ownerProp.value is null)")
+        "and ownerObj.name = doc.fullName and ownerObj.className = 'PhenoTips.OwnerClass' and ownerProp.id.id = ownerObj.id and (ownerProp.value = '' or ownerProp.value is null)")
     #else
       #set ($o = $escapetool.sql($services.model.serialize($xcontext.userReference, 'default')))
       #set ($filterWhere =
-        "and iid.id.id = obj.id and iid.id.name = 'identifier' and iid.value &gt;= 0 and ownerObj.name = doc.fullName and ownerObj.className = 'PhenoTips.OwnerClass' and ownerProp.id.id = ownerObj.id and ownerProp.value = '${o}'")
+        "and ownerObj.name = doc.fullName and ownerObj.className = 'PhenoTips.OwnerClass' and ownerProp.id.id = ownerObj.id and ownerProp.value = '${o}'")
     #end
     #set ($discard = $options.put(
       'extraParams', "&amp;filterFrom=${escapetool.url($filterFrom)}&amp;filterWhere=${escapetool.url($filterWhere)}"))

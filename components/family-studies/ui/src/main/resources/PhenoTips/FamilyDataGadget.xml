@@ -109,7 +109,7 @@
     </class>
     <property>
       <content>{{velocity}}
-#set ($availableData = $services.query.xwql("from doc.object(PhenoTips.FamilyClass) as family where doc.fullName &lt;&gt; 'PhenoTips.FamilyTemplate' and family.identifier &gt;= 0").addFilter('unique').count())
+#set ($availableData = $services.query.xwql("from doc.object(PhenoTips.FamilyClass) as family where doc.fullName &lt;&gt; 'PhenoTips.FamilyTemplate'").addFilter('unique').count())
 #if ($availableData &gt; 0)
   $xwiki.ssfx.use('uicomponents/suggest/suggestPicker.css', true)##
   $xwiki.jsfx.use('uicomponents/suggest/suggestPicker.js', true)##
@@ -151,10 +151,6 @@
       'defaultOrder'      : 'asc',
       'resultPage'        : 'PhenoTips.LiveTableResults'
     })
-    #set ($filterFrom = ", LongProperty iid")
-    #set ($filterWhere = "and iid.id.id = obj.id and iid.id.name = 'identifier' and iid.value &gt;= 0")
-    #set ($discard = $options.put(
-      'extraParams', "&amp;filterFrom=${escapetool.url($filterFrom)}&amp;filterWhere=${escapetool.url($filterWhere)}"))
     #if ("$!config.getProperty('livetableRows').value" != '' &amp;&amp; $config.getProperty('livetableRows').value &gt; 0)
       #set ($options.rowCount = $config.getProperty('livetableRows').value)
     #end
