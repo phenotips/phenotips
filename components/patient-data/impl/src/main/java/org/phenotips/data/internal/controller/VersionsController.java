@@ -26,7 +26,8 @@ import org.phenotips.data.PatientDataController;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.extension.distribution.internal.DistributionManager;
+import org.xwiki.extension.repository.CoreExtensionRepository;
+import org.xwiki.extension.version.Version;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.EntityReference;
 
@@ -116,9 +117,10 @@ public class VersionsController extends AbstractSimpleController
     private void addPhenoTipsVersion(Map<String, String> versions)
     {
         try {
-            DistributionManager distribution =
-                ComponentManagerRegistry.getContextComponentManager().getInstance(DistributionManager.class);
-            versions.put("phenotips_version", distribution.getDistributionExtension().getId().getVersion().toString());
+            CoreExtensionRepository coreExtensionRepository =
+                ComponentManagerRegistry.getContextComponentManager().getInstance(CoreExtensionRepository.class);
+            Version v = coreExtensionRepository.getCoreExtension("org.phenotips:patient-data-api").getId().getVersion();
+            versions.put("phenotips_version", v.toString());
         } catch (ComponentLookupException ex) {
             // Shouldn't happen
             this.logger.error("Could not find DistributionManager component");

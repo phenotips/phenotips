@@ -30,7 +30,7 @@ import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.component.util.ReflectionUtils;
 import org.xwiki.extension.CoreExtension;
 import org.xwiki.extension.ExtensionId;
-import org.xwiki.extension.distribution.internal.DistributionManager;
+import org.xwiki.extension.repository.CoreExtensionRepository;
 import org.xwiki.extension.version.Version;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
@@ -102,7 +102,10 @@ public class VersionsControllerTest
     private ComponentManager contextComponentManager;
 
     @Mock
-    private DistributionManager distributionManager;
+    private CoreExtensionRepository repo;
+
+    @Mock
+    private CoreExtension patientDataExtension;
 
     @Before
     public void setUp() throws Exception
@@ -124,11 +127,10 @@ public class VersionsControllerTest
 
         ReflectionUtils.setFieldValue(new ComponentManagerRegistry(), "cmProvider", this.cmProvider);
         doReturn(this.contextComponentManager).when(this.cmProvider).get();
-        doReturn(this.distributionManager).when(this.contextComponentManager).getInstance(DistributionManager.class);
-        CoreExtension coreExtension = Mockito.mock(CoreExtension.class);
-        doReturn(coreExtension).when(this.distributionManager).getDistributionExtension();
+        doReturn(this.repo).when(this.contextComponentManager).getInstance(CoreExtensionRepository.class);
+        doReturn(this.patientDataExtension).when(this.repo).getCoreExtension("org.phenotips:patient-data-api");
         ExtensionId id = Mockito.mock(ExtensionId.class);
-        doReturn(id).when(coreExtension).getId();
+        doReturn(id).when(this.patientDataExtension).getId();
         Version version = Mockito.mock(Version.class);
         doReturn(version).when(id).getVersion();
         when(version.toString()).thenReturn(PHENOTIPS_VERSION_STRING);
@@ -216,7 +218,7 @@ public class VersionsControllerTest
         throws ComponentLookupException
     {
         ComponentLookupException exception = new ComponentLookupException("message");
-        doThrow(exception).when(this.contextComponentManager).getInstance(DistributionManager.class);
+        doThrow(exception).when(this.contextComponentManager).getInstance(CoreExtensionRepository.class);
 
         PatientData<String> result = this.mocker.getComponentUnderTest().load(this.patient);
 
