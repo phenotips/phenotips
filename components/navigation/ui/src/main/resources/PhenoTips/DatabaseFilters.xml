@@ -59,7 +59,7 @@
 #set ($labelParam = 'label')
 #set ($valueParam = 'value')
 #set ($existingLabels = $services.query.xwql("select distinct labeled_eid.${labelParam} from Document doc, doc.object(PhenoTips.LabeledIdentifierClass) as labeled_eid").execute())
-#if ($!{existingLabels} &amp;&amp; $existingLabels.size() > 0)
+#if ($!{existingLabels} &amp;&amp; $existingLabels.size() &gt; 0)
 * $services.localization.render('phenotips.databaseFilters.labeledExternalID')
 (% class="labeled-eids" %)(((
 #__filters_LabeledEidLabel ("$services.localization.render('phenotips.databaseFilters.label.label') " $labelParam $eidClass $existingLabels)
@@ -107,9 +107,9 @@
 #__filters_labeledIdentifiers()
 #end
 #if (!$exclusions.contains('visibility') &amp;&amp; !$xwiki.getDocument('PhenoTips.VisibilityClass').isNew())
-  * $services.localization.render('phenotips.databaseFilters.visibility') {{html clean=false}}#foreach ($visibility in $services.permissions.listVisibilityOptions())&lt;br /&gt;&lt;label&gt;&lt;input type="checkbox" class="multipleSelection privacyExport" name="visibility" value="$visibility.name"#if ($visibility.name != 'hidden') checked="checked"#end /&gt; $visibility.label&lt;/label&gt;#end&lt;input type="hidden" name="visibility/class" value="PhenoTips.VisibilityClass"/&gt;{{/html}}
+  * $services.localization.render('phenotips.databaseFilters.visibility') {{html clean=false}}#foreach ($visibility in $services.permissions.listVisibilityOptions())&lt;br /&gt;&lt;label&gt;&lt;input type="checkbox" class="multipleSelection privacyExport" name="visibility" value="$visibility.name"#if ($visibility.name != 'hidden') checked="checked"#end /&gt; $visibility.label&lt;/label&gt;#end&lt;input type="hidden" name="visibility/class" value="PhenoTips.VisibilityClass"/&gt;&lt;input type="hidden" value="exact" name="visibility/match" /&gt;{{/html}}
 #end
-#if(!$exclusions.contains('doc.creator'))
+#if (!$exclusions.contains('doc.creator'))
   * $services.localization.render('phenotips.databaseFilters.referrer') {{html clean=false}}&lt;input type="text" class="suggestUsers multipleSelection" name="doc.creator" value=""/&gt;{{/html}}
 #end
 #if (!$exclusions.contains('owner') &amp;&amp; !$xwiki.getDocument('PhenoTips.OwnerClass').isNew())
@@ -124,7 +124,7 @@
 #if (!$exclusions.contains('doc.creationDate'))
   * $services.localization.render('phenotips.databaseFilters.creationDate') #__filters_dateRange("doc.creationDate")
 #end
-#if(!$exclusions.contains('doc.date'))
+#if (!$exclusions.contains('doc.date'))
   * $services.localization.render('phenotips.databaseFilters.modificationDate') #__filters_dateRange("doc.date")
 #end
 #if (!$exclusions.contains('date_of_birth') &amp;&amp; $activeFields.contains('date_of_birth'))
