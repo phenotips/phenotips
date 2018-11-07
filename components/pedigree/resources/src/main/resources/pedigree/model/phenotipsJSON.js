@@ -11,7 +11,8 @@ define([
 
     PhenotipsJSON.supportedPhenotipsVersionsRegexps = {
         "any 1.3": /^1.3/,
-        "any 1.4": /^1.4/
+        "any 1.4": /^1.4/,
+        "any 1.5": /^1.5/
     };
 
     /**
