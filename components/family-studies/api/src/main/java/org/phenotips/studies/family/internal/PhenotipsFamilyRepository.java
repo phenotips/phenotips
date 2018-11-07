@@ -106,9 +106,11 @@ public class PhenotipsFamilyRepository extends FamilyEntityManager implements Fa
             final Family family = super.create(creator);
             final XWikiDocument doc = family.getXDocument();
 
-            // Adding owner reference to family
-            doc.newXObject(Owner.CLASS_REFERENCE, context).set(OWNER,
-                creator == null ? StringUtils.EMPTY : this.entitySerializer.serialize(creator), context);
+            if (doc.getXObject(Owner.CLASS_REFERENCE) == null) {
+                // add owner reference to family - only if no owner already exist, e.g. from FamilyTemplate
+                doc.newXObject(Owner.CLASS_REFERENCE, context).set(OWNER,
+                    creator == null ? StringUtils.EMPTY : this.entitySerializer.serialize(creator), context);
+            }
             // Adding identifier to family
             doc.getXObject(Family.CLASS_REFERENCE).setLongValue(IDENTIFIER,
                 Integer.parseInt(family.getId().replaceAll("\\D++", StringUtils.EMPTY)));
