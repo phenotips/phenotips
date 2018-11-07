@@ -27,6 +27,8 @@ define([
    *      { "name": "m22", "sex": "male" },
    *      { "relationshipId": 1, "partner1": "f21", "partner2": "m22"} ]
    *
+   * See import.js/PedigreeImport.initFromSimpleJSON() for more detailed description of supported properties
+   *
    * @param pedigree {PositionedGraph}
    * ===============================================================================================
    */
@@ -73,7 +75,7 @@ define([
                          property == 'dob' || property == 'bob') continue;
                      if (privacySetting == "minimal" && property == "comments") continue
                  }
-                 var converted = PedigreeExport.convertProperty(property, properties[property]);
+                 var converted = PedigreeExport.convertPropertyToSimpleJSON(property, properties[property]);
                  if (converted !== null) {
                      person[converted.propertyName] = converted.value;
                  }
@@ -711,7 +713,7 @@ define([
    * Converts property name from internal format to external JSON format - also helps to
    * support aliases for some terms and weed out unsupported terms.
    */
-  PedigreeExport.convertProperty = function(internalPropertyName, value) {
+  PedigreeExport.convertPropertyToSimpleJSON = function(internalPropertyName, value) {
 
       if (!PedigreeExport.internalToJSONPropertyMapping.hasOwnProperty(internalPropertyName)) {
           return null;
@@ -731,7 +733,38 @@ define([
           }
       }
 
+      if (externalPropertyName == "cancers") {
+          value = PedigreeExport.convertCancersToSimpleJSON(value);
+      }
+
       return {"propertyName": externalPropertyName, "value": value };
+  }
+
+  PedigreeExport.convertCancersToSimpleJSON = function(cancerData) {
+      // a set of cancers that simpleJSON format supports
+      // note: this list is fixed as it is defined by the PT1.3 implementation
+      var simpleJSONCancers = Helpers.toObjectWithTrue(
+                                [ "Breast", "Ovarian", "Colon", "Uterus", "Prostate",
+                                  "Pancreatic", "Melanoma", "Kidney", "Gastric",
+                                  "Lung", "Brain", "Oesophagus", "Thyroid", "Liver",
+                                  "Cervix", "Myeloma", "Leukemia" ] );
+
+      var result = {};
+      for (var i = 0; i < cancerData.length; i++) {
+          var nextCancer = cancerData[i];
+          var cancerName = nextCancer["label"];
+          if (simpleJSONCancers.hasOwnProperty(cancerName)) {
+              var convertedCancerObj = {};
+              convertedCancerObj["affected"] = nextCancer.affected;
+              if (nextCancer.hasOwnProperty("qualifiers") && nextCancer.qualifiers.length > 0) {
+                  convertedCancerObj["ageAtDiagnosis"] = nextCancer.qualifiers[0].ageAtDiagnosis;
+                  convertedCancerObj["numericAgeAtDiagnosis"] = nextCancer.qualifiers[0].numericAgeAtDiagnosis;
+                  convertedCancerObj["notes"] = nextCancer.qualifiers[0].notes;
+              }
+              result[cancerName] = convertedCancerObj;
+          }
+      }
+      return result;
   }
 
   /**
