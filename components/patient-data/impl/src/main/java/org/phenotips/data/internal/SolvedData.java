@@ -205,7 +205,7 @@ public class SolvedData
      */
     public boolean isSolved()
     {
-        return this.status == STATUS_SOLVED_NUMERIC;
+        return STATUS_SOLVED_NUMERIC.equals(this.status);
     }
 
     /**
