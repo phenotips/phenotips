@@ -989,6 +989,8 @@ define([
      *                            if not found a check against "name" and finally "firstName".
      *                            If one of the parents is given and the other one is not a virtual new node is created
      *   - "phenotipsId": The id of the PhenoTips document this node is linked to (default: none)
+     *   - "cancers": an object where each supported cancer is a key, and the value is an object with the following fields:
+     *                {"affected": boolean, "ageAtDiagnosis": string, "numericAgeAtDiagnosis": number, "notes": string (freetext)}
      *
      *  Supported properties for relationship nodes:
      *   - "relationshipId": string or number. The valu eis not used, only required ot indicate that this
@@ -1714,6 +1716,11 @@ define([
                 return [ {"propertyName": "genes", "value": genes} ];
             }
 
+            if (externalPropertyName.toLowerCase() == "cancers") {
+                // convert from cancers as represented in SimpleJSON to current internal representation
+                return [ {"propertyName": "cancers", "value": PedigreeImport.convertSimpleJSONCancers(value)} ];
+            }
+
             if (!PedigreeImport.JSONToInternalPropertyMapping.hasOwnProperty(externalPropertyName)) {
                 return [];
             }
@@ -1769,6 +1776,48 @@ define([
             console.log("Error importing relationship property [" + externalPropertyName + "]");
             return null;
         }
+    }
+
+    PedigreeImport.convertSimpleJSONCancers = function(importData) {
+        var simpleJSONCancers = { "Breast": "HP:0100013",
+                                  "Ovarian": "HP:0100615",
+                                  "Colon": "HP:0100273",
+                                  "Uterus": "HP:0010784",
+                                  "Prostate": "HP:0100787",
+                                  "Pancreatic": "HP:0002894",
+                                  "Melanoma": "HP:0012056",
+                                  "Kidney": "HP:0009726",
+                                  "Gastric": "HP:0006753",
+                                  "Lung": "HP:0100526",
+                                  "Brain": "HP:0030692",
+                                  "Oesophagus": "HP:0100751",
+                                  "Thyroid": "HP:0100031",
+                                  "Liver": "HP:0002896",
+                                  "Cervix": "HP:0030079",
+                                  "Myeloma": "HP:0006775",
+                                  "Leukemia": "HP:0001909" };
+
+        var result = [];
+        for (var cancer in importData) {
+            if (importData.hasOwnProperty(cancer)) {
+                if (simpleJSONCancers.hasOwnProperty(cancer)) {
+                    var cancerID = simpleJSONCancers[cancer];
+                    var cancerData = importData[cancer];
+                    if (!cancerData.affected) {
+                        // current version of pedigree can not represent cancers that are "unaffected"
+                        continue;
+                    }
+                    var cancerObj = { "id": cancerID, "label": cancer, "affected": cancerData.affected};
+                    var cancerQualifiers = { "laterality": "", "primary": true };
+                    cancerQualifiers["notes"] = cancerData.notes ? cancerData.notes : "";
+                    cancerQualifiers["numericAgeAtDiagnosis"] = cancerData.numericAgeAtDiagnosis;
+                    cancerQualifiers["ageAtDiagnosis"] = cancerData.ageAtDiagnosis;
+                    cancerObj["qualifiers"] = [ cancerQualifiers ];
+                    result.push(cancerObj);
+                }
+            }
+        }
+        return result;
     }
 
     //===============================================================================================
