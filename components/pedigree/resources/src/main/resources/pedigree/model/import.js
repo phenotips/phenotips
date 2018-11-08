@@ -357,9 +357,10 @@ define([
             if (vOrder[nodeID] < 0) {
                 throw "Orders should be positive integers starting from 1";
             }
-            if (positions && data[id].hasOwnProperty("x") && Helpers.isInt(data[id]["x"]) ) {
+            if (positions && data[id].hasOwnProperty("x") && !isNaN(parseFloat(data[id]["x"]))) {
                 positions[nodeID] = data[id]["x"];
             } else {
+                // if at least one coordinate is not set or is invalid => all coordinates have to be recomputed
                 positions = null;
             }
         }
@@ -423,7 +424,7 @@ define([
                         var nextV = newG._addVertex( null, BaseGraph.TYPE.VIRTUALEDGE, {}, {});
                         newG.addEdge( prevV, nextV );
                         ranks[nextV] = ranks[longEdgeParent] + p;
-                        positions[nextV] = path[p].x;
+                        positions && (positions[nextV] = path[p].x);
 
                         // now comes the complication: while order of vertices on person+relationship rank is
                         // known, the order of childhubs is lost and may be different from what is stored;
