@@ -929,7 +929,6 @@
                - Exclude batik-js to prevent conflict with the patched version of Rhino used by yuicompressor used for
                  JSX. See http://jira.xwiki.org/jira/browse/XWIKI-6151 for more details.
                - Exclude JavaBeans Activation Framework (activation-*.jar) since it's included in Java SE 6.
-               - Exclude JAXB since it's included in Java SE 6
                - Exclude STAX API since it's included in Java SE 6
                - Exclude all XAR files from being placed in WEB-INF/lib. This is done by the WAR plugin which supports
                  XAR files (not our format, some other format! See https://jira.codehaus.org/browse/MWAR-281). The
@@ -941,8 +940,6 @@
             %regex[WEB-INF/lib/log4j-(?!over-slf4j).*.jar],
             WEB-INF/lib/activation-*.jar,
             WEB-INF/lib/batik-js-*.jar,
-            WEB-INF/lib/jaxb-impl-*.jar,
-            WEB-INF/lib/jaxb-api-*.jar,
             WEB-INF/lib/stax-api-*.jar,
             resources/js/xwiki/wysiwyg/**
           </packagingExcludes>
