@@ -19,6 +19,7 @@ package org.phenotips.data;
 
 import org.phenotips.data.ContactInfo.Builder;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import org.json.JSONObject;
@@ -35,6 +36,8 @@ public class ContactInfoTest
     private static final String USER_ID = "xwiki:XWiki.padams";
 
     private static final String USER_EMAIL = "padams@hospital.org";
+
+    private static final String USER_EMAILS = "padams@hospital.org,rodens@hospital.org";
 
     private static final String USER_NAME = "Patch Adams";
 
@@ -203,4 +206,14 @@ public class ContactInfoTest
         Assert.assertTrue(json.similar(contact.toJSON()));
     }
 
+    @Test
+    public void builderResultCorrectEmails()
+    {
+        ContactInfo contact = new Builder().withEmail(USER_EMAILS).build();
+        Assert.assertNull(contact.getUserId());
+        Assert.assertNull(contact.getName());
+        Assert.assertNull(contact.getInstitution());
+        Assert.assertNull(contact.getUrl());
+        Assert.assertEquals(Arrays.asList("padams@hospital.org", "rodens@hospital.org"), contact.getEmails());
+    }
 }
