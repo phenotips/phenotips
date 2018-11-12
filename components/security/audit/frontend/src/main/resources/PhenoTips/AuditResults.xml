@@ -42,7 +42,7 @@
   #break
 #end
 $response.setContentType('application/json')
-#set ($dateFormat = "yyyy/mm/dd hh:mm")
+#set ($dateFormat = "yyyy/MM/dd hh:mm")
 #set($map = {})
 #set($rows = [])
 #set($offset = $mathtool.toInteger($request.get('offset')))
