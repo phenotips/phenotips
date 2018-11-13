@@ -92,30 +92,13 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
 ## Get all user's groups, in order to check if the cases are shared with
 ## the user in any way (hence visible to the user)
 ## ---------------------------------------------------------------------------
-  #set ($groupsAndSelf = [$xcontext.userReference.toString()])
-  #set ($toProcess = $collectionstool.queue)
-  #set ($discard = $toProcess.add($xcontext.userReference.toString()))
-  #foreach ($iteration in [0..1000])
-    #if ($toProcess.empty)
-      #break
-    #end
-    #set ($item = $toProcess.poll())
-    #foreach ($group in $xwiki.wrapDocs($xwiki.rightsmanager.getAllGroupsNamesForMember($item)))
-      #set ($groupObj = $group.getObject('PhenoTips.PhenoTipsGroupClass'))
-      #if (!$groupObj &amp;&amp; $group.documentReference.name.endsWith(' Managers'))
-        #set ($group = $xwiki.getDocument($services.model.resolveDocument($stringtool.removeEnd($group.documentReference.name, ' Managers'), $group.documentReference.parent)))
-        #set ($groupObj = $group.getObject('PhenoTips.PhenoTipsGroupClass'))
-      #end
-      #if (!$groupObj &amp;&amp; $group.documentReference.name.endsWith(' Administrators'))
-        #set ($group = $xwiki.getDocument($services.model.resolveDocument($stringtool.removeEnd($group.documentReference.name, ' Administrators'), $group.documentReference.parent)))
-        #set ($groupObj = $group.getObject('PhenoTips.PhenoTipsGroupClass'))
-      #end
-      #if ($groupObj &amp;&amp; !$groupsAndSelf.contains($group.documentReference.toString()))
-        #set ($discard = $toProcess.add($group.documentReference.toString()))
-        #set ($discard = $groupsAndSelf.add($escapetool.sql($group.documentReference.toString())))
-      #end
-    #end
+#set ($groupsAndSelf = [$xcontext.userReference.toString()])
+#foreach ($i in $services.user.group.getGroupsFromAllWikis($xcontext.userReference))
+  #set ($group = $xwiki.getDocument($i))
+  #if ($group.getObject('PhenoTips.PhenoTipsGroupClass'))
+    #set ($discard = $groupsAndSelf.add($escapetool.sql($group.documentReference.toString())))
   #end
+#end
 ## ---------------------------------------------------------------------------
 ## Get all 'public' visibilities, in order to obtain cases that are accessible
 ## to everyone, including this user
