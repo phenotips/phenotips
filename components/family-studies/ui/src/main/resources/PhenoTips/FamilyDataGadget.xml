@@ -25,12 +25,9 @@
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <creationDate>1447446175000</creationDate>
   <parent>PhenoTips.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1499935959000</date>
-  <contentUpdateDate>1499935930000</contentUpdateDate>
   <version>1.1</version>
   <title>{{translation key="phenotips.homepage.families.title"/}}</title>
   <comment/>

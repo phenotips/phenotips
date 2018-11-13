@@ -25,12 +25,9 @@
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <creationDate>1410399246000</creationDate>
   <parent>PhenoTips.PatientClass</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1410399468000</date>
-  <contentUpdateDate>1410399468000</contentUpdateDate>
   <version>1.1</version>
   <title>$services.localization.render('phenotips.vcf.title')</title>
   <comment/>

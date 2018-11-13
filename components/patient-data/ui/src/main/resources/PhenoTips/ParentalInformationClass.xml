@@ -25,12 +25,9 @@
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <creationDate>1440998227000</creationDate>
   <parent>PhenoTips.PatientClass</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1440998361000</date>
-  <contentUpdateDate>1440998361000</contentUpdateDate>
   <version>1.1</version>
   <title>XClass for recording information about the patient's parents</title>
   <comment/>
