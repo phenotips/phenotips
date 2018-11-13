@@ -39,6 +39,10 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.json</groupId>
+      <artifactId>json</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-component-api</artifactId>
       <version>${xwiki.version}</version>
@@ -96,10 +100,6 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>xwiki-platform-users-api</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.json</groupId>
-      <artifactId>json</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>

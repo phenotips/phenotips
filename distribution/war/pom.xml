@@ -961,6 +961,7 @@
             %regex[WEB-INF/lib/log4j-(?!over-slf4j).*.jar],
             WEB-INF/lib/batik-js-*.jar,
             WEB-INF/lib/stax-api-*.jar,
+            WEB-INF/lib/json-1.8.jar,
             resources/js/xwiki/wysiwyg/**
           </packagingExcludes>
           <overlays>
