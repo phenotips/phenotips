@@ -25,12 +25,9 @@
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <creationDate>1401822199000</creationDate>
   <parent>PhenoTips.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1401823699000</date>
-  <contentUpdateDate>1401823699000</contentUpdateDate>
   <version>1.1</version>
   <title/>
   <comment/>
@@ -40,8 +37,8 @@
   <content/>
   <attachment>
     <filename>body-icon-left-s.png</filename>
+    <mimetype>image/png</mimetype>
     <author>xwiki:XWiki.Admin</author>
-    <date>1353452431000</date>
     <version>1.1</version>
     <comment/>
     <content>iVBORw0KGgoAAAANSUhEUgAAABAAAAAdCAYAAACjbey/AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAB3RJTUUH3AsVAjsos7xz5AAAAdxJREFUOMud1b9rFFEQwPHPxfNyiYkmYIwIKgQ0Vko0iIIoWAgpbO38IwQR/AcECwtbSS1YJIqF2NoIoqCi+BMNKAhigj+jaPTOZhZenrsbyYPl7c3MfWfezJtZ6td5XMKgVa5vuInJKoOe/4D8qlOuBJjGejxZDWAT9uIntqNVZrSmRNbAFVzETtxFB3vC4buw+SeCQngUJ7AhsfkdldiHteiWAYr3iZKouvG0sLEqBwX1FG7jUaLrxf0o664qQAdnsQWHcCezm8N17MdIGWAM53A6otmdHWMYC3iB42WAa7gQzzBGE92fiAyu4jOOFIB1uIGH4R12JGE2AjCUOJyJu3GgiZOYypLTj76kHzpop/UPh4eboTyD54lyIoznI7rBOFYbi2HzEkPNaNd8jcf+Ac9wMICjeB3v33GrJ340MkBxC5/icUQpOdaym9hNBdm1nklArRJHld04Fvvl2Ofiz/2Zg1JAO5pmNpF9inyM1EVQUCdDPp3ofuBt1L6vqhsLwFTs85mzRQzUdWMjq8DHDPAFS/mxy3LQi3t4lcnnIorOSoAW3mSlbSQRLFvNkoHyHl8ryrsUjVUKKHKwNbJetQbqJhIciyGqYjZuq5uJ49H3DyoAC9icfg7+AiLBYNpmi+VbAAAAAElFTkSuQmCC</content>
@@ -49,8 +46,8 @@
   </attachment>
   <attachment>
     <filename>body-icon-right-s.png</filename>
+    <mimetype>image/png</mimetype>
     <author>xwiki:XWiki.Admin</author>
-    <date>1353452432000</date>
     <version>1.1</version>
     <comment/>
     <content>iVBORw0KGgoAAAANSUhEUgAAABAAAAAdCAYAAACjbey/AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAB3RJTUUH3AsVAwA4k3vmjwAAAddJREFUOMul1T9rFGEQBvBfLmeikpxnNKeFYiUaRPwHCmJMqZivIBYW2vgBxN4PYKFY2aYQqwiCCIJiIRYBRSHIgVUM5MC/xBgutzaz8LLu3kkcOIZ9Zt5nn5l5Z4/+dgRzOFeVUBtAMIUTuLpZAvjtP2wK73F2Mwq2oYUuZrGjLGm44vBFTGMCh3EZ11HHyziXVSnYF43bivUE34mbGMNGWQlD4SfThIKN4digHhxHG52QnNt9LOFKFUGGU2jgEZaj1lzZfPTmWpT4F0EDM3gRz7sT4nyk7yL+JC87JZjFayxgFNvRS+Lnw8/gI+4hq2NLSOvgVSQ1kynkJRzESGDT0afbNRyK4JvkbfX4ZfgZ2ESh5Du4VYs3PMfXJDiJcazhaWB7sCvJeYi7tWjMQmGUzfDrsQu5nU6a/xk3qnZhJJJyBSuBt5LJDBWnoHAru9EoeFASz5BVETSwisV4fhx+77+s83BIbSfYIr7gZPFcGUErNu9Dgq3gGS7FNLr9tvFA+F8F4qW4G0cHlTCK7yXfwk/JhAb2YBnfCvg8fqTyqwhqkVjE2oFnCne+aKuxYEWCXsTWBikYLyHOEr+/3xdJJPQqLtgGLvRT0IwpdCoUvMWZ+M8AfwASUl+BqVfCkAAAAABJRU5ErkJggg==</content>
@@ -58,8 +55,8 @@
   </attachment>
   <attachment>
     <filename>body-icon-s.png</filename>
+    <mimetype>image/png</mimetype>
     <author>xwiki:XWiki.Admin</author>
-    <date>1353452432000</date>
     <version>1.1</version>
     <comment/>
     <content>iVBORw0KGgoAAAANSUhEUgAAABAAAAAdCAYAAACjbey/AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAB3RJTUUH3AsVAwAh9xBOTwAAAcFJREFUOMud1M+LjVEYB/DPfekamUIabGZjYzUxFBsLNUVmN/+FlY1SslDKzk5+l40skIbIXrJQFroLZUFDfowSavIrM/e1eU6dTu9777hn85znfb7v9/l9GHxO4y32GvF8Qo3zbYBqlUSdUSM4ExHsHiWCrdgT91ls9B/h3sL38N4P+RWnArNmUJ4z8UP6uZ/pSxhvSyHdpxvI+yHHsWtYPT7gKXqZ5xqXwnZlUP4nA9zBtYJgFlNxb4rSjjAeD/1ZQZC+P8Zi03z0cC7um7FQdOFehn2Ci0nZgEe4kQH24UcRwUt0M8xrnIWjAdiZGQ9mntM8LGIswxxDXYXxBF5lxunI7z2u4g+2YUuGuYMLbd24HMQvMIfl0OfK+anCU7ltae7fYD7GOO2HrNWdKitS01jfDXm9wV6nGrTNBNwM+TDk9tVs4xhWMu8wEWncD33toG08EOEdKey38Te60biNiSD9+KUg+Biep4YRpA58KwgWQnaHPWnr8DxGNT8P4kFZHkbQxbuitVUQLpUtz6uZDJ8DWDrq4yd+txGkGkziV0FQZ3KyLYX07h0q88zOCg63EaSV3hRL1BRBD/uxPhn+AWIFfIBgIfUHAAAAAElFTkSuQmCC</content>
@@ -67,8 +64,8 @@
   </attachment>
   <attachment>
     <filename>eye.png</filename>
+    <mimetype>image/png</mimetype>
     <author>xwiki:XWiki.Admin</author>
-    <date>1353452800000</date>
     <version>1.1</version>
     <comment/>
     <content>iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3AsVAwcgz1boHgAAAlpJREFUOMvFUz1v01AUPX62Q+zETQc3FaVq3EgZOsAOytKlA1IRbAhUqRO/AfZOHeg/qGBmAQkJ0TliahiKKjo2kVtLVtqkPMXP7z0/X6ZElRg7cKQ73OF+nKNzLCLCXcBwRzi3m+Fw2CWid3meb2qtPSKCMQZlWYIxJj3POw6C4O3KykpvNmPNKMRx/FFK+VIpVbFtG0opjMdjKKXgOA4ajQa01jDG0PLy8tf19fVn8wVxHH/nnG9ZloWLiwskSQIAcF0XxhgURYGyLGHbNqIoAhFhaWnp18bGxiNnMBi8z/N8i4hwdnaG1dVVuK6LoiigtZ6XlBJra2tQSiHLMiilHgL4wIwxr7IsgxAC29vbMMZAaw2lFHZ2drC7uwspJZRSGAwG6Ha7iKII0+kU/X7/tTOZTJrNZhNhGALA/NrsbSKClBJSyrnY7XYbvu/j6OjIccIwLGu1mm2MAWMMQRBgNBpBSomDgwMopSCEgNYarVYLZVnCGINGo4FWq0WMc/6Hcz7nHIYhKpUKhBAQQiDPcwghEAQB2u02tNYoigJpmoJzrp1qtfppNBq9ybIMi4uLqNfr6HQ6sG0bw+EQABBFETqdDprNJrIsQxzHOD09BRH1LSLCycnJj5ubm8eu62JhYWHs+37ueZ6ybbuc8SYiXF9fV+M4vn95eQnOeZIkyYO5kXq93pc0TZ+6ruv4vo9KpQLHcUBEICJMp1NcXV0hTVOq1WrH5+fnT/b29grrdpgODw/vTSaT51LKF4yxTcZYHYBljCnzPP8phPhMRN/29/d//2Pl/5bGvyCjcnzpE2LzAAAAAElFTkSuQmCC</content>
@@ -76,8 +73,8 @@
   </attachment>
   <attachment>
     <filename>head-icon-s.png</filename>
+    <mimetype>image/png</mimetype>
     <author>xwiki:XWiki.Admin</author>
-    <date>1363902620000</date>
     <version>1.1</version>
     <comment/>
     <content>iVBORw0KGgoAAAANSUhEUgAAABAAAAAVCAYAAABPPm7SAAAAsklEQVQ4y2NgwA5YgdgUiP2B2B3I02cgAdgD8S8g/o+GfwOxFSHNCVg0ouMEXJpFidAMwl+BmBGbAXOINACEu7EZcIkEAz6jawY56QsJBvwAYl50A/6TgEGxJEmpARLo3iDVABFkzetINACEO5AN2EOGAS3IBiwkw4B0ZAO8yDDADj0QTxCp8S8QHwNiLmypkRgDHuDLjduIMGAzLs2gxGRBhAHe+FygR4QBbvgM0Ke7AQD+P9Vh46YDYAAAAABJRU5ErkJggg==</content>
@@ -85,8 +82,8 @@
   </attachment>
   <attachment>
     <filename>logo.png</filename>
+    <mimetype>image/png</mimetype>
     <author>xwiki:XWiki.Admin</author>
-    <date>1368557198000</date>
     <version>1.1</version>
     <comment/>
     <content>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</content>
@@ -94,8 +91,8 @@
   </attachment>
   <attachment>
     <filename>ratios-icon-s.png</filename>
+    <mimetype>image/png</mimetype>
     <author>xwiki:XWiki.Admin</author>
-    <date>1363905937000</date>
     <version>1.1</version>
     <comment/>
     <content>iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAQAAAAngNWGAAAACXBIWXMAABcSAAAXEgFnn9JSAAAAB3RJTUUH3QMVFisPvHdHFgAAAAJiS0dEAP+Hj8y/AAABtklEQVQoU2XRS0sUUBQA4K/UFJnJTKMwwUX0ArUcN5KZUCY4RgWViRqMgZILNc13MGkFRqQFZdgDH9GqVY9di6gkMLr/aVo4jmNxNvec+93DPfdK2QyFqvSZSkefSoVZu5lFox6XRDJ5xGU9Gu3YBg2Ii26dT1ej4gYy0F5LHujNxJDxrOyeFWUbsMO8FdMa7VfsmFXBCXuUOW3Ce28kUigwqVVUvWcWDWr1StBhzJLXupU6Z0oBFcbcMWlC0gfBum9+C4JPnnvovml3VXBNszoRUUWKRHwUBC/VO+qgcsVOaXGVUdVqM3PmSgiCeNbsMSeNMrINFqoVBEc23y8NR/6Ho4Lg8D8dR+hXkwWL/REEN+zMgrX6adK2CeUaFgTBz61/EnPdWUokxdKlUt+tWfdV0JQFk0rIM+RiSop8M1YlrVn02FwGXjAsV4oWSbly1Pmhyrgv5jT45VD6OknxFCmq9Uko0W5RvhcWzCv0zrgceRL61GzCmPNueyJhlzmLZuUrtyDulmaxLXjGbpWGTGo367O36rSb0eu4qAaxDbjPFZ06dek26Kllyx4ZclOXTp3aHEj5C58T1CMV/tRNAAAAAElFTkSuQmCC</content>

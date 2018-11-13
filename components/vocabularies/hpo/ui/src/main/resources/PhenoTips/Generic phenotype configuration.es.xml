@@ -25,12 +25,9 @@
   <defaultLanguage>en</defaultLanguage>
   <translation>1</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <creationDate>1489693411000</creationDate>
   <parent>data.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1489694719000</date>
-  <contentUpdateDate>1489694119000</contentUpdateDate>
   <version>1.1</version>
   <title>$services.localization.render('phenotips.genericPhenotypeConfig.title')</title>
   <comment/>
