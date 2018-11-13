@@ -43,7 +43,6 @@ import org.mockito.MockitoAnnotations;
 
 import com.xpn.xwiki.objects.BaseObjectReference;
 import com.xpn.xwiki.web.Utils;
-
 import net.jcip.annotations.NotThreadSafe;
 
 import static org.mockito.Mockito.when;
@@ -85,14 +84,14 @@ public class DefaultPermissionsConfigurationTest
     {
         MockitoAnnotations.initMocks(this);
 
-        DocumentReferenceResolver<EntityReference> resolver =
+        DocumentReferenceResolver<EntityReference> stringResolver =
             this.mocker.getInstance(DocumentReferenceResolver.TYPE_REFERENCE, "current");
-        when(resolver.resolve(Visibility.CLASS_REFERENCE)).thenReturn(this.visibilityClassReference);
-        when(resolver.resolve(PermissionsConfiguration.VISIBILITY_CONFIGURATION_CLASS_REFERENCE)).thenReturn(
+        when(stringResolver.resolve(Visibility.CLASS_REFERENCE)).thenReturn(this.visibilityClassReference);
+        when(stringResolver.resolve(PermissionsConfiguration.VISIBILITY_CONFIGURATION_CLASS_REFERENCE)).thenReturn(
             this.visibilityConfigurationClassReference);
-        when(resolver.resolve(PermissionsConfiguration.PREFERENCES_DOCUMENT)).thenReturn(
+        when(stringResolver.resolve(PermissionsConfiguration.PREFERENCES_DOCUMENT)).thenReturn(
             this.preferencesDocumentReference);
-        when(resolver.resolve(
+        when(stringResolver.resolve(
             new EntityReference("PatientTemplate", EntityType.DOCUMENT, Constants.CODE_SPACE_REFERENCE)))
                 .thenReturn(this.patientTemplateReference);
 
@@ -102,12 +101,13 @@ public class DefaultPermissionsConfigurationTest
 
         // Needed for making BaseObjectReference work
         this.mocker.registerComponent(EntityReferenceSerializer.TYPE_STRING, this.serializer);
+        this.mocker.registerComponent(EntityReferenceSerializer.TYPE_STRING, "compactwiki", this.serializer);
         this.mocker.registerComponent(DocumentReferenceResolver.TYPE_STRING, this.resolver);
-        when(this.serializer.serialize(this.visibilityConfigurationClassReference))
+        when(this.serializer.serialize(this.visibilityConfigurationClassReference, this.preferencesDocumentReference))
             .thenReturn("xwiki:PhenoTips.VisibilityConfigurationClass");
         when(this.resolver.resolve("xwiki:PhenoTips.VisibilityConfigurationClass"))
             .thenReturn(this.visibilityConfigurationClassReference);
-        when(this.serializer.serialize(this.visibilityClassReference))
+        when(this.serializer.serialize(this.visibilityClassReference, this.patientTemplateReference))
             .thenReturn("xwiki:PhenoTips.VisibilityClass");
         when(this.resolver.resolve("xwiki:PhenoTips.VisibilityClass"))
             .thenReturn(this.visibilityClassReference);

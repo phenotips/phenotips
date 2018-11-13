@@ -1,68 +1,60 @@
+$services.progress.pushLevel(4)
+
 ###
 ### Display document contents in "view" mode.
 ###
 ## -------------------------------
 ## Compute the content to display
 ## -------------------------------
-## Honor the syntax if it's passed in the request.
-#try()
-  #set($outputSyntax = $xwiki.getAvailableRendererSyntax($request.outputSyntax, $request.outputSyntaxVersion))
-  #if ($outputSyntax)
-    ## If the passed syntax is not an HTML-compatible syntax we need to HTML-escape it so that it can be
-    ## displayed fine in HTML (since at the point this vm file is called we're already inside an HTML page with
-    ## panels on the side, header, etc).
-    #set($syntaxType = $outputSyntax.type.toIdString())
-    #if (($syntaxType == "xhtml") || ($syntaxType == "html"))
-      #set ($renderedContent = $tdoc.getRenderedContent($outputSyntax))
-    #else
-      ## Make sure to print correctly the result when it's not HTML
-      #set ($renderedContent = "<pre>$escapetool.html($tdoc.getRenderedContent($outputSyntax))</pre>")
-    #end
-  #else
-    #set ($renderedContent = $tdoc.getRenderedContent())
-  #end
-#end
+$services.progress.startStep('Compute the content to display')
+#template("contentvars.vm")
+$services.progress.endStep()
+
 ## ----------------------------------------------------------------------------
-## Display UI Extensions before the title element
+## Compute title to display and modify rendered content accordingly
 ## ----------------------------------------------------------------------------
-#foreach ($uix in $services.uix.getExtensions('org.xwiki.platform.template.title.before'))
-  $services.rendering.render($uix.execute(), 'xhtml/1.0')
-#end
-## ----------------------------------------------------------------------------
-## Compute title to display and modify rendered content accordingly.
-## ----------------------------------------------------------------------------
+$services.progress.startStep('Compute title to display and modify rendered content accordingly')
 #template("titlevars.vm")
-## ----------------------------
-## Title zone
-## ----------------------------
-<div id="document-head">
+$services.progress.endStep()
+
 ## ----------------------------
 ## Display the title
 ## ----------------------------
-<div id="document-title" class="#if ($doc.getObject('PhenoTips.PatientClass') || $doc.getObject('PhenoTips.FamilyClass'))title-tab active#{end}"><h1>$titleToDisplay</h1></div>
-## --------------------------------------------------------------------------
-## Document author(s)
-##---------------------------------------------------------------------------
-$!xwiki.getDocument('PhenoTips.DocumentMeta').getRenderedContent()
-</div>##document-head
-## --------------------------------------------------------------------------
-## Drop permissions as they are no longer needed. This allows us not to have
-## to review the code below for security holes since nothing bad can happen.
-## --------------------------------------------------------------------------
-$xcontext.dropPermissions()
-## ----------------------------
-## Display the shortcuts
-## ----------------------------
-#if($displayShortcuts)
-  #template("shortcuts.vm")
-#end
-## ----------------------------
-## Display the rendered content
-## ----------------------------
-<div id="xwikicontent">
-  #if ("$!exception" != '')
-    #displayUnhandledException($exception)
-  #else
-    $renderedContent
+$services.progress.startStep('Display the title and content')
+<div class="xcontent">
+  #template('contentheader.vm')
+  #foreach ($uix in $services.uix.getExtensions('org.xwiki.platform.template.content.header.after'))
+    $services.rendering.render($uix.execute(), 'xhtml/1.0')
   #end
+  ## --------------------------------------------------------------------------
+  ## Drop permissions as they are no longer needed. This allows us not to have
+  ## to review the code below for security holes since nothing bad can happen.
+  ## --------------------------------------------------------------------------
+  $xcontext.dropPermissions()
+  ## ----------------------------
+  ## Display the rendered content
+  ## ----------------------------
+  <div class="row">
+    <div id="xwikicontent" class="col-xs-12">
+      #if ("$!contentvmexception" != '')
+        #displayUnhandledException($contentvmexception)
+      #else
+        $renderedContent
+      #end
+    </div>
+  </div>
 </div>
+$services.progress.endStep()
+
+## -----------------------------------------------------------------------------------
+## Display the footnotes if the document is in 1.0 syntax and if there are any defined
+## -----------------------------------------------------------------------------------
+## TODO: move that in a place common to old and new rendering footnotes
+#if ($doc.syntax.toIdString() == 'xwiki/1.0')
+$services.progress.startStep('Display the footnotes')
+#set($footnotes = "#putFootnotes()")
+$doc.getRenderedContent($footnotes, 'xwiki/1.0')
+$services.progress.endStep()
+#end
+
+$services.progress.popLevel()
