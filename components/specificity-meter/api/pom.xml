@@ -63,8 +63,8 @@
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-cache-api</artifactId>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-cache-api</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>

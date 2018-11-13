@@ -36,8 +36,8 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.xwiki.enterprise</groupId>
-      <artifactId>xwiki-enterprise-ui-admin-user</artifactId>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-distribution-ui-admin-user</artifactId>
       <version>${xwiki.version}</version>
       <type>xar</type>
       <scope>runtime</scope>

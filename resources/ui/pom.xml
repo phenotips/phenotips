@@ -71,13 +71,6 @@
     </dependency>
     <dependency>
       <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-rendering-wikimacro-ui</artifactId>
-      <version>${xwiki.version}</version>
-      <type>xar</type>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-extension-ui</artifactId>
       <version>${xwiki.version}</version>
       <type>xar</type>

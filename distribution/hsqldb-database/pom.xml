@@ -139,7 +139,7 @@ xwiki.store.attachment.recyclebin.hint=file
           <!-- Filesystem attachment storage -->
           <dependency>
             <groupId>org.xwiki.platform</groupId>
-            <artifactId>xwiki-platform-store-filesystem-attachments</artifactId>
+            <artifactId>xwiki-platform-store-filesystem-oldcore</artifactId>
             <version>${xwiki.version}</version>
             <scope>runtime</scope>
           </dependency>

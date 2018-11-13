@@ -18,19 +18,24 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
 
+<!-- Notes:
+     * metadata-complete="true" is used to disable scanning the web application and its libraries for classes that use
+       annotations to define components of a web application (Servlets etc.). Thus leading to a faster startup.
+-->
 <web-app xmlns="http://java.sun.com/xml/ns/javaee"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
-    version="3.0">
+    version="3.0"
+    metadata-complete="true">
+
+  <!-- "absolute-ordering" specifies which web fragment JARs (according to the names in their WEB-INF/web-fragment.xml
+       files) have to be scanned for SCIs (javax.servlet.ServletContainerInitializer), fragments and annotations.
+       An empty <absolute-ordering/> element configures that none are to be scanned, thus leading to a faster
+       startup. -->
+  <absolute-ordering />
 
   <display-name>PhenoTips</display-name>
   <description>Application for collecting clinical findings observed in patients with possible genetic disorders</description>
-
-  <!-- Main Restlet Application using Restlet's JAX-RS extension. -->
-  <context-param>
-    <param-name>org.restlet.application</param-name>
-    <param-value>org.xwiki.rest.internal.XWikiRestletJaxRsApplication</param-value>
-  </context-param>
 
   <!-- Shorter URLs: this gets rid of /bin/ from URLs. -->
   <filter>
@@ -115,7 +120,7 @@
   </filter>
 
   <!-- We need this filter because cross domain request for fonts are not allowed if some headers are not set.
-       See http://jira.xwiki.org/browse/XWIKI-11300 for more informations. -->
+       See https://jira.xwiki.org/browse/XWIKI-11300 for more informations. -->
   <filter>
     <filter-name>Set CORS policy for fonts</filter-name>
     <filter-class>org.xwiki.container.servlet.filters.internal.SetHTTPHeaderFilter</filter-class>
@@ -292,11 +297,6 @@
   <servlet-mapping>
     <servlet-name>action</servlet-name>
     <url-pattern>/xwiki/*</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>action</servlet-name>
-    <url-pattern>/xwiki/bin/*</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
