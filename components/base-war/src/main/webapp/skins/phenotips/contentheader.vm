@@ -1,0 +1,20 @@
+<div class="row document-header" id="document-head">
+  <div class="document-info col-xs-12 #if($displayContentMenu)col-md-7#end">
+    ## --------------------------------------------------------
+    ## Display UI Extensions before the title element
+    ## --------------------------------------------------------
+    #foreach ($uix in $services.uix.getExtensions('org.xwiki.platform.template.title.before'))
+      $services.rendering.render($uix.execute(), 'xhtml/1.0')
+    #end
+    <div id="document-title"#if ($doc.getObject('PhenoTips.PatientClass') || $doc.getObject('PhenoTips.FamilyClass')) class="title-tab active"#{end}><h1>$titleToDisplay</h1></div>
+      ## --------------------------------------------------------------------------
+      ## Document author(s)
+      ##---------------------------------------------------------------------------
+      $!xwiki.getDocument('PhenoTips.DocumentMeta').getRenderedContent()
+   </div>
+  #if($displayContentMenu)
+    <div class="document-menu col-xs-12 col-md-5">
+      #template("menus_content.vm")
+    </div>
+  #end
+</div>

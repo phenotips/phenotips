@@ -213,7 +213,7 @@ XWiki.widgets.LiveTable = Class.create({
 
           // Let code know new entries arrived
           // 1. Named event (for code interested by that table only)
-          document.fire("xwiki:livetable:" + this.domNodeName + ":receivedEntries", {
+          document.fire("xwiki:livetable:" + self.domNodeName + ":receivedEntries", {
             "data" : res
           });
           // 2. Generic event (for code potentially interested in any livetable)
@@ -286,15 +286,17 @@ XWiki.widgets.LiveTable = Class.create({
     });
     this.clearDisplay();
 
-    for (var i = off; i <= f; i++) {
-      if (this.fetchedRows[i]) {
-        var elem = this.handler(this.fetchedRows[i], i, this);
-        this.displayNode.appendChild(elem);
+    for (var rowIndex = off; rowIndex <= f; rowIndex++) {
+      var rowData = this.fetchedRows[rowIndex];
+      if (rowData) {
+        var rowElement = this.handler(rowData, rowIndex, this);
+        rowElement.writeAttribute('data-index', rowIndex);
+        this.displayNode.appendChild(rowElement);
         var memo = {
-          "data": this.fetchedRows[i],
-          "row":elem,
-          "table":this,
-          "tableId":this.domNodeName
+          "data": rowData,
+          "row": rowElement,
+          "table": this,
+          "tableId": this.domNodeName
         };
         // 1. Named event (for code interested by that table only)
         document.fire("xwiki:livetable:" + this.domNodeName + ":newrow", memo);
@@ -545,7 +547,19 @@ XWiki.widgets.LiveTable = Class.create({
          self.showRows(1, self.limit);
       });
    });
+  },
+
+  /**
+   * Refresh the display of the livetable (clear the cache and fetch content again).
+   * @since 9.5RC1
+   */
+  refresh: function() {
+    var start = Math.max(this.lastOffset, 1);
+    var end   = this.limit;
+    this.clearCache();
+    this.getRows(start, end, start, end);
   }
+
 });
 
 /**
@@ -1012,7 +1026,9 @@ var LiveTableFilter = Class.create({
    */
   applyActiveFilterStyle: function(element) {
     if(element && element.tagName && ((element.tagName.toLowerCase() == "input" && element.type == "text") || element.tagName.toLowerCase() == "select")) {
-      if ($F(element) != '') {
+      // The filter value can be a string, an array or null.
+      var filterValue = $F(element);
+      if (filterValue != null && filterValue.length) {
         element.addClassName('xwiki-livetable-filter-active');
       } else {
         element.removeClassName('xwiki-livetable-filter-active');
@@ -1180,23 +1196,6 @@ var LiveTableTagCloud = Class.create({
    }
 });
 
-
-/**
- * The Ugly: Fix IE6
- * Add specific classes when mouse is over table rows, since it cannot be handled in CSS.
- */
-if(browser.isIE6x) {
-  // get notified of all new rows created by live tables.
-  document.observe("xwiki:livetable:newrow", function(ev) {
-    // Add events listeners to mouse over/out on the <tr>
-    Event.observe(ev.memo.row, "mouseover", function(event){
-      event.element().up("tr").addClassName("rowHover");
-    });
-    Event.observe(ev.memo.row, "mouseout", function(event){
-      event.element().up("tr").removeClassName("rowHover");
-     });
-  });
-}
 
 // Trigger table loading when document and scripts are ready
 function init() {

@@ -7,23 +7,20 @@
 ## Is the document being edited by another user?
 ## If yes, warn about it and show a forcing link:
 ##
-#if($tdoc.getLocked() && "$!request.get('force')" == '')
+#set ($lock = $services.locks.getLock($doc.getDocumentReference()))
+#if($lock && (!$lock.canOverride() || "$!request.get('force')" == ''))
   #template("startpage.vm")
   <div class="main layoutsubsection">
-  #foreach ($uix in $services.uix.getExtensions('org.xwiki.platform.main.top'))
-    $services.rendering.render($uix.execute(), 'xhtml/1.0')
-  #end
-  <div id="mainContentArea">
-  #foreach ($uix in $services.uix.getExtensions('org.xwiki.platform.content.top'))
-    $services.rendering.render($uix.execute(), 'xhtml/1.0')
-  #end
+   <div id="mainContentArea">
     ##
     $response.setStatus(423)
-    #set($newquerystring = "$!{request.getQueryString().replaceAll('&', '&amp;').replaceAll('&amp;amp;', '&amp;')}"
-                         + '&amp;force=1')
-    #set($forceEditURL = $doc.getURL($xcontext.getAction(), ${newquerystring}))
-    #xwikimessageboxstart($services.localization.render('notice') "$services.localization.render('doclockedby') $xwiki.getUserName($doc.getLockingUser())")
-    <a href="$forceEditURL">$services.localization.render('forcelock')</a>
+    #xwikimessageboxstart($services.localization.render('notice') "$!lock.getReason()")
+    #if ($lock.canOverride())
+      #set($newquerystring = "$!{request.getQueryString().replaceAll('&', '&amp;').replaceAll('&amp;amp;', '&amp;')}")
+      #set ($newquerystring = "${newquerystring}&amp;force=1")
+      #set($forceEditURL = $doc.getURL($xcontext.getAction(), ${newquerystring}))
+      <a href="$forceEditURL">$services.localization.render('forcelock')</a>
+    #end
     #xwikimessageboxend()
     ##
    </div>## mainContentArea
@@ -85,6 +82,16 @@
     ## This input is used by the full screen widget: it stores the selector of the maximized element, so that the full screen can be restored when coming back from preview.
     <input type="hidden" name="x-maximized" value="$!{escapetool.xml($request.get('x-maximized'))}"/>
     </div>
+     #if ("$!request.template" != '')
+      ## Used when creating a document (i.e. editing for the first time) from a template to wait asynchronously
+      ## (with javascript progress information) for the save operation to finish. Without this, the save operation
+      ## is synchronous by default.
+      #set ($async = $request.async)
+      #if ("$!async" == '')
+        #set ($async = 'true')
+      #end
+      <input type="hidden" name="async" value="$escapetool.xml($async)" />
+    #end
   #end
   ##################
   ##   Edit zone  ##
