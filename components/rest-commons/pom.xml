@@ -29,7 +29,7 @@
   <name>PhenoTips - Common code for REST services</name>
 
   <properties>
-    <coverage.instructionRatio>0.05</coverage.instructionRatio>
+    <coverage.instructionRatio>0.02</coverage.instructionRatio>
   </properties>
 
   <dependencies>
@@ -37,6 +37,10 @@
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
       <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.xml.bind</groupId>
+      <artifactId>jaxb-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.xwiki.platform</groupId>
@@ -49,18 +53,9 @@
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.xwiki.commons</groupId>
-      <artifactId>xwiki-commons-observation-api</artifactId>
-      <version>${xwiki.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-security-api</artifactId>
       <version>${xwiki.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.restlet.jse</groupId>
-      <artifactId>org.restlet.ext.jackson</artifactId>
     </dependency>
     <dependency>
       <groupId>org.restlet.jse</groupId>
@@ -79,12 +74,16 @@
       <artifactId>commons-lang3</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-mapper-asl</artifactId>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-core-asl</artifactId>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
     </dependency>
     <!-- Test dependencies -->
     <dependency>

@@ -132,6 +132,10 @@
       <artifactId>patient-data-api</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>javax.xml.bind</groupId>
+      <artifactId>jaxb-api</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
