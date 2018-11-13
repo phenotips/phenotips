@@ -1,5 +1,2 @@
-org.phenotips.rest.internal.ConfigureISODatesInJson
-org.phenotips.rest.internal.ConfigureJsonMapper
-org.phenotips.rest.internal.ConfigureNonNullFieldsInJson
 org.phenotips.rest.internal.DefaultAllowedActionsResolver
 org.phenotips.rest.internal.DefaultAutolinker

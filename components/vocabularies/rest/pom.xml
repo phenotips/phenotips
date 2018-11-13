@@ -42,6 +42,10 @@
       <artifactId>json</artifactId>
     </dependency>
     <dependency>
+      <groupId>javax.xml.bind</groupId>
+      <artifactId>jaxb-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>phenotips-rest-commons</artifactId>
       <version>${project.version}</version>
