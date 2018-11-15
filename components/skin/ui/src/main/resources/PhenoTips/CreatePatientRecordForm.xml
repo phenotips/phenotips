@@ -39,7 +39,7 @@
 {{velocity}}{{html clean=false}}
 $xwiki.ssx.use('PhenoTips.Widgets')##
 $xwiki.jsx.use('PhenoTips.Widgets')##
-#if ($xwiki.hasAccessLevel('edit', "data.$!{reservedDocumentName}"))
+#if ($services.security.authorization.hasAccess('edit', $services.model.resolveSpace('data')))
   &lt;form id="patient-creation-form" class="patient-creation-form x-single-submit-form" action="$xwiki.getURL('PhenoTips.CreatePatientRecord')" method="post"&gt;&lt;div&gt;
     &lt;input type="hidden" name="form_token" value="$!{services.csrf.getToken()}" /&gt;
     &lt;input type="hidden" name="doCreate" value="1" /&gt;
@@ -131,7 +131,7 @@ $xwiki.jsx.use('PhenoTips.Widgets')##
       </scope>
     </class>
     <property>
-      <content>{{velocity}}#if ($xwiki.hasAccessLevel('edit', "data.$!{reservedDocumentName}")){{include reference="PhenoTips.CreatePatientRecordForm" /}}#end{{/velocity}}</content>
+      <content>{{velocity}}#if ($services.security.authorization.hasAccess('edit', $services.model.resolveSpace('data'))){{include reference="PhenoTips.CreatePatientRecordForm" /}}#end{{/velocity}}</content>
     </property>
     <property>
       <extensionPointId>phenotips.globalTools.create.entries</extensionPointId>
