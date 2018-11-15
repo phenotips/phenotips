@@ -63,7 +63,7 @@ $xwiki.jsfx.use('js/scriptaculous/dragdrop.js')##
 #set ($columns = $collectionstool.arrayList)
 #set ($discard = $columns.addAll(['doc.name', 'external_id', 'doc.creator', 'doc.creationDate', 'doc.author', 'doc.date', 'proband_id']))
 #set ($columnsProperties = {
-  '_actions' : {'actions': ['edit', 'delete']}
+  '_actions' : {'actions': ['edit', 'delete'], 'filterable' : false}
 })
 #set ($columnFilters ={})
 #if (!$xwiki.getDocument('PhenoTips.OwnerClass').isNew())

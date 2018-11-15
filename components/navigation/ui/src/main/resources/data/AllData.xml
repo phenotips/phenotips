@@ -80,7 +80,7 @@ $xwiki.ssx.use('PhenoTips.PatientConsent')##
   #end
 #end
 #set ($columnsProperties = {
-  '_actions' : {'actions': ['edit', 'delete']}
+  '_actions' : {'actions': ['edit', 'delete'], 'filterable' : false}
 })
 #set ($columnFiltersContent = '')
 #foreach ($f in $columnFilters.keySet())

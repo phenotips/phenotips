@@ -136,7 +136,7 @@
       #set ($discard = $columnsProperties.put($column, { 'type' : 'text', 'link' : $link, 'size' : 7, 'filterable' : $isFilterable, 'sortable': true }))
     #end
     #set ($discard = $columns.add('_actions'))
-    #set ($discard = $columnsProperties.put('_actions', {'actions': ['edit', 'delete']}))
+    #set ($discard = $columnsProperties.put('_actions', {'actions': ['edit', 'delete'], 'filterable' : false}))
   ##
   ##
     #set ($options = {
