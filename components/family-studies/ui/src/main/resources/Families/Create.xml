@@ -112,7 +112,7 @@
       </scope>
     </class>
     <property>
-      <content>{{velocity}}#if ($xwiki.hasAccessLevel('edit', "Families.$!{reservedDocumentName}"))[[$services.localization.render('phenotips.globalTools.create.family')&gt;&gt;Families.Create]]#end{{/velocity}}</content>
+      <content>{{velocity}}#if ($services.security.authorization.hasAccess('edit', $services.model.resolveSpace('Families')))[[$services.localization.render('phenotips.globalTools.create.family')&gt;&gt;Families.Create]]#end{{/velocity}}</content>
     </property>
     <property>
       <extensionPointId>phenotips.globalTools.create.entries</extensionPointId>
