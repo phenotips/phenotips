@@ -43,12 +43,12 @@
 #set ($consentsDoc      = $xwiki.getDocument('PhenoTips.Consents'))
 #set ($existingConsents = $consentsDoc.getObjects($consentClassname))
 #set ($xredirect        = $doc.getURL($xcontext.action, $request.queryString))
-#set ($doc = $consentsDoc)
 $xwiki.ssx.use($displayDocName)##
 $xwiki.jsx.use($displayDocName)##
 {{/velocity}}
 
 {{velocity}}
+#set ($doc = $consentsDoc)
 #if ("$!{request.xaction}" == 'lastentry')
  #set ($entryClassName = $request.dataClassName)
   #set ($options = {})
