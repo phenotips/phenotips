@@ -66,6 +66,7 @@
     <reference_genome>
       <cache>0</cache>
       <customDisplay/>
+      <defaultValue>GRCh37</defaultValue>
       <disabled>0</disabled>
       <displayType>select</displayType>
       <multiSelect>0</multiSelect>
