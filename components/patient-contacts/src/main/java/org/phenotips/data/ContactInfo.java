@@ -19,6 +19,7 @@ package org.phenotips.data;
 
 import org.xwiki.stability.Unstable;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -222,7 +223,13 @@ public interface ContactInfo
 
             private void setEmails(List<String> emails)
             {
-                this.emails = emails;
+                List<String> collectedEmails = new ArrayList<String>();
+                for (String email : emails) {
+                    for (String parsedEmail : StringUtils.split(email, ",|;")) {
+                        collectedEmails.add(parsedEmail.trim());
+                    }
+                }
+                this.emails = collectedEmails;
             }
 
             @Override
