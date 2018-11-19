@@ -17,7 +17,7 @@ The patient data being managed includes:
 
 The application provides a **web interface** accessible from any device equipped with a web browser and a secure connection to the application server. The complexity and technical codification of standardized phenotyping and disease vocabularies is hidden under the friendly UI, which allows for error-tolerant, predictive search of phenotypic descriptions, and provides instant suggestions of additional phenotypes and diseases matching the current phenotype selection to investigate.
 
-## Major tools and resources involved used by this project ##
+## Major tools and resources used by this project ##
 * The [Human Phenotype Ontology (HPO)](http://www.human-phenotype-ontology.org/) - a standardized vocabulary of phenotypic abnormalities encountered in human disease; contains approximately 10,000 terms and is being developed using information from [OMIM](http://omim.org/) and the medical literature
 * [Apache Solr](http://lucene.apache.org/solr/) - an enterprise search platform
 * [XWiki](http://xwiki.org) - an enterprise web application development framework
