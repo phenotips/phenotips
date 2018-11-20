@@ -667,7 +667,9 @@
     </property>
     <property>
       <code>#template("colorThemeInit.vm")
-
+#groups-directory td {
+  float: left;
+}
 #groups-directory td {
   border: 0 none;
   border-bottom: 2px solid $theme.borderColor;
