@@ -550,7 +550,6 @@
     _initOwnershipManager : function() {
       this._ownerInfo = new Element('div', {id : 'owner', 'class' : 'intro xHint'});
       this._ownershipManager.update(this._ownerInfo);
-      this._ownerSuggestPicker = XWiki.widgets.UserPicker.instances["new-owner-input"];
 
       // HACK: 'new-owner-input' suggest input had to be put into the document from the start
       //       to make suggest picker attach to it correctly; it now has to be moved into
@@ -572,8 +571,6 @@
 
            transferToRadio.observe('change', function() {
              _this._newOwnerInput.disable();
-             // removes previously selected user displayed by the suggest user picker
-             _this._ownerSuggestPicker &amp;&amp; _this._ownerSuggestPicker.clear();
              if (transferToRadio.checked &amp;&amp; controlledElement) {
                _this._newOwnerInput.enable();
                _this._newOwnerInput.focus();
