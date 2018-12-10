@@ -292,7 +292,7 @@ var ExtraGeneVariantData = (function (ExtraGeneVariantData) {
       varIndex++;
 
       var data = {
-          GENE_SYMBOL_PLACEHOLDER: geneSymbol,
+          GENE_NAME_PLACEHOLDER: geneSymbol,
           VARIANT_COUNT_PLACEHOLDER: varCount,
           GENE_INDEX_PLACEHOLDER: geneIndex,
           VARIANT_INDEX_PLACEHOLDER: varIndex
