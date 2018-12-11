@@ -53,15 +53,15 @@
       <customDisplay>{{velocity}}
 #set ($config = $xwiki.getDocument('XWiki.XWikiPreferences').getObject('PhenoTips.LabeledIdentifierGlobalSettings'))
 #set ($family = $services.families.getFamilyById($value))
-#set ($familyID = $family.getId())
-#if ("$family.getExternalId()" != '')
+#set ($familyID = $!family.getId())
+#if ("$!family.getExternalId()" != '')
   #if ($config &amp;&amp; "$!{config.getProperty('hideInternalIds').value}" == '1')
     #set ($familyID = $family.getExternalId())
   #else
     #set ($familyID = "$family.getId() ($family.getExternalId())")
   #end
 #end
-#if ("$familyID" != '')
+#if ("$!familyID" != '')
 [[$familyID&gt;&gt;path:$xwiki.getURL($family.getDocumentReference(), 'view')||id="familyId" target="$family.getId()"]]
 #end
 {{/velocity}}
