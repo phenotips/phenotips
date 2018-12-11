@@ -57,7 +57,7 @@ $xwiki.jsx.use('PhenoTips.StudySheet')##
 
 )))
 #else
-$!doc.content
+#if ("$!{doc.content}" != '')((($!doc.content)))#end
 #if ($xcontext.action == 'view')
 #set ($filterVal = $services.rendering.escape($doc.fullName, $doc.syntax))
 #set ($sections = [
