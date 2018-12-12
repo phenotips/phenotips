@@ -386,7 +386,7 @@ $xwiki.ssx.use('XWiki.XWikiUserSheet')##
 
       // need to be correctly redirected on "save and view summary" action
       var xredirectEl = $$('input[name="xredirect"]');
-      if (xredirectEl && xredirectEl.size() > 0) {
+      if (xredirectEl &amp;&amp; xredirectEl.size() > 0) {
         xredirectEl[0].value = XWiki.currentDocument.getURL('view', window.self.location.search.slice(1));
       }
     }
