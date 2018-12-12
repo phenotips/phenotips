@@ -104,7 +104,11 @@ public class NameAndEmailExtractor
     private Pair<String, String> fetchFromGroup(XWikiDocument document)
     {
         BaseObject groupObject = document.getXObject(GROUP_OBJECT_REFERENCE);
-        String email = groupObject.getStringValue("contact");
+        String email = null;
+        // if the group is of "PhenoTipsGroupClass"
+        if (groupObject != null) {
+            email = groupObject.getStringValue("contact");
+        }
         String name = document.getDocumentReference().getName();
         return Pair.of(name, email);
     }
