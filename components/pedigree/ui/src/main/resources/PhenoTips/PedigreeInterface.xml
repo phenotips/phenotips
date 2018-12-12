@@ -166,7 +166,7 @@ $response.setContentType('application/json')##
             "lineStyle"                    : "$!{config.getProperty('lineStyle').value}"
         #end
     },
-    "phenotipsVersion": "$!{services.distribution.distributionExtension.id.version}"
+    "phenotipsVersion": "$!{services.extension.getCoreExtension('org.phenotips:patient-data-api').id.version}"
   }
 #else
   Unknown action
