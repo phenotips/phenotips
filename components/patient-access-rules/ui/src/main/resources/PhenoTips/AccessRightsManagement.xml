@@ -544,6 +544,8 @@
       if (this._newOwnerSelector) {
         this._ownerInfo.insert(" $escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.modifyOwnershipOptions'))");
         this._checkKeepOwnershipOption();
+        // clean-up cached owner suggested selections from previous interactions, if any
+        this._newOwnerSelector.down('.accepted-suggestions') &amp;&amp; this._newOwnerSelector.down('.accepted-suggestions').update('');
       }
     },
 
@@ -964,6 +966,9 @@
 
     _updateCollaborators : function (collaborators) {
       this._collaboratorsList.update('');
+      if ($('new-collaborator-input')) {
+        $('new-collaborator-input').value = '';
+      }
       collaborators.each(this._addCollaborator.bind(this));
     },
 
