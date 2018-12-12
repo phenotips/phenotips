@@ -329,10 +329,11 @@ public class PhenotipsFamilyExport
                 familyJson.put("textSummary", searchResult.getDescription());
                 familyArray.put(familyJson);
             } else {
-                String escapedReference = XMLUtils.escapeXMLComment(searchResult.getReference());
-                String escapedDescription = XMLUtils.escapeXMLComment(searchResult.getDescription());
+                String url = XMLUtils.escapeAttributeValue(searchResult.getUrl());
+                String escapedReference = XMLUtils.escapeAttributeValue(searchResult.getReference());
+                String escapedDescription = XMLUtils.escapeElementContent(searchResult.getDescription());
 
-                xmlResult.append("<rs id=\"").append(searchResult.getUrl()).append("\" ");
+                xmlResult.append("<rs id=\"").append(url).append("\" ");
                 xmlResult.append("info=\"").append(escapedReference).append("\">");
 
                 xmlResult.append(escapedDescription);

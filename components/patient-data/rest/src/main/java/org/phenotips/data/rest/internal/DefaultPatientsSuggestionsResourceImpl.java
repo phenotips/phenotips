@@ -226,15 +226,13 @@ public class DefaultPatientsSuggestionsResourceImpl extends XWikiResource implem
 
     private void appentPatientXML(Patient patient, StringBuilder xmlResult)
     {
+        String url = XMLUtils.escapeAttributeValue(getURL(patient));
         String escapedReference = XMLUtils.escapeAttributeValue(patient.getDocumentReference().toString());
+        String escapedDescription = XMLUtils.escapeElementContent(getDescription(patient));
 
-        xmlResult.append("<rs id=\"").append(getURL(patient)).append("\" ");
+        xmlResult.append("<rs id=\"").append(url).append("\" ");
         xmlResult.append("info=\"").append(escapedReference).append("\">");
 
-        String description = getDescription(patient);
-
-        // Add description
-        String escapedDescription = XMLUtils.escapeXMLComment(description);
         xmlResult.append(escapedDescription);
 
         xmlResult.append("</rs>");
