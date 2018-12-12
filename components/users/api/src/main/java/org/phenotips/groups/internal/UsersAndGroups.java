@@ -208,10 +208,11 @@ public class UsersAndGroups implements Initializable
             xmlResult.append("<results>");
             for (Object object : resultArray) {
                 JSONObject entityJson = (JSONObject) object;
-                String escapedId = XMLUtils.escapeXMLComment(entityJson.optString(UsersAndGroups.ID_KEY));
-                String escapedInfo = XMLUtils.escapeXMLComment(entityJson.optString(UsersAndGroups.INFO_KEY));
-                String escapedValue = XMLUtils.escapeXMLComment(entityJson.optString(UsersAndGroups.VALUE_KEY));
-                String escapedDescription = XMLUtils.escapeXMLComment(entityJson.optString(UsersAndGroups.DESC_KEY));
+                String escapedId = XMLUtils.escapeAttributeValue(entityJson.optString(UsersAndGroups.ID_KEY));
+                String escapedInfo = XMLUtils.escapeAttributeValue(entityJson.optString(UsersAndGroups.INFO_KEY));
+                String escapedValue = XMLUtils.escapeAttributeValue(entityJson.optString(UsersAndGroups.VALUE_KEY));
+                String escapedDescription =
+                    XMLUtils.escapeElementContent(entityJson.optString(UsersAndGroups.DESC_KEY));
 
                 xmlResult.append("<rs id=\"").append(escapedId).append("\" ");
                 xmlResult.append("icon=\"").append(entityJson.optString(UsersAndGroups.ICON_KEY)).append("\" ");

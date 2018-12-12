@@ -26,7 +26,7 @@ $response.setContentType("text/xml")
   #getUserAvatarURL($reference $avatarURL 30)
   #if ($request.uorg == 'user')
     ## The string returned by XWiki#getUserName() is XML encoded.
-    #set ($prettyName = $xwiki.getUserName($stringReference, false))
+    #set ($prettyName = $xwiki.getPlainUserName($stringReference))
   #else
     #set ($prettyName = $xwiki.getDocument($reference).plainTitle)
     #if ("$!prettyName" == '')
@@ -34,7 +34,7 @@ $response.setContentType("text/xml")
     #end
   #end
   <rs id="$escapetool.xml($reference.name)" icon="$escapetool.xml($avatarURL.url)"
-    info="$prettyName">$escapetool.xml($stringReference)</rs>
+    info="$escapetool.xml($prettyName)">$escapetool.xml($stringReference)</rs>
 #end
 
 #if ($request.wiki == 'global')
