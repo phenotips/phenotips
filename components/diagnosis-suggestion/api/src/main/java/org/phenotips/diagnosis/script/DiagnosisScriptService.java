@@ -21,13 +21,18 @@ import org.phenotips.diagnosis.DiagnosisService;
 import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
 import org.xwiki.script.service.ScriptService;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+
+import org.slf4j.Logger;
 
 /**
  * Service that suggests plausible diagnoses for a set of features.
@@ -42,7 +47,11 @@ import javax.inject.Singleton;
 public class DiagnosisScriptService implements ScriptService
 {
     @Inject
-    private DiagnosisService service;
+    @Named("wiki")
+    private ComponentManager componentManager;
+
+    @Inject
+    protected static Logger logger;
 
     /**
      * Get a list of plausible diagnoses given a list of present phenotypes.
@@ -55,6 +64,23 @@ public class DiagnosisScriptService implements ScriptService
      */
     public List<VocabularyTerm> get(List<String> phenotypes, List<String> nonstandardPhenotypes, int limit)
     {
-        return this.service.getDiagnosis(phenotypes, nonstandardPhenotypes, limit);
+        return this.get(phenotypes, Collections.emptyList(), nonstandardPhenotypes, limit);
+    }
+
+    public List<VocabularyTerm> get(List<String> phenotypes, List<String> negativePhenotypes, List<String> nonstandardPhenotypes, int limit)
+    {
+        return this.get(phenotypes, negativePhenotypes, nonstandardPhenotypes, limit, "default");
+    }
+
+    public List<VocabularyTerm> get(List<String> phenotypes, List<String> negativePhenotypes, List<String> nonstandardPhenotypes, int limit, String source)
+    {
+        DiagnosisService service;
+        try {
+            service = componentManager.getInstance(DiagnosisService.class, source);
+        } catch (ComponentLookupException e) {
+            logger.error("Error loading component: {}", e);
+            return Collections.emptyList();
+        }
+        return service.getDiagnosis(phenotypes, nonstandardPhenotypes, limit);
     }
 }

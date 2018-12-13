@@ -40,55 +40,77 @@
   <content>{{velocity filter="indent"}}
 #if ($xcontext.action == 'get')
   $response.setHeader("X-ReqNo", "$!request.reqNo")##
-  #if ("$!request.q" != '')##
+  #if ("$!request.symptom" != '')
+    #set ($_service = $services.diagnosis)
     #set ($limit = $mathtool.toInteger("$!{request.limit}"))
     #if (!$limit || $limit &lt; 0)
       #set ($limit = 10)
     #end
-    #set ($symptoms = [])
-    #set ($freeSymptoms = [])
-    #foreach ($piece in $!request.getParameterValues('symptom'))
-      #set($discard = $symptoms.add($piece))
+    #set ($symptoms = $collectionstool.set)
+    #foreach($i in $request.getParameterValues('symptom'))
+      #set ($discard = $symptoms.add($i))
     #end
     #foreach ($piece in $!request.getParameterValues('free_symptom'))
       #set($discard = $freeSymptoms.add($piece))
     #end
-#if ("$!{request.format}" == 'html')
-#set ($results = $services.diagnosis.get($symptoms, $freeSymptoms, $limit))
-#if ($results.size() &gt; 0)
-{{html clean="false" wiki="false"}}##
-&lt;ul class="vocabulary-term-list"&gt;
-#foreach($term in $results)
-  #set ($name = $term.getName())
-  #set ($id = $term.getId())
-  #if ($term.id.indexOf(':') &gt;= 0)
-    #set ($unprefixedId = $stringtool.substringAfter($term.id, ':'))
-  #else
-    #set ($unprefixedId = $term.id)
-  #end
-  #set ($fullName = $name)
-  #if ($term.short_name &amp;&amp; $term.short_name.size() &gt; 0)
-    #set ($fullName = $fullName.concat('; ').concat($stringtool.join($term.short_name, ', ')))
-  #end
-  &lt;li class="disorder"&gt;
-    &lt;span class="term-id" title="${id}"&gt;&lt;a href="http://www.omim.org/entry/${unprefixedId}" target="_blank" title="${services.localization.render('phenotips.UIXField.diagnosisSuggestions.omimSearch.result.title')}"&gt;${stringtool.defaultString($!term.symbol, ' ')}${unprefixedId}&lt;/a&gt;&lt;/span&gt;
-    &lt;span class="term-name" title="${fullName}"&gt;${name}&lt;/span&gt;
-  &lt;/li&gt;
-#end ## foreach item
-&lt;/ul&gt;
-{{/html}}
-   #set ($hasOutput = true)
-#else
-   #set ($hasOutput = false)
-#end## results.size() &gt; 0
-    #end## html format
+    #set ($results = $_service.get($symptoms, $freeSymptoms, $limit))
+    #set ($hasOutput = false)
+    #if ("$!{request.format}" == 'html')
+      #if ($results.size() &gt; 0)
+        {{html wiki="false" clean="false"}}##
+        &lt;ul class="vocabulary-term-list"&gt;
+          #foreach ($term in $results)
+            #set ($termPrefix = "")
+            #set ($unprefixedId = "$!{term.id}")
+            #set ($termDisplay = "$!{term.id}")
+            #if ($term.id.indexOf(':') &gt;= 0)
+              #set ($termPrefix = $stringtool.substringBefore($term.id, ':').toUpperCase())
+              #set ($unprefixedId = $stringtool.substringAfter($term.id, ':').toUpperCase())
+            #end
+            ## Default to OMIM
+            #if ("$!{termPrefix}" == "" || $termPrefix == "MIM" || $termPrefix == "OMIM")
+              #set ($termUrl = "http://www.omim.org/entry/${escapetool.url($unprefixedId)}")
+              #set ($termDisplay = "${stringtool.defaultString($!{term.symbol}, ' ')}${unprefixedId}")
+            #elseif ($termPrefix == "ORDO" || $termPrefix == "ORPHA" || $termPrefix == "ORPHANET")
+              #set ($termUrl = "http://www.orpha.net/consor/cgi-bin/OC_Exp.php?lng=en&amp;Expert=${escapetool.url($unprefixedId)}")
+            #else
+              #set ($termUrl = "")
+            #end
+            &lt;li class="disorder"&gt;
+              &lt;span class="term-id" title="$escapetool.xml(${term.id})"&gt;
+                #if ("$!{termUrl}" != "")
+                  &lt;a href="${termUrl}" target="_blank" title="${services.localization.render('phenotips.UIXField.diagnosisSuggestions.omimSearch.result.title')}"&gt;${termDisplay}&lt;/a&gt;
+                #else
+                  ${termDisplay}
+                #end
+              &lt;/span&gt;
+              &lt;span class="term-name" title="$escapetool.xml(${term.name})"&gt;${stringtool.defaultString($!{term.short_name}, $!{term.name})}&lt;/span&gt;
+            &lt;/li&gt;
+          #end
+        &lt;/ul&gt;
+        {{/html}}
+        #set ($hasOutput = true)
+      #end## results.size() &gt; 0
+    #elseif ("$!{request.format}" == 'json')
+      #set ($jsonResults = [])
+      #foreach ($term in $results)
+        #set ($discard = $jsonResults.add($term.toJSON()))
+      #end
+      $response.setContentType('application/json')
+      #if ("$!{request.outputSyntax}" == 'plain')
+        {{content syntax="plain/1.0"}}$jsontool.serialize($jsonResults){{/content}}
+      #else
+       {{html wiki="false" clean="false"}}$jsontool.serialize($jsonResults){{/html}}
+      #end
+      #set ($hasOutput = true)
+    #end## format
   #else
     #set ($hasOutput = false)
   #end## non-empty query
 #end## get action
 ##
 #if (!$hasOutput)
-(% class="hint" %)No matches found
+(% class="hint" %)$services.localization.render('phenotips.diagnosisSuggestions.noMatches')
 #end
 {{/velocity}}</content>
 </xwikidoc>
