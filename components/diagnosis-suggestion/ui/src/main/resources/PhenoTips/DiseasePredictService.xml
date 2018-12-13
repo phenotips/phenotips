@@ -43,7 +43,7 @@
   #if ("$!request.q" != '')##
     #set ($limit = $mathtool.toInteger("$!{request.limit}"))
     #if (!$limit || $limit &lt; 0)
-      #set ($limit = 20)
+      #set ($limit = 10)
     #end
     #set ($symptoms = [])
     #set ($freeSymptoms = [])

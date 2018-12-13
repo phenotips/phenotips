@@ -18,230 +18,134 @@
 package org.phenotips.diagnosis.internal;
 
 import org.phenotips.diagnosis.DiagnosisService;
+import org.phenotips.vocabulary.SolrVocabularyResourceManager;
+import org.phenotips.vocabulary.Vocabulary;
 import org.phenotips.vocabulary.VocabularyManager;
 import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.annotation.Component;
-import org.xwiki.component.phase.Initializable;
-import org.xwiki.component.phase.InitializationException;
-import org.xwiki.environment.Environment;
+import org.xwiki.filter.annotation.Name;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.params.CommonParams;
 import org.slf4j.Logger;
 
-import ontologizer.go.Term;
-import ontologizer.types.ByteString;
-import sonumina.boqa.calculation.BOQA;
-import sonumina.boqa.calculation.Observations;
-
 /**
- * An implementation of {@link DiagnosisService} using BOQA, see
- * <a href="http://bioinformatics.oxfordjournals.org/content/28/19/2502.abstract">this article</a>.
+ * An implementation of {@link DiagnosisService} using the builtin vocabularies
  *
- * @since 1.1M1
+ * @since 1.5M1
  * @version $Id$
  */
 @Singleton
 @Component
-public class DefaultDiagnosisService implements DiagnosisService, Initializable
+public class DefaultDiagnosisService implements DiagnosisService
 {
     @Inject
     private Logger logger;
 
-    private BOQA boqa;
-
-    private Map<Integer, ByteString> omimMap;
-
     @Inject
     private VocabularyManager vocabulary;
 
+    /** Direct access to the omim vocabulary */
     @Inject
-    private Environment env;
+    @Named("omim")
+    private Vocabulary omim;
 
     @Inject
-    private Utils utils;
-
-    @Override
-    public void initialize() throws InitializationException
-    {
-        // Initialize boqa
-        this.boqa = new BOQA();
-        this.boqa.setConsiderFrequenciesOnly(false);
-        this.boqa.setPrecalculateScoreDistribution(false);
-        this.boqa.setCacheScoreDistribution(false);
-        this.boqa.setPrecalculateItemMaxs(false);
-        this.boqa.setPrecalculateMaxICs(false);
-        this.boqa.setMaxFrequencyTerms(2);
-        this.boqa.setPrecalculateJaccard(false);
-
-        String annotationPath = null;
-        String vocabularyPath = null;
-        try {
-            annotationPath =
-                stream2file(BOQA.class.getClassLoader().getResourceAsStream("new_phenotype.gz"), "annotation")
-                    .getPath();
-            vocabularyPath =
-                stream2file(BOQA.class.getClassLoader().getResourceAsStream("hp.obo.gz"), "ontology").getPath();
-        } catch (IOException e) {
-            throw new InitializationException(e.getMessage());
-        }
-
-        // Load datafiles
-        try {
-            this.utils.loadDataFiles(vocabularyPath, annotationPath);
-        } catch (InterruptedException e) {
-            throw new InitializationException(e.getMessage());
-        } catch (IOException e) {
-            throw new InitializationException(e.getMessage());
-        }
-
-        this.boqa.setup(this.utils.getGraph(), this.utils.getDataAssociation());
-
-        // Set up our index -> OMIM mapping by flipping the OMIM -> Index mapping in boqa
-        Set<Map.Entry<ByteString, Integer>> omimtonum = this.boqa.item2Index.entrySet();
-        this.omimMap = new HashMap<>(omimtonum.size());
-
-        for (Map.Entry<ByteString, Integer> item : omimtonum) {
-            this.omimMap.put(item.getValue(), item.getKey());
-        }
-    }
+    private SolrVocabularyResourceManager solrManager;
 
     @Override
     public List<VocabularyTerm> getDiagnosis(List<String> phenotypes, List<String> nonstandardPhenotypes, int limit)
     {
         // TODO: use the `nonstandardPhenotypes` argument
+        // TODO: switch to search across vocabulary.getVocabularies("diagnosis")
 
-        Observations o = new Observations();
-        o.observations = new boolean[this.boqa.getOntology().getNumberOfTerms()];
-        boolean searchIsEmpty = true;
+        List<VocabularyTerm> result = new LinkedList<>();
 
-        // Add all hpo terms with ancestors to array of booleans
-        for (String hpo : phenotypes) {
-            Term t = this.boqa.getOntology().getTerm(hpo);
-            searchIsEmpty = !addTermAndAncestors(t, o) && searchIsEmpty;
+        Set<String> allAncestors = new HashSet<>();
+        for (String phenotype : phenotypes) {
+            allAncestors.addAll(this.getAllAncestorsAndSelfIDs(phenotype));
+        }
+        if (allAncestors.isEmpty()) {
+            return result;
         }
 
-        if (searchIsEmpty) {
-            return Collections.emptyList();
-        }
-
-        // Get marginals
-        final BOQA.Result res = this.boqa.assignMarginals(o, false, 1);
-
-        // All of this is sorting diseases by marginals
-        Integer[] order = new Integer[res.size()];
-        for (int i = 0; i < order.length; i++) {
-            order[i] = i;
-        }
-
-        Arrays.sort(order, new Comparator<Integer>()
-        {
-            @Override
-            public int compare(Integer o1, Integer o2)
-            {
-                if (res.getMarginal(o1) < res.getMarginal(o2)) {
-                    return 1;
-                }
-                if (res.getMarginal(o1) > res.getMarginal(o2)) {
-                    return -1;
-                }
-                return 0;
-            }
-        });
-
-        // Get top limit results
-        List<VocabularyTerm> results = new ArrayList<>();
-        for (int id : order) {
-            if (results.size() >= limit) {
-                break;
-            }
-
-            String termId = String.valueOf(this.omimMap.get(id));
-            String vocabularyId = StringUtils.substringBefore(termId, ":");
-
-            // ignore non-OMIM diseases (BOQA has ORPHANET and DECIPHER as well)
-            if (!"OMIM".equals(vocabularyId)) {
-                continue;
-            }
-
-            // Strip 'O' in "OMIM"
-            termId = termId.substring(1);
-
-            VocabularyTerm term = this.vocabulary.resolveTerm(termId);
-
-            if (term == null) {
-                this.logger.warn(String.format(
-                    "Unable to resolve OMIM term '%s' due to outdated OMIM vocabulary.", termId));
-                continue;
-            }
-
-            // Do not suggest diseases that start with *, +, and ^
-            Pattern pattern = Pattern.compile("[*+^]");
-            if (pattern.matcher(term.getName().substring(0, 1)).matches()) {
-                continue;
-            }
-
-            results.add(term);
-
-        }
-
-        this.logger.debug(String.valueOf(results));
-
-        return results;
-    }
-
-    private boolean addTermAndAncestors(Term t, Observations o)
-    {
+        QueryResponse response;
         try {
-            int id = this.boqa.getTermIndex(t);
-            o.observations[id] = true;
-            this.boqa.activateAncestors(id, o.observations);
-        } catch (Exception e) {
-            this.logger.warn("Unable to find the boqa index of [{}].", t);
-            return false;
+            response = this.solrManager.getSolrConnection(this.omim).query(prepareParams(allAncestors,
+                Collections.emptyList(), limit));
+        } catch (SolrServerException | IOException ex) {
+            this.logger.warn("Failed to query OMIM index: {}", ex.getMessage());
+            return result;
         }
-        return true;
+
+        SolrDocumentList matchingDisorders = response.getResults();
+        for (SolrDocument doc : matchingDisorders) {
+            String termId = (String) doc.getFieldValue("id");
+            VocabularyTerm term = this.omim.getTerm(termId);
+            if (term == null) {
+                continue;
+            }
+            result.add(term);
+        }
+        return result;
     }
 
     /**
-     * Convert a stream into a file.
+     * Prepare the map of parameters that can be passed to a Solr query, in order to get a list of diseases matching the
+     * selected positive and negative phenotypes.
      *
-     * @param in an inputstream
-     * @return a File
-     * @throws IOException when we can't open file
+     * @param phenotypes the list of already selected phenotypes
+     * @param nphenotypes phenotypes that are not observed in the patient
+     * @param limit the maximum number of results to return
+     * @return the computed Solr query parameters
      */
-    private File stream2file(InputStream in, String nameRoot) throws IOException
+    private SolrQuery prepareParams(Collection<String> phenotypes, Collection<String> nphenotypes, int limit)
     {
-        File tempDir = this.env.getTemporaryDirectory();
-        final File tempFile;
-        if (tempDir != null) {
-            tempFile = new File(tempDir, String.format("phenotips_boqa_%s.tmp", nameRoot));
-        } else {
-            tempFile = File.createTempFile("phenotips_boqa", ".tmp");
+        SolrQuery result = new SolrQuery();
+        String q = "symptom:" + StringUtils.join(phenotypes, " symptom:");
+        if (!nphenotypes.isEmpty()) {
+            q += "  not_symptom:" + StringUtils.join(nphenotypes, " not_symptom:");
         }
-        tempFile.deleteOnExit();
+        q += " -nameSort:\\** -nameSort:\\+* -nameSort:\\^*";
+        result.set(CommonParams.Q, q.replaceAll("HP:", "HP\\\\:"));
+        result.set(CommonParams.ROWS, limit);
+        result.set(CommonParams.START, "0");
 
-        FileOutputStream out = new FileOutputStream(tempFile);
-        IOUtils.copy(in, out);
+        return result;
+    }
 
-        return tempFile;
+    /**
+     * Get the HPO IDs of the specified phenotype and all its ancestors.
+     *
+     * @param id the HPO identifier to search for, in the {@code HP:1234567} format
+     * @return the full set of ancestors-or-self IDs, or an empty set if the requested ID was not found in the index
+     */
+    public Set<String> getAllAncestorsAndSelfIDs(final String id)
+    {
+        Set<String> parents = new HashSet<>();
+        VocabularyTerm crt = this.vocabulary.resolveTerm(id);
+        Set<VocabularyTerm> ancestors = crt.getAncestorsAndSelf();
+        for (VocabularyTerm term : ancestors) {
+            parents.add(term.getId());
+        }
+        return parents;
     }
 }

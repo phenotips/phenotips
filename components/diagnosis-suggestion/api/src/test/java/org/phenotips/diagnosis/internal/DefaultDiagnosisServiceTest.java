@@ -22,31 +22,22 @@ import org.phenotips.vocabulary.VocabularyManager;
 import org.phenotips.vocabulary.VocabularyTerm;
 
 import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.environment.Environment;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-
-import sonumina.boqa.calculation.BOQA;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -59,15 +50,9 @@ public class DefaultDiagnosisServiceTest
     public final MockitoComponentMockingRule<DiagnosisService> mocker =
         new MockitoComponentMockingRule<>(DefaultDiagnosisService.class);
 
-    @Rule
-    public final MockitoComponentMockingRule<Utils> workingUtils =
-        new MockitoComponentMockingRule<>(BoqaUtils.class);
-
     @Test
-    public void returnsCorrectDiagnosis() throws ComponentLookupException, IOException, InterruptedException
+    public void returnsCorrectDiagnosis() throws ComponentLookupException, InterruptedException
     {
-        String tempDir = System.getProperty("java.io.tmpdir");
-
         /** This test is prone to outdated ontologies. */
         List<List<String>> phenotypes = new LinkedList<>();
         List<List<String>> disorderIds = new LinkedList<>();
@@ -96,23 +81,6 @@ public class DefaultDiagnosisServiceTest
         int invalidPhenotypes = 2;
 
         VocabularyManager vocabulary = this.mocker.getInstance(VocabularyManager.class);
-        Environment env = this.mocker.getInstance(Environment.class);
-        Utils utils = this.mocker.getInstance(Utils.class);
-
-        File tempMock = mock(File.class);
-        doReturn(tempMock).when(env).getTemporaryDirectory();
-        doReturn(tempDir).when(tempMock).getPath();
-
-        Environment utilsEnv = this.workingUtils.getInstance(Environment.class);
-        Utils workingUtilsComponent = this.workingUtils.getComponentUnderTest();
-        String annotationPath =
-            stream2file(BOQA.class.getClassLoader().getResourceAsStream("new_phenotype.gz")).getPath();
-        String vocabularyPath = stream2file(BOQA.class.getClassLoader().getResourceAsStream("hp.obo.gz")).getPath();
-
-        File tempSpyObj = new File(tempDir);
-        File tempSpy = spy(tempSpyObj);
-        doReturn(tempSpy).when(utilsEnv).getTemporaryDirectory();
-        workingUtilsComponent.loadDataFiles(vocabularyPath, annotationPath);
 
         doAnswer(new Answer<VocabularyTerm>()
         {
@@ -127,9 +95,6 @@ public class DefaultDiagnosisServiceTest
             }
         }).when(vocabulary).resolveTerm(anyString());
 
-        doReturn(tempSpy).when(env).getTemporaryDirectory();
-        doReturn(workingUtilsComponent.getGraph()).when(utils).getGraph();
-        doReturn(workingUtilsComponent.getDataAssociation()).when(utils).getDataAssociation();
         DiagnosisService diagnosisService = this.mocker.getComponentUnderTest();
 
         int limit = 3;
@@ -147,16 +112,5 @@ public class DefaultDiagnosisServiceTest
             i++;
         }
         verify(vocabulary, times(limit * (i - invalidPhenotypes))).resolveTerm(anyString());
-    }
-
-    private File stream2file(InputStream in) throws IOException
-    {
-        final File tempFile = File.createTempFile("phenotips_test", ".tmp");
-        tempFile.deleteOnExit();
-
-        FileOutputStream out = new FileOutputStream(tempFile);
-        IOUtils.copy(in, out);
-
-        return tempFile;
     }
 }

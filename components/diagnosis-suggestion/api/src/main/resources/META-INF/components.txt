@@ -1,4 +1,5 @@
 org.phenotips.diagnosis.script.DiagnosisScriptService
-org.phenotips.diagnosis.internal.DefaultDiagnosisService
+org.phenotips.diagnosis.internal.BoqaDiagnosisService
 org.phenotips.diagnosis.internal.BoqaInitializer
 org.phenotips.diagnosis.internal.BoqaUtils
+org.phenotips.diagnosis.internal.DefaultDiagnosisService
