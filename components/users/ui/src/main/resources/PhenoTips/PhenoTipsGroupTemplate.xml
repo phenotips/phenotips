@@ -121,7 +121,7 @@
         <unmodifiable>0</unmodifiable>
         <validationMessage/>
         <validationRegExp/>
-        <values>members=Show member list to non-members|cases=Show list of public cases to non-members</values>
+        <values>members=Show member list to non-members|cases=Show list of cases to non-members</values>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </public_sections>
       <studies>
