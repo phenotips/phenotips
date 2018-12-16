@@ -644,9 +644,9 @@
            // to identify whether the collaborator has been already added we compare resolved names
            // to be independent on the entity name format passed by suggest widget or REST service
            // (could be "xwiki:XWiki:Admin", or "XWiki:Admin", or "Admin")
-           var resolvedId = XWiki.Model.resolve(id, XWiki.EntityType.DOCUMENT).name;
+           var resolvedName = XWiki.Model.resolve(id, XWiki.EntityType.DOCUMENT).name;
            _this._collaboratorsList.select('tr input[value*="' + id + '"]').each( function(item) {
-               if (XWiki.Model.resolve(item.value, XWiki.EntityType.DOCUMENT).name === resolvedId) {
+               if (XWiki.Model.resolve(item.value, XWiki.EntityType.DOCUMENT).name === resolvedName) {
                  existingCollaborator = item;
                }
            });
@@ -1058,6 +1058,7 @@
           collaboratorText = "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.collaboratorsSummary.noCollaborators', ['__beginHtml__', '__endHtml__']))".replace("__beginHtml__", beginHtml).replace("__endHtml__", endHtml);
         } else {
           var collaborator = data.collaborators.collaborators[0];
+          collaborator.name = collaborator.name || XWiki.Model.resolve(collaborator.id, XWiki.EntityType.DOCUMENT).name;
           if (collaboratorsCount == 1) {
             collaboratorText = "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.collaboratorsSummary.oneCollaborator', ['__beginHtml__', '__collaborator.name__', '__endHtml__']))".replace("__beginHtml__", beginHtml).replace("__collaborator.name__", collaborator.name).replace("__endHtml__", endHtml);
           } else if (collaboratorsCount == 2) {
@@ -1080,7 +1081,7 @@
       var row = new Element('tr', {'class' : (highlight === true ? 'new' : '')});
       row.insert(new Element('td').insert(new Element('span', {'class' : 'fa fa-' + c.type}).update(' ')));
       row.insert(new Element('td')
-              .insert(c.name)
+              .insert(c.name ? c.name : XWiki.Model.resolve(c.id, XWiki.EntityType.DOCUMENT).name)
               .insert(new Element('input', {'type': 'hidden', 'name' : 'collaborator', 'value' : c.id}))
       );
       var rights = this._generateCollaborationOptions('accessLevel', c.level)
