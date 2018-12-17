@@ -316,6 +316,33 @@ var init = function() {
 };
 (XWiki.domIsLoaded &amp;&amp; init()) || document.observe('xwiki:dom:loaded', init);
 document.observe('lightbox:userprofile:loaded', init);
+document.observe('xwiki:dom:updated', function(e) {
+  if (e.memo &amp;&amp; e.memo.elements &amp;&amp; e.memo.elements[0] &amp;&amp; e.memo.elements[0].down('#register')) {
+    window.lb.lbClose = function() {
+      this.lbHide();
+      this.lbClearData();
+    }
+    window.lb.lbSaveForm = function() {
+      var formParams = Form.serialize(this.form);
+      Form.disable(this.form);
+      var ajaxRequest = new Ajax.Request(this.saveUrl, {
+        parameters: formParams,
+        asynchronous: false
+      });
+      window.lb.lbFormDataLoaded(ajaxRequest.transport);
+    }
+    $('register').down('input[type="submit"]').observe('click', function(e) {
+      e.stop();
+      window.lb.lbSaveForm();
+    });
+  } else if (e.memo &amp;&amp; e.memo.elements &amp;&amp; e.memo.elements[0] &amp;&amp; e.memo.elements[0].down('.box.infomessage')) {
+    var url = window.lb.redirectUrl;
+    window.lb.lbClose;
+    if (url != undefined) {
+      window.location.href = url;
+    }
+  }
+});
 // End XWiki augmentation.
 return XWiki;
 }(XWiki || {}));</code>
