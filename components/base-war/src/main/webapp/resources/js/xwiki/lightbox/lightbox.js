@@ -50,6 +50,7 @@ Lightbox = Class.create({
       }.bind(this)
     );
     this.form = $('lb-content').getElementsByTagName('form')[0];
+    document.fire('xwiki:dom:updated', {'elements': [$('lb-content')]});
   },
 
   /**
