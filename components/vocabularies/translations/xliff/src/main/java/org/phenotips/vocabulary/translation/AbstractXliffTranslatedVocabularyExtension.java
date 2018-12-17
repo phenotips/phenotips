@@ -29,11 +29,9 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Formatter;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -108,9 +106,6 @@ public abstract class AbstractXliffTranslatedVocabularyExtension implements Voca
     @Override
     public void extendTerm(VocabularyInputTerm term, Vocabulary vocabulary)
     {
-        if (!isTargetLocaleEnabled()) {
-            return;
-        }
         Locale targetLocale = getTargetLocale();
         String label = this.translator.getTranslation(vocabulary.getIdentifier(),
             term.getId().replace(':', '_') + KEY_MAP.get(NAME_KEY), targetLocale);
@@ -174,29 +169,14 @@ public abstract class AbstractXliffTranslatedVocabularyExtension implements Voca
      *
      * @return {@code true} if the current language is targeted, or if the instance is set as multilingual and the
      *         targeted language is included in the list of supported locales, {@code false} otherwise
+     * @deprecated This method allowed skipping languages that weren't explicitly enabled in a particular instance, but
+     *             since including all available translations of a vocabulary has no real disadvantages, it was decided
+     *             to always index all translations. Thus, this method is not used and always returns {@code true}.
      */
+    @Deprecated
     protected boolean isTargetLocaleEnabled()
     {
-        Locale currentLocale = this.localizationContext.getCurrentLocale();
-        if (isLocaleSupported(currentLocale)) {
-            return true;
-        }
-        if (!this.config.getProperty("multilingual", Boolean.FALSE)) {
-            return false;
-        }
-        Set<String> defaultValue = new HashSet<>();
-        defaultValue.add(currentLocale.getLanguage());
-        Set<String> enabledLanguages = this.config.getProperty("languages", defaultValue);
-        for (String lang : enabledLanguages) {
-            if (StringUtils.isBlank(lang)) {
-                continue;
-            }
-            String trimmed = lang.trim();
-            if (isLocaleSupported(Locale.forLanguageTag(trimmed))) {
-                return true;
-            }
-        }
-        return false;
+        return true;
     }
 
     /**

@@ -24,15 +24,11 @@ import org.phenotips.vocabulary.internal.solr.SolrVocabularyInputTerm;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.localization.LocalizationContext;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 import javax.inject.Singleton;
 
@@ -77,14 +73,6 @@ public class AbstractXliffTranslatedVocabularyExtensionTest
         Locale locale = new Locale("en");
         LocalizationContext ctx = this.mocker.getInstance(LocalizationContext.class);
         when(ctx.getCurrentLocale()).thenReturn(locale);
-        ConfigurationSource config = this.mocker.getInstance(ConfigurationSource.class, "wiki");
-        Set<String> languages = new HashSet<>();
-        languages.add("en");
-        languages.add("es");
-        languages.add("");
-        languages.add("fr");
-        when(config.getProperty("languages", Collections.singleton("en"))).thenReturn(languages);
-        when(config.getProperty("multilingual", Boolean.FALSE)).thenReturn(Boolean.TRUE);
         this.extension = this.mocker.getComponentUnderTest();
         this.extension.indexingStarted(this.vocabularyInstance);
     }
