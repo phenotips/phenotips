@@ -193,6 +193,13 @@ public class PhenotipsFamily extends AbstractPrimaryEntity implements Family
         return getXDocument().getURL(actions, getXContext());
     }
 
+    @Override
+    public boolean containsSensitiveData()
+    {
+        BaseObject familyObject = getXDocument().getXObject(Family.CLASS_REFERENCE);
+        return (familyObject.getIntValue(WARNING) != 0);
+    }
+
     /*
      * Some pedigrees may contain sensitive information, which should be displayed on every edit of the pedigree. The
      * function returns a warning to display, or empty string

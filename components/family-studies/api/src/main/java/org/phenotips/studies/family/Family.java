@@ -88,8 +88,17 @@ public interface Family extends PrimaryEntity
     String getURL(String action);
 
     /**
+     * Checks if the pedigree in this family contains sensitive information.
+     *
+     * @return true if pedigree contains sensitive data and should be obfuscated on the view page
+     */
+    boolean containsSensitiveData();
+
+    /**
      * Some pedigrees may contain sensitive information, which should be displayed on every edit of the pedigree. The
-     * function returns a warning to display, or empty string
+     * function returns a warning to display, or empty string.
+     *
+     * Note: when there is no sensitive data an empty string is returned as well.
      *
      * @return warning message
      */

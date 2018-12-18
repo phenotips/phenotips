@@ -33,8 +33,12 @@ define([
                 this.familyMembersIndex[this.familyMembers[i].id] = i;
             }
 
-            this.warningMessage = familyJSON.hasOwnProperty("warning") ?
-                                  familyJSON.warning : "";
+            this.warningMessage = null;
+            if (familyJSON.hasOwnProperty("contains_sensitive_data") && familyJSON["contains_sensitive_data"]) {
+                this.warningMessage = (familyJSON.hasOwnProperty("sensitive_data_message") && familyJSON["sensitive_data_message"] != "")
+                                      ? familyJSON["sensitive_data_message"]
+                                      : "This pedigree was marked as containing sensitive information. No further details were provided.";
+            }
 
             console.log("Family data:  [familyPage: " + this.familyPage +
                     "], [editingFamilyPage: " + Helpers.stringifyObject(this.isFamilyPage()) + "], [Members:" +
@@ -54,7 +58,7 @@ define([
         },
 
         hasWarningMessage: function() {
-            return (this.warningMessage != "");
+            return (this.warningMessage != null);
         },
 
         getLoadedFamilyMembers: function() {
