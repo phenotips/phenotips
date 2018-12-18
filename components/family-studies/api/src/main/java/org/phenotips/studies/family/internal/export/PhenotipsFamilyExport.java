@@ -88,7 +88,9 @@ public class PhenotipsFamilyExport
 
     private static final String FAMILY_EXTERNAL_ID = "externalId";
 
-    private static final String FAMILY_WARNING = "warning";
+    private static final String FAMILY_HAS_SENSITIVE_DATA = "contains_sensitive_data";
+
+    private static final String FAMILY_SENSITIVE_DATA_MESSAGE = "sensitive_data_message";
 
     private static final String FAMILY_MEMBERS = "familyMembers";
 
@@ -148,7 +150,8 @@ public class PhenotipsFamilyExport
         JSONObject familyJSON = new JSONObject();
         familyJSON.put(FAMILY_ID, family.getId());
         familyJSON.put(FAMILY_EXTERNAL_ID, family.getExternalId());
-        familyJSON.put(FAMILY_WARNING, family.getWarningMessage());
+        familyJSON.put(FAMILY_HAS_SENSITIVE_DATA, family.containsSensitiveData());
+        familyJSON.put(FAMILY_SENSITIVE_DATA_MESSAGE, family.getWarningMessage());
 
         JSONArray patientsJSONArray = new JSONArray();
         for (Patient patient : family.getMembers()) {
