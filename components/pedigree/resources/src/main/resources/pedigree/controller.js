@@ -363,7 +363,7 @@ define([
             // get the default study setting for the currently logged user
             // show study selection dialog only if no such setting exist
             var defaultStudy = editor.getPreferencesManager().getConfigurationOption("defaultStudy");
-            if ((!defaultStudy || defaultStudy == "") && studies.length > 0) {
+            if (!defaultStudy && studies.length > 0) {
                 var studySelectionDialog = editor.getStudySelectionDialog();
                 studySelectionDialog.show(callPatientCreate);
             } else {
