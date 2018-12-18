@@ -325,7 +325,7 @@ $xwiki.jsx.use('PhenoTips.StudySheet')##
   font-size: 1.2em;
 }
 .menu-section {
-  margin-left: 14em;
+  margin-left: 15em;
 }
 .menu-section h2 {
   margin-top: 0;
