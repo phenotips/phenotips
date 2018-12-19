@@ -48,6 +48,7 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
@@ -154,8 +155,8 @@ public class DefaultEntityPermissionsPreferencesManager implements EntityPermiss
         }
 
         Map<EntityReference, Collaborator> defaultCollabsMap = getDefaultPreferenceCollaborators(currentUserRef);
-        // here null value will indicate the absence of any defaultCollaborator properties stored
-        if (defaultCollabsMap != null) {
+        // here null or empty map value will indicate the absence of any defaultCollaborator properties stored
+        if (!MapUtils.isEmpty(defaultCollabsMap)) {
             return defaultCollabsMap;
         }
 
@@ -302,7 +303,7 @@ public class DefaultEntityPermissionsPreferencesManager implements EntityPermiss
      * this method will return empty map.
      *
      * @param entity entity that stores the property of interest
-     * @return the map of collaborators mapped to their corresponding entities.
+     * @return the map of collaborators mapped to their corresponding entities or null.
      */
     private Map<EntityReference, Collaborator> getDefaultPreferenceCollaborators(DocumentReference entity)
     {
