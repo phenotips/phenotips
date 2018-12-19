@@ -197,7 +197,7 @@ public class PhenotipsFamily extends AbstractPrimaryEntity implements Family
     public boolean containsSensitiveData()
     {
         BaseObject familyObject = getXDocument().getXObject(Family.CLASS_REFERENCE);
-        return (familyObject.getIntValue(WARNING) != 0);
+        return (familyObject.getIntValue(WARNING) == 1);
     }
 
     /*
