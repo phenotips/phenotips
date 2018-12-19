@@ -3,7 +3,8 @@
  *
  * @class OkCancelDialogue
  */
-define([], function(){
+define(["pedigree/pedigreeEditorParameters"],
+       function(PedigreeEditorParameters) {
   var OkCancelDialogue = Class.create( {
 
       initialize: function() {
@@ -11,6 +12,7 @@ define([], function(){
 
           this._onButtonActions = [undefined, undefined, undefined];
           this._buttons         = [undefined, undefined, undefined];
+          this._buttonOptions   = [{}, {}, {}];
 
           var mainDiv = new Element('div', {'class': 'ok-cancel-dialogue'});
 
@@ -26,7 +28,9 @@ define([], function(){
               buttons.insert(this._buttons[i].wrap('span', {'class' : 'buttonwrapper'}));
               this._buttons[i].index = i;
               this._buttons[i].observe('click', function(event) {
-                      _this.hide();
+                      if (!_this._buttonOptions[this.index]["keepBackgroundScreenWhenPressed"]) {
+                          _this.hide();
+                      }
                       _this._onButtonActions[this.index] && _this._onButtonActions[this.index]();
               });
           }
@@ -78,20 +82,57 @@ define([], function(){
       },
 
       /**
-       * Displays the template selector
+       * Displays the dialogue with up to 3 customizable buttons
        *
-       * @method show
+       * @method showCustomized
        */
       showCustomized: function( message, title,
                                 button1title, on1Function,
                                 button2title, on2Function,
                                 button3title, on3Function, bottomRight ) {
-          this._configButton(0, button1title, on1Function);
-          this._configButton(1, button2title, on2Function);
-          this._configButton(2, button3title, on3Function, bottomRight);
-          this._promptBody.update(message);
-          this.dialog.show();
-          this.dialog.dialogBox.down("div.msdialog-title").update(title);  // this.dialog.dialogBox is available only after show()
+          this.showWithOptions( message, title, {},
+                                button1title, on1Function,
+                                button2title, on2Function,
+                                button3title, on3Function, bottomRight );
+      },
+
+      /**
+       * Displays the dialogue with up to 3 customizable buttons styled according to provided options
+       *
+       * @method show
+       */
+      showWithOptions: function( message, title, options,
+                                 button1title, on1Function,
+                                 button2title, on2Function,
+                                 button3title, on3Function, bottomRight ) {
+          try {
+              this._configButton(0, button1title, on1Function);
+              this._configButton(1, button2title, on2Function);
+              this._configButton(2, button3title, on3Function, bottomRight);
+              this._promptBody.update(message);
+              this.dialog.show();
+              this.dialog.dialogBox.down("div.msdialog-title").update(title);  // this.dialog.dialogBox is available only after show()
+
+              // support for opaque dialog background
+              var screenBackground = this.dialog.dialogBox.up().down("div.msdialog-screen");
+              var useProperties = (options && options["screenBackground"] == "opaque")
+                                  ? PedigreeEditorParameters.attributes.opaqueBackgroundScreenCSS
+                                  : PedigreeEditorParameters.attributes.normalBackgroundScreenCSS;
+              for (var backgroundCSSProperty in useProperties) {
+                  if (useProperties.hasOwnProperty(backgroundCSSProperty)) {
+                      screenBackground.style[backgroundCSSProperty] = useProperties[backgroundCSSProperty];
+                  }
+              }
+
+              // support for button options
+              for (var buttonNum = 0; buttonNum < 3; buttonNum++) {
+                  if (options && options["button" + buttonNum]) {
+                      this._buttonOptions[buttonNum] = options["button" + buttonNum];
+                  } else {
+                      this._buttonOptions[buttonNum] = {};
+                  }
+              }
+          } catch (error) {}
       },
 
       /**
