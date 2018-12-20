@@ -11,6 +11,8 @@ define([
         Helpers
     ){
     var FamilyData = Class.create( {
+        DEFAULT_SENSITIVE_DATA_MESSAGE: "This pedigree was marked as containing sensitive information. No further details were provided.",
+
         initialize: function() {
             this.familyPage = null;
             this.familyMembers = [];
@@ -33,8 +35,8 @@ define([
                 this.familyMembersIndex[this.familyMembers[i].id] = i;
             }
 
-            this.warningMessage = familyJSON.hasOwnProperty("warning") ?
-                                  familyJSON.warning : "";
+            // set to null if no sensitive data present, set to DEFAULT_SENSITIVE_DATA_MESSAGE if provided message is blank, otherwise use provided
+            this.warningMessage = familyJSON["contains_sensitive_data"] ? (familyJSON["sensitive_data_message"] || this.DEFAULT_SENSITIVE_DATA_MESSAGE) : null;
 
             console.log("Family data:  [familyPage: " + this.familyPage +
                     "], [editingFamilyPage: " + Helpers.stringifyObject(this.isFamilyPage()) + "], [Members:" +
@@ -54,7 +56,7 @@ define([
         },
 
         hasWarningMessage: function() {
-            return (this.warningMessage != "");
+            return (this.warningMessage != null);
         },
 
         getLoadedFamilyMembers: function() {
