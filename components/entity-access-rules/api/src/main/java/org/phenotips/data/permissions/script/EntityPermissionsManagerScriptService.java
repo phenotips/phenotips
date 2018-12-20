@@ -182,17 +182,6 @@ public class EntityPermissionsManagerScriptService implements ScriptService
     }
 
     /**
-     * Fires a study update event for the entity with {@code targetEntityId}.
-     *
-     * @param targetEntityId the ID for the {@link PrimaryEntity} of interest
-     * @param newStudyId the ID for the new study the entity is getting assigned to
-     */
-    public void fireStudyUpdateEvent(String targetEntityId, String newStudyId)
-    {
-        this.manager.fireStudyUpdateEvent(targetEntityId, newStudyId);
-    }
-
-    /**
      * Gets the default study setting for the currently logged user.
      *
      * @return the default study {@code DocumentReference}
@@ -200,6 +189,6 @@ public class EntityPermissionsManagerScriptService implements ScriptService
      */
     public DocumentReference getDefaultStudy()
     {
-        return this.preferencesManager.getDefaultStudy(null);
+        return this.preferencesManager.getDefaultStudy(this.userManager.getCurrentUser().getProfileDocument());
     }
 }

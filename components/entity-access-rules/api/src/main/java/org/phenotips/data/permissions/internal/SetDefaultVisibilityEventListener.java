@@ -20,16 +20,12 @@ package org.phenotips.data.permissions.internal;
 import org.phenotips.data.events.PatientCreatedEvent;
 import org.phenotips.data.permissions.EntityPermissionsPreferencesManager;
 import org.phenotips.data.permissions.Visibility;
-import org.phenotips.data.permissions.events.EntityRightsUpdatedEvent;
-import org.phenotips.data.permissions.events.EntityRightsUpdatedEvent.RightsUpdateEventType;
 import org.phenotips.data.permissions.events.EntityStudyUpdatedEvent;
 import org.phenotips.entities.PrimaryEntity;
 
 import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.observation.event.Event;
-
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -40,9 +36,8 @@ import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.objects.BaseObject;
 
 /**
- * This listener creates a {@code PhenoTips.VisibilityClass} object when a new entity is created or when a user or a
- * workgroup becomes owner of a patient record or when a patient is assigned to a new study. Retrieves the configured
- * defaultVisibility for the user (either from the user profile or, if missing, from its workgroup).
+ * This listener creates a {@code PhenoTips.VisibilityClass} object when a new entity is created or when a patient is
+ * assigned to a new study. Retrieves the configured defaultVisibility from a new owner or a new study profile.
  *
  * @version $Id$
  * @since 1.4
@@ -66,21 +61,12 @@ public class SetDefaultVisibilityEventListener extends AbstractDefaultPermission
     /** Default constructor, sets up the listener name and the list of events to subscribe to. */
     public SetDefaultVisibilityEventListener()
     {
-        super("phenotips-entity-visibility-updater", new PatientCreatedEvent(), new EntityRightsUpdatedEvent(),
-            new EntityStudyUpdatedEvent());
+        super("phenotips-entity-visibility-updater", new PatientCreatedEvent(), new EntityStudyUpdatedEvent());
     }
 
     @Override
     public void onEvent(Event event, Object source, Object data)
     {
-        // a change of ownership did not happen while updating patient access rights, do nothing
-        if (event instanceof EntityRightsUpdatedEvent) {
-            List<RightsUpdateEventType> eventTypes = ((EntityRightsUpdatedEvent) event).getEventTypes();
-            if (!eventTypes.contains(RightsUpdateEventType.ENTITY_OWNER_UPDATED)) {
-                return;
-            }
-        }
-
         PrimaryEntity primaryEntity = getPrimaryEntity(event, source);
         if (primaryEntity == null) {
             return;

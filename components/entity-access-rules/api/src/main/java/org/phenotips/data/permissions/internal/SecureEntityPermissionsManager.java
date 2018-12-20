@@ -137,10 +137,4 @@ public class SecureEntityPermissionsManager implements EntityPermissionsManager
     {
         this.internalService.fireRightsUpdateEvent(eventTypes, entityId);
     }
-
-    @Override
-    public void fireStudyUpdateEvent(@Nonnull final String entityId, @Nonnull final String studyId)
-    {
-        this.internalService.fireStudyUpdateEvent(entityId, studyId);
-    }
 }

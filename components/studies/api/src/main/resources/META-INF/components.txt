@@ -1,1 +1,3 @@
 org.phenotips.studies.internal.StudyRecordConfigurationModule
+org.phenotips.studies.events.internal.StudyChangedEventListener
+org.phenotips.studies.events.internal.SetDefaultStudyEventListener

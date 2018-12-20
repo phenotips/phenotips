@@ -19,7 +19,6 @@ package org.phenotips.data.permissions;
 
 import org.phenotips.data.permissions.events.EntityRightsUpdatedEvent;
 import org.phenotips.data.permissions.events.EntityRightsUpdatedEvent.RightsUpdateEventType;
-import org.phenotips.data.permissions.events.EntityStudyUpdatedEvent;
 import org.phenotips.entities.PrimaryEntity;
 
 import org.xwiki.component.annotation.Role;
@@ -160,13 +159,4 @@ public interface EntityPermissionsManager
      * @param entityId the {@link PrimaryEntity#getId() identifier} of the affected entity
      */
     void fireRightsUpdateEvent(@Nonnull List<RightsUpdateEventType> eventTypes, @Nonnull String entityId);
-
-    /**
-     * Fires a {@link EntityStudyUpdatedEvent} to notify interested parties that entity has been assigned to a new
-     * study.
-     *
-     * @param entityId the {@link PrimaryEntity#getId() identifier} of the affected entity
-     * @param studyId the new study identifier
-     */
-    void fireStudyUpdateEvent(@Nonnull String entityId, @Nonnull String studyId);
 }
