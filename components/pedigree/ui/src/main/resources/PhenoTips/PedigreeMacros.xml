@@ -73,7 +73,7 @@
       #set ($pDelete = "$services.localization.render('phenotips.patientRecord.pedigree.delete')")
       #set ($pPrint = "$services.localization.render('phenotips.patientRecord.pedigree.print')")
       #set ($pDownload = "$services.localization.render('phenotips.patientRecord.pedigree.download')")
-      #if ($hasFamily &amp;&amp; "$family.getWarningMessage()" != "")
+      #if ($hasFamily &amp;&amp; $family.containsSensitiveData())
         #set ($pAction = "$services.localization.render('phenotips.patientRecord.pedigree.open')")
         #set ($pClass = 'open')
         #set ($pContent = $pAction)

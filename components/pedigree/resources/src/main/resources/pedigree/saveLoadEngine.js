@@ -392,10 +392,6 @@ define([
 
                 editor.getFamilyData().updateFromJSON(responseJSON.family);
 
-                // display a warning if there is "sensitive information" associated with the family
-                if (editor.getFamilyData().hasWarningMessage()) {
-                    editor.getOkCancelDialogue().showCustomized(editor.getFamilyData().getWarningMessage(),"Attention: This pedigree contains sensitive information.", "OK", null);
-                }
 
                 if (responseJSON.hasOwnProperty("pedigree")) {
                     try {
@@ -408,6 +404,15 @@ define([
 
                         // if pedigree is misformatted createGraphFromStoredData() may throw as well
                         this.createGraphFromStoredData(updatedJSONData, "familyPedigree" /* data source */, markAsEquivalentToSaved);
+
+                        // display a warning if there is "sensitive information" associated with the family
+                        if (editor.getFamilyData().hasWarningMessage()) {
+                            editor.getOkCancelDialogue().showWithOptions(
+                                editor.getFamilyData().getWarningMessage(),
+                                "Attention: This pedigree contains sensitive information",
+                                { "screenBackground": "opaque", "button1": {"keepBackgroundScreenWhenPressed": true} },
+                                "Continue to pedigree", null, "Quit", function() { editor.closePedigree() });
+                        }
 
                         return;
                     } catch (error) {

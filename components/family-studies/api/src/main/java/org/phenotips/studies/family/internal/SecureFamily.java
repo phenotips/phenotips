@@ -133,6 +133,12 @@ public class SecureFamily implements Family
     }
 
     @Override
+    public boolean containsSensitiveData()
+    {
+        return this.family.containsSensitiveData();
+    }
+
+    @Override
     public String getWarningMessage()
     {
         return this.family.getWarningMessage();

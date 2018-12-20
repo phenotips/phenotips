@@ -133,7 +133,9 @@ define([], function(){
         legendMinimizedWidthPixels: 150,
         legendStyle: "multiSector",
         firstNodeLabelSpaceOnTop: 8,
-        patientLinkClickAreaAbove: 3
+        patientLinkClickAreaAbove: 3,
+        opaqueBackgroundScreenCSS: { "opacity": 1.0, "background-color": "#999" },
+        normalBackgroundScreenCSS: { "opacity": 0.5, "background-color": "#000" }
     };
 
     return PedigreeEditorParameters;

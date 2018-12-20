@@ -60,7 +60,10 @@ public class PhenotipsFamily extends AbstractPrimaryEntity implements Family
     /** Field name in the family document which holds the list of member patients. */
     public static final String FAMILY_MEMBERS_FIELD = "members";
 
-    private static final String WARNING = "warning";
+    private static final String FIELD_HAS_SENSITIVE_DATA = "warning";
+
+    // the value used by XWiki in XObjects to indicate a boolean is set to true/a checkbox is checked
+    private static final int FIELD_VALUE_CHECKED = 1;
 
     private static PatientRepository patientRepository;
 
@@ -193,6 +196,13 @@ public class PhenotipsFamily extends AbstractPrimaryEntity implements Family
         return getXDocument().getURL(actions, getXContext());
     }
 
+    @Override
+    public boolean containsSensitiveData()
+    {
+        BaseObject familyObject = getXDocument().getXObject(Family.CLASS_REFERENCE);
+        return (familyObject.getIntValue(FIELD_HAS_SENSITIVE_DATA) == FIELD_VALUE_CHECKED);
+    }
+
     /*
      * Some pedigrees may contain sensitive information, which should be displayed on every edit of the pedigree. The
      * function returns a warning to display, or empty string
@@ -201,9 +211,9 @@ public class PhenotipsFamily extends AbstractPrimaryEntity implements Family
     public String getWarningMessage()
     {
         BaseObject familyObject = getXDocument().getXObject(Family.CLASS_REFERENCE);
-        return familyObject.getIntValue(WARNING) == 0
-            ? StringUtils.EMPTY
-            : familyObject.getStringValue("warning_message");
+        return familyObject.getIntValue(FIELD_HAS_SENSITIVE_DATA) == FIELD_VALUE_CHECKED
+            ? familyObject.getStringValue("warning_message")
+            : StringUtils.EMPTY;
     }
 
     @Override
