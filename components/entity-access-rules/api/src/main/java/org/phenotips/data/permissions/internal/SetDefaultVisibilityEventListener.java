@@ -20,7 +20,7 @@ package org.phenotips.data.permissions.internal;
 import org.phenotips.data.events.PatientCreatedEvent;
 import org.phenotips.data.permissions.EntityPermissionsPreferencesManager;
 import org.phenotips.data.permissions.Visibility;
-import org.phenotips.data.permissions.events.EntityStudyUpdatedEvent;
+import org.phenotips.data.permissions.events.EntitiesLinkedEvent;
 import org.phenotips.entities.PrimaryEntity;
 
 import org.xwiki.component.annotation.Component;
@@ -40,7 +40,7 @@ import com.xpn.xwiki.objects.BaseObject;
  * assigned to a new study. Retrieves the configured defaultVisibility from a new owner or a new study profile.
  *
  * @version $Id$
- * @since 1.4
+ * @since 1.5M1
  */
 @Component
 @Named("phenotips-entity-visibility-updater")
@@ -61,18 +61,27 @@ public class SetDefaultVisibilityEventListener extends AbstractDefaultPermission
     /** Default constructor, sets up the listener name and the list of events to subscribe to. */
     public SetDefaultVisibilityEventListener()
     {
-        super("phenotips-entity-visibility-updater", new PatientCreatedEvent(), new EntityStudyUpdatedEvent());
+        super("phenotips-entity-visibility-updater", new PatientCreatedEvent(), new EntitiesLinkedEvent());
     }
 
     @Override
     public void onEvent(Event event, Object source, Object data)
     {
+        // if the entity is linked to another entity, we are interested only in patient linked to a study
+        if (event instanceof EntitiesLinkedEvent) {
+            String entitySpace = ((EntitiesLinkedEvent) event).getSubjectEntitySpace();
+            String linkedToSpace = ((EntitiesLinkedEvent) event).getLinkedToEntitySpace();
+            if (!"data".equals(entitySpace) || !"Studies".equals(linkedToSpace)) {
+                return;
+            }
+        }
+
         PrimaryEntity primaryEntity = getPrimaryEntity(event, source);
         if (primaryEntity == null) {
             return;
         }
 
-        DocumentReference entityRef = getEntityRef(event, primaryEntity);
+        DocumentReference entityRef = getEntityRef(event);
         Visibility defaultVisibility = this.preferencesManager.getDefaultVisibility(entityRef);
         Visibility currentVisibility = this.visibilityManager.getVisibility(primaryEntity);
         if (defaultVisibility != null && !defaultVisibility.equals(currentVisibility)) {

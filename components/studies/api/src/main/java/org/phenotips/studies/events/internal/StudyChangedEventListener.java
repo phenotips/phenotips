@@ -20,7 +20,7 @@ package org.phenotips.studies.events.internal;
 import org.phenotips.data.Patient;
 import org.phenotips.data.events.PatientChangedEvent;
 import org.phenotips.data.events.PatientEvent;
-import org.phenotips.data.permissions.events.EntityStudyUpdatedEvent;
+import org.phenotips.data.permissions.events.EntitiesLinkedEvent;
 import org.phenotips.studies.internal.StudyRecordConfigurationModule;
 
 import org.xwiki.component.annotation.Component;
@@ -40,7 +40,7 @@ import com.xpn.xwiki.objects.BaseObject;
  * Monitors document changes and fires {@link EntityStudyUpdatedEvent event} if study was changed.
  *
  * @version $Id$
- * @since 1.5
+ * @since 1.5M1
  */
 @Component
 @Named("phenotips-patient-study-updated")
@@ -76,13 +76,13 @@ public class StudyChangedEventListener extends AbstractEventListener
             patient.getXDocument().getOriginalDocument()
                 .getXObject(StudyRecordConfigurationModule.STUDY_BINDING_CLASS_REFERENCE);
         if (oldStudyObject == null) {
-            this.observationManager.notify(new EntityStudyUpdatedEvent(patient.getId(), newStudy), null);
+            this.observationManager.notify(new EntitiesLinkedEvent(patient.getId(), "data", newStudy, "Studies"), null);
             return;
         }
 
         String oldStudy = oldStudyObject.getStringValue(StudyRecordConfigurationModule.STUDY_REFERENCE_PROPERTY_LABEL);
         if (!oldStudy.equals(newStudy)) {
-            this.observationManager.notify(new EntityStudyUpdatedEvent(patient.getId(), newStudy), null);
+            this.observationManager.notify(new EntitiesLinkedEvent(patient.getId(), "data", newStudy, "Studies"), null);
         }
     }
 }

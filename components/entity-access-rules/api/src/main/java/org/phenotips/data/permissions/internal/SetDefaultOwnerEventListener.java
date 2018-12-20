@@ -47,7 +47,7 @@ import com.xpn.xwiki.objects.BaseObject;
  * default.
  *
  * @version $Id$
- * @since 1.4
+ * @since 1.5M1
  */
 @Component
 @Named("phenotips-entity-owner-updater")
@@ -101,7 +101,7 @@ public class SetDefaultOwnerEventListener extends AbstractDefaultPermissionsEven
                 ownerObject.setStringValue(OWNER, "");
             }
 
-            DocumentReference entityRef = getEntityRef(event, primaryEntity);
+            DocumentReference entityRef = getEntityRef(event);
             DocumentReference defaultOwnerDocRef = this.preferencesManager.getDefaultOwner(entityRef);
             if (defaultOwnerDocRef != null) {
                 EntityAccess access = this.permissions.getEntityAccess(primaryEntity);

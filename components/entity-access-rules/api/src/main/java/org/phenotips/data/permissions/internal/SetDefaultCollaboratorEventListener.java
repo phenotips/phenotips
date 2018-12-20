@@ -23,9 +23,7 @@ import org.phenotips.data.permissions.Collaborator;
 import org.phenotips.data.permissions.EntityAccess;
 import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.EntityPermissionsPreferencesManager;
-import org.phenotips.data.permissions.events.EntityRightsUpdatedEvent;
-import org.phenotips.data.permissions.events.EntityRightsUpdatedEvent.RightsUpdateEventType;
-import org.phenotips.data.permissions.events.EntityStudyUpdatedEvent;
+import org.phenotips.data.permissions.events.EntitiesLinkedEvent;
 import org.phenotips.entities.PrimaryEntity;
 
 import org.xwiki.component.annotation.Component;
@@ -35,7 +33,6 @@ import org.xwiki.observation.event.Event;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
@@ -50,12 +47,11 @@ import org.slf4j.Logger;
 import com.xpn.xwiki.XWikiException;
 
 /**
- * This listener sets default collaborators when a patient record is created or when a user or a workgroup becomes owner
- * of a patient record or when a patient is assigned to a new study. Retrieves the configured defaultCollaborators from
- * a new new owner or a new study profile.
+ * This listener sets default collaborators when a patient record is created or when a patient is assigned to a new
+ * study. Retrieves the configured defaultCollaborators from a new new owner or a new study profile.
  *
  * @version $Id$
- * @since 1.4
+ * @since 1.5M1
  */
 @Component
 @Named("phenotips-entity-collaborator-updater")
@@ -74,17 +70,17 @@ public class SetDefaultCollaboratorEventListener extends AbstractDefaultPermissi
     /** Default constructor, sets up the listener name and the list of events to subscribe to. */
     public SetDefaultCollaboratorEventListener()
     {
-        super("phenotips-entity-collaborator-updater", new PatientCreatedEvent(), new EntityRightsUpdatedEvent(),
-            new EntityStudyUpdatedEvent());
+        super("phenotips-entity-collaborator-updater", new PatientCreatedEvent(), new EntitiesLinkedEvent());
     }
 
     @Override
     public void onEvent(Event event, Object source, Object data)
     {
-        // a change of ownership did not happen while updating patient access rights, do nothing
-        if (event instanceof EntityRightsUpdatedEvent) {
-            List<RightsUpdateEventType> eventTypes = ((EntityRightsUpdatedEvent) event).getEventTypes();
-            if (!eventTypes.contains(RightsUpdateEventType.ENTITY_OWNER_UPDATED)) {
+        // if the entity is linked to another entity, we are interested only in patient linked to a study
+        if (event instanceof EntitiesLinkedEvent) {
+            String entitySpace = ((EntitiesLinkedEvent) event).getSubjectEntitySpace();
+            String linkedToSpace = ((EntitiesLinkedEvent) event).getLinkedToEntitySpace();
+            if (!"data".equals(entitySpace) || !"Studies".equals(linkedToSpace)) {
                 return;
             }
         }
@@ -95,7 +91,7 @@ public class SetDefaultCollaboratorEventListener extends AbstractDefaultPermissi
         }
 
         try {
-            DocumentReference entityRef = getEntityRef(event, primaryEntity);
+            DocumentReference entityRef = getEntityRef(event);
             Map<EntityReference, Collaborator> defaultCollabs =
                 this.preferencesManager.getDefaultCollaborators(entityRef);
             if (defaultCollabs.isEmpty()) {

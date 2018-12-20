@@ -19,7 +19,7 @@ package org.phenotips.studies.events.internal;
 
 import org.phenotips.data.events.PatientCreatedEvent;
 import org.phenotips.data.permissions.EntityPermissionsPreferencesManager;
-import org.phenotips.data.permissions.events.EntityStudyUpdatedEvent;
+import org.phenotips.data.permissions.events.EntitiesLinkedEvent;
 import org.phenotips.data.permissions.internal.AbstractDefaultPermissionsEventListener;
 import org.phenotips.entities.PrimaryEntity;
 import org.phenotips.studies.internal.StudyRecordConfigurationModule;
@@ -47,7 +47,7 @@ import com.xpn.xwiki.objects.BaseObject;
  * user profile or, if no defaultWorkgroup specified, from the user profile).
  *
  * @version $Id$
- * @since 1.4
+ * @since 1.5M1
  */
 @Component
 @Named("phenotips-entity-study-updater")
@@ -82,7 +82,7 @@ public class SetDefaultStudyEventListener extends AbstractDefaultPermissionsEven
 
         try {
             XWikiDocument doc = primaryEntity.getXDocument();
-            DocumentReference entityRef = getEntityRef(event, primaryEntity);
+            DocumentReference entityRef = getEntityRef(event);
 
             BaseObject studyObject = doc.getXObject(StudyRecordConfigurationModule.STUDY_BINDING_CLASS_REFERENCE);
             if (studyObject == null) {
@@ -100,7 +100,8 @@ public class SetDefaultStudyEventListener extends AbstractDefaultPermissionsEven
 
                 // firing a cascading event of a patient record is placed into a study
                 // to assign any study default permissions
-                this.observationManager.notify(new EntityStudyUpdatedEvent(primaryEntity.getId(), newStudy), null);
+                this.observationManager.notify(new EntitiesLinkedEvent(primaryEntity.getId(), primaryEntity
+                    .getXDocument().getSpace(), newStudy, "Studies"), null);
             }
         } catch (XWikiException ex) {
             this.logger.error("Failed to set the initial study for entity [{}]: {}", primaryEntity.getName(),
