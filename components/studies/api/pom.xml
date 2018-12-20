@@ -27,10 +27,30 @@
   </parent>
   <artifactId>phenotips-studies-api</artifactId>
   <name>PhenoTips - Studies - Java APIs</name>
+
+  <properties>
+    <coverage.instructionRatio>0.60</coverage.instructionRatio>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>entity-access-rules-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>phenotips-constants</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>patient-data-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>phenotips-entities-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -41,6 +61,11 @@
     <dependency>
       <groupId>org.xwiki.commons</groupId>
       <artifactId>xwiki-commons-component-api</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xwiki.commons</groupId>
+      <artifactId>xwiki-commons-observation-api</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
     <dependency>

@@ -23,7 +23,6 @@ import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.Visibility;
 import org.phenotips.data.permissions.events.EntityRightsUpdatedEvent;
 import org.phenotips.data.permissions.events.EntityRightsUpdatedEvent.RightsUpdateEventType;
-import org.phenotips.data.permissions.events.EntityStudyUpdatedEvent;
 import org.phenotips.entities.PrimaryEntity;
 
 import org.xwiki.component.annotation.Component;
@@ -145,11 +144,5 @@ public class DefaultEntityPermissionsManager implements EntityPermissionsManager
         @Nonnull final String entityId)
     {
         this.observationManager.notify(new EntityRightsUpdatedEvent(eventTypes, entityId), null);
-    }
-
-    @Override
-    public void fireStudyUpdateEvent(@Nonnull final String entityId, @Nonnull final String studyId)
-    {
-        this.observationManager.notify(new EntityStudyUpdatedEvent(entityId, studyId), null);
     }
 }

@@ -42,8 +42,9 @@ import com.xpn.xwiki.objects.BaseObject;
 
 /**
  * This listener creates a {@code PhenoTips.OwnerClass} object when a new entity is created. Retrieves the configured
- * defaultOwner for the user (either from the user profile or, if missing, from its workgroup) If no such entry exists,
- * sets the creator as the owner by the default.
+ * defaultOwner for the user (either from the defaultWorkgroup profile specified in user profile or, if no
+ * defaultWorkgroup specified, from the user profile). If no such entry exists, sets the creator as the owner by the
+ * default.
  *
  * @version $Id$
  * @since 1.4
@@ -93,16 +94,18 @@ public class SetDefaultOwnerEventListener extends AbstractDefaultPermissionsEven
 
             // set the creator as the owner by default
             // this is needed for proper workflow of EntityAccess.setOwner()
+            // to make a creator a managing collaborator in changeOwnership()
             if (creator != null) {
                 ownerObject.setStringValue(OWNER, creator.toString());
+            } else {
+                ownerObject.setStringValue(OWNER, "");
             }
 
-            DocumentReference defaultOwnerDocRef = this.preferencesManager.getDefaultOwner(null);
+            DocumentReference entityRef = getEntityRef(event, primaryEntity);
+            DocumentReference defaultOwnerDocRef = this.preferencesManager.getDefaultOwner(entityRef);
             if (defaultOwnerDocRef != null) {
                 EntityAccess access = this.permissions.getEntityAccess(primaryEntity);
                 access.setOwner(defaultOwnerDocRef);
-            } else {
-                ownerObject.setStringValue(OWNER, "");
             }
         } catch (XWikiException ex) {
             this.logger.error("Failed to set the initial owner for entity [{}]: {}", doc.getDocumentReference(),

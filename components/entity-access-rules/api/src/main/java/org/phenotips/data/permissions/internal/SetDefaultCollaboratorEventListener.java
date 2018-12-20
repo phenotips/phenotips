@@ -51,9 +51,8 @@ import com.xpn.xwiki.XWikiException;
 
 /**
  * This listener sets default collaborators when a patient record is created or when a user or a workgroup becomes owner
- * of a patient record or when a patient is assigned to a new study. Retrieves the configured defaultCollaborator for
- * user (either from the user profile or, if missing, from its workgroup) or from the profile of the new record’s
- * owner.
+ * of a patient record or when a patient is assigned to a new study. Retrieves the configured defaultCollaborators from
+ * a new new owner or a new study profile.
  *
  * @version $Id$
  * @since 1.4

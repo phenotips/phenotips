@@ -53,6 +53,13 @@ public abstract class AbstractDefaultPermissionsEventListener extends AbstractEv
     @Named("userOrGroup")
     protected DocumentReferenceResolver<String> userOrGroupResolver;
 
+    @Inject
+    @Named("current")
+    protected DocumentReferenceResolver<String> stringResolver;
+
+    @Inject
+    private EntityAccessHelper helper;
+
     /** Default constructor, sets up the listener name and the list of events to subscribe to. */
     protected AbstractDefaultPermissionsEventListener(String name, Event... events)
     {
@@ -77,6 +84,11 @@ public abstract class AbstractDefaultPermissionsEventListener extends AbstractEv
     /** Get the entity {@link DocumentReference} source of getting default settings (user, group or study document). */
     protected DocumentReference getEntityRef(Event event, PrimaryEntity primaryEntity)
     {
+        // if the patient is created, the the current user profile document
+        if (event instanceof PatientCreatedEvent) {
+            return this.helper.getCurrentUser();
+        }
+
         // if the ownership has been transferred, get the new owner profile document
         if (event instanceof EntityRightsUpdatedEvent) {
             BaseObject ownerObj = primaryEntity.getXDocument().getXObject(Owner.CLASS_REFERENCE);
@@ -89,7 +101,7 @@ public abstract class AbstractDefaultPermissionsEventListener extends AbstractEv
         // if the entity was assigned to a new study, get the the study document
         if (event instanceof EntityStudyUpdatedEvent) {
             String studyId = ((EntityStudyUpdatedEvent) event).getStudyId();
-            return this.userOrGroupResolver.resolve(studyId);
+            return this.stringResolver.resolve(String.valueOf(studyId), "Studies");
         }
 
         return null;

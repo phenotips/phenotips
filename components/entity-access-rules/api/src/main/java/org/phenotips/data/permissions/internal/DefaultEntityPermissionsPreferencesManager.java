@@ -95,6 +95,10 @@ public class DefaultEntityPermissionsPreferencesManager implements EntityPermiss
     private DocumentReferenceResolver<String> userOrGroupResolver;
 
     @Inject
+    @Named("current")
+    private DocumentReferenceResolver<String> stringResolver;
+
+    @Inject
     private GroupManager groupManager;
 
     @Inject
@@ -114,27 +118,13 @@ public class DefaultEntityPermissionsPreferencesManager implements EntityPermiss
     @Override
     public DocumentReference getDefaultOwner(DocumentReference entity)
     {
-        DocumentReference currentUserRef = entity == null ? this.helper.getCurrentUser() : entity;
-        // Guest user or invalid entity
-        if (currentUserRef == null) {
+        DocumentReference sourceEntity = getSourceDocument(entity);
+        if (sourceEntity == null) {
             return null;
         }
 
-        String ownerID = getDefaultPreferenceStringValue(currentUserRef, DEFAULT_OWNER_PROPERTY_NAME);
-        if (ownerID != null) {
-            EntityReference defaultOwnerReference = this.userOrGroupResolver.resolve(ownerID);
-            if (defaultOwnerReference != null) {
-                return new DocumentReference(defaultOwnerReference);
-            }
-        }
+        String ownerID = getDefaultPreferenceStringValue(sourceEntity, DEFAULT_OWNER_PROPERTY_NAME);
 
-        DocumentReference workGroupRef = getWorkgroupForUser(currentUserRef);
-        // if the entity is not a user or user has no groups, we can not get further
-        if (workGroupRef == null) {
-            return null;
-        }
-
-        ownerID = getDefaultPreferenceStringValue(workGroupRef, DEFAULT_OWNER_PROPERTY_NAME);
         if (ownerID != null) {
             EntityReference defaultOwnerReference = this.userOrGroupResolver.resolve(ownerID);
             if (defaultOwnerReference != null) {
@@ -148,22 +138,15 @@ public class DefaultEntityPermissionsPreferencesManager implements EntityPermiss
     @Override
     public Map<EntityReference, Collaborator> getDefaultCollaborators(DocumentReference entity)
     {
-        DocumentReference currentUserRef = entity == null ? this.helper.getCurrentUser() : entity;
-        // Guest user or invalid entity
-        if (currentUserRef == null) {
+        DocumentReference sourceEntity = getSourceDocument(entity);
+        if (sourceEntity == null) {
             return Collections.emptyMap();
         }
 
-        Map<EntityReference, Collaborator> defaultCollabsMap = getDefaultPreferenceCollaborators(currentUserRef);
+        Map<EntityReference, Collaborator> defaultCollabsMap = getDefaultPreferenceCollaborators(sourceEntity);
         // here null or empty map value will indicate the absence of any defaultCollaborator properties stored
         if (!MapUtils.isEmpty(defaultCollabsMap)) {
             return defaultCollabsMap;
-        }
-
-        DocumentReference workGroupRef = getWorkgroupForUser(currentUserRef);
-        // if the entity is not a user or user has no groups, we can not get further
-        if (workGroupRef != null) {
-            return getDefaultPreferenceCollaborators(workGroupRef);
         }
 
         return Collections.emptyMap();
@@ -173,32 +156,18 @@ public class DefaultEntityPermissionsPreferencesManager implements EntityPermiss
     public Visibility getDefaultVisibility(DocumentReference entity)
     {
         try {
-            DocumentReference currentUserRef = entity == null ? this.helper.getCurrentUser() : entity;
-            // Guest user or invalid entity
-            if (currentUserRef == null) {
+            DocumentReference sourceEntity = getSourceDocument(entity);
+            if (sourceEntity == null) {
                 return null;
             }
 
-            String visibilityName = getDefaultPreferenceStringValue(currentUserRef, DEFAULT_VISIBILITY_PROPERTY_NAME);
+            String visibilityName = getDefaultPreferenceStringValue(sourceEntity, DEFAULT_VISIBILITY_PROPERTY_NAME);
             if (visibilityName != null) {
                 Visibility defaultVisibility =
                     this.componentManager.get().getInstance(Visibility.class, visibilityName);
                 if (defaultVisibility != null) {
                     return defaultVisibility;
                 }
-            }
-
-            DocumentReference workGroupRef = getWorkgroupForUser(currentUserRef);
-            // if the entity is not a user or user has no groups, we can not get further
-            if (workGroupRef == null) {
-                return null;
-            }
-
-            visibilityName = getDefaultPreferenceStringValue(workGroupRef, DEFAULT_VISIBILITY_PROPERTY_NAME);
-            if (visibilityName != null) {
-                Visibility defaultVisibility =
-                    this.componentManager.get().getInstance(Visibility.class, visibilityName);
-                return defaultVisibility;
             }
         } catch (ComponentLookupException ex) {
             this.logger.error("Failed to get the default visibility for entity [{}]: {}", entity.toString(),
@@ -211,59 +180,62 @@ public class DefaultEntityPermissionsPreferencesManager implements EntityPermiss
     @Override
     public DocumentReference getDefaultStudy(DocumentReference entity)
     {
-        DocumentReference currentUserRef = entity == null ? this.helper.getCurrentUser() : entity;
-        // Guest user or invalid entity
-        if (currentUserRef == null) {
+        DocumentReference sourceEntity = getSourceDocument(entity);
+        if (sourceEntity == null) {
             return null;
         }
 
-        String studyID = getDefaultPreferenceStringValue(currentUserRef, DEFAULT_STUDY_PROPERTY_NAME);
+        String studyID = getDefaultPreferenceStringValue(sourceEntity, DEFAULT_STUDY_PROPERTY_NAME);
         if (studyID != null) {
-            return this.userOrGroupResolver.resolve(studyID);
-        }
-
-        DocumentReference workGroupRef = getWorkgroupForUser(currentUserRef);
-        // if the entity is not a user or user has no groups, we can not get further
-        if (workGroupRef == null) {
-            return null;
-        }
-
-        studyID = getDefaultPreferenceStringValue(workGroupRef, DEFAULT_STUDY_PROPERTY_NAME);
-        if (studyID != null) {
-            return this.userOrGroupResolver.resolve(studyID);
+            return this.stringResolver.resolve(String.valueOf(studyID), "Studies");
         }
 
         return null;
     }
 
-    private DocumentReference getWorkgroupForUser(DocumentReference userRef)
+    /**
+     * Track down the reference of the document to get owner permission setting from.
+     *
+     * @param docRef entity to start search for permissions settings from, either user of group
+     * @return the actual document to read permissions settings from
+     */
+    @SuppressWarnings("checkstyle:ReturnCount")
+    private DocumentReference getSourceDocument(DocumentReference docRef)
     {
-        // if the entity is not a user we can not get further
-        if (!this.helper.isUser(userRef)) {
+        // Guest user or invalid entity
+        if (docRef == null) {
             return null;
         }
 
-        // check user workgroups for defaultOwner
-        Set<Group> userGroups =
-            this.groupManager.getGroupsForUser(this.userManager.getUser(userRef.getName()));
-
-        // look for XWiki.ConfigurationClass objects with that property in that workgroup’s profile document
-        if (userGroups.size() == 1) {
-            return userGroups.iterator().next().getReference();
+        // if the entity is not a user we can not get further
+        // a defaultWorkgroup could be defined only in users profiles
+        if (!this.helper.isUser(docRef)) {
+            return docRef;
         }
 
-        // If there is more than one workgroup, look for XWiki.ConfigurationClass object
-        // with defaultWorkgoup property in the user profile document
-        if (userGroups.size() > 1) {
-            String defaultWorkgroupID = getDefaultPreferenceStringValue(userRef, DEFAULT_WORKGROUP_PROPERTY_NAME);
-            if (defaultWorkgroupID == null) {
-                return null;
-            }
+        // The docRef is a user, look whether defaultWorkgroup property is set
+        String defaultWorkgroupID = getDefaultPreferenceStringValue(docRef, DEFAULT_WORKGROUP_PROPERTY_NAME);
+        // if no defaultWorkgroup defined in user profile document, we return user profile itself
+        if (defaultWorkgroupID == null) {
+            return docRef;
+        }
 
-            // check if workgroup entity exists AND the workgroup reference is valid AND it’s one of this user’s
-            // workgroups
-            Group group = this.groupManager.getGroup(defaultWorkgroupID);
-            if (group != null && userGroups.contains(group)) {
+        // check if workgroup entity exists
+        Group group = this.groupManager.getGroup(defaultWorkgroupID);
+        // user profile defaultWorkgroup doesn't exist anymore, nothing to do
+        if (group == null) {
+            return null;
+        }
+
+        // check that this group is one of this user’s workgroups
+        Set<Group> userGroups =
+            this.groupManager.getGroupsForUser(this.userManager.getUser(docRef.getName()));
+
+        // note that Group and default Group implementation do not overwrite equals(), thus
+        // using Set.contains() with groupManager.getGroup(groupName) is not possible
+        String groupName = group.toString();
+        for (Group ugroup : userGroups) {
+            if (ugroup.toString().equals(groupName)) {
                 return group.getReference();
             }
         }

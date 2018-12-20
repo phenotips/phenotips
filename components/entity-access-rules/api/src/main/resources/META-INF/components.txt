@@ -19,6 +19,5 @@ org.phenotips.data.permissions.internal.SecureEntityPermissionsManager
 org.phenotips.data.permissions.internal.AdminTemplateAccessAuthorizationModule
 org.phenotips.data.permissions.internal.SetDefaultOwnerEventListener
 org.phenotips.data.permissions.internal.SetDefaultCollaboratorEventListener
-org.phenotips.data.permissions.internal.SetDefaultStudyEventListener
 org.phenotips.data.permissions.internal.SetDefaultVisibilityEventListener
 org.phenotips.data.permissions.internal.DefaultEntityPermissionsPreferencesManager
