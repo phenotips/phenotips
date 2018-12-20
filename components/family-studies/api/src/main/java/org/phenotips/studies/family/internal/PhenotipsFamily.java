@@ -212,8 +212,8 @@ public class PhenotipsFamily extends AbstractPrimaryEntity implements Family
     {
         BaseObject familyObject = getXDocument().getXObject(Family.CLASS_REFERENCE);
         return familyObject.getIntValue(FIELD_HAS_SENSITIVE_DATA) == FIELD_VALUE_CHECKED
-            ? StringUtils.EMPTY
-            : familyObject.getStringValue("warning_message");
+            ? familyObject.getStringValue("warning_message")
+            : StringUtils.EMPTY;
     }
 
     @Override
