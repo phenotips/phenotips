@@ -18,9 +18,7 @@
 package org.phenotips.data.permissions.internal;
 
 import org.phenotips.data.events.PatientCreatedEvent;
-import org.phenotips.data.permissions.Owner;
-import org.phenotips.data.permissions.events.EntityRightsUpdatedEvent;
-import org.phenotips.data.permissions.events.EntityStudyUpdatedEvent;
+import org.phenotips.data.permissions.events.EntitiesLinkedEvent;
 import org.phenotips.entities.PrimaryEntity;
 import org.phenotips.entities.PrimaryEntityResolver;
 
@@ -33,19 +31,16 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import com.xpn.xwiki.doc.XWikiDocument;
-import com.xpn.xwiki.objects.BaseObject;
 
 /**
  * Base abstract class for handling a collection of permissions and study update events. Main purpose is avoiding code
  * duplication.
  *
  * @version $Id$
- * @since 1.4
+ * @since 1.5M1
  */
 public abstract class AbstractDefaultPermissionsEventListener extends AbstractEventListener
 {
-    private static final String OWNER = "owner";
-
     @Inject
     protected PrimaryEntityResolver resolver;
 
@@ -73,35 +68,25 @@ public abstract class AbstractDefaultPermissionsEventListener extends AbstractEv
         if (event instanceof PatientCreatedEvent) {
             XWikiDocument doc = (XWikiDocument) source;
             primaryEntityId = doc.getDocumentReference().toString();
-        } else if (event instanceof EntityRightsUpdatedEvent) {
-            primaryEntityId = ((EntityRightsUpdatedEvent) event).getEntityId();
-        } else if (event instanceof EntityStudyUpdatedEvent) {
-            primaryEntityId = ((EntityStudyUpdatedEvent) event).getEntityId();
+        } else if (event instanceof EntitiesLinkedEvent) {
+            primaryEntityId = ((EntitiesLinkedEvent) event).getSubjectEntityId();
         }
         return this.resolver.resolveEntity(primaryEntityId);
     }
 
     /** Get the entity {@link DocumentReference} source of getting default settings (user, group or study document). */
-    protected DocumentReference getEntityRef(Event event, PrimaryEntity primaryEntity)
+    protected DocumentReference getEntityRef(Event event)
     {
         // if the patient is created, the the current user profile document
         if (event instanceof PatientCreatedEvent) {
             return this.helper.getCurrentUser();
         }
 
-        // if the ownership has been transferred, get the new owner profile document
-        if (event instanceof EntityRightsUpdatedEvent) {
-            BaseObject ownerObj = primaryEntity.getXDocument().getXObject(Owner.CLASS_REFERENCE);
-            if (ownerObj != null) {
-                String ownerID = ownerObj.getStringValue(OWNER);
-                return this.userOrGroupResolver.resolve(ownerID);
-            }
-        }
-
-        // if the entity was assigned to a new study, get the the study document
-        if (event instanceof EntityStudyUpdatedEvent) {
-            String studyId = ((EntityStudyUpdatedEvent) event).getStudyId();
-            return this.stringResolver.resolve(String.valueOf(studyId), "Studies");
+        // if the entity was linked to another entity, get this entity document
+        if (event instanceof EntitiesLinkedEvent) {
+            String entityId = ((EntitiesLinkedEvent) event).getLinkedToEntityId();
+            return this.stringResolver.resolve(String.valueOf(entityId),
+                ((EntitiesLinkedEvent) event).getLinkedToEntitySpace());
         }
 
         return null;

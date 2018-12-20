@@ -31,7 +31,7 @@ import javax.annotation.Nullable;
  * collaborators and study preferences for particular entity.
  *
  * @version $Id$
- * @since 1.4
+ * @since 1.5M1
  */
 @Unstable
 @Role
@@ -47,8 +47,8 @@ public interface EntityPermissionsPreferencesManager
     DocumentReference getDefaultOwner(@Nullable DocumentReference entity);
 
     /**
-     * Get the {@code defaultCollaborator} preferences for the {@code entity} of interest or for the currently
-     * logged-in user, if {@code entity} is {@code null}.
+     * Get the {@code defaultCollaborator} preferences for the {@code entity} of interest or for the currently logged-in
+     * user, if {@code entity} is {@code null}.
      *
      * @param entity the {@code entity} whose default settings will be fetched (a user, workgroup, or study)
      * @return a map of default {@link Collaborator}s mapped to the corresponding entities
@@ -56,8 +56,8 @@ public interface EntityPermissionsPreferencesManager
     Map<EntityReference, Collaborator> getDefaultCollaborators(@Nullable DocumentReference entity);
 
     /**
-     * Get the {@code defaultVisibility} preference for the {@code entity} of interest or for the currently
-     * logged-in user, if {@code entity} is {@code null}.
+     * Get the {@code defaultVisibility} preference for the {@code entity} of interest or for the currently logged-in
+     * user, if {@code entity} is {@code null}.
      *
      * @param entity the {@code entity} whose default settings will be fetched (a user, workgroup, or study)
      * @return the default {@link Visibility}, if exists, null otherwise

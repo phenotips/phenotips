@@ -38,7 +38,7 @@ public class EntityRightsUpdatedEvent implements Event
     /**
      * An enum of all the possible entity permissions event types.
      *
-     * @since 1.4
+     * @since 1.5M1
      */
     public enum RightsUpdateEventType
     {

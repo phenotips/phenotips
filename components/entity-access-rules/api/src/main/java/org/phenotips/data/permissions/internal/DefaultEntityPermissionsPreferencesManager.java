@@ -59,7 +59,7 @@ import com.xpn.xwiki.objects.BaseObject;
  * The default implementation of {@link EntityPermissionsPreferencesManager}.
  *
  * @version $Id$
- * @since 1.4
+ * @since 1.5M1
  */
 @Component
 @Singleton
