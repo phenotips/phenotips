@@ -446,7 +446,6 @@ activeinstalls.ipFetchURL=https://phenotips.org/get/Stats/Id
                  and non aspectified ones
                - Exclude batik-js to prevent conflict with the patched version of Rhino used by yuicompressor used for
                  JSX. See http://jira.xwiki.org/jira/browse/XWIKI-6151 for more details.
-               - Exclude JavaBeans Activation Framework (activation-*.jar) since it's included in Java SE 6.
           -->
           <packagingExcludes>
             WEB-INF/lib/batik-js-*.jar,
