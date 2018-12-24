@@ -203,7 +203,7 @@
         'successfulImportMsg' : "$escapetool.javascript($services.localization.render('phenotips.patientRecord.jsonImportDialog.success.singlePatient'))"
       },
       'multi-patient-import' : {
-        'service' : XWiki.contextPath + 'rest/patients',
+        'service' : XWiki.contextPath + '/rest/patients',
         'modalTitle' : "$escapetool.javascript($services.localization.render('phenotips.patientRecord.jsonImportDialog.title.multiplePatients'))",
         'successfulImportMsg' : "$escapetool.javascript($services.localization.render('phenotips.patientRecord.jsonImportDialog.success.multiplePatients'))"
       }
