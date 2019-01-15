@@ -911,16 +911,37 @@ define(["pedigree/model/helpers"], function(Helpers){
                         // connected by all other edges into each other)
 
                         var DG = this.DG;
+
+                        // get v's siblings (if any) to simplify checking for connections spaning the gap between v
+                        // and its right neighbour
+                        var childhubID = null;
+                        if (DG.GG.isPerson(v) && DG.GG.getProducingRelationship(v) !== null) {
+                            childhubID = DG.GG.getRelationshipChildhub(DG.GG.getProducingRelationship(v));
+                        }
+
                         var excludeEdgesSpanningOrder = function(from, to) {
+                            var orderFrom = DG.order.vOrder[from];
+                            var orderTo   = DG.order.vOrder[to];
+
                             // filter to exclude all edges spanning the gap between v and its right neighbour
                             if (DG.ranks[from] == rank && DG.ranks[to] == rank) {
-                                var orderFrom = DG.order.vOrder[from];
-                                var orderTo   = DG.order.vOrder[to];
                                 if ((orderFrom <= order && orderTo   > order) ||
                                     (orderTo   <= order && orderFrom > order) ) {
                                     return false;
                                 }
                             }
+
+                            // the filter above will not exclude connections between children ordered before and after "order"
+                            // on the rank we are interested in, because the connection spans two ranks, so need to handle this
+                            // case separately
+                            if (from == childhubID) {
+                                // this is an edge from v's childhub to v's sibling (since all edges from v's childhub go to v's siblings)
+                                if (orderTo > order) {
+                                    // exclude if it is a sibling on the "other side" of the gap
+                                    return false;
+                                }
+                            }
+
                             return true;
                         };
 
@@ -938,7 +959,9 @@ define(["pedigree/model/helpers"], function(Helpers){
 
                         if (component.size > maxComponentSize) {
                             // can't move component on the left - it is too big. Check the right side
-                            component = this.DG.findConnectedComponent(rightNeighbour, excludeEdgesSpanningOrder, {}, maxComponentSize );
+                            var stopSet = {};   // note: no need for a stop set here, if nodes are connected the
+                                                // connection would be found while analizing the left component
+                            component = this.DG.findConnectedComponent(rightNeighbour, excludeEdgesSpanningOrder, stopSet, maxComponentSize );
                             if (component.size > maxComponentSize) continue;  // can't move component on the right - too big as well
                             leftSide  = false;
                         }

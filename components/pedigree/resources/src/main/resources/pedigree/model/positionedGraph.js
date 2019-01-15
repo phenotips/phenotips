@@ -2377,7 +2377,7 @@ define([
 
         findConnectedComponent: function( v, edgeIncludedFunc, stopSet, maxSize )
         {
-            // computes connected component which includes vertex v (or all vertice sin array v)
+            // computes connected component which includes vertex v (or all vertices in array v)
             // and all vertices reachable from v not using edges which do not pass the `edgeIncludedFunc()` test
             //
             // stops when a vertex from the `stopSet` set is found and includes `reachedStopSet` key in the response
@@ -2387,7 +2387,7 @@ define([
             var size      = 0;
             var stopFound = false;
 
-            // if v is not an arrya make it an array with one element
+            // if v is not an array make it an array with one element
             if (Object.prototype.toString.call(v) !== '[object Array]') {
                 v = [v];
             }
@@ -2415,6 +2415,7 @@ define([
 
                         if (stopSet.hasOwnProperty(u)) {
                             stopFound = true;
+                            q.clear();
                             break;
                         }
                     }
