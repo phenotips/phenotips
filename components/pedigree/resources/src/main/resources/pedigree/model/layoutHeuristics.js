@@ -84,39 +84,66 @@ define(["pedigree/model/helpers"], function(Helpers){
 
             var havePartners        = {};
             var numWithPartners     = 0;
-            var numWithTwoPartners  = 0;
             var leftMostChildId     = undefined;
             var leftMostChildOrder  = Infinity;
             var leftMostHasLParner  = false;
             var rightMostChildId    = undefined;
             var rightMostChildOrder = -Infinity;
             var rightMostHasRParner = false;
+            var unrelatedNodesBetwenChildren = false;
 
             var onlyPlaceholder = false;
             if (children.length == 1 && this.DG.GG.isPlaceholder(children[0])) {
                 onlyPlaceholder = true;
             }
 
+            // all children are always on the samew rank, so get the rank of any child
+            var rank = this.DG.ranks[children[0]];
+
+            // a set of all childrent plus all nodes directly connected to the children (their relationships, partners)
+            var allChildConnections = {};
+
             for (var i = 0; i < children.length; i++) {
                 var childId = children[i];
                 var order   = this.DG.order.vOrder[childId];
 
+                allChildConnections[childId] = true;
+
+                var childRels     = this.DG.GG.getAllRelationships(childId);
+                var childPartners = this.DG.GG.getAllPartners(childId);
+
+                childRels    .forEach(function(relId)     { allChildConnections[relId]     = true; });
+                childPartners.forEach(function(partnerId) { allChildConnections[partnerId] = true; });
+
+                // TODO: is there a need to add long edge pieces connected to these relationships to allChildConnections as well?
+
                 if (order < leftMostChildOrder) {
                     leftMostChildId    = childId;
                     leftMostChildOrder = order;
-                    leftMostHasLParner = this.hasParnerBetweenOrders(childId, 0, order-1);  // has partner to the left
+                    // check if has partner or relationship to the left on the same rank:
+                    leftMostHasLParner = this.nodeBetweenOrdersOnRank(childRels,     rank, 0, order-1) ||
+                                         this.nodeBetweenOrdersOnRank(childPartners, rank, 0, order-1);
                 }
                 if (order > rightMostChildOrder) {
                     rightMostChildId    = childId;
                     rightMostChildOrder = order;
-                    rightMostHasRParner = this.hasParnerBetweenOrders(childId, order+1, Infinity);  // has partner to the right
+                    // check if has partner or relationship to the right on the same rank:
+                    rightMostHasRParner = this.nodeBetweenOrdersOnRank(childRels,     rank, order+1, Infinity) ||
+                                          this.nodeBetweenOrdersOnRank(childPartners, rank, order+1, Infinity);
                 }
-                if (this.DG.GG.getOutEdges(childId).length > 0) {
+                if (childRels.length > 0) {
                     havePartners[childId] = true;
                     numWithPartners++;
-                    if (this.DG.GG.getOutEdges(childId).length > 1) {
-                        numWithTwoPartners++;
-                    }
+                }
+            }
+
+            // check if there are unrelated nodes positioned between child nodes:
+            // algorithm will place none there, but some can be placed there using manual rearrangement
+            for (var order = leftMostChildOrder + 1; order < rightMostChildOrder; order++) {
+                var nodeId = this.DG.order.order[rank][order];
+                if (!allChildConnections.hasOwnProperty(nodeId)) {
+                    unrelatedNodesBetwenChildren = true;
+                    break;
                 }
             }
 
@@ -131,25 +158,20 @@ define(["pedigree/model/helpers"], function(Helpers){
                     "rightMostChildOrder": rightMostChildOrder,
                     "withPartnerSet"     : havePartners,
                     "numWithPartners"    : numWithPartners,
-                    "numWithTwoPartners" : numWithTwoPartners,
                     "orderedChildren"    : orderedChildren,
-                    "onlyPlaceholder"    : onlyPlaceholder };
+                    "onlyPlaceholder"    : onlyPlaceholder,
+                    "unrelatedNodesBetwenChildren": unrelatedNodesBetwenChildren};
         },
 
-        hasParnerBetweenOrders: function( personId, minOrder, maxOrder )
+        nodeBetweenOrdersOnRank: function( nodeList, rank, minOrder, maxOrder )
         {
-            var rank  = this.DG.ranks[personId];
-            var order = this.DG.order.vOrder[personId];
+            for (var i = 0; i < nodeList.length; i++ ) {
+                var node = nodeList[i];
+                var nodeRank = this.DG.ranks[node];
+                if (nodeRank != rank) continue;
 
-            var outEdges = this.DG.GG.getOutEdges(personId);
-
-            for (var i = 0; i < outEdges.length; i++ ) {
-                var relationship = outEdges[i];
-                var relRank      = this.DG.ranks[relationship];
-                if (relRank != rank) continue;
-
-                var relOrder = this.DG.order.vOrder[relationship];
-                if (relOrder >= minOrder && relOrder <= maxOrder)
+                var nodeOrder = this.DG.order.vOrder[node];
+                if (nodeOrder >= minOrder && nodeOrder <= maxOrder)
                     return true;
             }
 
@@ -561,13 +583,21 @@ define(["pedigree/model/helpers"], function(Helpers){
                 for (var k = 0; k < orderedRelationships.length; k++) {
                     var v = orderedRelationships[k];
 
-                    var parents   = this.DG.GG.getInEdges(v);
+                    var parents   = this.DG.GG.getInEdges(v);  // these are the nodes "preceding" v in the pedihgree: those can be
+                                                               // person nodes or pieces of a multi-generation edge: for the purpose
+                                                               // of moving nodes both cases are OK and getInEdges(v) is what we need
+
                     var childhub  = this.DG.GG.getRelationshipChildhub(v);
 
                     var relX      = xcoord.xcoord[v];
                     var childhubX = xcoord.xcoord[childhub];
 
                     var childInfo = this.analizeChildren(childhub);
+
+                    if (childInfo.unrelatedNodesBetwenChildren) {
+                        // this can be too complicated, can't apply this simple heurostic
+                        continue;
+                    }
 
                     //if (childInfo.onlyPlaceholder) continue;
 
@@ -594,11 +624,10 @@ define(["pedigree/model/helpers"], function(Helpers){
                     else {
                         var positionInfo = this._computeDesiredChildhubLocation( childInfo, xcoord );
 
-                        // no need to move anything when parent line is either above the mid-point between the leftmost and rightmost child
-                        // or above the middle child of the three
+                        // no need to move anything when parent line is within the range we want it to be
                         if (positionInfo.minPreferred <= childhubX && childhubX <= positionInfo.maxPreferred) continue;
 
-                        // of the two "OK" points pick the one which requires less movement
+                        // find the closest point within the "prefered" interval (which will always be one of the endpoints)
                         var shiftToX = (childhubX > positionInfo.maxPreferred) ? positionInfo.maxPreferred : positionInfo.minPreferred;
 
                         var needToShift = childhubX - shiftToX;
@@ -633,6 +662,8 @@ define(["pedigree/model/helpers"], function(Helpers){
 
                     if (misalignment == 0) continue;
 
+                    // FIXME: logic below is a bit overcomplicated, need to review
+
                     // OK, harder case: either move the parents or the children (with whatever nodes are connected to them, in both cases).
                     // (need to make sure we do not break what has already been good, or we may be stuck in an infinite improvement loop)
 
@@ -646,14 +677,19 @@ define(["pedigree/model/helpers"], function(Helpers){
                     var rightParent = (xcoord.xcoord[parents[0]] < xcoord.xcoord[parents[1]]) ? parents[1] : parents[0];
 
                     var shiftList = [v, childhub];
-                    if (this.DG.order.vOrder[leftParent]  == this.DG.order.vOrder[v] - 1 && !this.DG.GG.isVirtual(leftParent)) {
+                    if (this.DG.order.vOrder[leftParent]  == this.DG.order.vOrder[v] - 1
+                            && !this.DG.GG.isVirtual(leftParent)
+                            && this.DG.ranks[leftParent] == this.DG.ranks[v]) {
                         if (misalignment > 0 || xcoord.getSlackOnTheLeft(v) < -misalignment)
                             shiftList.unshift(leftParent);
                     }
-                    if (this.DG.order.vOrder[rightParent] == this.DG.order.vOrder[v] + 1 && !this.DG.GG.isVirtual(rightParent)) {
+                    if (this.DG.order.vOrder[rightParent] == this.DG.order.vOrder[v] + 1
+                            && !this.DG.GG.isVirtual(rightParent)
+                            && this.DG.ranks[rightParent] == this.DG.ranks[v]) {
                         if (misalignment < 0 || xcoord.getSlackOnTheRight(v) < misalignment)
                             shiftList.push(rightParent);
                     }
+
                     var noUpSet = {};
                     noUpSet[v] = true;
                     // findAffectedSet: function(v_list, dontmove_set, noUp_set, noDown_set, forbidden_set, shiftSize, xcoord, stopAtVirtual, minimizeMovement, stopAtPersons, stopAtRels)
