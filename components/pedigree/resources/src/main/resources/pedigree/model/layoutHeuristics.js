@@ -763,6 +763,52 @@ define(["pedigree/model/helpers"], function(Helpers){
                 }
             }
 
+            // sometimes the heuristics above fail to shift parent and/or children in a way that makes
+            // the pedigree look good. So as a last resort, try to at least fix remaining cases like the one
+            // shown below by moving just one child (closest to the childhub line, marked with <*> below) -
+            // only when the change is as simple as moving one node:
+            //
+            //  []--*--()                   []--*--()
+            //      |                           |
+            //      +---+--------+     -->      +------------+
+            //          |        |              |            |
+            //         <*> ...  <?>            <*>    ...   <?>
+            //
+            for (var k = 0; k < orderedRelationships.length; k++) {
+                var v = orderedRelationships[k];
+
+                var childhubID = this.DG.GG.getRelationshipChildhub(v);
+                var childhubX  = xcoord.xcoord[childhubID];
+
+                var childInfo = this.analizeChildren(childhubID);
+
+                var leftMostX  = xcoord.xcoord[childInfo["leftMostChildId"]];
+                var rightMostX = xcoord.xcoord[childInfo["rightMostChildId"]];
+
+                var moveChildId       = null;
+                var desiredMoveAmount = 0;
+                if (leftMostX > childhubX && rightMostX > childhubX) {
+                    moveChildId = childInfo["leftMostChildId"];
+                    desiredMoveAmount = childhubX - leftMostX;   // negative amount: move left
+                    if (xcoord.getSlackOnTheLeft(moveChildId) < Math.abs(desiredMoveAmount)) {
+                        continue; // can't move
+                    }
+                } else if (leftMostX < childhubX && rightMostX < childhubX) {
+                    moveChildId       = childInfo["rightMostChildId"];
+                    desiredMoveAmount = childhubX - rightMostX;  // positive amount: move right
+                    if (xcoord.getSlackOnTheRight(moveChildId) < desiredMoveAmount) {
+                        continue; // can't move
+                    }
+                } else {
+                    continue; // all other cases are not handled by this heuristic
+                }
+
+                if (moveChildId !== null && desiredMoveAmount != 0) {
+                    xcoord.xcoord[moveChildId] += desiredMoveAmount;
+                }
+            }
+
+
             // 2D) check if there is any extra whitespace in the graph, e.g. if a subgraph can be
             //     moved closer to the rest of the graph by shortening some edges (this may be
             //     the case after some imperfect insertion heuristics move stuff too far).
