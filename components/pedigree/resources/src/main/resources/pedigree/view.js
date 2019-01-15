@@ -120,9 +120,9 @@ define([
             this.__probandArrowPath = Raphael.transformPath(this.__arrow_svgPath, ["s", 1.3, 1.3, 0, 0]);
 
             // 3) move node left/right buttons
-            this.__moveNodeLeft_svgPath  = "M0,0 L-10,10 L0,20 z";
+            this.__moveNodeLeft_svgPath  = "M0,0 L-10,15 L0,30 z";
             this.__moveNodeLeft_BBox     = Raphael.pathBBox(this.__moveNodeLeft_svgPath);
-            this.__moveNodeRight_svgPath = "M-10,0 L0,10 L-10,20 z";
+            this.__moveNodeRight_svgPath = "M-10,0 L0,15 L-10,30 z";
             this.__moveNodeRight_BBox    = Raphael.pathBBox(this.__moveNodeRight_svgPath);
         },
 
