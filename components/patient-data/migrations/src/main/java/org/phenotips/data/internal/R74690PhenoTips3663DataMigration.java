@@ -30,6 +30,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -114,7 +115,7 @@ public class R74690PhenoTips3663DataMigration extends AbstractHibernateDataMigra
                 newProperty.setId(oldProperty.getId());
 
                 List<String> newValue = new ArrayList<String>();
-                if (oldProperty.getValue() != null) {
+                if (StringUtils.isNotBlank(oldProperty.getValue())) {
                     newValue.add(oldProperty.getValue());
                     newProperty.setValue(newValue);
                 }
