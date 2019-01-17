@@ -28,7 +28,9 @@ import org.xwiki.component.phase.InitializationException;
 import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.AttachmentReference;
 import org.xwiki.model.reference.DocumentReference;
+import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
+import org.xwiki.model.reference.EntityReferenceResolver;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryException;
 import org.xwiki.query.QueryManager;
@@ -40,6 +42,7 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
@@ -104,6 +107,14 @@ public class UsersAndGroups implements Initializable
 
     @Inject
     private Provider<XWikiContext> xcontextProvider;
+
+    @Inject
+    @Named("current")
+    private EntityReferenceResolver<String> resolver;
+
+    @Inject
+    @Named("current")
+    private DocumentReferenceResolver<EntityReference> documentResolver;
 
     @Override
     public void initialize() throws InitializationException
@@ -281,22 +292,46 @@ public class UsersAndGroups implements Initializable
         throws Exception
     {
         List<String> queryResult = runQuery(queryString, formattedInput, maxResults);
-        for (String groupName : queryResult)
-        {
+        for (String groupName : queryResult) {
             Group group = this.groupManager.getGroup(groupName);
-            List<AttachmentReference> attachmentRefs = this.bridge.getAttachmentReferences(group.getReference());
-            String avatarURL = "";
-            if (attachmentRefs.size() > 0) {
-                avatarURL = this.bridge.getAttachmentURL(attachmentRefs.get(0), true);
-            } else {
-                XWikiContext xcontext = this.xcontextProvider.get();
-                XWiki xwiki = xcontext.getWiki();
-                avatarURL = xwiki.getSkinFile("icons/xwiki/noavatargroup.png", xcontext);
-            }
-            DocumentReference ref = (DocumentReference) group.getReference();
+            String avatarURL = getGroupAvatar(group);
+            DocumentReference ref = group.getReference();
             XWikiDocument doc = (XWikiDocument) this.bridge.getDocument(ref);
             JSONObject o = createObject(ref.getName(), groupName, avatarURL, doc.getTitle(), groupName);
             resultArray.put(o);
+        }
+    }
+
+    private String getGroupAvatar(Group group)
+    {
+        String imageName = (String) this.bridge.getProperty(group.getReference(),
+            this.documentResolver.resolve(GROUP_CLASS), "image");
+        String avatarURL = "";
+
+        if (StringUtils.isNotBlank(imageName)) {
+            AttachmentReference attachmentRef =
+                new AttachmentReference(this.resolver.resolve(imageName, EntityType.ATTACHMENT, group.getReference()));
+            if (attachmentExists(attachmentRef)) {
+                avatarURL = this.bridge.getAttachmentURL(attachmentRef, true);
+            }
+        }
+
+        if (StringUtils.isBlank(avatarURL)) {
+            XWikiContext xcontext = this.xcontextProvider.get();
+            XWiki xwiki = xcontext.getWiki();
+            avatarURL = xwiki.getSkinFile("icons/xwiki/noavatargroup.png", xcontext);
+        }
+
+        return avatarURL;
+    }
+
+    private boolean attachmentExists(AttachmentReference attachment)
+    {
+        try {
+            return this.bridge.getAttachmentReferences(attachment.getDocumentReference()).stream()
+                .anyMatch(i -> StringUtils.equals(i.getName(), attachment.getName()));
+        } catch (Exception e) {
+            return false;
         }
     }
 

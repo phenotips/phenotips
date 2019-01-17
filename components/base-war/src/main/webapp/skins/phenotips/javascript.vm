@@ -20,18 +20,18 @@ $xwiki.jsfx.use('js/scriptaculous/effects.js', true)##
   $xwiki.jsfx.use('js/xwiki/widgets/modalPopup.js', true)##
   $xwiki.ssfx.use('js/xwiki/widgets/modalPopup.css', {'forceSkinAction' : true, 'colorTheme' : $themeDoc})##
   $xwiki.jsfx.use('js/xwiki/widgets/jumpToPage.js', true)##
-  $xwiki.ssfx.use('js/xwiki/widgets/jumpToPage.css', {'forceSkinAction' : true, 'language' : $xcontext.language})##
+  $xwiki.ssfx.use('js/xwiki/widgets/jumpToPage.css', {'forceSkinAction' : true, 'language' : $xcontext.locale})##
   $xwiki.jsfx.use('uicomponents/widgets/confirmationBox.js', true)##
   $xwiki.ssfx.use('uicomponents/widgets/confirmationBox.css', true)##
   $xwiki.jsfx.use('uicomponents/widgets/confirmedAjaxRequest.js', true)##
   $xwiki.jsfx.use('uicomponents/widgets/notification.js', true)##
   $xwiki.ssfx.use('uicomponents/widgets/notification.css', true)##
   $xwiki.jsfx.use('uicomponents/widgets/list/xlist.js')##
-  $xwiki.jsfx.use('uicomponents/suggest/suggest.js', {'forceSkinAction' : true, 'language' : $xcontext.language})##
+  $xwiki.jsfx.use('uicomponents/suggest/suggest.js', {'forceSkinAction' : true, 'language' : $xcontext.locale})##
   $xwiki.ssfx.use('uicomponents/suggest/suggest.css', true)##
 #else
-  $xwiki.jsfx.use('js/xwiki/xwiki-min.js', {'forceSkinAction': true, 'defer': false, 'language': $xcontext.language})##
-  $xwiki.ssfx.use('css/xwiki-min.css', {'forceSkinAction': true, 'colorTheme': $themeDoc, 'language': $xcontext.language})##
+  $xwiki.jsfx.use('js/xwiki/xwiki-min.js', {'forceSkinAction': true, 'defer': false, 'language': $xcontext.locale})##
+  $xwiki.ssfx.use('css/xwiki-min.css', {'forceSkinAction': true, 'colorTheme': $themeDoc, 'language': $xcontext.locale})##
 #end
 #if($xwiki.exists('XWiki.SearchSuggestConfig'))
   ## Hook to request the search suggest script if search suggest configuration is present.
@@ -61,6 +61,9 @@ $xwiki.jsfx.use('js/scriptaculous/effects.js', true)##
   $xwiki.jsfx.use('uicomponents/widgets/validation/livevalidation_prototype.js')##
   $xwiki.ssfx.use('uicomponents/widgets/validation/livevalidation.css', true)##
 #end
+#if($services.async.isEnabled())
+  $xwiki.jsfx.use("uicomponents/async/async.js", true)##
+#end
 ##
 ## Hooks for inserting JavaScript skin extensions
 ##
@@ -72,6 +75,12 @@ $xwiki.jsfx.use('js/scriptaculous/effects.js', true)##
 <script type="text/javascript" src="$xwiki.getSkinFile("js/xwiki/compatibility.js", false)" defer="defer"></script>
 ## Marker script that signals that all the deferred scripts have indeed been executed, guarding against a premature dom:loaded event
 <script type="text/javascript" src="$xwiki.getSkinFile("js/xwiki/markerScript.js", false)" defer="defer"></script>
+<!--[if lt IE 9]>
+  ## HTML5Shiv enable the compatibility with IE8
+  <script src="$services.webjars.url('html5shiv', 'html5shiv.min.js')"></script>
+  ## Respond.js implements the CSS 3 media queries for IE8
+  <script type="text/javascript" src="$services.webjars.url('respond', 'dest/respond.min.js')" defer="defer"></script>
+<![endif]-->
 <script type="text/javascript">
 // <![CDATA[
 ## Requirejs will automatically add a ".js" suffix if the generated URL doesn't contain a "?". It happens that we
@@ -80,7 +89,7 @@ $xwiki.jsfx.use('js/scriptaculous/effects.js', true)##
 ## Note that we cannot do this generically in the webjars module when exporting in HTML because the webjars module
 ## provide generic URLs and they don't all go through requirejs...
 ## Note that this comment and code below are not correctly indentend voluntarily in order to generate nicely formatted
-## code at runtime!
+## (and valid) code at runtime!
 #macro(removeJsSuffix $expr)
 ## Note that velocity takes argument references by name (see: https://velocity.apache.org/engine/releases/velocity-1.5/user-guide.html#velocimacros).
 ## So we set the value of the $expr in the $url variable to not execute $expr multiple times.
@@ -93,21 +102,52 @@ $xwiki.jsfx.use('js/scriptaculous/effects.js', true)##
 require.config({
   paths: {
     'jquery': '#removeJsSuffix($services.webjars.url("jquery", "jquery${jsExtension}"))',
+    'bootstrap': '#removeJsSuffix($services.webjars.url("bootstrap", "js/bootstrap${jsExtension}"))',
     'xwiki-meta': '$stringtool.removeEnd($xwiki.getSkinFile('js/xwiki/meta.js'), '.js')',
-    'xwiki-events-bridge': "$stringtool.removeEnd($xwiki.getSkinFile('js/xwiki/eventsBridge.js'), '.js')"
+    'xwiki-events-bridge': "$stringtool.removeEnd($xwiki.getSkinFile('js/xwiki/eventsBridge.js'), '.js')",
+    'deferred': "$stringtool.removeEnd($xwiki.getSkinFile('uicomponents/require/deferred.js'), '.js')"
+  },
+  shim: {
+    'bootstrap' : ['jquery']
   },
   waitSeconds: 30,
   ## see: http://requirejs.org/docs/jquery.html#noconflictmap to see why this works.
   map: {
-    '*': { 'jquery': 'jQueryNoConflict' },
-    'jQueryNoConflict': { 'jquery': 'jquery' }
+    '*': {
+      'jquery': 'jQueryNoConflict'
+    },
+    'jQueryNoConflict': {
+      'jquery': 'jquery'
+    },
   }
 });
-define('jQueryNoConflict', ['jquery'], function($) { $.noConflict(); return $; });
+define('jQueryNoConflict', ['jquery'], function ($) {
+    return $.noConflict();
+});
+if (Prototype.BrowserFeatures.ElementExtensions) {
+  require(['jquery', 'bootstrap'], function ($) {
+    // Fix incompatibilities between BootStrap and Prototype
+    var disablePrototypeJS = function (method, pluginsToDisable) {
+      var handler = function (event) {
+        event.target[method] = undefined;
+        setTimeout(function () {
+            delete event.target[method];
+        }, 0);
+      };
+      pluginsToDisable.each(function (plugin) { 
+          $(window).on(method + '.bs.' + plugin, handler); 
+      });
+    },
+    pluginsToDisable = ['collapse', 'dropdown', 'modal', 'tooltip', 'tab', 'popover'];
+    disablePrototypeJS('show', pluginsToDisable);
+    disablePrototypeJS('hide', pluginsToDisable);
+  });
+}
 XWiki.webapppath = "${xwiki.webAppPath}";
 XWiki.servletpath = "${xwiki.servletPath}";
 XWiki.contextPath = "${request.contextPath}";
 XWiki.mainWiki = "$!{escapetool.javascript(${xcontext.mainWikiName})}";
+// Deprecated: replaced by meta data in the HTML element
 XWiki.currentWiki = "$!{escapetool.javascript(${xcontext.database})}";
 XWiki.currentSpace = "$!{escapetool.javascript($doc.space)}";
 XWiki.currentPage = "$!{escapetool.javascript($doc.name)}";

@@ -71,13 +71,6 @@
     </dependency>
     <dependency>
       <groupId>org.xwiki.platform</groupId>
-      <artifactId>xwiki-platform-rendering-wikimacro-ui</artifactId>
-      <version>${xwiki.version}</version>
-      <type>xar</type>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-extension-ui</artifactId>
       <version>${xwiki.version}</version>
       <type>xar</type>
@@ -100,7 +93,7 @@
     <dependency>
       <groupId>org.xwiki.platform</groupId>
       <artifactId>xwiki-platform-colorthemes-ui</artifactId>
-      <version>${xwiki.version}</version>
+      <version>7.4.6</version>
       <type>xar</type>
       <scope>runtime</scope>
     </dependency>

@@ -122,12 +122,16 @@ widgets.UserPicker = Class.create(widgets.Suggest, {
   createItemDisplay: function(data, source) {
     var container = new Element('div', {'class': 'user'});
     var avatarWrapper = new Element('div', {'class': 'user-avatar-wrapper'});
-    avatarWrapper.insert(new Element('img', {src: data.icon, alt: data.info, 'class': 'icon'}));
+    if (data.icon.indexOf('/') >= 0) {
+      avatarWrapper.insert(new Element('img', {src: data.icon, alt: data.info, 'class': 'icon'}));
+    } else {
+      avatarWrapper.insert(new Element('span', {alt: data.info, 'class': data.icon}));
+    }
     container.insert(avatarWrapper);
     var userName = source.highlight ? this.emphasizeMatches(this.sInput, data.info) : data.info;
     container.insert(new Element('div', {'class': 'user-name'}).update(userName));
     var referenceWrapper = new Element('div');
-    var userAlias = source.highlight ? this.emphasizeMatches(this.sInput, data.id) : data.id;
+    var userAlias = source.highlight ? this.emphasizeMatches(this.sInput, data.id.replace(/.*\//g, '')) : data.id;
     referenceWrapper.insert(new Element('span', {'class': 'user-alias'}).update(userAlias));
     var userReference = XWiki.Model.resolve(data.value, XWiki.EntityType.DOCUMENT);
     var wiki = userReference.extractReferenceValue(XWiki.EntityType.WIKI) || XWiki.currentWiki;

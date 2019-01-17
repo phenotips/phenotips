@@ -25,12 +25,9 @@
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <creationDate>1439225369000</creationDate>
   <parent>PhenoTips.PatientClass</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1439226065000</date>
-  <contentUpdateDate>1439226065000</contentUpdateDate>
   <version>1.1</version>
   <title/>
   <comment/>
@@ -46,12 +43,12 @@
 #set ($consentsDoc      = $xwiki.getDocument('PhenoTips.Consents'))
 #set ($existingConsents = $consentsDoc.getObjects($consentClassname))
 #set ($xredirect        = $doc.getURL($xcontext.action, $request.queryString))
-#set ($doc = $consentsDoc)
 $xwiki.ssx.use($displayDocName)##
 $xwiki.jsx.use($displayDocName)##
 {{/velocity}}
 
 {{velocity}}
+#set ($doc = $consentsDoc)
 #if ("$!{request.xaction}" == 'lastentry')
  #set ($entryClassName = $request.dataClassName)
   #set ($options = {})

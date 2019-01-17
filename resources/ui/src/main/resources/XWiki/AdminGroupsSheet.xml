@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+-->
+
+<xwikidoc version="1.2" reference="XWiki.AdminGroupsSheet" locale="">
+  <web>XWiki</web>
+  <name>AdminGroupsSheet</name>
+  <language/>
+  <defaultLanguage/>
+  <translation>0</translation>
+  <creator>xwiki:XWiki.Admin</creator>
+  <parent>XWiki.AdminSheet</parent>
+  <author>xwiki:XWiki.Admin</author>
+  <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
+  <version>1.1</version>
+  <title>AdminGroupsSheet</title>
+  <comment/>
+  <minorEdit>false</minorEdit>
+  <syntaxId>xwiki/2.0</syntaxId>
+  <hidden>true</hidden>
+  <content>{{velocity}}
+##
+## FIXME: Rewrite this entire code since it is very old and does everything by hand, making it hard to maintain.
+##
+{{html}}
+### Globally administrate the groups in a wiki.
+#set($formname = "update")
+#set($saveaction = "save")
+##
+## Inject needed JS and CSS files
+##
+#set($ok = $xwiki.jsfx.use("js/xwiki/lightbox/lightbox.js", true))
+#set($ok = $xwiki.ssfx.use("js/xwiki/lightbox/lightbox.css", true))
+#set($ok = $xwiki.jsfx.use("js/xwiki/usersandgroups/usersandgroups.js", true))
+#set($ok = $xwiki.ssfx.use("js/xwiki/usersandgroups/usersandgroups.css", true))
+#set($ok = $xwiki.jsfx.use("js/xwiki/table/livetable.js", true))
+#set($ok = $xwiki.ssfx.use("js/xwiki/table/livetable.css", true))
+#set($ok = $xwiki.jsx.use('XWiki.AdminGroupsSheet'))
+## The following are needed when editing a group (e.g. for adding new members).
+#userPicker_import()
+#set ($discard = $xwiki.jsx.use('XWiki.XWikiGroupSheet'))
+#if($xcontext.database != "xwiki")
+  #set($mainwk = false)
+#else
+  #set($mainwk = true)
+#end
+&lt;div id="xwikieditcontent"&gt;
+  &lt;table id="groupstable" class="xwiki-livetable"&gt;
+    &lt;tr&gt;
+      &lt;td class="xwiki-livetable-pagination"&gt;
+        &lt;span id="groupstable-limits" class="xwiki-livetable-limits"&gt;&lt;/span&gt;
+        &lt;span id="groupstable-ajax-loader" class="xwiki-livetable-loader"&gt;&lt;img src="$xwiki.getSkinFile('icons/xwiki/ajax-loader-large.gif')" alt="$services.localization.render('platform.livetable.loading')" title="" /&gt;$services.localization.render('platform.livetable.loading')&lt;/span&gt;
+        &lt;span class="pagination"&gt;
+          &lt;span id="groupstable-pagination-text" class="xwiki-livetable-pagination-text"&gt;$services.localization.render('platform.livetable.paginationPage')&lt;/span&gt;
+          &lt;span id="groupstable-pagination" class="xwiki-livetable-pagination-content" &gt;&lt;/span&gt;
+        &lt;/span&gt;
+      &lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td class="xwiki-livetable-display-container"&gt;
+        &lt;table class="xwiki-livetable-display"&gt;
+          &lt;thead class="xwiki-livetable-display-header"&gt;
+            &lt;tr&gt;
+              &lt;th class="xwiki-livetable-display-header-text" scope="col"&gt;$services.localization.render('xe.admin.groups.groupname')&lt;/th&gt;
+              &lt;th class="xwiki-livetable-display-header-text" scope="col"&gt;$services.localization.render('xe.admin.groups.members')&lt;/th&gt;
+              &lt;th class="xwiki-livetable-display-header-text" scope="col"&gt;$services.localization.render('xe.admin.groups.manage')&lt;/th&gt;
+            &lt;/tr&gt;
+            &lt;tr id="groupstable-filters" class="xwiki-livetable-display-filters"&gt;
+              &lt;td class="xwiki-livetable-display-header-filter"&gt;&lt;label for="name" class="hidden"&gt;$services.localization.render('xe.admin.groups.filter.groupName')&lt;/label&gt;&lt;input id="name" name="name" type="text" class="filter"/&gt;&lt;/td&gt;
+              &lt;td class="xwiki-livetable-display-header-filter"&gt;&lt;/td&gt;
+              &lt;td class="xwiki-livetable-display-header-filter"&gt;
+              #if (!$mainwk)
+                &lt;label for="wiki" class="hidden"&gt;$services.localization.render('xe.admin.groups.filter.scope')&lt;/label&gt;
+                &lt;select name="wiki" class="filter"&gt;
+                  &lt;option value="local" selected="selected"&gt;$services.localization.render('xe.admin.groups.local')&lt;/option&gt;
+                  &lt;option value="global"&gt;$services.localization.render('xe.admin.groups.global')&lt;/option&gt;
+                  &lt;option value="both"&gt;$services.localization.render('xe.admin.groups.both')&lt;/option&gt;
+                &lt;/select&gt;
+              #else
+                &lt;input type="hidden" value="local" name="wiki" /&gt; 
+              #end
+              &lt;/td&gt;
+            &lt;/tr&gt;
+          &lt;/thead&gt;
+          &lt;tbody id="groupstable-display" class="xwiki-livetable-display-body"&gt;&lt;tr&gt;&lt;td&gt;&amp;nbsp;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;
+        &lt;/table&gt;
+      &lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td id="tdAddNewUserOrGroup"&gt;
+        &lt;span class="buttonwrapper"&gt;&lt;a href="#" id="addNewGroup"&gt;$services.localization.render('rightsmanager.addnewgroup')&lt;/a&gt;&lt;/span&gt;
+      &lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/table&gt;
+&lt;/div&gt; ## xwikieditcontent
+{{/html}}
+{{/velocity}}</content>
+  <object>
+    <name>XWiki.AdminGroupsSheet</name>
+    <number>0</number>
+    <className>XWiki.JavaScriptExtension</className>
+    <guid>41afe63a-d8ec-43ff-b1f3-1ab39f765330</guid>
+    <class>
+      <name>XWiki.JavaScriptExtension</name>
+      <customClass/>
+      <customMapping/>
+      <defaultViewSheet/>
+      <defaultEditSheet/>
+      <defaultWeb/>
+      <nameField/>
+      <validationScript/>
+      <cache>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>cache</name>
+        <number>5</number>
+        <prettyName>Caching policy</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>long|short|default|forbid</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </cache>
+      <code>
+        <disabled>0</disabled>
+        <name>code</name>
+        <number>2</number>
+        <prettyName>Code</prettyName>
+        <rows>20</rows>
+        <size>50</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.TextAreaClass</classType>
+      </code>
+      <name>
+        <disabled>0</disabled>
+        <name>name</name>
+        <number>1</number>
+        <prettyName>Name</prettyName>
+        <size>30</size>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      </name>
+      <parse>
+        <disabled>0</disabled>
+        <displayFormType>select</displayFormType>
+        <displayType>yesno</displayType>
+        <name>parse</name>
+        <number>4</number>
+        <prettyName>Parse content</prettyName>
+        <unmodifiable>0</unmodifiable>
+        <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
+      </parse>
+      <use>
+        <cache>0</cache>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>0</multiSelect>
+        <name>use</name>
+        <number>3</number>
+        <prettyName>Use this extension</prettyName>
+        <relationalStorage>0</relationalStorage>
+        <separator> </separator>
+        <separators>|, </separators>
+        <size>1</size>
+        <unmodifiable>0</unmodifiable>
+        <values>currentPage|onDemand|always</values>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </use>
+    </class>
+    <property>
+      <cache>long</cache>
+    </property>
+    <property>
+      <code>require(['jquery', 'xwiki-events-bridge'], function($) {
+  /**
+   * Callback for the livetable.
+   */
+  var livetableCallback = function(row, i, table) {
+    return displayGroups(row, i, table, "$!{services.csrf.getToken()}");
+  };
+
+  var startup = function() {
+    // URL to get the groups for displaying them in the ajax-based table
+    var livetableDataURL = XWiki.currentDocument.getURL('get', 'xpage=getgroups');
+    // Initialize the livetable. FIXME: Just use the "modern" livetable macro.
+    var ta = new XWiki.widgets.LiveTable(livetableDataURL, 'groupstable', livetableCallback);
+
+    // Register the click listener for the Add New Group button.
+    var groupsDocument = new XWiki.Document('XWikiGroups', 'XWiki');
+    var addnewurl = groupsDocument.getURL('get', 'xpage=addnewgroup');
+    var saveurl = groupsDocument.getURL('view');
+    var redirecturl = new XWiki.Document('XWikiPreferences', 'XWiki').getURL('admin', 'editor=' + XWiki.editor + '&amp;section=Groups');
+    $('#addNewGroup').on('click', makeAddHandler(addnewurl, saveurl, redirecturl));
+  }
+
+  // Initialization
+  if ((typeof(XWiki) != 'undefined') &amp;&amp; (typeof(XWiki.widgets) != 'undefined') &amp;&amp; (typeof(XWiki.widgets.LiveTable) != 'undefined')) {
+    startup();
+  } else {
+    $(document).on('xwiki:livetable:loading', startup);
+  }
+});</code>
+    </property>
+    <property>
+      <name/>
+    </property>
+    <property>
+      <parse>1</parse>
+    </property>
+    <property>
+      <use>currentPage</use>
+    </property>
+  </object>
+</xwikidoc>

@@ -70,4 +70,20 @@
     <to>/</to>
   </outbound-rule>
 
+  <outbound-rule>
+    <note>
+      Rewrite outbound URLs to remove the "/data" part when there's a single path after it.
+    </note>
+    <from>/data/(.*)$</from>
+    <to>/$1</to>
+  </outbound-rule>
+
+  <outbound-rule>
+    <note>
+      Rewrite outbound URLs to remove the "/data" part when it's the last path.
+    </note>
+    <from>/data/?$</from>
+    <to>/</to>
+  </outbound-rule>
+
 </urlrewrite>
