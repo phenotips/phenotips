@@ -48,8 +48,9 @@ define([
 
             var x = this.getX();
             var y = this.getY();
+            var rawPosition = editor.getGraph().DG.positions[this.getNode().getID()];
             this._idLabel && this._idLabel.remove();
-            this._idLabel = editor.getPaper().text(x, y, this.getNode().getID()).attr(PedigreeEditorParameters.attributes.dragMeLabel).toFront();
+            this._idLabel = editor.getPaper().text(x, y, this.getNode().getID() + "\n(x=" + rawPosition + ")").attr(PedigreeEditorParameters.attributes.dragMeLabel).toFront();
             this._idLabel.node.setAttribute("class", "no-mouse-interaction");
         },
 
@@ -119,6 +120,8 @@ define([
                 this.getAllGraphics().transform("t " + moveX + "," + moveY + "...");
                 callback && callback();
             }
+
+            this.updateIDLabel();
         },
 
         /**

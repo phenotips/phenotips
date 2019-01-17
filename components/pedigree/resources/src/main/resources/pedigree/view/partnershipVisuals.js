@@ -58,8 +58,9 @@ define([
             if (!editor.DEBUG_MODE) return;
             var x = this.getX();
             var y = this.getY();
+            var rawPosition = editor.getGraph().DG.positions[this.getNode().getID()];
             this._idLabel && this._idLabel.remove();
-            this._idLabel = editor.getPaper().text(x, y-20, this.getNode().getID()).attr(PedigreeEditorParameters.attributes.dragMeLabel).insertAfter(this._junctionShape.flatten());
+            this._idLabel = editor.getPaper().text(x, y-20, this.getNode().getID() + " (x=" + rawPosition + ")").attr(PedigreeEditorParameters.attributes.dragMeLabel).insertAfter(this._junctionShape.flatten());
         },
 
         /**
@@ -492,6 +493,7 @@ define([
             this.updatePartnerConnections();
             this.updateChildhubConnection();
             this.updateChildlessStatusLabel();
+            this.updateIDLabel();
         },
 
         /**
