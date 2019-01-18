@@ -76,7 +76,7 @@ public class R74692PhenoTips3930DataMigration extends AbstractHibernateDataMigra
     @Override
     public String getDescription()
     {
-        return "Make Pubmed ID to be a multiple value field.";
+        return "Clean up empty pubmed id entries.";
     }
 
     @Override
