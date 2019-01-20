@@ -457,7 +457,7 @@ $!displayValue
       #if ($filterValue != '')
         ## Exact filter, substring matching
         #set($whereSql = "${whereSql} and upper(str(${safe_tableAlias})) like upper(?) ESCAPE '!'")
-        #set($discard = $whereParams.add("%${filterValue.replaceAll('[\[_%!]', '!$0')}%"))
+        #set($discard = $whereParams.add("%${filterValue.replaceAll('[_%!]', '!$0')}%"))
       #else
         ## Before and After filters
         #if ($filterValueLowLimit != '')
@@ -488,7 +488,7 @@ $!displayValue
           #set($discard = $whereParams.add("${stringtool.substringAfter($filterValue, ':')}"))
         #else
           #set($whereSql = "${whereSql} upper(str(${safe_colname.replace('_','.')})) like upper(?) ESCAPE '!'")
-          #set($discard = $whereParams.add("%${filterValue.replaceAll('[\[_%!]', '!$0')}%"))
+          #set($discard = $whereParams.add("%${filterValue.replaceAll('[_%!]', '!$0')}%"))
         #end
         #if (!$foreach.hasNext)
           #set ($whereSql = "${whereSql})")
@@ -498,7 +498,7 @@ $!displayValue
     ## Other document fields, substring matching
     #elseif($colname.startsWith('doc.'))
       #set($whereSql = "${whereSql} and upper(str(${safe_colname.replace('_','.')})) like upper(?) ESCAPE '!'")
-      #set($discard = $whereParams.add("%${filterValue.replaceAll('[\[_%!]', '!$0')}%"))
+      #set($discard = $whereParams.add("%${filterValue.replaceAll('[_%!]', '!$0')}%"))
     ##
     ## Object properties from now on
     ##
@@ -562,7 +562,7 @@ $!displayValue
       #if ($filterValue != '')
         ## Exact filter, substring matching
         #set($whereSql = "${whereSql} and upper(str(${safe_tableAlias}.value)) like upper(?) ESCAPE '!'")
-        #set($discard = $whereParams.add("%${filterValue.replaceAll('[\[_%!]', '!$0')}%"))
+        #set($discard = $whereParams.add("%${filterValue.replaceAll('[_%!]', '!$0')}%"))
       #else
         ## Before and After filters
         #if ($filterValueLowLimit != '')
@@ -581,7 +581,7 @@ $!displayValue
     #elseif($propType == 'TextAreaClass' || $propType == 'UsersClass' || $propType == 'GroupsClass')
       #set($fromSql = "${fromSql}, LargeStringProperty ${safe_tableAlias}")
       #set($whereSql = "${whereSql} and ${targetedObject}.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and upper(${safe_tableAlias}.value) like upper(?) ESCAPE '!'")
-      #set($discard = $whereParams.addAll(["${colname}", "%${filterValue.replaceAll('[\[_%!]', '!$0')}%"]))
+      #set($discard = $whereParams.addAll(["${colname}", "%${filterValue.replaceAll('[_%!]', '!$0')}%"]))
     ##
     ## Lists, these can be stored in several ways
     #elseif($propType == 'StaticListClass' || $propType == 'DBListClass' || $propType == 'DBTreeListClass')
@@ -622,7 +622,7 @@ $!displayValue
           ## Exact match
           #set($fromSql = "${fromSql}, StringListProperty ${safe_tableAlias}")
           #set($whereSql = "${whereSql} and ${targetedObject}.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and concat('|', concat(upper(${safe_tableAlias}.textValue), '|')) like upper(?) ESCAPE '!'")
-          #set($discard = $whereParams.addAll(["${colname}", "%|${filterValue.replaceAll('[\[_%!]', '!$0')}|%"]))
+          #set($discard = $whereParams.addAll(["${colname}", "%|${filterValue.replaceAll('[_%!]', '!$0')}|%"]))
         #end
       ##
       ## No multiselect, just one value is stored
@@ -675,7 +675,7 @@ $!displayValue
         #set($discard = $whereParams.addAll(["${colname}", "${filterValueList[0].toUpperCase()}"]))
       #else
         #set($whereSql = "${whereSql} and ${targetedObject}.id=${safe_tableAlias}.id.id and ${safe_tableAlias}.id.name = ? and upper(${safe_tableAlias}.value) like upper(?) ESCAPE '!'")
-        #set($discard = $whereParams.addAll(["${colname}", "%${filterValueList[0].replaceAll('[\[_%!]', '!$0')}%"]))
+        #set($discard = $whereParams.addAll(["${colname}", "%${filterValueList[0].replaceAll('[_%!]', '!$0')}%"]))
       #end
     #end
   #end
