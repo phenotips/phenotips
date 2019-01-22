@@ -109,6 +109,9 @@
     #set ($data.unauthorizedserver = 'true')
   #elseif ($response.isLoginFailed())
     #set ($data.loginfailed = 'true')    ## one form or another of incorrect username, password or stored token
+    #if ($response.isLoginFailed_UsernameNotCanonical())
+      #set ($data.usernameNotCanonical = 'true')
+    #end
   #end
   $jsontool.serialize($data)
 #elseif ($request.do == 'push')

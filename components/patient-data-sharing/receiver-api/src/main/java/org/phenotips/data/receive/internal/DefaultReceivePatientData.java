@@ -48,6 +48,7 @@ import org.xwiki.users.UserManager;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.URLDecoder;
+import java.security.Principal;
 import java.security.SecureRandom;
 import java.util.HashSet;
 import java.util.List;
@@ -151,6 +152,10 @@ public class DefaultReceivePatientData implements ReceivePatientData
     @Inject
     private ConsentAuthorizer consentAuthorizer;
 
+    @Inject
+    @Named("user/current")
+    private DocumentReferenceResolver<String> userResolver;  // used to convert usernames from XWiki.user to plain user
+
     @Override
     public boolean isServerTrusted()
     {
@@ -214,6 +219,14 @@ public class DefaultReceivePatientData implements ReceivePatientData
         if (jsonKeyToSet != null) {
             response.put(jsonKeyToSet, true);
         }
+        return response;
+    }
+
+    protected JSONObject generateNotCanonicalUsernameResponse(String expectedName, String providedName)
+    {
+        JSONObject response = generateFailedLoginResponse();
+        response.put(ShareProtocol.SERVER_JSON_KEY_NAME_USERNAME_NOT_ACCEPTED, providedName);
+        response.put(ShareProtocol.SERVER_JSON_KEY_NAME_USERNAME_EXPECTED, expectedName);
         return response;
     }
 
@@ -385,44 +398,113 @@ public class DefaultReceivePatientData implements ReceivePatientData
         return DEFAULT_USER_TOKENS_ENABLED;
     }
 
+    // internal class which contains details about a login attempt
+    protected class LoginResult
+    {
+        private String authorizedUsername;
+        private String userToken;
+
+        private JSONObject failedLoginDetails;
+
+        public LoginResult(String authorizedUsername, String userToken) {
+            this.authorizedUsername = authorizedUsername;
+            this.userToken = userToken;
+        }
+
+        public LoginResult(JSONObject failedLoginDetails) {
+            this.failedLoginDetails = failedLoginDetails == null
+                    ? generateFailedLoginResponse()
+                    : failedLoginDetails;
+        }
+
+        public boolean isSuccessful() {
+            return this.authorizedUsername != null;
+        }
+
+        public boolean isFailed() {
+            return !this.isSuccessful();
+        }
+
+        public String getAuthorizedUsername() {
+            return this.authorizedUsername;
+        }
+
+        public String getUserToken() {
+            return this.userToken;
+        }
+
+        public JSONObject getFailedLoginDetails() {
+            return this.failedLoginDetails;
+        }
+    }
+
     /**
      * Check that username and credentials (either password or user_token) are received in the request, that
-     * {@code username} is a valid user name on this server and that credentials are valid for the username given.<br>
-     * If user_token are enabled on the server and user_token is present in the request then only the token is validated
-     * and password is ignored.
+     * provided username is a valid user name on this server and that credentials are valid for the username given.
      *
-     * @return {@code null} iff user name and user credentials are valid, a JSON object containing error description
-     *         otherwise
+     * If user_token are enabled on the server and user_token is present in the request then only the token is
+     * validated and password is ignored.
+     *
+     * @return {@code LoginResult} a LoginResult object which either contains the login failure reason (in JSON format,
+     *                             which can be returned directly to the requestor), or authorized user name (which may
+     *                             be different form the name provided because of the peculiarities of XWiki framework
+     *                             (e.g. current version strips all spaces from the provided username before attempting
+     *                             to authorize)
      */
-    protected JSONObject validateLogin(XWikiRequest request, XWikiContext context)
+    protected LoginResult validateLogin(XWikiRequest request, XWikiContext context)
     {
         try {
             String clientVersion = request.getParameter(ShareProtocol.CLIENT_POST_KEY_NAME_PROTOCOLVER);
             if (!isCompatibleVersion(clientVersion)) {
                 this.logger.error("Rejecting push request by {} - incompatible push protocol version",
                     request.getRemoteAddr());
-                return generateIncompatibleVersionResponse();
+                return new LoginResult(generateIncompatibleVersionResponse());
             }
 
             String userName = request.getParameter(ShareProtocol.CLIENT_POST_KEY_NAME_USERNAME);
             String token = request.getParameter(ShareProtocol.CLIENT_POST_KEY_NAME_USER_TOKEN);
 
             if (userName == null) {
-                return generateFailedCredentialsResponse();
+                return new LoginResult(generateFailedCredentialsResponse());
             }
 
             if (token == null) {
                 String password = request.getParameter(ShareProtocol.CLIENT_POST_KEY_NAME_PASSWORD);
 
-                if (context.getWiki().getAuthService().authenticate(userName, password, context) == null) {
-                    return generateFailedCredentialsResponse();
+                Principal authenticatedUser =
+                        context.getWiki().getAuthService().authenticate(userName, password, context);
+
+                if (authenticatedUser == null) {
+                    return new LoginResult(generateFailedCredentialsResponse());
                 }
+
+                // authenticate() may accept usernames which are not in "canonical" format, e.g. with
+                // extra whitespace added or explicit XWiki: and/or XWiki. prefixes. In such cases the problem
+                // arises when we try to authenticate the same username using a token and our own authentication
+                // system, which does not know about all possible accepted username variations.
+                //
+                // One way is to reject all usernames in non-canonical form, however we do not want to reject
+                // usernames with prefixes added, as that is useful for debugging PT installs on a farm.
+                // So the solution is to try to instantiate a user object using the name, which is what
+                // we ultimately need from a username once authenticated. If it works - accept, else - reject.
+                User user = this.userManager.getUser(userName);
+                if (user == null || user.getProfileDocument() == null) {
+                    DocumentReference userReference = this.userResolver.resolve(authenticatedUser.getName());
+                    if (userReference == null) {
+                        return new LoginResult(generateFailedCredentialsResponse());
+                    }
+                    String plainUserNameAsAuthenticated = userReference.getName();
+                    return new LoginResult(generateNotCanonicalUsernameResponse(plainUserNameAsAuthenticated, userName));
+                }
+
+                return new LoginResult(userName, null);  // successful login, no token provided
             } else {
                 BaseObject serverConfig = getSourceServerConfiguration(request.getRemoteAddr(), context);
 
                 if (!userTokensEnabled(serverConfig)) {
                     this.logger.warn("user token provided by [{}] but tokens are disabled", userName);
-                    return generateFailedCredentialsResponse(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_NOUSERTOKENS);
+                    return new LoginResult(
+                            generateFailedCredentialsResponse(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_NOUSERTOKENS));
                 }
 
                 String serverName = getRemoteServerName(serverConfig, request);
@@ -431,16 +513,18 @@ public class DefaultReceivePatientData implements ReceivePatientData
                 TokenStatus tokenStatus = checkUserToken(userName, serverName, token, tokenLifeTime);
 
                 if (tokenStatus == TokenStatus.INVALID) {
-                    return generateFailedCredentialsResponse();
+                    return new LoginResult(generateFailedCredentialsResponse());
                 } else if (tokenStatus == TokenStatus.EXPIRED) {
-                    return generateFailedCredentialsResponse(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_EXPIREDUSERTOKEN);
+                    return new LoginResult(
+                            generateFailedCredentialsResponse(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_EXPIREDUSERTOKEN));
                 }
+
+                return new LoginResult(userName, token);    // successful login using the given token
             }
         } catch (Exception ex) {
             this.logger.error("Error during remote login [{}] {}", ex.getMessage(), ex);
-            return generateFailedLoginResponse();
+            return new LoginResult(generateFailedLoginResponse());
         }
-        return null;
     }
 
     protected boolean isCompatibleVersion(String clientVersion)
@@ -460,12 +544,12 @@ public class DefaultReceivePatientData implements ReceivePatientData
 
             this.logger.warn("Push patient request from remote [{}]", request.getRemoteAddr());
 
-            JSONObject loginError = validateLogin(request, context);
-            if (loginError != null) {
-                return loginError;
+            LoginResult loginResult = validateLogin(request, context);
+            if (loginResult.isFailed()) {
+                return loginResult.getFailedLoginDetails();
             }
 
-            String userName = request.getParameter(ShareProtocol.CLIENT_POST_KEY_NAME_USERNAME);
+            String userName = loginResult.getAuthorizedUsername();
             String groupName = request.getParameter(ShareProtocol.CLIENT_POST_KEY_NAME_GROUPNAME);
             if (groupName != null && !isValidUserGroup(userName, groupName)) {
                 this.logger.warn("Incorrect group name provided by {}", request.getRemoteAddr());
@@ -634,12 +718,12 @@ public class DefaultReceivePatientData implements ReceivePatientData
 
             this.logger.warn("Get config request from remote [{}]", request.getRemoteAddr());
 
-            JSONObject loginError = validateLogin(request, context);
-            if (loginError != null) {
-                return loginError;
+            LoginResult loginResult = validateLogin(request, context);
+            if (loginResult.isFailed()) {
+                return loginResult.getFailedLoginDetails();
             }
 
-            String userName = request.getParameter(ShareProtocol.CLIENT_POST_KEY_NAME_USERNAME);
+            String userName = loginResult.getAuthorizedUsername();
             Set<Group> userGroups = this.groupManager.getGroupsForUser(this.userManager.getUser(userName));
             JSONArray groupList = new JSONArray();
             for (Group g : userGroups) {
@@ -658,13 +742,12 @@ public class DefaultReceivePatientData implements ReceivePatientData
 
             BaseObject serverConfig = getSourceServerConfiguration(request.getRemoteAddr(), context); // TODO: make nice
             if (this.userTokensEnabled(serverConfig)) {
-                String token = request.getParameter(ShareProtocol.CLIENT_POST_KEY_NAME_USER_TOKEN);
-                if (token == null) {
-                    token = generateNewToken(userName);
-                    // Note: if token is not null it must be valid, keep it until expire date
-                    // TODO: can be a config option to keep regenerating at each login
-                    // (and thus keep pushing the expire date)
-                }
+
+                // a valid token should be returned for every configuration request. If a valid token already exists,
+                // that token will be returned back. Otherwise a new one is generated and returned
+                String token = loginResult.getUserToken() == null
+                        ? generateNewToken(userName)
+                        : loginResult.getUserToken();
 
                 String serverName = getRemoteServerName(serverConfig, request);
                 this.logger.debug("Remote server name: [{}]", serverName);
@@ -690,12 +773,12 @@ public class DefaultReceivePatientData implements ReceivePatientData
 
             this.logger.warn("Get patient URL request from remote [{}]", request.getRemoteAddr());
 
-            JSONObject loginError = validateLogin(request, context);
-            if (loginError != null) {
-                return loginError;
+            LoginResult loginResult = validateLogin(request, context);
+            if (loginResult.isFailed()) {
+                return loginResult.getFailedLoginDetails();
             }
 
-            String userName = request.getParameter(ShareProtocol.CLIENT_POST_KEY_NAME_USERNAME);
+            String userName = loginResult.getAuthorizedUsername();
             String guid = request.getParameter(ShareProtocol.CLIENT_POST_KEY_NAME_GUID);
 
             if (userName == null || guid == null) {
