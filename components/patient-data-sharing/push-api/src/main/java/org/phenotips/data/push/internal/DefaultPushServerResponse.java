@@ -122,6 +122,13 @@ public class DefaultPushServerResponse implements PushServerResponse
     }
 
     @Override
+    public boolean isLoginFailed_UsernameNotCanonical()
+    {
+        return isLoginFailed()
+                && this.response.has(ShareProtocol.SERVER_JSON_KEY_NAME_USERNAME_NOT_ACCEPTED);
+    }
+
+    @Override
     public boolean isLoginFailed_UserTokenExpired()
     {
         return isLoginFailed() && hasKeySetToTrue(ShareProtocol.SERVER_JSON_KEY_NAME_ERROR_EXPIREDUSERTOKEN);

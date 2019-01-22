@@ -615,7 +615,12 @@
 
       if (lastLoginResponse) {
         if (this._lastLoginResponse.loginfailed &amp;&amp; password_when_failed != "") {   // ignore unseccessful passwrodless logins - maybe token has expired, it is OK
-          this._userLoginError.update("$!escapetool.javascript($services.localization.render('phenotips.PushPatient.cantAuthorizeUser'))");
+
+          if (this._lastLoginResponse.usernameNotCanonical) {
+            this._userLoginError.update("$!escapetool.javascript($services.localization.render('phenotips.PushPatient.cantAuthorizeNonCanonicalUserName'))");
+          } else {
+            this._userLoginError.update("$!escapetool.javascript($services.localization.render('phenotips.PushPatient.cantAuthorizeUser'))");
+          }
           this._userLoginError.show();
         }
       }
