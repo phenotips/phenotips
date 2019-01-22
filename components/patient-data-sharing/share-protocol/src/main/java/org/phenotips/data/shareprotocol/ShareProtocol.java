@@ -116,6 +116,10 @@ public class ShareProtocol
     // (and it is guaranteed only one of these is included):
     public static final String SERVER_JSON_KEY_NAME_ERROR_LOGINFAILED    = "login_failed";
     public static final String SERVER_JSON_KEY_NAME_ERROR_ACTIONFAILED   = "action_failed";
+
+    public static final String SERVER_JSON_KEY_NAME_USERNAME_NOT_ACCEPTED = "username_not_accepted";
+    public static final String SERVER_JSON_KEY_NAME_USERNAME_EXPECTED     = "username_expected";
+
     public static final String SERVER_JSON_KEY_NAME_ERROR_PROTOCOLFAILED = "unsupported_post_protocol_version";
 
     // one of the following may be set in case SERVER_JSON_KEY_NAME_ERROR_LOGINFAILED is set:
