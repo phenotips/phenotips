@@ -125,7 +125,7 @@ public class DefaultPushServerResponse implements PushServerResponse
     public boolean isLoginFailed_UsernameNotCanonical()
     {
         return isLoginFailed()
-                && this.response.has(ShareProtocol.SERVER_JSON_KEY_NAME_USERNAME_NOT_IN_CANONICAL_FORM);
+                && this.response.has(ShareProtocol.SERVER_JSON_KEY_NAME_USERNAME_NOT_ACCEPTED);
     }
 
     @Override

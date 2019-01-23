@@ -165,9 +165,9 @@ public class ShareProtocol
 
     public static final String SERVER_JSON_KEY_NAME_ERROR_ACTIONFAILED = "action_failed";
 
-    public static final String SERVER_JSON_KEY_NAME_USERNAME_NOT_IN_CANONICAL_FORM = "username_not_canonical";
+    public static final String SERVER_JSON_KEY_NAME_USERNAME_NOT_ACCEPTED = "username_not_accepted";
 
-    public static final String SERVER_JSON_KEY_NAME_USERNAME_SUGGESTED_CANONICAL_FORM = "username_suggested_canonical";
+    public static final String SERVER_JSON_KEY_NAME_USERNAME_EXPECTED = "username_expected";
 
     public static final String SERVER_JSON_KEY_NAME_ERROR_PROTOCOLFAILED = "unsupported_post_protocol_version";
 

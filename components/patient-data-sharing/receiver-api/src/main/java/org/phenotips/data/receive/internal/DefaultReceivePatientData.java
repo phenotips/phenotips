@@ -39,6 +39,7 @@ import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.context.Execution;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
+import org.xwiki.model.reference.EntityReferenceSerializer;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryManager;
 import org.xwiki.security.authorization.Right;
@@ -158,6 +159,13 @@ public class DefaultReceivePatientData implements ReceivePatientData
     @Named("user/current")
     private DocumentReferenceResolver<String> userResolver;  // used to convert usernames from XWiki.user to plain user
 
+    /**
+     * Used to convert a user DocumentReference to string (standard form),
+     * for checking that username is correct and has no extra spaces.
+     */
+    @Inject
+    private EntityReferenceSerializer<String> defaultEntityReferenceSerializer;
+
     @Override
     public boolean isServerTrusted()
     {
@@ -227,8 +235,8 @@ public class DefaultReceivePatientData implements ReceivePatientData
     protected JSONObject generateNotCanonicalUsernameResponse(String expectedName, String providedName)
     {
         JSONObject response = generateFailedLoginResponse();
-        response.put(ShareProtocol.SERVER_JSON_KEY_NAME_USERNAME_NOT_IN_CANONICAL_FORM, providedName);
-        response.put(ShareProtocol.SERVER_JSON_KEY_NAME_USERNAME_SUGGESTED_CANONICAL_FORM, expectedName);
+        response.put(ShareProtocol.SERVER_JSON_KEY_NAME_USERNAME_NOT_ACCEPTED, providedName);
+        response.put(ShareProtocol.SERVER_JSON_KEY_NAME_USERNAME_EXPECTED, expectedName);
         return response;
     }
 
@@ -482,10 +490,14 @@ public class DefaultReceivePatientData implements ReceivePatientData
 
                 String plainUserNameAsAuthenticated = userReference.getName();
                 if (!userName.equals(plainUserNameAsAuthenticated)) {
-                    return new LoginResult(generateNotCanonicalUsernameResponse(plainUserNameAsAuthenticated, userName));
+                    String fullName = defaultEntityReferenceSerializer.serialize(userReference);
+                    if (!userName.equals(fullName)) {
+                        return new LoginResult(
+                                generateNotCanonicalUsernameResponse(plainUserNameAsAuthenticated, userName));
+                    }
                 }
 
-                return new LoginResult(plainUserNameAsAuthenticated, null);  // successful login, no token provided
+                return new LoginResult(userName, null);  // successful login, no token provided
             } else {
                 BaseObject serverConfig = getSourceServerConfiguration(request.getRemoteAddr(), context);
 
