@@ -105,6 +105,11 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
     @Override
     public void index(Patient patient)
     {
+        this.internalIndex(patient, true);
+    }
+
+    private void internalIndex(Patient patient, boolean commit)
+    {
         SolrInputDocument input = new SolrInputDocument();
         input.setField("document", this.referenceSerializer.serialize(patient.getDocumentReference()));
         String reporter = "";
@@ -139,6 +144,9 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
 
         try {
             this.server.add(input);
+            if (commit) {
+                this.server.commit();
+            }
         } catch (SolrServerException ex) {
             this.logger.warn("Failed to perform Solr search: {}", ex.getMessage());
         } catch (IOException ex) {
@@ -168,7 +176,7 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
                 this.qm.createQuery("from doc.object(PhenoTips.PatientClass) as patient", Query.XWQL).execute();
             this.server.deleteByQuery("*:*");
             for (String patientDoc : patientDocs) {
-                this.index(this.patientRepository.get(patientDoc));
+                this.internalIndex(this.patientRepository.get(patientDoc), false);
             }
             this.server.commit();
         } catch (SolrServerException ex) {
