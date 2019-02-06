@@ -78,7 +78,7 @@ public class ReporterContactProvider implements PatientContactProvider
             contactInfo.withName(user.getName());
             contactInfo.withEmail(email);
             contactInfo.withInstitution(institution);
-            // FIXME URL is missing
+            contactInfo.withUrl(user.getProfileURI() != null ? user.getProfileURI().toString() : null);
         }
         // Otherwise, if null user -> user is no longer valid, all we know is the username, already added before the if
 
