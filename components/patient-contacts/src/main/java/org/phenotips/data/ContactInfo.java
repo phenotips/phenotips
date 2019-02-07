@@ -225,7 +225,7 @@ public interface ContactInfo
             {
                 List<String> collectedEmails = new ArrayList<String>();
                 for (String email : emails) {
-                    for (String parsedEmail : StringUtils.split(email, ",|;")) {
+                    for (String parsedEmail : StringUtils.split(email, ",; ")) {
                         collectedEmails.add(parsedEmail.trim());
                     }
                 }
