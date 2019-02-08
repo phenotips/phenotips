@@ -767,6 +767,12 @@
               <method>java.lang.String getServerProtocolVersion()</method>
               <justification>Improved handling of older push server protocol versions.</justification>
             </difference>
+            <difference>
+               <className>org/phenotips/data/push/PushServerResponse</className>
+               <differenceType>7012</differenceType>
+               <method>boolean isLoginFailed_UsernameNotCanonical()</method>
+               <justification>Improved handling of usernames with extra spaces.</justification>
+             </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>

@@ -103,6 +103,12 @@ public interface PushServerResponse
     boolean isLoginFailed_IncorrectCredentials();
 
     /**
+     * @return {@code true} iff the user name provided seems to be right, but includes extra symbols such as whitespace
+     *         (which XWiki login process tolerates, but push login process can't).
+     */
+    boolean isLoginFailed_UsernameNotCanonical();
+
+    /**
      * @return {@code true} iff the user token provided is expired.<br>
      *         May only be true if user token was supplied in the POST request.
      */

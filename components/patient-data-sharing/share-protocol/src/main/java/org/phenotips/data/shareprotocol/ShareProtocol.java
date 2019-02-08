@@ -118,6 +118,9 @@ public class ShareProtocol
     public static final String SERVER_JSON_KEY_NAME_ERROR_ACTIONFAILED   = "action_failed";
     public static final String SERVER_JSON_KEY_NAME_ERROR_PROTOCOLFAILED = "unsupported_post_protocol_version";
 
+    public static final String SERVER_JSON_KEY_NAME_USERNAME_NOT_ACCEPTED = "username_not_accepted";
+    public static final String SERVER_JSON_KEY_NAME_USERNAME_EXPECTED     = "username_expected";
+
     // one of the following may be set in case SERVER_JSON_KEY_NAME_ERROR_LOGINFAILED is set:
     public static final String SERVER_JSON_KEY_NAME_ERROR_WRONGCREDENTIALS = "incorrect_credentials";     // incorrect username or password or token
     public static final String SERVER_JSON_KEY_NAME_ERROR_UNTRUSTEDSERVER  = "unauthorized_server";       // unapproved source server
