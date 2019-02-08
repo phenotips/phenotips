@@ -616,6 +616,12 @@
               <method>com.xpn.xwiki.api.Document getDocument(org.xwiki.model.reference.EntityReference)</method>
               <justification>Adding new method to get Document of user or group reference</justification>
             </difference>
+            <difference>
+                <className>org/phenotips/data/push/PushServerResponse</className>
+                <differenceType>7012</differenceType>
+                <method>boolean isLoginFailed_UsernameNotCanonical()</method>
+                <justification>Improved handling of usernames with extra spaces.</justification>
+              </difference>
           </ignored>
           <excludes>
             <exclude>**/internal/**</exclude>
