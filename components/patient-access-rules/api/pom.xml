@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>patient-access-rules</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3.10</version>
   </parent>
   <artifactId>patient-access-rules-api</artifactId>
   <name>PhenoTips - Patient access rules - Java APIs</name>

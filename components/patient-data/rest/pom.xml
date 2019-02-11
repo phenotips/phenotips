@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>patient-data</artifactId>
-    <version>1.3-SNAPSHOT</version>
+    <version>1.3.10</version>
   </parent>
   <artifactId>patient-data-rest</artifactId>
   <name>PhenoTips - Patient Data - REST services</name>
