@@ -28,6 +28,8 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 
@@ -60,6 +62,8 @@ public class ReporterContactProviderTest
 
     private static final String USER_INSTITUTION = "Hospital";
 
+    private static final String USER_URL = "http://prestigious.clinic/padams";
+
     @Rule
     public final MockitoComponentMockingRule<PatientContactProvider> mocker =
         new MockitoComponentMockingRule<PatientContactProvider>(ReporterContactProvider.class);
@@ -77,7 +81,7 @@ public class ReporterContactProviderTest
 
     /** {@link ReporterContactProvider} returns the user information when the reporter is a user. */
     @Test
-    public void patientWithValidReporterReturnsCorrectContactInfo() throws ComponentLookupException
+    public void patientWithValidReporterReturnsCorrectContactInfo() throws ComponentLookupException, URISyntaxException
     {
         UserManager users = this.mocker.getInstance(UserManager.class);
         User user = mock(User.class);
@@ -86,6 +90,7 @@ public class ReporterContactProviderTest
         when(user.getUsername()).thenReturn(USER.getName());
         when(user.getAttribute("email")).thenReturn(USER_EMAIL);
         when(user.getAttribute("company")).thenReturn(USER_INSTITUTION);
+        when(user.getProfileURI()).thenReturn(new URI(USER_URL));
 
         when(this.patient.getReporter()).thenReturn(USER);
 
@@ -98,6 +103,27 @@ public class ReporterContactProviderTest
         Assert.assertEquals(USER_NAME, contact.getName());
         Assert.assertEquals(Collections.singletonList(USER_EMAIL), contact.getEmails());
         Assert.assertEquals(USER_INSTITUTION, contact.getInstitution());
+        Assert.assertEquals(USER_URL, contact.getUrl());
+    }
+
+    /** {@link ReporterContactProvider} returns null for null user URI information when the reporter is a user. */
+    @Test
+    public void patientWithNullURLReturnsCorrectContactInfo() throws ComponentLookupException,
+        URISyntaxException
+    {
+        UserManager users = this.mocker.getInstance(UserManager.class);
+        User user = mock(User.class);
+        when(users.getUser(USER_STR)).thenReturn(user);
+        when(user.getProfileURI()).thenReturn(null);
+
+        when(this.patient.getReporter()).thenReturn(USER);
+
+        List<ContactInfo> result = this.mocker.getComponentUnderTest().getContacts(this.patient);
+
+        Assert.assertNotNull(result);
+        Assert.assertEquals(1, result.size());
+        ContactInfo contact = result.get(0);
+        Assert.assertNull(contact.getUrl());
     }
 
     /** {@link ReporterContactProvider} returns simple user information when the reporter is an invalid user. */

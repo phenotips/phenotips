@@ -20,9 +20,9 @@ package org.phenotips.data.permissions.internal;
 import org.phenotips.data.ContactInfo;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientContactProvider;
+import org.phenotips.data.permissions.EntityAccess;
 import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.Owner;
-import org.phenotips.data.permissions.EntityAccess;
 import org.phenotips.groups.Group;
 import org.phenotips.groups.GroupManager;
 
@@ -34,6 +34,8 @@ import org.xwiki.test.mockito.MockitoComponentMockingRule;
 import org.xwiki.users.User;
 import org.xwiki.users.UserManager;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 
@@ -68,6 +70,8 @@ public class OwnerContactProviderTest
 
     private static final String USER_INSTITUTION = "Hospital";
 
+    private static final String USER_URL = "http://prestigious.clinic/padams";
+
     /** Group used as collaborator. */
     private static final DocumentReference GROUP = new DocumentReference("xwiki", "XWiki", "collaborators");
 
@@ -90,7 +94,7 @@ public class OwnerContactProviderTest
 
     /** {@link OwnerContactProvider#getContacts(Patient)} returns the user information when the owner is a user. */
     @Test
-    public void loadWithUserOwner() throws ComponentLookupException
+    public void loadWithUserOwner() throws ComponentLookupException, URISyntaxException
     {
         EntityPermissionsManager permissions = this.mocker.getInstance(EntityPermissionsManager.class);
         EntityAccess access = mock(EntityAccess.class);
@@ -107,6 +111,7 @@ public class OwnerContactProviderTest
         when(user.getUsername()).thenReturn(USER.getName());
         when(user.getAttribute("email")).thenReturn(USER_EMAIL);
         when(user.getAttribute("company")).thenReturn(USER_INSTITUTION);
+        when(user.getProfileURI()).thenReturn(new URI(USER_URL));
 
         List<ContactInfo> result = this.mocker.getComponentUnderTest().getContacts(this.patient);
         Assert.assertEquals(1, result.size());
@@ -115,6 +120,7 @@ public class OwnerContactProviderTest
         Assert.assertEquals(USER_STR, contact.getUserId());
         Assert.assertEquals(Collections.singletonList(USER_EMAIL), contact.getEmails());
         Assert.assertEquals(USER_INSTITUTION, contact.getInstitution());
+        Assert.assertEquals(USER_URL, contact.getUrl());
     }
 
     /** {@link OwnerContactProvider#getContacts(Patient)} doesn't return empty fields. */
@@ -136,6 +142,7 @@ public class OwnerContactProviderTest
         when(user.getUsername()).thenReturn(USER.getName());
         when(user.getAttribute("email")).thenReturn("");
         when(user.getAttribute("company")).thenReturn(" ");
+        when(user.getProfileURI()).thenReturn(null);
 
         List<ContactInfo> result = this.mocker.getComponentUnderTest().getContacts(this.patient);
         Assert.assertEquals(1, result.size());
@@ -144,6 +151,7 @@ public class OwnerContactProviderTest
         Assert.assertEquals(USER_STR, contact.getUserId());
         Assert.assertTrue(contact.getEmails().isEmpty());
         Assert.assertNull(contact.getInstitution());
+        Assert.assertNull(contact.getUrl());
     }
 
     /** {@link OwnerContactProvider#getContacts(Patient)} returns null when the owner is a user that doesn't exist. */
