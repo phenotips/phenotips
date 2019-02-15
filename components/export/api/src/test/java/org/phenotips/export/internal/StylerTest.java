@@ -23,6 +23,7 @@ import java.util.Set;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.Assert;
 import org.junit.Test;
@@ -226,7 +227,7 @@ public class StylerTest
         verify(dataCell).getStyles();
         verify(style, times(1)).setWrapText(true);
         verify(style, times(1)).setFont(any(Font.class));
-        verify(style, times(1)).setVerticalAlignment(CellStyle.VERTICAL_TOP);
+        verify(style, times(1)).setVerticalAlignment(VerticalAlignment.TOP);
         verify(cell, times(1)).setCellStyle(style);
         verifyNoMoreInteractions(style);
         /* This is the only one that's important. */

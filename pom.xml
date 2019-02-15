@@ -142,7 +142,7 @@
     <project.version.previous>1.4</project.version.previous>
     <xwiki.version>10.9</xwiki.version>
     <slf4j.version>1.7.25</slf4j.version>
-    <poi.version>3.11</poi.version>
+    <poi.version>3.17</poi.version>
     <selenium.version>3.14.0</selenium.version>
     <jackson.codehaus.version>1.9.13</jackson.codehaus.version>
     <jackson.fasterxml.version>2.9.7</jackson.fasterxml.version>
