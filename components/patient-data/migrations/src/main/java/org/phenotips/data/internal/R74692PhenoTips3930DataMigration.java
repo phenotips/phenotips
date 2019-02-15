@@ -23,8 +23,8 @@ import org.xwiki.component.annotation.Component;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReferenceSerializer;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -38,23 +38,21 @@ import org.slf4j.Logger;
 
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.objects.DBStringListProperty;
-import com.xpn.xwiki.objects.StringProperty;
 import com.xpn.xwiki.store.XWikiHibernateBaseStore;
 import com.xpn.xwiki.store.migration.DataMigrationException;
 import com.xpn.xwiki.store.migration.XWikiDBVersion;
 import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
 
 /**
- * Migration for PhenoTips issue #3663: Automatically migrate {@code solved__pubmed_id} from {@code StringProperty} to
- * {@code DBStringListProperty} to allow storing multiple Pubmed IDs.
+ * Migration for PhenoTips issue #3930: Remove blank Pubmed IDs left by 74690 migrator.
  *
  * @version $Id$
- * @since 1.4
+ * @since 1.5
  */
 @Component
-@Named("76490-PT-3663")
+@Named("74692-PT-3930")
 @Singleton
-public class R74690PhenoTips3663DataMigration extends AbstractHibernateDataMigration implements
+public class R74692PhenoTips3930DataMigration extends AbstractHibernateDataMigration implements
     XWikiHibernateBaseStore.HibernateCallback<Object>
 {
     private final String propertyName = "solved__pubmed_id";
@@ -78,13 +76,13 @@ public class R74690PhenoTips3663DataMigration extends AbstractHibernateDataMigra
     @Override
     public String getDescription()
     {
-        return "Make Pubmed ID to be a multiple value field.";
+        return "Clean up empty pubmed id entries.";
     }
 
     @Override
     public XWikiDBVersion getVersion()
     {
-        return new XWikiDBVersion(74690);
+        return new XWikiDBVersion(74692);
     }
 
     @Override
@@ -94,33 +92,29 @@ public class R74690PhenoTips3663DataMigration extends AbstractHibernateDataMigra
     }
 
     /**
-     * Searches for all documents containing a solved__pubmed_id property and changes that property type from
-     * {@code StringProperty} to {@code DBStringListProperty}.
+     * Searches for all documents containing a solved__pubmed_id property and removes blank pubmed ids if any.
      */
     @Override
     public Object doInHibernate(Session session) throws HibernateException, XWikiException
     {
         Query q =
-            session.createQuery("select distinct p from BaseObject o, StringProperty p where o.className = '"
-                + this.serializer.serialize(Patient.CLASS_REFERENCE)
-                + "'and p.id.id = o.id and p.id.name = '" + this.propertyName + "'");
+            session.createQuery("select distinct p from BaseObject o, " + DBStringListProperty.class.getName()
+                + " p where o.className = '" + this.serializer.serialize(Patient.CLASS_REFERENCE)
+                + "'and p.id.id = o.id and p.id.name = '" + this.propertyName + "'"
+                + " and '' in elements(p.list)");
 
         @SuppressWarnings("unchecked")
-        List<StringProperty> properties = q.list();
+        List<DBStringListProperty> properties = q.list();
         this.logger.debug("Found {} pubmed id properties", properties.size());
-        for (StringProperty oldProperty : properties) {
+        for (DBStringListProperty property : properties) {
             try {
-                DBStringListProperty newProperty = new DBStringListProperty();
-                newProperty.setName(oldProperty.getName());
-                newProperty.setId(oldProperty.getId());
-
-                List<String> newValue = new ArrayList<String>();
-                if (StringUtils.isNotBlank(oldProperty.getValue())) {
-                    newValue.add(oldProperty.getValue());
-                    newProperty.setValue(newValue);
-                }
-                session.delete(oldProperty);
-                session.save(newProperty);
+                List<String> values = property.getList();
+                List<String> newValues = values.stream()
+                    // Filter out any blank pubmed ids
+                    .filter(pubmedId -> StringUtils.isNotBlank(pubmedId))
+                    .collect(Collectors.toList());
+                property.setValue(newValues);
+                session.update(property);
             } catch (Exception e) {
                 this.logger.warn("Failed to update a pubmed id property: {}", e.getMessage());
             }
