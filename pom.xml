@@ -150,7 +150,7 @@
     <buildtools.version>1.8</buildtools.version>
     <!-- <textAnalysis.version>1.0</textAnalysis.version>-->
     <testframework.version>1.4</testframework.version>
-    <solr.version>6.5.1</solr.version>
+    <solr.version>7.7.0</solr.version>
     <jaxb2-fluent-api.version>3.0</jaxb2-fluent-api.version>
     <maven-jaxb2-plugin.version>0.13.3</maven-jaxb2-plugin.version>
     <enforcer.skip>false</enforcer.skip>
