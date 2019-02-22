@@ -218,7 +218,7 @@ $doc.display($prop.getName(), 'view', $fakeObj )##
 ##
 ##
 #if ($xcontext.action == 'get' && $request.action == 'deletegene' && "$!{request.gene}" != '' && "$!{request.objnumber}" != '' && $services.csrf.isTokenValid("$!{request.form_token}"))
-  #set ($geneObject = $doc.getObject($!{request.geneclassname}, $!{request.objnumber}))
+  #set ($geneObject = $doc.getObject($!{request.geneclassname}, $mathtool.toInteger($!{request.objnumber})))
   #set ($variantObjects = $doc.getObjects($!{request.variantclassname}, 'gene', $request.gene))
   ## delete gene
   $doc.removeObject($geneObject)
