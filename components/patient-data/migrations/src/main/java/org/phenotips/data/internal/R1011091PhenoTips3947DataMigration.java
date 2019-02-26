@@ -57,9 +57,9 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
  * @since 1.4.5
  */
 @Component
-@Named("R74694-PT-3947")
+@Named("R1011091-PT-3947")
 @Singleton
-public class R74694PhenoTips3947DataMigration extends AbstractHibernateDataMigration implements
+public class R1011091PhenoTips3947DataMigration extends AbstractHibernateDataMigration implements
     HibernateCallback<Object>
 {
     private static final String CDNA_NAME = "cdna";
@@ -92,7 +92,7 @@ public class R74694PhenoTips3947DataMigration extends AbstractHibernateDataMigra
     @Override
     public XWikiDBVersion getVersion()
     {
-        return new XWikiDBVersion(74694);
+        return new XWikiDBVersion(1011091);
     }
 
     @Override
