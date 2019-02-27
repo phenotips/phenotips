@@ -77,6 +77,13 @@ var XWiki = (function(XWiki) {
         if (!input.__Variant_validator) {
           input.__Variant_validator = new XWiki.widgets.DuplicateValidator(input, '.variant.cdna input', "$services.localization.render('PhenoTips.GeneVariantClass.variantAlreadyExist')");
         }
+        input.observe("blur", function(event) {
+          // Make sure any leading and trailing spaces are cleaned up and the prefix "c." is lowercase in variants' cDNA field
+          input.value = input.value.trim();
+          if (input.value.startsWith("C.")) {
+            input.value = input.value.replace("C.", "c.");
+          }
+        });
       });
     });
     return true;
