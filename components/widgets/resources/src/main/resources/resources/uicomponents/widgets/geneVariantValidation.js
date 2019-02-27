@@ -30,10 +30,10 @@ var XWiki = (function(XWiki) {
         var allItems = [];
         $$(this.selector).each( function (item) {
           if (item != el) {
-            allItems.push(item.value);
+            allItems.push(item.value.trim().toLowerCase());
           }
         });
-        if (allItems.indexOf(el.value) > -1) {
+        if (allItems.indexOf(el.value.trim().toLowerCase()) > -1) {
           this.invalid();
         } else {
           this.available();
