@@ -74,7 +74,7 @@ public class VariantCdnaCleanupEventListener extends AbstractEventListener
         variantXWikiObjects.stream().filter(Objects::nonNull)
             .filter(variant -> !StringUtils.isBlank(variant.getStringValue(VARIANT_KEY)))
             .forEach(variant -> {
-                String cdna = variant.getStringValue(VARIANT_KEY).trim().replaceFirst("^C\\.", "c\\.");
+                String cdna = variant.getStringValue(VARIANT_KEY).trim().replaceFirst("^C\\.", "c.");
                 variant.setStringValue(VARIANT_KEY, cdna);
             });
     }

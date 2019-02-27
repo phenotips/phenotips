@@ -132,7 +132,7 @@ public class R74694PhenoTips3947DataMigration extends AbstractHibernateDataMigra
                 }
 
                 String cdna = oldBaseObjProp.getValue();
-                oldBaseObjProp.setValue(cdna.trim().replaceFirst("^C\\.", "c\\."));
+                oldBaseObjProp.setValue(cdna.trim().replaceFirst("^C\\.", "c."));
             }
 
             doc.setComment(getDescription());
