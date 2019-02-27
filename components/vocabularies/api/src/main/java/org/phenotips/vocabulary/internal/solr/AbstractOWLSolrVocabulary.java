@@ -22,6 +22,7 @@ import org.phenotips.vocabulary.VocabularyTerm;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -31,6 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
+import org.apache.jena.ontology.Ontology;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Statement;
@@ -214,7 +216,19 @@ public abstract class AbstractOWLSolrVocabulary extends AbstractSolrVocabulary
     private void setVersion(@Nonnull final SolrInputDocument doc, @Nonnull final OntModel ontModel)
         throws IOException, SolrServerException
     {
-        final String version = ontModel.getOntology(getBaseOntologyUri()).getVersionInfo();
+        Ontology ontology = ontModel.getOntology(getBaseOntologyUri());
+        if (ontology == null) {
+            this.logger.warn("Expected ontology not found: [{}]", getBaseOntologyUri());
+            Iterator<Ontology> ontologies = ontModel.listOntologies();
+            if (ontologies.hasNext()) {
+                ontology = ontologies.next();
+                this.logger.warn("Found this ontology instead: [{}]", ontology.getURI());
+            }
+        }
+        if (ontology == null) {
+            return;
+        }
+        final String version = ontology.getVersionInfo();
         if (StringUtils.isNotBlank(version)) {
             doc.addField(ID_FIELD_NAME, HEADER_INFO_LABEL);
             doc.addField(VERSION_FIELD_NAME, version);
