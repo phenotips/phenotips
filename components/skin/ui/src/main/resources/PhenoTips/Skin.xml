@@ -1567,7 +1567,7 @@ h1:target, h2:target, h3:target {
   z-index: 1000;
 }
 
-.page-actions .menu.menu-horizontal {
+.content-actions .menu.menu-horizontal {
   background-color: $theme.menuBackgroundColor;
   #css3_backgroundLinearGradient({
     'to': 'bottom',
@@ -1583,24 +1583,24 @@ h1:target, h2:target, h3:target {
   padding: 0 0 0 10px;
   text-shadow: none;
 }
-.page-actions .menu.menu-horizontal a:hover {
+.content-actions .menu.menu-horizontal a:hover {
   text-decoration: none !important;
   text-shadow: 0 0 2px $theme.highlightColor;
 }
 
-.page-actions .menu-horizontal &gt; ul &gt; li {
+.content-actions .menu-horizontal &gt; ul &gt; li {
   /* (menu height - line height) / 2 = (1.8em - 1.2em) / 2 = 0.3em */
   padding: 0.3em 1.3em 0.3em 0.3em;
 }
-.page-actions .menu-horizontal &gt; ul {
+.content-actions .menu-horizontal &gt; ul {
   white-space: nowrap;
 }
-.page-actions .menu-horizontal ul ul {
+.content-actions .menu-horizontal ul ul {
   background: none repeat scroll 0 0 $theme.menuBackgroundColor;
   box-shadow: 0 1px 1px $theme.borderColor;
   white-space: normal;
 }
-.page-actions .menu-horizontal input {
+.content-actions .menu-horizontal input {
   background: transparent !important;
   /* Buttons without a border in IE don't trigger the :hover state */
   border: 1px solid transparent !important;
@@ -1610,7 +1610,7 @@ h1:target, h2:target, h3:target {
   font-size: inherit !important;
   font-family: inherit !important;
 }
-.page-actions .menu-horizontal label:hover, .page-actions .menu-horizontal label:hover input {
+.content-actions .menu-horizontal label:hover, .content-actions .menu-horizontal label:hover input {
   cursor: pointer;
   text-shadow: 0 0 2px $theme.highlightColor;
 }</code>
