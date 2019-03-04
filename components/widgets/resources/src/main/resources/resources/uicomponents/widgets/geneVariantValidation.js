@@ -30,10 +30,10 @@ var XWiki = (function(XWiki) {
         var allItems = [];
         $$(this.selector).each( function (item) {
           if (item != el) {
-            allItems.push(item.value);
+            allItems.push(item.value.trim().toLowerCase());
           }
         });
-        if (allItems.indexOf(el.value) > -1) {
+        if (allItems.indexOf(el.value.trim().toLowerCase()) > -1) {
           this.invalid();
         } else {
           this.available();
@@ -77,6 +77,13 @@ var XWiki = (function(XWiki) {
         if (!input.__Variant_validator) {
           input.__Variant_validator = new XWiki.widgets.DuplicateValidator(input, '.variant.cdna input', "$services.localization.render('PhenoTips.GeneVariantClass.variantAlreadyExist')");
         }
+        input.observe("blur", function(event) {
+          // Make sure any leading and trailing spaces are cleaned up and the prefix "c." is lowercase in variants' cDNA field
+          input.value = input.value.trim();
+          if (input.value.startsWith("C.")) {
+            input.value = input.value.replace("C.", "c.");
+          }
+        });
       });
     });
     return true;
