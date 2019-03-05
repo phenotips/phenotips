@@ -9529,6 +9529,9 @@ input.suggestUsersAndGroups {
     <property>
       <code>#template('colorThemeInit.vm')
 
+.collapsible-subsection {
+    margin-bottom: 2em;
+}
 .collapsible-subsection h3 {
     margin-bottom: 0 !important;
 }
