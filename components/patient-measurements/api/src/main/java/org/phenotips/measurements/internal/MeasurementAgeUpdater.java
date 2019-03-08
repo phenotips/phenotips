@@ -36,8 +36,11 @@ import javax.inject.Singleton;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 
+import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
+import com.xpn.xwiki.objects.DateProperty;
+import com.xpn.xwiki.objects.NumberProperty;
 
 /**
  * Update the Age property whenever the birth date or measurement date properties are changed.
@@ -81,20 +84,25 @@ public class MeasurementAgeUpdater extends AbstractEventListener
             return;
         }
         for (BaseObject measurement : objects) {
-            if (measurement == null) {
-                continue;
-            } else if ("birth".equals(measurement.getStringValue("type"))) {
-                measurement.setFloatValue(AGE_PROPERTY_NAME, 0);
-                measurement.removeField(DATE_PROPERTY_NAME);
-                continue;
+            try {
+                if (measurement == null) {
+                    continue;
+                } else if ("birth".equals(measurement.getStringValue("type"))) {
+                    measurement.setFloatValue(AGE_PROPERTY_NAME, 0);
+                    ((DateProperty) measurement.get(DATE_PROPERTY_NAME)).setValue(null);
+                    return;
+                }
+                Date measurementDate = measurement.getDateValue(DATE_PROPERTY_NAME);
+                if (measurementDate == null || birthDate == null) {
+                    ((NumberProperty) measurement.get(AGE_PROPERTY_NAME)).setValue(null);
+                } else {
+                    measurement.setFloatValue(AGE_PROPERTY_NAME,
+                        Days.daysBetween(new DateTime(birthDate), new DateTime(measurementDate)).getDays() / 30.4375f);
+                }
+            } catch (XWikiException e) {
+                // Not expected
             }
-            Date measurementDate = measurement.getDateValue(DATE_PROPERTY_NAME);
-            if (measurementDate == null || birthDate == null) {
-                measurement.removeField(AGE_PROPERTY_NAME);
-            } else {
-                measurement.setFloatValue(AGE_PROPERTY_NAME,
-                    Days.daysBetween(new DateTime(birthDate), new DateTime(measurementDate)).getDays() / 30.4375f);
-            }
+            continue;
         }
     }
 }

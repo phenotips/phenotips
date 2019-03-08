@@ -35,8 +35,12 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.xpn.xwiki.XWikiContext;
+import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
+import com.xpn.xwiki.objects.DateProperty;
+import com.xpn.xwiki.objects.NumberProperty;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyFloat;
@@ -62,7 +66,7 @@ public class MeasurementAgeUpdaterTest
         new MockitoComponentMockingRule<>(MeasurementAgeUpdater.class);
 
     @Mock
-    private Object data;
+    private XWikiContext data;
 
     @Mock
     private XWikiDocument source;
@@ -75,6 +79,12 @@ public class MeasurementAgeUpdaterTest
 
     @Mock
     private BaseObject measurement;
+
+    @Mock
+    private NumberProperty ageProperty;
+
+    @Mock
+    private DateProperty dateProperty;
 
     private List<BaseObject> objects;
 
@@ -94,32 +104,36 @@ public class MeasurementAgeUpdaterTest
     }
 
     @Test
-    public void removesAgeWhenBirthDateNull() throws ComponentLookupException
+    public void setsNullAgeWhenBirthDateNull() throws ComponentLookupException, XWikiException
     {
         when(this.patientRecordObj.getDateValue(DATE_OF_BIRTH_PROPERTY_NAME)).thenReturn(null);
+        when(this.measurement.get(AGE_PROPERTY_NAME)).thenReturn(this.ageProperty);
 
         this.mocker.getComponentUnderTest().onEvent(this.event, this.source, this.data);
-        verify(this.measurement).removeField(AGE_PROPERTY_NAME);
+        verify(this.ageProperty).setValue(null);
     }
 
     @Test
-    public void removesAgeWhenMeasurementDateNull() throws ComponentLookupException
+    public void setsNullAgeWhenMeasurementDateNull() throws ComponentLookupException, XWikiException
     {
         when(this.measurement.getDateValue(DATE_PROPERTY_NAME)).thenReturn(null);
+        when(this.measurement.get(AGE_PROPERTY_NAME)).thenReturn(this.ageProperty);
 
         this.mocker.getComponentUnderTest().onEvent(this.event, this.source, this.data);
-        verify(this.measurement).removeField(AGE_PROPERTY_NAME);
+        verify(this.ageProperty).setValue(null);
     }
 
     @Test
-    public void setsAgeToZeroWhenMeasurementTypeBirth() throws ComponentLookupException
+    public void setsAgeToZeroWhenMeasurementTypeBirth() throws ComponentLookupException, XWikiException
     {
         when(this.measurement.getStringValue("type")).thenReturn("birth");
+        when(this.measurement.get(DATE_PROPERTY_NAME)).thenReturn(this.dateProperty);
+        when(this.measurement.getDateValue(DATE_PROPERTY_NAME)).thenReturn(null);
 
         this.mocker.getComponentUnderTest().onEvent(this.event, this.source, this.data);
 
         verify(this.measurement).setFloatValue(AGE_PROPERTY_NAME, 0);
-        verify(this.measurement).removeField(DATE_PROPERTY_NAME);
+        verify(this.dateProperty).setValue(null);
     }
 
     @Test
