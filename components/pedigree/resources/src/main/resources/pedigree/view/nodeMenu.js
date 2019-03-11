@@ -1597,7 +1597,8 @@ define([
                         values.each(function(v) {
                             target._suggestPicker.addItem(v.id, v.gene, '');
                             var legendType = container.getAttribute("legendName");
-                            var geneColor = legendType ? editor.getGeneLegend(legendType).getGeneColor(v.id) : undefined;
+                            var geneColor = (legendType && editor.getGeneLegend(legendType)) ? // Check if getGeneLegend returns null value
+                                            editor.getGeneLegend(legendType).getGeneColor(v.id) : undefined;
                             _this._updateGene(container, v.id, v.id, v.gene, geneColor);
                         })
                     }
