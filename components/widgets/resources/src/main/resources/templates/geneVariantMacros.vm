@@ -160,7 +160,7 @@ $doc.display($prop.getName(), 'view', $fakeObj )##
 #if ($options.mode == 'edit')
 |(%class="pseudoindent"%)##
 |(% colspan="$colspan" class="variant variant-footer-$geneObjNumber" style="background : inherit;" %) #__variant_addTool($variantClassName $genename)##
-#end\\
+#end
 #end
 ##
 ## -----------Gene table macros-------------------
@@ -230,7 +230,7 @@ $doc.display($prop.getName(), 'view', $fakeObj )##
 #end
 
 
-#if ($options.mode == 'edit')(% class="list-actions" %)(((#__gene_addTool($geneClassName))))#end\\
+#if ($options.mode == 'edit')(% class="list-actions" %)(((#__gene_addTool($geneClassName))))#end
 #end
 ##
 ##
