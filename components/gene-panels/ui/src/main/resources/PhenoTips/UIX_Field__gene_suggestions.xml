@@ -126,8 +126,9 @@ $xwiki.jsx.use('PhenoTips.PanelsGeneStatusObserver')##
 $xwiki.ssx.use('PhenoTips.PanelsDisplay')##
 $xwiki.jsfx.use('js/xwiki/table/livetable.js', true)##
 $xwiki.ssfx.use('js/xwiki/table/livetable.css', true)##
-  (% class="instant-search gene-panels-search-box" %)(((
-    (% class="gene-search-box-content"%)(((
+  (% class="collapsible-subsection instant-search gene-panels-search-box" %)(((
+    === $services.localization.render('phenotips.UIXSection.genePanels') ===
+    (% class="gene-search-box-content box-content"%)(((
       (% class="hint"%)$services.localization.render('phenotips.UIXField.geneSuggestions.geneSearch.Hint')(%%)##
       {{html wiki=false clean=false}}&lt;input type="hidden" id="panelsSearchTermsInput" value="" /&gt;&lt;input type="hidden" id="panelsSearchTermIDsInput" value="" /&gt;&lt;input type="hidden" id="panelsRejectedGeneIDsInput" value="" /&gt;{{/html}}##
       {{html wiki=false clean=false}}&lt;input type="hidden" id="panels-phenotypes-summary" value="$escapetool.xml($jsontool.serialize($phenotypesSummary))" /&gt;{{/html}}##
@@ -196,7 +197,7 @@ $xwiki.ssfx.use('js/xwiki/table/livetable.css', true)##
 {{/velocity}}</content>
     </property>
     <property>
-      <extensionPointId>org.phenotips.patientSheet.section.gene-suggestions</extensionPointId>
+      <extensionPointId>org.phenotips.patientSheet.section.genotype</extensionPointId>
     </property>
     <property>
       <name>org.phenotips.patientSheet.field.gene_suggestions</name>
@@ -205,7 +206,7 @@ $xwiki.ssfx.use('js/xwiki/table/livetable.css', true)##
       <parameters>title=$services.localization.render('phenotips.UIXField.geneSuggestions')
 enabled=true
 required=
-order=1
+order=3
 fields=</parameters>
     </property>
     <property>
