@@ -132,7 +132,7 @@
 
   #else
     #pedigreeThumbnail($family, $doc.name)
-    #set($displayMembers = "$!{config.getProperty('displayFamilyMembers').value}")##
+    #set($displayMembers = "$!{pedigreeConfig.getProperty('displayFamilyMembers').value}")##
     #if($displayMembers != 0 &amp;&amp; $family &amp;&amp; $family.getMembers().size() &gt; 0)
 {{html clean="false" wiki="false"}}&lt;div class="family-members"&gt;&lt;span id="family-label" "class="label"&gt;$services.localization.render('phenotips.patientRecord.family.members.title')&lt;/span&gt;{{/html}}##
 

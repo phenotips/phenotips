@@ -44,8 +44,8 @@
 ##
   #if ($hasFamily &amp;&amp; $family.pedigree)
     ## get desired thumbnail size from configuration
-    #set($config = $!{xwiki.getDocument('XWiki.XWikiPreferences').getObject('PhenoTips.PedigreeGlobalSettings')})##
-    #set($previewSize = "$!{config.getProperty('pedigreePreviewSize').value}")##
+    #set($pedigreeConfig = $!{xwiki.getDocument('XWiki.XWikiPreferences').getObject('PhenoTips.PedigreeGlobalSettings')})##
+    #set($previewSize = "$!{pedigreeConfig.getProperty('pedigreePreviewSize').value}")##
     #if ($previewSize == "medium")##
       #set($size = 400)##
     #elseif ($previewSize == "large")##
