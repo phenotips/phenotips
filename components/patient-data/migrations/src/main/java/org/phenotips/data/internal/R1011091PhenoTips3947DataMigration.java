@@ -125,6 +125,9 @@ public class R1011091PhenoTips3947DataMigration extends AbstractHibernateDataMig
             }
 
             for (BaseObject variant : variants) {
+                if (variant == null) {
+                    continue;
+                }
                 StringProperty oldBaseObjProp = (StringProperty) variant.get(CDNA_NAME);
 
                 if (oldBaseObjProp == null) {
