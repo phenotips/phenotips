@@ -143,8 +143,8 @@ $response.setContentType('application/json')##
   #set($configEid = $xwiki.getDocument('XWiki.XWikiPreferences').getObject('PhenoTips.LabeledIdentifierGlobalSettings'))##
   #set($configPT = $xwiki.getDocument('data.WebHome').getObject('PhenoTips.DBConfigurationClass'))##
   { "user": {
-        "firstName" : "$!{user.getProperty('first_name').value}",
-        "lastName" : "$!{user.getProperty('last_name').value}",
+        "firstName" : "$!{escapetool.json($user.getProperty('first_name').value)}",
+        "lastName" : "$!{escapetool.json($user.getProperty('last_name').value)}",
         "hideDraggingHint": false,
         "advancedUser": $isAdvancedUser
     },
