@@ -141,11 +141,16 @@ $xwiki.ssfx.use('uicomponents/viewers/comments.css', true)
   #if ("$!commentSelection" != "")
     #set($isAnnotation = true)
   #end
-  <div id="xwikicomment_${comment.number}" class="xwikicomment#if($comment.getProperty('author').value == $doc.creator) commentByCreator#end#if($isAnnotation) annotation#end">
-    <div class="commentavatar">#if("$!comment.replyto" == '')#mediumUserAvatar($comment.author)#{else}#smallUserAvatar($comment.author)#end</div>
+  #set ($commentAuthor = $comment.getValue('author'))
+  ## An empty comment author means that the comment author is a guest.
+  ## This variable should be true only for an authenticate user that matches the comment author.
+  ## We don't allow guests to be edit or delete comments because we can't know if they are the comment author.
+  #set ($isUserComment = $commentAuthor != '' && $services.model.resolveDocument($commentAuthor, 'user') == $xcontext.userReference)
+  <div id="xwikicomment_${comment.number}" class="xwikicomment  #if($comment.getProperty('author').value == $doc.creator) commentByCreator#end#if($isAnnotation) annotation#end">
+    <div class="commentavatar">#if("$!comment.replyto" == '')#mediumUserAvatar($commentAuthor)#{else}#smallUserAvatar($commentAuthor)#end</div>
     <div class="commentheader">
       <div>
-      <span class="commentauthor">$!xwiki.getUserName($doc.display('author', 'view', $comment).replaceAll('^(\{\{html clean="false" wiki="false"}})?<p>|</p>(\{\{/html}})?$', '$1$2'))</span>##
+      <span class="commentauthor">$!xwiki.getUserName($commentAuthor)</span>##
       #set($date = $comment.getProperty('date').value)
 ## Don't indent, otherwise the comma will be misplaced
 #if($date), <span class="commentdate">$!xwiki.formatDate($date)</span>#end
@@ -154,7 +159,7 @@ $xwiki.ssfx.use('uicomponents/viewers/comments.css', true)
       <span class="commenttool comment-permalink"><a class="permalink" rel="nofollow" href="$doc.getURL('view', 'viewer=comments')#xwikicomment_${comment.number}" title="$services.localization.render('core.viewers.comments.permalink')">$services.localization.render('core.viewers.comments.permalink')</a></span>
       #if($xwiki.hasAccessLevel('comment'))
         <span class="commenttool commentreply"><a class="commentreply" rel="nofollow" href="$xredirect.replaceAll('&?replyto=\d++', '')&amp;replyto=${comment.number}#xwikicomment_${comment.number}" title="$services.localization.render('core.viewers.comments.reply')"#if("$!replyTo" == "${comment.number}") style="display: none;"#end>$services.localization.render('core.viewers.comments.reply')</a></span>
-        #if($comment.author == $xcontext.user && $hasEdit)
+        #if($isUserComment && $hasEdit)
           <span class="commenttool commentedit"><a class="edit" rel="nofollow" href="$doc.getURL('view', "viewer=comments&amp;number=${comment.number}&amp;xredirect=$xredirect")" title="$services.localization.render('core.viewers.comments.edit')">$services.localization.render('core.viewers.comments.edit')</a></span>
         #end
       #end
@@ -242,13 +247,15 @@ $xwiki.ssfx.use('uicomponents/viewers/comments.css', true)
 ##
 ##
 #macro(displayEditCommentForm $comment)
-  #if (${comment.author} == ${xcontext.user})
+  #set ($commentAuthor = $comment.getValue('author'))
+  #set ($isUserComment = $commentAuthor != '' && $services.model.resolveDocument($commentAuthor, 'user') == $xcontext.userReference)
+  #if ($isUserComment)
   <form action="$doc.getURL('save')" method="post" class="edit-xcomment reply">
     <div id="xwikicomment_${comment.number}" class="xwikicomment#if($comment.getProperty('author').value == $doc.creator) commentByCreator#end">
     <div class="commentavatar">#if("$!comment.replyto" == '')#mediumUserAvatar($comment.author)#{else}#smallUserAvatar($comment.author)#end</div>
     <div class="commentheader">
       <div>
-      <span class="commentauthor">$!xwiki.getUserName($doc.display('author', 'view', $comment))</span>##
+      <span class="commentauthor">$!xwiki.getUserName($commentAuthor)</span>##
 ## Don't indent, otherwise the comma will be misplaced
 #set($date = $comment.getProperty('date').value)##
 #if($date), <span class="commentdate">$!xwiki.formatDate($date)</span>#end
