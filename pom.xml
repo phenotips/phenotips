@@ -454,6 +454,52 @@
         <artifactId>batik-css</artifactId>
         <version>1.10</version>
       </dependency>
+      <!-- XWiki oldcore brings in Batik 1.8; force 1.10. These will not need to be included with xwiki 10. -->
+      <dependency>
+        <groupId>org.apache.xmlgraphics</groupId>
+        <artifactId>batik-svg-dom</artifactId>
+        <version>1.10</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.xmlgraphics</groupId>
+        <artifactId>batik-ext</artifactId>
+        <version>1.10</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.xmlgraphics</groupId>
+        <artifactId>batik-extension</artifactId>
+        <version>1.10</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.xmlgraphics</groupId>
+        <artifactId>batik-transcoder</artifactId>
+        <version>1.10</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.xmlgraphics</groupId>
+        <artifactId>batik-bridge</artifactId>
+        <version>1.10</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.xmlgraphics</groupId>
+        <artifactId>batik-gvt</artifactId>
+        <version>1.10</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.xmlgraphics</groupId>
+        <artifactId>batik-awt-util</artifactId>
+        <version>1.10</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.xmlgraphics</groupId>
+        <artifactId>batik-rasterizer</artifactId>
+        <version>1.10</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.xmlgraphics</groupId>
+        <artifactId>batik-codec</artifactId>
+        <version>1.10</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
