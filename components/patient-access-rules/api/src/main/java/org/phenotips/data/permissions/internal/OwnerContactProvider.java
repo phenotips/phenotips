@@ -20,9 +20,9 @@ package org.phenotips.data.permissions.internal;
 import org.phenotips.data.ContactInfo;
 import org.phenotips.data.Patient;
 import org.phenotips.data.PatientContactProvider;
+import org.phenotips.data.permissions.EntityAccess;
 import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.Owner;
-import org.phenotips.data.permissions.EntityAccess;
 import org.phenotips.groups.Group;
 import org.phenotips.groups.GroupManager;
 
@@ -129,6 +129,7 @@ public class OwnerContactProvider implements PatientContactProvider
         contactInfo.withName(user.getName());
         contactInfo.withEmail(email);
         contactInfo.withInstitution(institution);
+        contactInfo.withUrl(user.getProfileURI() != null ? user.getProfileURI().toString() : null);
     }
 
     private void populateGroupInfo(ContactInfo.Builder contactInfo, Group group)
