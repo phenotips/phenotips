@@ -35,7 +35,8 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.request.schema.AnalyzerDefinition;
 import org.apache.solr.client.solrj.request.schema.FieldTypeDefinition;
 import org.apache.solr.client.solrj.request.schema.SchemaRequest;
-import org.apache.solr.client.solrj.response.schema.SchemaResponse.UpdateResponse;
+import org.apache.solr.client.solrj.response.schema.SchemaResponse.FieldResponse;
+import org.apache.solr.client.solrj.response.schema.SchemaResponse.FieldTypeResponse;
 
 /**
  * Implements {@link VocabularyExtension} to provide translation services for Solr-based vocabularies. Works with XLIFF
@@ -93,16 +94,18 @@ public abstract class AbstractXliffTranslatedSolrVocabularyExtension extends Abs
         fieldTypeDefinition.setAnalyzer(analyzerDefinition);
 
         try {
-            // The current version (5.5) of SolrJ/EmbeddedSolrServer doesn't support getting schema information,
-            // so we do this the ugly way: try to add, check for errors, try to replace
-            UpdateResponse response =
-                new SchemaRequest.AddFieldType(fieldTypeDefinition).process(getClient());
-            if (response.getResponse().get("errors") != null) {
-                response = new SchemaRequest.ReplaceFieldType(fieldTypeDefinition).process(getClient());
+            FieldTypeResponse fieldTypeExists = new SchemaRequest.FieldType(name).process(getClient());
+            if (fieldTypeExists.getFieldType() != null) {
+                // The field type already exists, but it may have a deprecated definition
+                // Update with the current definition
+                new SchemaRequest.ReplaceFieldType(fieldTypeDefinition).process(getClient());
+                return;
             }
-            this.logger.debug(response.toString());
         } catch (Exception ex) {
+            // This happens (Solr 7.7) if the field type doesn't exist; fall through and add the field type
         }
+
+        new SchemaRequest.AddFieldType(fieldTypeDefinition).process(getClient());
     }
 
     /**
@@ -138,11 +141,18 @@ public abstract class AbstractXliffTranslatedSolrVocabularyExtension extends Abs
         fieldDefinition.put("stored", true);
         fieldDefinition.put("multiValued", multiValued);
 
-        // Add or redefine the field
-        UpdateResponse response = new SchemaRequest.AddField(fieldDefinition).process(getClient());
-        if (response.getResponse().get("errors") != null) {
-            response = new SchemaRequest.ReplaceField(fieldDefinition).process(getClient());
+        try {
+            FieldResponse fieldExists = new SchemaRequest.Field(name).process(getClient());
+            if (fieldExists.getField() != null) {
+                // The field already exists, but it may have a deprecated definition; update with the current definition
+                new SchemaRequest.ReplaceField(fieldDefinition).process(getClient());
+                return;
+            }
+        } catch (Exception ex) {
+            // This happens (Solr 7.7) if the field doesn't exist; fall through and add the field
         }
+
+        new SchemaRequest.AddField(fieldDefinition).process(getClient());
     }
 
     /**

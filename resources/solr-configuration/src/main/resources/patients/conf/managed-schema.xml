@@ -35,7 +35,7 @@
       </analyzer>
     </fieldType>
 
-    <fieldType name="int" class="solr.TrieIntField"  precisionStep="0" positionIncrementGap="0"/>
+    <fieldType name="int" class="solr.IntPointField"/>
 
     <!-- Since fields of this type are by default not stored or indexed,
          any data added to them will be ignored outright.  -->

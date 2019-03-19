@@ -26,7 +26,7 @@
 <schema name="ethnicity" version="1.6">
   <types>
     <!-- Numeric field for storing the population size. -->
-    <fieldType name="tlong" class="solr.TrieLongField" precisionStep="8" positionIncrementGap="0"/>
+    <fieldType name="long" class="solr.LongPointField"/>
 
     <!-- The StrField type is not analyzed, but indexed/stored verbatim. -->
     <fieldType name="string" class="solr.StrField" sortMissingLast="true"/>
@@ -80,11 +80,13 @@
          and each such token is matched against the index. -->
     <fieldType name="text_prefix" class="solr.TextField" positionIncrementGap="100">
       <analyzer type="index">
-        <tokenizer class="solr.LowerCaseTokenizerFactory"/>
+        <tokenizer class="solr.LetterTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
         <filter class="solr.EdgeNGramFilterFactory" minGramSize="1" maxGramSize="10"/>
       </analyzer>
       <analyzer type="query">
-        <tokenizer class="solr.LowerCaseTokenizerFactory"/>
+        <tokenizer class="solr.LetterTokenizerFactory"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
       </analyzer>
     </fieldType>
 
@@ -101,7 +103,7 @@
     <field name="nameStub" type="text_prefix" indexed="true" stored="false" omitNorms="true"/>
     <field name="nameSort" type="string" indexed="true" stored="false"/>
 
-    <field name="popsize" type="tlong" indexed="true" stored="false" omitNorms="true"/>
+    <field name="popsize" type="long" indexed="false" docValues="true" stored="false" omitNorms="true"/>
 
     <!-- Discard all other fields -->
     <dynamicField name="*" type="ignored" multiValued="true"/>

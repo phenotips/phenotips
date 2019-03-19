@@ -140,17 +140,17 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <phenotips.version>1.5-SNAPSHOT</phenotips.version>
     <project.version.previous>1.4</project.version.previous>
-    <xwiki.version>10.9</xwiki.version>
+    <xwiki.version>10.11.3</xwiki.version>
     <slf4j.version>1.7.25</slf4j.version>
-    <poi.version>3.11</poi.version>
+    <poi.version>3.17</poi.version>
     <selenium.version>3.14.0</selenium.version>
     <jackson.codehaus.version>1.9.13</jackson.codehaus.version>
-    <jackson.fasterxml.version>2.9.7</jackson.fasterxml.version>
+    <jackson.fasterxml.version>2.9.8</jackson.fasterxml.version>
     <restlet.version>2.3.12</restlet.version>
     <buildtools.version>1.8</buildtools.version>
     <!-- <textAnalysis.version>1.0</textAnalysis.version>-->
     <testframework.version>1.4</testframework.version>
-    <solr.version>6.5.1</solr.version>
+    <solr.version>7.7.0</solr.version>
     <jaxb2-fluent-api.version>3.0</jaxb2-fluent-api.version>
     <maven-jaxb2-plugin.version>0.13.3</maven-jaxb2-plugin.version>
     <enforcer.skip>false</enforcer.skip>
@@ -184,12 +184,12 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-text</artifactId>
-        <version>1.4</version>
+        <version>1.6</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-collections4</artifactId>
-        <version>4.2</version>
+        <version>4.3</version>
       </dependency>
       <dependency>
         <groupId>commons-collections</groupId>
@@ -234,7 +234,7 @@
       <dependency>
         <groupId>joda-time</groupId>
         <artifactId>joda-time</artifactId>
-        <version>2.10</version>
+        <version>2.10.1</version>
       </dependency>
       <!-- JSON serialization and deserialization -->
       <dependency>
@@ -258,12 +258,12 @@
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpcore</artifactId>
-        <version>4.4.10</version>
+        <version>4.4.11</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpclient</artifactId>
-        <version>4.5.6</version>
+        <version>4.5.7</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
@@ -298,7 +298,7 @@
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
-        <version>1.11</version>
+        <version>1.12</version>
       </dependency>
       <dependency>
         <groupId>commons-io</groupId>
@@ -426,7 +426,7 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>26.0-jre</version>
+        <version>27.0.1-jre</version>
       </dependency>
       <dependency>
         <groupId>com.google.code.findbugs</groupId>

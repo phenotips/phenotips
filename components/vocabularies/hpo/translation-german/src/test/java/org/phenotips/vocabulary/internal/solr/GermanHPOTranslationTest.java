@@ -29,6 +29,7 @@ import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.localization.LocalizationContext;
 import org.xwiki.test.mockito.MockitoComponentMockingRule;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -36,7 +37,6 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrRequest;
@@ -117,9 +117,9 @@ public class GermanHPOTranslationTest
     {
         SchemaRequest.AddFieldType fieldTypeRequest = (AddFieldType) this.coreRequests.getAllValues().stream()
             .filter(item -> item instanceof SchemaRequest.AddFieldType).findAny().get();
-        JSONObject request =
-            new JSONObject(IOUtils.toString(fieldTypeRequest.getContentStreams().iterator().next().getReader()))
-                .getJSONObject("add-field-type");
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        fieldTypeRequest.getContentWriter("").write(os);
+        JSONObject request = new JSONObject(os.toString()).getJSONObject("add-field-type");
         Assert.assertEquals("text_general_de", request.get("name"));
         Assert.assertEquals("org.apache.lucene.analysis.de.GermanAnalyzer",
             request.getJSONObject("analyzer").get("class"));
@@ -132,8 +132,9 @@ public class GermanHPOTranslationTest
             .filter(item -> item instanceof SchemaRequest.AddField)
             .map(item -> {
                 try {
-                    return new JSONObject(IOUtils.toString(item.getContentStreams().iterator().next().getReader()))
-                        .getJSONObject("add-field");
+                    ByteArrayOutputStream os = new ByteArrayOutputStream();
+                    item.getContentWriter("").write(os);
+                    return new JSONObject(os.toString()).getJSONObject("add-field");
                 } catch (JSONException | IOException e) {
                     return null;
                 }

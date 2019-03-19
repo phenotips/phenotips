@@ -25,18 +25,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.hssf.util.HSSFColor.HSSFColorPredefined;
+import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 
 /**
- * Reads the {@link org.phenotips.export.internal.DataCell#styles} from DataCells, creates {@link
- * org.apache.poi.ss.usermodel.CellStyle}s and applies them to {@link org.apache.poi.ss.usermodel.Cell}. In other words
- * this class bridges the gap between {@link org.phenotips.export.internal.DataCell#styles}'s keeping track of the
+ * Reads the {@link org.phenotips.export.internal.DataCell#styles} from DataCells, creates
+ * {@link org.apache.poi.ss.usermodel.CellStyle}s and applies them to {@link org.apache.poi.ss.usermodel.Cell}. In other
+ * words this class bridges the gap between {@link org.phenotips.export.internal.DataCell#styles}'s keeping track of the
  * cell's appearance, and actually committing the appearance to the spreadsheet. This class also contains some static
  * function which have to be used at later stages of committing cells to a spreadsheet.
  *
@@ -268,7 +271,7 @@ public class Styler
             this.defaultFont = createDefaultFont(wBook);
         }
         cellStyle.setFont(this.defaultFont);
-        cellStyle.setVerticalAlignment(CellStyle.VERTICAL_TOP);
+        cellStyle.setVerticalAlignment(VerticalAlignment.TOP);
 
         /* If the DataCell's styles is not set, gives default style, and indicates that this function should return. */
         if (this.setDefaultStyle(styles, cell, cellStyle)) {
@@ -313,16 +316,16 @@ public class Styler
         Font headerFont = null;
         if (styles.contains(StyleOption.HEADER)) {
             headerFont = wBook.createFont();
-            headerFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
+            headerFont.setBold(true);
             cellStyle.setFont(headerFont);
-            cellStyle.setAlignment(CellStyle.ALIGN_CENTER);
-            cellStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER);
+            cellStyle.setAlignment(HorizontalAlignment.CENTER);
+            cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
             cell.setCellStyle(cellStyle);
         }
         if (styles.contains(StyleOption.LARGE_HEADER)) {
             if (headerFont == null) {
                 headerFont = wBook.createFont();
-                headerFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
+                headerFont.setBold(true);
             }
             headerFont.setFontHeightInPoints((short) 12);
             cellStyle.setFont(headerFont);
@@ -330,14 +333,14 @@ public class Styler
         }
         if (styles.contains(StyleOption.YES)) {
             Font font = createDefaultFont(wBook);
-            font.setColor(HSSFColor.GREEN.index);
+            font.setColor(HSSFColorPredefined.GREEN.getIndex());
             cellStyle.setFont(font);
             cell.setCellStyle(cellStyle);
         }
         if (styles.contains(StyleOption.NO)) {
             Font font = createDefaultFont(wBook);
-            font.setColor(HSSFColor.DARK_RED.index);
-            font.setBoldweight(Font.BOLDWEIGHT_BOLD);
+            font.setColor(HSSFColorPredefined.DARK_RED.getIndex());
+            font.setBold(true);
             cellStyle.setFont(font);
             cell.setCellStyle(cellStyle);
         }
@@ -350,28 +353,28 @@ public class Styler
     private void setBorderStyles(Set<StyleOption> styles, Cell cell, CellStyle cellStyle, Workbook wBook)
     {
         if (styles.contains(StyleOption.HEADER_BOTTOM)) {
-            cellStyle.setBorderBottom(CellStyle.BORDER_MEDIUM);
+            cellStyle.setBorderBottom(BorderStyle.MEDIUM);
             cell.setCellStyle(cellStyle);
         }
         if (styles.contains(StyleOption.SECTION_BORDER_LEFT)) {
-            cellStyle.setBorderLeft(CellStyle.BORDER_MEDIUM);
+            cellStyle.setBorderLeft(BorderStyle.MEDIUM);
             cell.setCellStyle(cellStyle);
         }
         if (styles.contains(StyleOption.SECTION_BORDER_RIGHT)) {
-            cellStyle.setBorderRight(CellStyle.BORDER_MEDIUM);
+            cellStyle.setBorderRight(BorderStyle.MEDIUM);
             cell.setCellStyle(cellStyle);
         }
         if (styles.contains(StyleOption.PATIENT_BORDER)) {
-            cellStyle.setBorderBottom(CellStyle.BORDER_THIN);
+            cellStyle.setBorderBottom(BorderStyle.THIN);
             cell.setCellStyle(cellStyle);
         }
         if (styles.contains(StyleOption.FEATURE_SEPARATOR)) {
-            cellStyle.setBorderTop(CellStyle.BORDER_THIN);
+            cellStyle.setBorderTop(BorderStyle.THIN);
             cellStyle.setTopBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
             cell.setCellStyle(cellStyle);
         }
         if (styles.contains(StyleOption.YES_NO_SEPARATOR)) {
-            cellStyle.setBorderTop(CellStyle.BORDER_DASHED);
+            cellStyle.setBorderTop(BorderStyle.DASHED);
             cellStyle.setTopBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
             cell.setCellStyle(cellStyle);
         }

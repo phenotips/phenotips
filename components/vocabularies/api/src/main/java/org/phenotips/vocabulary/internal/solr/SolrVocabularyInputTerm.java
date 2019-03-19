@@ -72,7 +72,7 @@ public class SolrVocabularyInputTerm extends AbstractSolrVocabularyTerm implemen
         if (!isNull()) {
             SolrInputField field = new SolrInputField(PARENTS_KEY);
             for (VocabularyTerm parent : parents) {
-                field.addValue(parent.getId(), 1.0f);
+                field.addValue(parent.getId());
             }
             ((SolrInputDocument) this.doc).put(PARENTS_KEY, field);
         }
