@@ -135,6 +135,7 @@ public class OwnerContactProvider implements PatientContactProvider
     private void populateGroupInfo(ContactInfo.Builder contactInfo, Group group)
     {
         contactInfo.withUserId(this.serializer.serialize(group.getReference()));
+        contactInfo.withName(group.getReference().getName());
 
         DocumentReference documentReference = group.getReference();
         try {
