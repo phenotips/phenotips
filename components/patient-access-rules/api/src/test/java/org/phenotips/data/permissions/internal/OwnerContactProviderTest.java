@@ -73,6 +73,8 @@ public class OwnerContactProviderTest
 
     private static final String GROUP_EMAIL = "contact@hospital.org";
 
+    private static final String GROUP_TITLE = "Main Hospital Group";
+
     @Rule
     public final MockitoComponentMockingRule<PatientContactProvider> mocker =
         new MockitoComponentMockingRule<PatientContactProvider>(OwnerContactProvider.class);
@@ -185,11 +187,12 @@ public class OwnerContactProviderTest
         BaseObject obj = mock(BaseObject.class);
         when(doc.getXObject(Group.CLASS_REFERENCE)).thenReturn(obj);
         when(obj.getStringValue("contact")).thenReturn(GROUP_EMAIL);
+        when(doc.getTitle()).thenReturn(GROUP_TITLE);
 
         List<ContactInfo> result = this.mocker.getComponentUnderTest().getContacts(this.patient);
         Assert.assertEquals(1, result.size());
         ContactInfo contact = result.get(0);
-        Assert.assertEquals(GROUP.getName(), contact.getName());
+        Assert.assertEquals(GROUP_TITLE, contact.getName());
         Assert.assertEquals(GROUP.toString(), contact.getUserId());
         Assert.assertEquals(Collections.singletonList(GROUP_EMAIL), contact.getEmails());
         Assert.assertNull(contact.getInstitution());
@@ -219,7 +222,7 @@ public class OwnerContactProviderTest
         List<ContactInfo> result = this.mocker.getComponentUnderTest().getContacts(this.patient);
         Assert.assertEquals(1, result.size());
         ContactInfo contact = result.get(0);
-        Assert.assertEquals(GROUP.getName(), contact.getName());
+        Assert.assertNull(contact.getName());
         Assert.assertEquals(GROUP.toString(), contact.getUserId());
         Assert.assertTrue(contact.getEmails().isEmpty());
         Assert.assertNull(contact.getInstitution());

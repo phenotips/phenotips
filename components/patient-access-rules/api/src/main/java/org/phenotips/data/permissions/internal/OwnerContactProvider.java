@@ -139,6 +139,8 @@ public class OwnerContactProvider implements PatientContactProvider
         DocumentReference documentReference = group.getReference();
         try {
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(documentReference);
+            contactInfo.withName(doc.getTitle());
+
             BaseObject data = doc.getXObject(Group.CLASS_REFERENCE);
             contactInfo.withEmail(data.getStringValue(ATTRIBUTE_EMAIL_GROUP));
         } catch (Exception ex) {
