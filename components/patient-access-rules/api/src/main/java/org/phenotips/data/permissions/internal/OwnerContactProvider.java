@@ -135,11 +135,12 @@ public class OwnerContactProvider implements PatientContactProvider
     private void populateGroupInfo(ContactInfo.Builder contactInfo, Group group)
     {
         contactInfo.withUserId(this.serializer.serialize(group.getReference()));
-        contactInfo.withName(group.getReference().getName());
 
         DocumentReference documentReference = group.getReference();
         try {
             XWikiDocument doc = (XWikiDocument) this.documentAccessBridge.getDocument(documentReference);
+            contactInfo.withName(doc.getTitle());
+
             BaseObject data = doc.getXObject(Group.CLASS_REFERENCE);
             contactInfo.withEmail(data.getStringValue(ATTRIBUTE_EMAIL_GROUP));
         } catch (Exception ex) {
