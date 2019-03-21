@@ -109,16 +109,25 @@ public class SolvedData
     {
         if (jsonBlock.has(PUBMED_ID_JSON_KEY)) {
             Object object = jsonBlock.get(PUBMED_ID_JSON_KEY);
+
             if (object instanceof JSONArray) {
                 JSONArray values = (JSONArray) object;
                 List<String> ids = new ArrayList<String>();
                 for (Object id : values) {
-                    ids.add(id.toString());
+                    if (StringUtils.isNotBlank(id.toString())) {
+                        ids.add(id.toString());
+                    }
                 }
-                this.setPubmedIds(ids);
+
+                if (!ids.isEmpty()) {
+                    this.setPubmedIds(ids);
+                }
             } else {
                 // v1.3.x json compatibility
-                this.setPubmedIds(Arrays.asList(jsonBlock.optString(PUBMED_ID_JSON_KEY)));
+                String pubmedId = jsonBlock.optString(PUBMED_ID_JSON_KEY);
+                if (StringUtils.isNotBlank(pubmedId)) {
+                    this.setPubmedIds(Arrays.asList(pubmedId));
+                }
             }
         }
         if (jsonBlock.has(STATUS_JSON_KEY)) {
