@@ -979,7 +979,7 @@
       new Ajax.Request(this._serviceURL + "&amp;xaction=user-access&amp;id=" + this.recordId, {
         onSuccess : function(response) {
            var data = response.responseJSON;
-           level = data.level.name;
+           level = data.level;
            canTransfer = data.canTransfer;
            canManage = data.canManage;
         },
@@ -1009,8 +1009,7 @@
         var iconEl = new Element('span', {'class' : (data.owner.type) ? "fa fa-" + data.owner.type : "fa fa-user"}).update(' ');
         ownerNameEl.update(iconEl);
         ownerNameEl.insert(data.owner.name);
-        var space = (data.owner.type == "user") ? "XWiki" : "Groups";
-        ownerNameEl.href = (new XWiki.Document(data.owner.name, space)).getURL();
+        ownerNameEl.href = data.owner.url || '';
       }
       ownerNameContainer.update(ownerNameEl);
 

@@ -143,6 +143,8 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
                 result.withEmail(nameAndEmail.getRight());
             }
         }
+        Document doc = this.helper.getDocument(reference);
+        result.withUrl(doc.getURL());
         return result;
     }
 
