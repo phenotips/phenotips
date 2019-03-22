@@ -65,6 +65,7 @@ import com.xpn.xwiki.store.migration.hibernate.AbstractHibernateDataMigration;
 @Component
 @Named("R71499-PT-2777")
 @Singleton
+@SuppressWarnings("checkstyle:ClassFanOutComplexity")
 public class R71499PhenoTips2777DataMigration extends AbstractHibernateDataMigration implements
     HibernateCallback<Object>
 {
