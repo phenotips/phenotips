@@ -101,7 +101,6 @@
         <sequence>
           <element name="role" type="string"/>
           <element name="group" type="string"/>
-          <element name="url" type="string"/>
         </sequence>
       </extension>
     </complexContent>
