@@ -1,24 +1,24 @@
 /**
- * Specific version of GeneLegend for rejected candidate genes. It is not displayed but used
+ * Specific version of GeneLegend for known disease genes missing a second variant. It is not displayed but used
  * because of the way gene update machinery works (to update gene IDs for gene known only by their symbols)
  *
- * @class RejectedCandidateGeneLegend
+ * @class UmcMsvGeneLegend
  * @constructor
  */
  define(["pedigree/view/geneLegend"], function(GeneLegend){
-    var RejectedCandidateGeneLegend = Class.create( GeneLegend, {
+    var UmcMsvGeneLegend = Class.create( GeneLegend, {
 
         initialize: function($super) {
-            $super('Rejected Candidate Genes', 'genes',
-                   "rejectedcandidate",
+            $super('Known disease genes missing a second variant', 'genes',
+                   "umc_msv",
                    [], // these are never displayed in a legend so don't need colours
-                   "getRejectedCandidateGenes",
-                   "setRejectedCandidateGenes", true); // operation
+                   "getUmcMsvGenes",
+                   "setUmcMsvGenes", true); // operation
         },
 
         addCase: function($super, id, symbol, nodeID) {
             $super(id, symbol, nodeID, true);
         }
     });
-    return RejectedCandidateGeneLegend;
+    return UmcMsvGeneLegend;
 });

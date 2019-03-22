@@ -145,7 +145,7 @@ define([
                 'function' : 'setRejectedGenes' // not needed: read only for now
             },
             {
-                'name' : 'rejected_candidate_genes',
+                'name' : 'rejectedcandidate_genes',
                 'label' : 'Genotype: rejected candidate genes',
                 'type' : 'gene-picker',
                 'tab': 'Clinical',
@@ -158,6 +158,41 @@ define([
                 'tab': 'Clinical',
                 'legendName': "carrier",
                 'function' : 'setCarrierGenes'
+            },
+            {
+                'name' : 'candidate_novel_disease_genes',
+                'label' : 'Genotype: candidate novel disease genes',
+                'type' : 'gene-picker',
+                'tab': 'Clinical',
+                'function' : 'setCandidateNovelDiseaseGenes' // not needed: read only for now
+            },
+            {
+                'name' : 'candidate_novel_phen_genes',
+                'label' : 'Genotype: known disease genes with novel phenotype',
+                'type' : 'gene-picker',
+                'tab': 'Clinical',
+                'function' : 'setCandidateNovelPhenGenes' // not needed: read only for now
+            },
+            {
+                'name' : 'umc_genes',
+                'label' : 'Genotype: uncertain molecular cause genes',
+                'type' : 'gene-picker',
+                'tab': 'Clinical',
+                'function' : 'setUmcGenes' // not needed: read only for now
+            },
+            {
+                'name' : 'umc_vus_genes',
+                'label' : 'Genotype: known disease genes with a variant of unknown significance',
+                'type' : 'gene-picker',
+                'tab': 'Clinical',
+                'function' : 'setUmcVusGenes' // not needed: read only for now
+            },
+            {
+                'name' : 'umc_msv_genes',
+                'label' : 'Genotype: known disease genes missing a second variant',
+                'type' : 'gene-picker',
+                'tab': 'Clinical',
+                'function' : 'setUmcMsvGenes' // not needed: read only for now
             },
             {
                 'name' : 'date_of_birth',

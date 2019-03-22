@@ -60,7 +60,9 @@ public interface Gene extends VocabularyProperty
     /**
      * The status of this gene for the described patient.
      *
-     * @return one of {@code solved}, {@code candidate}, {@code carrier}, {@code rejected_candidate} or {@code rejected}
+     * @return one of {@code solved}, {@code candidate}, {@code carrier}, {@code rejectedcandidate}, {@code rejected},
+     *         {@code candidate_novel_disease}, {@code candidate_novel_phen}, {@code umc}, {@code umc_vus} or
+     *         {@code umc_msv}
      */
     String getStatus();
 

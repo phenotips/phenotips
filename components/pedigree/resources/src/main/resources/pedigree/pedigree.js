@@ -29,6 +29,11 @@ define([
         "pedigree/view/causalGeneLegend",
         "pedigree/view/rejectedGeneLegend",
         "pedigree/view/rejectedCandidateGeneLegend",
+        "pedigree/view/candidateNovelDiseaseGeneLegend",
+        "pedigree/view/candidateNovelPhenGeneLegend",
+        "pedigree/view/umcGeneLegend",
+        "pedigree/view/umcVusGeneLegend",
+        "pedigree/view/umcMsvGeneLegend",
         "pedigree/view/carrierGeneLegend",
         "pedigree/view/hpoLegend",
         "pedigree/view/patientDropLegend",
@@ -68,6 +73,11 @@ define([
         CausalGeneLegend,
         RejectedGeneLegend,
         RejectedCandidateGeneLegend,
+        CandidateNovelDiseaseGeneLegend,
+        CandidateNovelPhenGeneLegend,
+        UmcGeneLegend,
+        UmcVusGeneLegend,
+        UmcMsvGeneLegend,
         CarrierGeneLegend,
         HPOLegend,
         PatientDropLegend,
@@ -178,6 +188,11 @@ define([
                     this._rejectedGeneLegend = new RejectedGeneLegend();
                     this._rejectedCandidateGeneLegend = new RejectedCandidateGeneLegend();
                     this._carrierGeneLegend = new CarrierGeneLegend();
+                    this._candidateNovelDiseaseGeneLegend = new CandidateNovelDiseaseGeneLegend();
+                    this._candidateNovelPhenGeneLegend = new CandidateNovelPhenGeneLegend();
+                    this._umcGeneLegend = new UmcGeneLegend();
+                    this._umcVusGeneLegend = new UmcVusGeneLegend();
+                    this._umcMsvGeneLegend = new UmcMsvGeneLegend();
                     this._hpoLegend = new HPOLegend();
                     this._cancerLegend = new CancerLegend();
                     this._patientLegend = new PatientDropLegend();
@@ -633,10 +648,20 @@ define([
                 return this.getCausalGeneLegend();
             } else if (geneStatus == "rejected") {
                 return this.getRejectedGeneLegend();
-            } else if (geneStatus == "rejected_candidate") {
+            } else if (geneStatus == "rejectedcandidate") {
                 return this.getRejectedCandidateGeneLegend();
             } else if (geneStatus == "carrier") {
                 return this.getCarrierGeneLegend();
+            } else if (geneStatus == "candidate_novel_disease") {
+                return this.getCandidateNovelDiseaseGeneLegend();
+            } else if (geneStatus == "candidate_novel_phen") {
+                return this.getCandidateNovelPhenGeneLegend();
+            } else if (geneStatus == "umc") {
+                return this.getUmcGeneLegend();
+            } else if (geneStatus == "umc_vus") {
+                return this.getUmcVusGeneLegend();
+            } else if (geneStatus == "umc_msv") {
+                return this.getUmcMsvGeneLegend();
             }
             return null;
         },
@@ -679,6 +704,46 @@ define([
          */
         getCarrierGeneLegend: function() {
             return this._carrierGeneLegend;
+        },
+
+        /**
+         * @method getCandidateNovelDiseaseGeneLegend
+         * @return {Legend} Responsible for managing candidate novel disease genes
+         */
+        getCandidateNovelDiseaseGeneLegend: function() {
+            return this._candidateNovelDiseaseGeneLegend;
+        },
+
+        /**
+         * @method getCandidateNovelPhenGeneLegend
+         * @return {Legend} Responsible for managing known disease genes with novel phenotype
+         */
+        getCandidateNovelPhenGeneLegend: function() {
+            return this._candidateNovelPhenGeneLegend;
+        },
+
+        /**
+         * @method getUmcGeneLegend
+         * @return {Legend} Responsible for managing uncertain molecular cause genes
+         */
+        getUmcGeneLegend: function() {
+            return this._umcGeneLegend;
+        },
+
+        /**
+         * @method getUmcVusGeneLegend
+         * @return {Legend} Responsible for managing known disease genes with a variant of unknown significance
+         */
+        getUmcVusGeneLegend: function() {
+            return this._umcVusGeneLegend;
+        },
+
+        /**
+         * @method getUmcMsvGeneLegend
+         * @return {Legend} Responsible for managing known disease genes missing a second varian
+         */
+        getUmcMsvGeneLegend: function() {
+            return this._umcMsvGeneLegend;
         },
 
         /**

@@ -64,6 +64,7 @@ import com.xpn.xwiki.objects.StringListProperty;
 import com.xpn.xwiki.objects.classes.BaseClass;
 import com.xpn.xwiki.objects.classes.StaticListClass;
 import com.xpn.xwiki.web.Utils;
+
 import net.jcip.annotations.NotThreadSafe;
 
 import static org.mockito.Matchers.any;
@@ -118,8 +119,8 @@ public class GeneListControllerTest
 
     private static final String JSON_OLD_CANDIDATE_GENE_KEY = "candidate";
 
-    private static final List<String> STATUS_VALUES = Arrays.asList("candidate", "rejected", "rejected_candidate",
-        "solved", "carrier");
+    private static final List<String> STATUS_VALUES = Arrays.asList("candidate", "rejected", "rejectedcandidate",
+        "solved", "carrier", "candidate_novel_disease", "candidate_novel_phen", "umc", "umc_vus", "umc_msv");
 
     private static final List<String> STRATEGY_VALUES = Arrays.asList("sequencing", "deletion", "familial_mutation",
         "common_mutations");
@@ -500,7 +501,7 @@ public class GeneListControllerTest
         data.put(item);
         item = new JSONObject();
         item.put(JSON_GENE_SYMBOL, "GENE3");
-        item.put(JSON_STATUS_KEY, "rejected_candidate");
+        item.put(JSON_STATUS_KEY, "rejectedcandidate");
         data.put(item);
         item = new JSONObject();
         item.put(JSON_GENE_ID, "ENSG00000123456");
@@ -527,7 +528,7 @@ public class GeneListControllerTest
         Assert.assertTrue(gene.getStrategy().isEmpty());
         gene = result.get(2);
         Assert.assertEquals("GENE3", gene.getName());
-        Assert.assertEquals("rejected_candidate", gene.getStatus());
+        Assert.assertEquals("rejectedcandidate", gene.getStatus());
         Assert.assertNull(gene.getComment());
         Assert.assertTrue(gene.getStrategy().isEmpty());
         gene = result.get(3);

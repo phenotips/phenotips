@@ -259,7 +259,7 @@ define([
               var rejectedCandidateGenes  = [];
               var carrierGenes   = [];
               nodeGenes.each( function(item) {
-                  if (candidateGeneSelected && (item.status == "candidate")) {
+                  if (candidateGeneSelected && (item.status == "candidate" || item.status == "candidate_novel_disease" || item.status == "candidate_novel_phen")) {
                       candidateGenes.push(item.id);
                   }
                   if (causalGeneSelected && (item.status == "solved")) {
@@ -268,7 +268,7 @@ define([
                   if (item.status == "rejected") {
                       negativeGenes.push(item.id);
                   }
-                  if (item.status == "rejected_candidate") {
+                  if (item.status == "rejectedcandidate") {
                       rejectedCandidateGenes.push(item.id);
                   }
                   if (carrierGeneSelected && (item.status == "carrier")) {
@@ -611,8 +611,8 @@ define([
              if (status == "0") {
                  // if BRCA1 and BRCA2 are among rejected genes set status to "N"
                  // TODO: what if only one is rejected and another untested?
-                 if (hasGeneWithOneOfStatuses("BRCA1", ["rejected","rejected_candidate"]) &&
-                     hasGeneWithOneOfStatuses("BRCA2", ["rejected","rejected_candidate"])) {
+                 if (hasGeneWithOneOfStatuses("BRCA1", ["rejected","rejectedcandidate"]) &&
+                     hasGeneWithOneOfStatuses("BRCA2", ["rejected","rejectedcandidate"])) {
                      status = "N";
                  }
              }

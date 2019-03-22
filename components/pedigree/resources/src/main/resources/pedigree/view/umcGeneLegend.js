@@ -1,24 +1,24 @@
 /**
- * Specific version of GeneLegend for rejected candidate genes. It is not displayed but used
+ * Specific version of GeneLegend for uncertain molecular cause genes. It is not displayed but used
  * because of the way gene update machinery works (to update gene IDs for gene known only by their symbols)
  *
- * @class RejectedCandidateGeneLegend
+ * @class UmcGeneLegend
  * @constructor
  */
  define(["pedigree/view/geneLegend"], function(GeneLegend){
-    var RejectedCandidateGeneLegend = Class.create( GeneLegend, {
+    var UmcGeneLegend = Class.create( GeneLegend, {
 
         initialize: function($super) {
-            $super('Rejected Candidate Genes', 'genes',
-                   "rejectedcandidate",
+            $super('Uncertain Molecular Cause Genes', 'genes',
+                   "umc",
                    [], // these are never displayed in a legend so don't need colours
-                   "getRejectedCandidateGenes",
-                   "setRejectedCandidateGenes", true); // operation
+                   "getUmcGenes",
+                   "setUmcGenes", true); // operation
         },
 
         addCase: function($super, id, symbol, nodeID) {
             $super(id, symbol, nodeID, true);
         }
     });
-    return RejectedCandidateGeneLegend;
+    return UmcGeneLegend;
 });
