@@ -224,7 +224,8 @@ public class SolvedData
      */
     public boolean isEmpty()
     {
-        return StringUtils.isBlank(this.status) && StringUtils.isBlank(this.notes) && this.pubmedIds.isEmpty();
+        return StringUtils.isBlank(this.status) && StringUtils.isBlank(this.notes)
+            && (this.pubmedIds == null || this.pubmedIds.isEmpty());
     }
 
     /**
