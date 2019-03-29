@@ -296,7 +296,7 @@ define([
                     items: [
                         { key : 'undo',   label : 'Undo', icon : 'undo'},
                         { key : 'redo',   label : 'Redo', icon : 'repeat'},
-                        { key : 'layout', label : 'Automatic layout', icon : 'sitemap'}
+                        { key : 'layout', label : 'Automatic layout', icon : 'sitemap', title : 'Make pedigrees look tidier by decreasing the number of times relationship lines cross. It may rearrange the order of individuals within a generation. As with any other change to the pedigree diagram, this action can be undone.'}
                     ]
                   }, {
                     name : 'print',
@@ -344,7 +344,7 @@ define([
             };
             var _createMenuItem = function(data) {
                 var buttonIcon = new Element('span', {'class' : 'fa fa-' + data.icon});
-                var mi = new Element('span', {'id' : 'action-' + data.key, 'class' : 'field-no-user-select menu-item ' + data.key}).insert(buttonIcon).insert(' ').insert(data.label);
+                var mi = new Element('span', {'id' : 'action-' + data.key, 'class' : 'field-no-user-select menu-item ' + data.key, title : data.title || ''}).insert(buttonIcon).insert(' ').insert(data.label);
                 if (data.callback && typeof(data.callback) == 'function') {
                     mi.observe('click', function() {
                         data.callback(mi, buttonIcon);
