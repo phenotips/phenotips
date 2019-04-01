@@ -185,7 +185,8 @@ public class GeneNomenclature extends AbstractCSVSolrVocabulary
         if (StringUtils.isBlank(symbol)) {
             return null;
         }
-        final String id = StringUtils.contains(symbol, SEPARATOR)
+        final String id = (StringUtils.contains(symbol, SEPARATOR)
+                          && !StringUtils.isBlank(StringUtils.substringAfter(symbol, SEPARATOR)))
             ? StringUtils.substringAfter(symbol, SEPARATOR)
             : symbol;
         return requestTerm(ClientUtils.escapeQueryChars(id));
