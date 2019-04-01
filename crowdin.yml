@@ -5,3 +5,6 @@ files:
       - /**/jetty-logging.properties
       - /**/*_*.properties
     translation: /**/%file_name%_%two_letters_code%.properties
+    languages_mapping:
+      two_letters_code:
+        en-UD: en_UD
