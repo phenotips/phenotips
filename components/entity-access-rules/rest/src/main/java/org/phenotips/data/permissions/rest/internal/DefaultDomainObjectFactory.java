@@ -372,35 +372,29 @@ public class DefaultDomainObjectFactory implements DomainObjectFactory
 
         for (Collaborator collaborator : collaborators) {
 
-            String collabName = collaborator.getUsername();
             AccessLevel collabAccess = collaborator.getAccessLevel();
-            // family member collaborators with manage access can have only edit access to family itself
-            collabAccess = (isFamily && collabAccess == this.manageAccess) ? this.editAccess : collabAccess;
-            String role = isFamily ? "family-member-collaborator" : "collaborator";
+            String role = "collaborator";
+
+            if (isFamily) {
+                role = "family-member-collaborator";
+                // family member collaborators with manage access can have only edit access to family itself
+                collabAccess = (collabAccess == this.manageAccess) ? this.editAccess : collabAccess;
+            }
 
             DocumentReference collabDocument = this.resolver.resolve(collaborator.getUser());
             boolean isAdmin =
                 this.rights.hasAccess(Right.ADMIN, collabDocument, collaborator.getUser().getRoot());
-
-            // Adding collaborators. Two possible cases:
-            // 1. It is primary entity collaborator
-            // if duplicate - no checks, only owners with "manage" access collected so far, just skip if duplicate
-            if (addedPrincipals.containsKey(collabName)) {
-                // 2. It is family member collaborator
-                if (isFamily && this.viewAccess.equals(addedPrincipals.get(collabName).getRight())
-                    && !this.viewAccess.equals(collabAccess)) {
-                    // update access if saved access is "view" and collaborators' accesses is higher,
-                    // in that case we update entity access to family to "edit"
-                    checkAccessRight(addedPrincipals.get(collabName).getLeft(), addedPrincipals.get(collabName)
-                        .getRight(), this.editAccess, role, isFamily);
-                }
-                continue;
-            }
-
-            // if isAdmin -> save with access "manage" with role "admin"
             if (isAdmin) {
                 role = "admin";
                 collabAccess = this.manageAccess;
+            }
+
+            // If a collaborator was already added - update role and access if needed
+            String collabName = collaborator.getUsername();
+            if (addedPrincipals.containsKey(collabName)) {
+                checkAccessRight(addedPrincipals.get(collabName).getLeft(), addedPrincipals.get(collabName)
+                    .getRight(), collabAccess, role, isFamily);
+                continue;
             }
 
             Document collaboratorDoc = this.helper.getDocument(collaborator.getUser());
