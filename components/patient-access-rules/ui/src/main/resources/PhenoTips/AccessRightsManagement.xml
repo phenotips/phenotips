@@ -435,8 +435,9 @@
         "collaborator"  : "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.collaboratorRole'))",
         "user"          : "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.userType'))",
         "group"         : "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.groupType'))",
-        "private"       : "$escapetool.javascript($services.localization.render('phenotips.permissions.visibility.private.label'))",
-        "hidden"       : "$escapetool.javascript($services.localization.render('phenotips.permissions.visibility.hidden.label'))",
+#foreach ($visibility in $services.permissions.listAllVisibilityOptions())
+        "$escapetool.javascript($visibility.name)" : "$escapetool.javascript($visibility.label)",
+#end
         "family-member-owner" : "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.famMemOwnerRole'))",
         "family-member-collaborator" : "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.famMemCollabRole'))"
       };
