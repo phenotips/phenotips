@@ -109,7 +109,7 @@ public class NameAndEmailExtractor
         if (groupObject != null) {
             email = groupObject.getStringValue("contact");
         }
-        String name = document.getDocumentReference().getName();
+        String name = document.getTitle();
         return Pair.of(name, email);
     }
 }
