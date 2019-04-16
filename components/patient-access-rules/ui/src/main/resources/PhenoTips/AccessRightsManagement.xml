@@ -436,7 +436,6 @@
         "user"          : "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.userType'))",
         "group"         : "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.groupType'))",
 #foreach ($visibility in $services.permissions.listVisibilityOptions())
-#set ($key = "phenotips.permissions.visibility.${visibility}.label")
         "$escapetool.javascript($visibility.name)" : "$escapetool.javascript($visibility.label)",
 #end
         "family-member-owner" : "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.famMemOwnerRole'))",
