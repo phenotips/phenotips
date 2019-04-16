@@ -435,7 +435,7 @@
         "collaborator"  : "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.collaboratorRole'))",
         "user"          : "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.userType'))",
         "group"         : "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.groupType'))",
-#foreach ($visibility in $services.permissions.listVisibilityOptions())
+#foreach ($visibility in $services.permissions.listAllVisibilityOptions())
         "$escapetool.javascript($visibility.name)" : "$escapetool.javascript($visibility.label)",
 #end
         "family-member-owner" : "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.famMemOwnerRole'))",
