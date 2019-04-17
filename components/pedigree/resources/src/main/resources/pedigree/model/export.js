@@ -498,11 +498,11 @@ define([
          var age = "0";
          var yob = "0";
          var birthDate = new PedigreeDate(pedigree.GG.properties[i]["dob"]);
-         if (birthDate && birthDate.isSet()) {
+         if (birthDate && birthDate.isComplete()) {
              // BOADICEA file format does not support fuzzy dates, so get an estimate if only decade is available
              yob = parseInt(birthDate.getAverageYearEstimate());
              var deathDate = new PedigreeDate(pedigree.GG.properties[i]["dod"]);
-             if (deathDate && deathDate.isSet()) {
+             if (deathDate && deathDate.isComplete()) {
                  var deathDate = new PedigreeDate(pedigree.GG.properties[i]["dod"]);
                  var lastYearAlive = parseInt(deathDate.getAverageYearEstimate());
                  if (deathDate.toJSDate().getDayOfYear() < birthDate.toJSDate().getDayOfYear()) {
