@@ -48,7 +48,20 @@
     <nameField/>
     <validationScript/>
     <owner>
-      <customDisplay>{{velocity}}#if($value){{html}}$xwiki.getUserName($value){{/html}}#end{{/velocity}}</customDisplay>
+      <customDisplay>{{velocity}}#if($value)
+#set ($ownerDoc = $xwiki.getDocument($value))
+#set ($displayName = $ownerDoc.name)
+#set ($isGroup = $ownerDoc.getObject('XWiki.XWikiGroups'))
+#if ($isGroup)
+  #set ($groupName = $ownerDoc.getDisplayTitle())
+  #if ("$groupName" != '')
+    #set ($displayName = $groupName)
+  #end
+#else
+  #set ($displayName = $xwiki.getUserName($value))
+#end
+{{html}}$displayName{{/html}}
+#end{{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <name>owner</name>
       <number>1</number>
