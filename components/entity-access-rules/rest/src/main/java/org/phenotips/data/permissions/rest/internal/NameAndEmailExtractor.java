@@ -26,14 +26,17 @@ import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
 import org.xwiki.model.reference.EntityReference;
+import org.xwiki.rendering.syntax.Syntax;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.inject.Provider;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 
+import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.doc.XWikiDocument;
 import com.xpn.xwiki.objects.BaseObject;
 
@@ -61,6 +64,9 @@ public class NameAndEmailExtractor
     @Inject
     @Named("current")
     private DocumentReferenceResolver<EntityReference> referenceResolver;
+
+    @Inject
+    private Provider<XWikiContext> xcontextProvider;
 
     @Inject
     private Logger logger;
@@ -109,7 +115,7 @@ public class NameAndEmailExtractor
         if (groupObject != null) {
             email = groupObject.getStringValue("contact");
         }
-        String name = document.getTitle();
+        String name = document.getRenderedTitle(Syntax.PLAIN_1_0, this.xcontextProvider.get());
         return Pair.of(name, email);
     }
 }
