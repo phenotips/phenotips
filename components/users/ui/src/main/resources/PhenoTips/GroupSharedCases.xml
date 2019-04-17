@@ -88,8 +88,8 @@ $xwiki.ssx.use('XWiki.DateTimePicker')##
 #set ($topFilters = $doc.getRenderedContent("(% class='xform' %)((({{velocity}}#__filters_display('xform', true){{/velocity}})))", "xwiki/2.1"))
 #set ($discard = $columns.add('_actions'))
 ##
-#set ($filterFrom = ", BaseObject collaboratorObj, StringProperty collaborator")
-#set ($filterWhere = "and collaboratorObj.name = doc.fullName and collaboratorObj.className = 'PhenoTips.CollaboratorClass' and collaborator.id.id = collaboratorObj.id and collaborator.value = '${escapetool.sql($doc.documentReference)}'")
+#set ($filterFrom = ", BaseObject defaultCollaboratorObj, StringProperty defaultCollaborator")
+#set ($filterWhere = "and defaultCollaboratorObj.name = doc.fullName and defaultCollaboratorObj.className = 'PhenoTips.CollaboratorClass' and defaultCollaborator.id.id = defaultCollaboratorObj.id and defaultCollaborator.value = '${escapetool.sql($doc.documentReference)}'")
 #if (!$isMyGroup)
   #set ($filterFrom = "${filterFrom}, BaseObject accessObj, StringProperty access")
   #set ($visibilityThreshold = $services.permissions.resolveVisibility('public').permissiveness)
