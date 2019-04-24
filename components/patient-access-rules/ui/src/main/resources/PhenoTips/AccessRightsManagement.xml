@@ -867,7 +867,7 @@
       var row = template.cloneNode(true);
       var typeIcon = '&lt;span class="fa fa-'+ item.type +'"&gt; &lt;/span&gt;'
       row.down('.username a').insert({"before" : typeIcon});
-      row.down('.username a').update(item.name);
+      row.down('.username a').update(item.name.escapeHTML());
       row.down('.username a').href = item.url;
       row.down('.' + item.level).update(checkIcon);
       if (item.level == "edit") { row.down('.view').update(checkIcon); }
@@ -1078,7 +1078,7 @@
       var row = new Element('tr', {'class' : (highlight === true ? 'new' : '')});
       row.insert(new Element('td').insert(new Element('span', {'class' : 'fa fa-' + c.type}).update(' ')));
       row.insert(new Element('td')
-              .insert(c.name ? c.name : XWiki.Model.resolve(c.id, XWiki.EntityType.DOCUMENT).name)
+              .insert((c.name ? c.name : XWiki.Model.resolve(c.id, XWiki.EntityType.DOCUMENT).name).escapeHTML())
               .insert(new Element('input', {'type': 'hidden', 'name' : 'collaborator', 'value' : c.id}))
       );
       var rights = this._generateCollaborationOptions('accessLevel', c.level)
@@ -1479,7 +1479,7 @@ $xwiki.ssx.use($serviceDocName)
     #if ($firstCollaborator.isUser())
       #set ($collaboratorName = $xwiki.getUserName("$firstCollaboratorReference", false))
     #else
-      #set ($collaboratorName = $xwiki.getDocument($firstCollaboratorReference).plainTitle)
+      #set ($collaboratorName = $xwiki.getDocument($firstCollaboratorReference).getDisplayTitle())
     #end
     #set ($collaboratorString = $services.localization.render("phenotips.accessRightsManagement.collaboratorsSummary.oneCollaborator", ["(% class='access-rights-info' %){{html wiki='true' clean='false'}}{{icon name='group'/}}&lt;span class='collaborators'&gt;", $collaboratorName, "&lt;/span&gt;{{/html}}(%%)"]))
     #set ($collaboratorTooltipStr = $collaboratorName)
@@ -1493,7 +1493,7 @@ $xwiki.ssx.use($serviceDocName)
       #if ($collaborator.isUser())
         #set ($collaboratorTooltipStr = $collaboratorTooltipStr + $xwiki.getUserName("$collaborator.user", false) + ", ")
       #else
-        #set ($collaboratorTooltipStr = $collaboratorTooltipStr + $xwiki.getDocument($collaborator.user).plainTitle + ", ")
+        #set ($collaboratorTooltipStr = $collaboratorTooltipStr + $xwiki.getDocument($collaborator.user).getDisplayTitle() + ", ")
       #end
     #end
     #set ($collabStrLen = $collaboratorTooltipStr.length() - 2)
@@ -1501,7 +1501,7 @@ $xwiki.ssx.use($serviceDocName)
     #if ($topCollaborator.isUser())
       #set ($topCollaboratorName = $xwiki.getUserName("$topCollaborator.user", false))
     #else
-      #set ($topCollaboratorName = $xwiki.getDocument($topCollaborator.user).plainTitle)
+      #set ($topCollaboratorName = $xwiki.getDocument($topCollaborator.user).getDisplayTitle())
     #end
     #set ($collaboratorsCount = $collaboratorsCount - 1)
     #if ($collaboratorsCount == 1)
@@ -1520,7 +1520,7 @@ $xwiki.ssx.use($serviceDocName)
     #if ($owner.isUser())
       #set ($ownerName = $xwiki.getUserName("$ownerReference", false))
     #else
-      #set ($ownerName = $xwiki.getDocument($ownerReference).plainTitle)
+      #set ($ownerName = $xwiki.getDocument($ownerReference).getDisplayTitle())
     #end
   #end
   #set ($canTransfer = $recordAccess.hasAccessLevel('owner'))

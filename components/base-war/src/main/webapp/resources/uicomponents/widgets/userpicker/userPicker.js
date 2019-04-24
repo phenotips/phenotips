@@ -128,7 +128,7 @@ widgets.UserPicker = Class.create(widgets.Suggest, {
       avatarWrapper.insert(new Element('span', {alt: data.info, 'class': data.icon}));
     }
     container.insert(avatarWrapper);
-    var userName = source.highlight ? this.emphasizeMatches(this.sInput, data.info) : data.info;
+    var userName = (source.highlight ? this.emphasizeMatches(this.sInput, data.info) : data.info).escapeHTML();
     container.insert(new Element('div', {'class': 'user-name'}).update(userName));
     var referenceWrapper = new Element('div');
     var userAlias = source.highlight ? this.emphasizeMatches(this.sInput, data.id.replace(/.*\//g, '')) : data.id;
