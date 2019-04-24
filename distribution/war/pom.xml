@@ -558,6 +558,12 @@
       <artifactId>xwiki-platform-refactoring-default</artifactId>
       <version>${xwiki.version}</version>
     </dependency>
+    <!-- Instance ID -->
+    <dependency>
+      <groupId>org.xwiki.platform</groupId>
+      <artifactId>xwiki-platform-instance</artifactId>
+      <version>${xwiki.version}</version>
+    </dependency>
     <!-- Add support for HTTPS certificates signed by Let's Encrypt, such as the one used by nexus.phenotips.org -->
     <dependency>
       <groupId>org.xwiki.contrib</groupId>
@@ -878,12 +884,12 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>pingback-common</artifactId>
-      <version>1.3</version>
+      <version>1.4</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>pingback-client-api</artifactId>
-      <version>1.3</version>
+      <version>1.4</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
