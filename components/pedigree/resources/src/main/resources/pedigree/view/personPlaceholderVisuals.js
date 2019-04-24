@@ -39,6 +39,14 @@ define([
             this._genderShape = shape;
             this._genderGraphics = editor.getPaper().set(shape);
         },
+            
+        /**
+         * Overridden to prevent the highlightBox from blocking dragging
+         * action at the location of an invisible placeholder node.
+         */
+        setHighlightBox: function() {
+            this._highlightBox && this._highlightBox.remove();
+        },
 
         /**
          * Overridden to make sure some runaway label does not appear for a placeholder
