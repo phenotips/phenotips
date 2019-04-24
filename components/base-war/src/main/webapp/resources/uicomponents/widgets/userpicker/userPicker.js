@@ -120,6 +120,8 @@ widgets.UserPicker = Class.create(widgets.Suggest, {
 
   // @Override
   createItemDisplay: function(data, source) {
+    data.info = data.info.escapeHTML();
+
     var container = new Element('div', {'class': 'user'});
     var avatarWrapper = new Element('div', {'class': 'user-avatar-wrapper'});
     if (data.icon.indexOf('/') >= 0) {
@@ -128,7 +130,7 @@ widgets.UserPicker = Class.create(widgets.Suggest, {
       avatarWrapper.insert(new Element('span', {alt: data.info, 'class': data.icon}));
     }
     container.insert(avatarWrapper);
-    var userName = (source.highlight ? this.emphasizeMatches(this.sInput, data.info) : data.info).escapeHTML();
+    var userName = source.highlight ? this.emphasizeMatches(this.sInput.escapeHTML(), data.info) : data.info;
     container.insert(new Element('div', {'class': 'user-name'}).update(userName));
     var referenceWrapper = new Element('div');
     var userAlias = source.highlight ? this.emphasizeMatches(this.sInput, data.id.replace(/.*\//g, '')) : data.id;

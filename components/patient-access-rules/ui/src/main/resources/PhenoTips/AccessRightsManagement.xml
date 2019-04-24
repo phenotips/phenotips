@@ -537,7 +537,7 @@
       } else if (owner.id == currentUserName) {
         this._ownerInfo.update(this._OWNER_INFO_TEMPLATE.replace("{0}", "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.selfOwner'))"));
       } else {
-        this._ownerInfo.update(this._OWNER_INFO_TEMPLATE.replace("{0}", iconEl.outerHTML + ' ' + owner.name));
+        this._ownerInfo.update(this._OWNER_INFO_TEMPLATE.replace("{0}", iconEl.outerHTML + ' ' + owner.name.escapeHTML()));
       }
       if (this._newOwnerSelector) {
         this._ownerInfo.insert(" $escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.modifyOwnershipOptions'))");
@@ -1009,7 +1009,7 @@
         var ownerNameEl = new Element('a', {'class' : 'owner'});
         var iconEl = new Element('span', {'class' : (data.owner.type) ? "fa fa-" + data.owner.type : "fa fa-user"}).update(' ');
         ownerNameEl.update(iconEl);
-        ownerNameEl.insert(data.owner.name);
+        ownerNameEl.insert(data.owner.name.escapeHTML());
         ownerNameEl.href = data.owner.url || '';
       }
       ownerNameContainer.update(ownerNameEl);
