@@ -1055,14 +1055,14 @@
           collaboratorText = "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.collaboratorsSummary.noCollaborators', ['__beginHtml__', '__endHtml__']))".replace("__beginHtml__", beginHtml).replace("__endHtml__", endHtml);
         } else {
           var collaborator = data.collaborators.collaborators[0];
-          var safeCollaboratorName = (collaborator.name || XWiki.Model.resolve(collaborator.id, XWiki.EntityType.DOCUMENT).name).escapeHTML();
+          collaborator.name = (collaborator.name || XWiki.Model.resolve(collaborator.id, XWiki.EntityType.DOCUMENT).name).escapeHTML();
           if (collaboratorsCount == 1) {
-            collaboratorText = "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.collaboratorsSummary.oneCollaborator', ['__beginHtml__', '__collaborator.name__', '__endHtml__']))".replace("__beginHtml__", beginHtml).replace("__collaborator.name__", safeCollaboratorName).replace("__endHtml__", endHtml);
+            collaboratorText = "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.collaboratorsSummary.oneCollaborator', ['__beginHtml__', '__collaborator.name__', '__endHtml__']))".replace("__beginHtml__", beginHtml).replace("__collaborator.name__", collaborator.name).replace("__endHtml__", endHtml);
           } else if (collaboratorsCount == 2) {
-            collaboratorText = "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.collaboratorsSummary.oneOtherCollaborator', ['__beginHtml__', '__collaborator.name__', '__endHtml__']))".replace("__beginHtml__", beginHtml).replace("__collaborator.name__", safeCollaboratorName).replace("__endHtml__", endHtml);
+            collaboratorText = "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.collaboratorsSummary.oneOtherCollaborator', ['__beginHtml__', '__collaborator.name__', '__endHtml__']))".replace("__beginHtml__", beginHtml).replace("__collaborator.name__", collaborator.name).replace("__endHtml__", endHtml);
           } else {
             var count = collaboratorsCount - 1;
-            collaboratorText = "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.collaboratorsSummary.xOtherCollaborators', ['__beginHtml__', '__collaborator.name__', '__count__', '__endHtml__']))".replace("__beginHtml__", beginHtml).replace("__collaborator.name__", safeCollaboratorName).replace("__count__", count).replace("__endHtml__", endHtml);
+            collaboratorText = "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.collaboratorsSummary.xOtherCollaborators', ['__beginHtml__', '__collaborator.name__', '__count__', '__endHtml__']))".replace("__beginHtml__", beginHtml).replace("__collaborator.name__", collaborator.name).replace("__count__", count).replace("__endHtml__", endHtml);
           }
         }
         collaboratorsEl.innerHTML = collaboratorText;
