@@ -1055,14 +1055,14 @@
           collaboratorText = "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.collaboratorsSummary.noCollaborators', ['__beginHtml__', '__endHtml__']))".replace("__beginHtml__", beginHtml).replace("__endHtml__", endHtml);
         } else {
           var collaborator = data.collaborators.collaborators[0];
-          collaborator.name = collaborator.name || XWiki.Model.resolve(collaborator.id, XWiki.EntityType.DOCUMENT).name;
+          var safeCollaboratorName = (collaborator.name || XWiki.Model.resolve(collaborator.id, XWiki.EntityType.DOCUMENT).name).escapeHTML();
           if (collaboratorsCount == 1) {
-            collaboratorText = "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.collaboratorsSummary.oneCollaborator', ['__beginHtml__', '__collaborator.name__', '__endHtml__']))".replace("__beginHtml__", beginHtml).replace("__collaborator.name__", collaborator.name).replace("__endHtml__", endHtml);
+            collaboratorText = "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.collaboratorsSummary.oneCollaborator', ['__beginHtml__', '__collaborator.name__', '__endHtml__']))".replace("__beginHtml__", beginHtml).replace("__collaborator.name__", safeCollaboratorName).replace("__endHtml__", endHtml);
           } else if (collaboratorsCount == 2) {
-            collaboratorText = "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.collaboratorsSummary.oneOtherCollaborator', ['__beginHtml__', '__collaborator.name__', '__endHtml__']))".replace("__beginHtml__", beginHtml).replace("__collaborator.name__", collaborator.name).replace("__endHtml__", endHtml);
+            collaboratorText = "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.collaboratorsSummary.oneOtherCollaborator', ['__beginHtml__', '__collaborator.name__', '__endHtml__']))".replace("__beginHtml__", beginHtml).replace("__collaborator.name__", safeCollaboratorName).replace("__endHtml__", endHtml);
           } else {
             var count = collaboratorsCount - 1;
-            collaboratorText = "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.collaboratorsSummary.xOtherCollaborators', ['__beginHtml__', '__collaborator.name__', '__count__', '__endHtml__']))".replace("__beginHtml__", beginHtml).replace("__collaborator.name__", collaborator.name).replace("__count__", count).replace("__endHtml__", endHtml);
+            collaboratorText = "$escapetool.javascript($services.localization.render('phenotips.accessRightsManagement.collaboratorsSummary.xOtherCollaborators', ['__beginHtml__', '__collaborator.name__', '__count__', '__endHtml__']))".replace("__beginHtml__", beginHtml).replace("__collaborator.name__", safeCollaboratorName).replace("__count__", count).replace("__endHtml__", endHtml);
           }
         }
         collaboratorsEl.innerHTML = collaboratorText;
@@ -1479,7 +1479,7 @@ $xwiki.ssx.use($serviceDocName)
     #if ($firstCollaborator.isUser())
       #set ($collaboratorName = $xwiki.getUserName("$firstCollaboratorReference", false))
     #else
-      #set ($collaboratorName = $xwiki.getDocument($firstCollaboratorReference).getDisplayTitle())
+      #set ($collaboratorName = $escapetool.html($xwiki.getDocument($firstCollaboratorReference).plainTitle))
     #end
     #set ($collaboratorString = $services.localization.render("phenotips.accessRightsManagement.collaboratorsSummary.oneCollaborator", ["(% class='access-rights-info' %){{html wiki='true' clean='false'}}{{icon name='group'/}}&lt;span class='collaborators'&gt;", $collaboratorName, "&lt;/span&gt;{{/html}}(%%)"]))
     #set ($collaboratorTooltipStr = $collaboratorName)
@@ -1493,7 +1493,7 @@ $xwiki.ssx.use($serviceDocName)
       #if ($collaborator.isUser())
         #set ($collaboratorTooltipStr = $collaboratorTooltipStr + $xwiki.getUserName("$collaborator.user", false) + ", ")
       #else
-        #set ($collaboratorTooltipStr = $collaboratorTooltipStr + $xwiki.getDocument($collaborator.user).getDisplayTitle() + ", ")
+        #set ($collaboratorTooltipStr = $collaboratorTooltipStr + $escapetool.html($xwiki.getDocument($collaborator.user).plainTitle) + ", ")
       #end
     #end
     #set ($collabStrLen = $collaboratorTooltipStr.length() - 2)
@@ -1501,7 +1501,7 @@ $xwiki.ssx.use($serviceDocName)
     #if ($topCollaborator.isUser())
       #set ($topCollaboratorName = $xwiki.getUserName("$topCollaborator.user", false))
     #else
-      #set ($topCollaboratorName = $xwiki.getDocument($topCollaborator.user).getDisplayTitle())
+      #set ($topCollaboratorName = $escapetool.html($xwiki.getDocument($topCollaborator.user).plainTitle))
     #end
     #set ($collaboratorsCount = $collaboratorsCount - 1)
     #if ($collaboratorsCount == 1)
@@ -1520,7 +1520,7 @@ $xwiki.ssx.use($serviceDocName)
     #if ($owner.isUser())
       #set ($ownerName = $xwiki.getUserName("$ownerReference", false))
     #else
-      #set ($ownerName = $xwiki.getDocument($ownerReference).getDisplayTitle())
+      #set ($ownerName = $escapetool.html($xwiki.getDocument($ownerReference).plainTitle))
     #end
   #end
   #set ($canTransfer = $recordAccess.hasAccessLevel('owner'))
