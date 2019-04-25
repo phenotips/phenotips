@@ -515,6 +515,9 @@
 }
 .xform .form-template-option label input[type="radio"]  {
   vertical-align: middle;
+}     
+.xform .form-template-option .xHint {
+  margin: .5em 0;
 }
 .study-assignment-config {
   float: left;
