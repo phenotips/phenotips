@@ -131,7 +131,7 @@ widgets.UserPicker = Class.create(widgets.Suggest, {
     var userName = source.highlight ? this.emphasizeMatches(this.sInput.escapeHTML(), data.info.escapeHTML()) : data.info.escapeHTML();
     container.insert(new Element('div', {'class': 'user-name'}).update(userName));
     var referenceWrapper = new Element('div');
-    var userAlias = source.highlight ? this.emphasizeMatches(this.sInput, data.id.replace(/.*\//g, '')) : data.id;
+    var userAlias = source.highlight ? this.emphasizeMatches(this.sInput, data.id.replace(/.*\//g, '')) : data.id.escapeHTML();
     referenceWrapper.insert(new Element('span', {'class': 'user-alias'}).update(userAlias));
     var userReference = XWiki.Model.resolve(data.value, XWiki.EntityType.DOCUMENT);
     var wiki = userReference.extractReferenceValue(XWiki.EntityType.WIKI) || XWiki.currentWiki;
