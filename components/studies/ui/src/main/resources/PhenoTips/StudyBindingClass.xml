@@ -72,7 +72,7 @@
     #end
     &lt;div class="form-template-option"&gt;
     &lt;label&gt;&lt;input type="radio" name="${prefix}${name}" value="${escapetool.xml($services.model.serialize($s.documentReference, 'default'))}" #if ("$!{value}" == "${s.documentReference}") checked="checked" #end/&gt; $escapetool.xml($configTitle)&lt;/label&gt;
-    &lt;div class="xHint"&gt;$!s.getRenderedContent()&lt;/div&gt;
+    &lt;div class="xHint"&gt;$!{escapetool.xml($s.getRenderedContent($services.rendering.resolveSyntax('plain/1.0'))).replaceAll('\n', '&lt;br /&gt;')}&lt;/div&gt;
     &lt;/div&gt;
   #end
 #end
