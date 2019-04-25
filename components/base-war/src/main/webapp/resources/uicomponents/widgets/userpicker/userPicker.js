@@ -120,17 +120,15 @@ widgets.UserPicker = Class.create(widgets.Suggest, {
 
   // @Override
   createItemDisplay: function(data, source) {
-    data.info = data.info.escapeHTML();
-
     var container = new Element('div', {'class': 'user'});
     var avatarWrapper = new Element('div', {'class': 'user-avatar-wrapper'});
     if (data.icon.indexOf('/') >= 0) {
-      avatarWrapper.insert(new Element('img', {src: data.icon, alt: data.info, 'class': 'icon'}));
+      avatarWrapper.insert(new Element('img', {src: data.icon, alt: data.info.escapeHTML(), 'class': 'icon'}));
     } else {
-      avatarWrapper.insert(new Element('span', {alt: data.info, 'class': data.icon}));
+      avatarWrapper.insert(new Element('span', {alt: data.info.escapeHTML(), 'class': data.icon}));
     }
     container.insert(avatarWrapper);
-    var userName = source.highlight ? this.emphasizeMatches(this.sInput.escapeHTML(), data.info) : data.info;
+    var userName = source.highlight ? this.emphasizeMatches(this.sInput.escapeHTML(), data.info.escapeHTML()) : data.info.escapeHTML();
     container.insert(new Element('div', {'class': 'user-name'}).update(userName));
     var referenceWrapper = new Element('div');
     var userAlias = source.highlight ? this.emphasizeMatches(this.sInput, data.id.replace(/.*\//g, '')) : data.id;
