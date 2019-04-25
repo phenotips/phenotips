@@ -17,6 +17,12 @@
  */
 package org.xwiki.localization.internal;
 
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.localization.TranslationBundleContext;
+import org.xwiki.localization.message.TranslationMessage;
+import org.xwiki.localization.message.TranslationMessageParser;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,16 +35,11 @@ import java.util.Properties;
 import javax.inject.Inject;
 
 import org.slf4j.LoggerFactory;
-import org.xwiki.component.manager.ComponentLookupException;
-import org.xwiki.component.manager.ComponentManager;
-import org.xwiki.localization.TranslationBundleContext;
-import org.xwiki.localization.message.TranslationMessage;
-import org.xwiki.localization.message.TranslationMessageParser;
 
 /**
  * Base class for {@link org.xwiki.localization.TranslationBundle}s getting resource from classloader. Provides methods
  * for loading properties from documents, watching loaded documents and invalidating cached translations.
- * 
+ *
  * @version $Id$
  * @since 4.5M1
  */

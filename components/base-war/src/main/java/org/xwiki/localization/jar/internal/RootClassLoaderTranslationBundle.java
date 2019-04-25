@@ -17,6 +17,15 @@
  */
 package org.xwiki.localization.jar.internal;
 
+import org.xwiki.component.annotation.Component;
+import org.xwiki.localization.TranslationBundleContext;
+import org.xwiki.localization.internal.AbstractCachedTranslationBundle;
+import org.xwiki.localization.internal.DefaultLocalizedTranslationBundle;
+import org.xwiki.localization.internal.DefaultTranslation;
+import org.xwiki.localization.internal.LocalizedTranslationBundle;
+import org.xwiki.localization.message.TranslationMessage;
+import org.xwiki.localization.message.TranslationMessageParser;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -32,18 +41,10 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.apache.commons.collections.EnumerationUtils;
-import org.xwiki.component.annotation.Component;
-import org.xwiki.localization.TranslationBundleContext;
-import org.xwiki.localization.internal.AbstractCachedTranslationBundle;
-import org.xwiki.localization.internal.DefaultLocalizedTranslationBundle;
-import org.xwiki.localization.internal.DefaultTranslation;
-import org.xwiki.localization.internal.LocalizedTranslationBundle;
-import org.xwiki.localization.message.TranslationMessage;
-import org.xwiki.localization.message.TranslationMessageParser;
 
 /**
  * Provide translations coming from the root {@link ClassLoader}.
- * 
+ *
  * @version $Id$
  * @since 4.5M1
  */
