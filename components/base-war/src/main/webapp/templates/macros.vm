@@ -1337,7 +1337,15 @@ ${Msz}Mb##
     #if ("$!resultPage" == '')
       #set ($resultPage = 'XWiki.LiveTableResults')
     #end
-    #set ($dataurl = $xwiki.getURL($resultPage, 'get', "$escapetool.url($parameters)&$!options.extraParams"))
+    #if ($resultPage.startsWith('/'))
+      #set ($webAppPath = "$!xwiki.getWebAppPath()")
+      #if ($webAppPath != '' && !$stringtool.startsWith($webAppPath, '/'))
+         #set ($webAppPath = "/$webAppPath")
+      #end
+      #set ($dataurl = "$!stringtool.stripEnd($!webAppPath,'/')$resultPage?$escapetool.url($parameters)&$!options.extraParams")
+    #else
+      #set ($dataurl = $xwiki.getURL($resultPage, 'get', "$escapetool.url($parameters)&$!options.extraParams"))
+    #end
   #end
   ##
   ## HTML Table
