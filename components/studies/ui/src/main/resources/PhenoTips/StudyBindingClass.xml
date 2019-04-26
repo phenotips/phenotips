@@ -61,7 +61,7 @@
 {{html clean="false" wiki="false"}}
 &lt;div class="form-template-option"&gt;
 &lt;label&gt;&lt;input type="radio" name="${prefix}${name}" value=""#if ("$!{value}" == '') checked="checked"#end/&gt; $services.localization.render('phenotips.studyBindingClass.noStudyOption')&lt;/label&gt;
-&lt;p class="xHint"&gt;$services.localization.render('phenotips.studyBindingClass.noStudyOption.hint')&lt;/p&gt;
+&lt;div class="xHint"&gt;$services.localization.render('phenotips.studyBindingClass.noStudyOption.hint')&lt;/div&gt;
 &lt;/div&gt;
 #foreach ($sName in $studies)
   #set ($s = $xwiki.getDocument($sName))
@@ -75,7 +75,7 @@
     #end
     &lt;div class="form-template-option"&gt;
     &lt;label&gt;&lt;input type="radio" name="${prefix}${name}" value="${escapetool.xml($services.model.serialize($s.documentReference, 'default'))}" #if ("$!{value}" == "${s.documentReference}") checked="checked" #end/&gt; $escapetool.xml($configTitle)&lt;/label&gt;
-    &lt;p class="xHint"&gt;$!{escapetool.xml($s.content)}&lt;/p&gt;
+    &lt;div class="xHint"&gt;$!{escapetool.xml($s.getRenderedContent($services.rendering.resolveSyntax('plain/1.0'))).replaceAll('\n', '&lt;br /&gt;')}&lt;/div&gt;
     &lt;/div&gt;
   #end
 #end
@@ -518,6 +518,9 @@
 }
 .xform .form-template-option label input[type="radio"]  {
   vertical-align: middle;
+}     
+.xform .form-template-option .xHint {
+  margin: .5em 0;
 }
 .study-assignment-config {
   float: left;
