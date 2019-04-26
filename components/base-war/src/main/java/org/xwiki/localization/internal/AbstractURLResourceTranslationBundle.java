@@ -1,0 +1,186 @@
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see http://www.gnu.org/licenses/
+ */
+package org.xwiki.localization.internal;
+
+import org.xwiki.component.manager.ComponentLookupException;
+import org.xwiki.component.manager.ComponentManager;
+import org.xwiki.localization.TranslationBundleContext;
+import org.xwiki.localization.message.TranslationMessage;
+import org.xwiki.localization.message.TranslationMessageParser;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
+
+import javax.inject.Inject;
+
+import org.slf4j.LoggerFactory;
+
+/**
+ * Base class for {@link org.xwiki.localization.TranslationBundle}s getting resource from classloader. Provides methods
+ * for loading properties from documents, watching loaded documents and invalidating cached translations.
+ *
+ * @version $Id$
+ * @since 4.5M1
+ */
+public abstract class AbstractURLResourceTranslationBundle extends AbstractCachedTranslationBundle
+{
+    /**
+     * The prefix to use in all resource based translations.
+     */
+    public static final String ID_PREFIX = "resource:";
+
+    /**
+     * The file extension of files containing translations.
+     */
+    private static final String PROPERTIES_EXT = ".properties";
+
+    /**
+     * Used to add no bundles to the list of current translation bundles.
+     */
+    @Inject
+    protected TranslationBundleContext bundleContext;
+
+    /**
+     * Used to parse translation messages.
+     */
+    protected TranslationMessageParser translationMessageParser;
+
+    /**
+     * The URL of the Locale.Root translations. Other Locale files will be "calculated" from it.
+     */
+    protected URL baseURL;
+
+    /**
+     * @param baseURL the base URL from which to calculate all translations URLs
+     * @param componentManager used to lookup of the components
+     * @param translationMessageParser used to parse translation messages
+     * @throws ComponentLookupException failed to lookup some component
+     */
+    public AbstractURLResourceTranslationBundle(URL baseURL, ComponentManager componentManager,
+        TranslationMessageParser translationMessageParser) throws ComponentLookupException
+    {
+        this.bundleContext = componentManager.getInstance(TranslationBundleContext.class);
+
+        this.translationMessageParser = translationMessageParser;
+
+        this.logger = LoggerFactory.getLogger(getClass());
+
+        this.baseURL = baseURL;
+
+        setId(ID_PREFIX + baseURL);
+    }
+
+    /**
+     * @param locale the locale
+     * @return the URL corresponding to the passed {@link Locale}
+     */
+    protected URL getLocaleURL(Locale locale)
+    {
+        String urlString = this.baseURL.toString();
+
+        String localeURL = urlString;
+
+        if (!locale.equals(Locale.ROOT)) {
+            if (urlString.endsWith(PROPERTIES_EXT)) {
+                int index = urlString.lastIndexOf('.');
+
+                localeURL = urlString.substring(0, index);
+                localeURL += "_" + locale.toString();
+                localeURL += PROPERTIES_EXT;
+            } else {
+                // No idea what is it
+                return null;
+            }
+        }
+
+        try {
+            return new URL(localeURL);
+        } catch (MalformedURLException e) {
+            // Should never happen
+            return null;
+        }
+    }
+
+    /**
+     * @param locale the locale
+     * @return the {@link LocalizedTranslationBundle} corresponding to the passed {@link Locale}, null if none could be
+     *         found
+     */
+    protected LocalizedTranslationBundle loadResourceLocaleBundle(Locale locale)
+    {
+        // Find resource
+        URL localeURL = getLocaleURL(locale);
+
+        if (localeURL == null) {
+            return LocalizedTranslationBundle.EMPTY;
+        }
+
+        // Parse resource
+        Properties properties = new Properties();
+
+        try (Reader componentListStream = new InputStreamReader(localeURL.openStream(), StandardCharsets.UTF_8)) {
+            properties.load(componentListStream);
+        } catch (FileNotFoundException e) {
+            // No translation files for the passed locale
+            return LocalizedTranslationBundle.EMPTY;
+        } catch (IOException e) {
+            this.logger.error("Failed to parse resource [{}] as translation bundle", localeURL, e);
+        }
+
+        // Convert to LocalBundle
+        DefaultLocalizedTranslationBundle localeBundle = new DefaultLocalizedTranslationBundle(this, locale);
+
+        TranslationMessageParser parser = getTranslationMessageParser();
+
+        for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+            if (entry.getKey() instanceof String && entry.getValue() instanceof String) {
+                String key = (String) entry.getKey();
+                String message = (String) entry.getValue();
+
+                TranslationMessage translationMessage = parser.parse(message);
+
+                localeBundle.addTranslation(new DefaultTranslation(this.bundleContext, localeBundle, key,
+                    translationMessage));
+            }
+        }
+
+        return localeBundle;
+    }
+
+    /**
+     * @return the parser to use
+     */
+    protected TranslationMessageParser getTranslationMessageParser()
+    {
+        return this.translationMessageParser;
+    }
+
+    @Override
+    protected LocalizedTranslationBundle createBundle(Locale locale)
+    {
+        return loadResourceLocaleBundle(locale);
+    }
+}
