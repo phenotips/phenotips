@@ -27,8 +27,10 @@ import org.xwiki.localization.message.TranslationMessage;
 import org.xwiki.localization.message.TranslationMessageParser;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.ListIterator;
@@ -127,14 +129,8 @@ public class RootClassLoaderTranslationBundle extends AbstractCachedTranslationB
         for (ListIterator<URL> it = urlList.listIterator(urlList.size()); it.hasPrevious();) {
             URL url = it.previous();
 
-            try {
-                InputStream componentListStream = url.openStream();
-
-                try {
-                    properties.load(componentListStream);
-                } finally {
-                    componentListStream.close();
-                }
+            try (Reader componentListStream = new InputStreamReader(url.openStream(), StandardCharsets.UTF_8)) {
+                properties.load(componentListStream);
             } catch (IOException e) {
                 this.logger.error("Failed to parse resource [{}] as translation budle", url, e);
             }

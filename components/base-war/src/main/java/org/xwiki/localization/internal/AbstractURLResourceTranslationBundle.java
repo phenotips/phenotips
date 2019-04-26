@@ -25,9 +25,11 @@ import org.xwiki.localization.message.TranslationMessageParser;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
@@ -139,7 +141,7 @@ public abstract class AbstractURLResourceTranslationBundle extends AbstractCache
         // Parse resource
         Properties properties = new Properties();
 
-        try (InputStream componentListStream = localeURL.openStream()) {
+        try (Reader componentListStream = new InputStreamReader(localeURL.openStream(), StandardCharsets.UTF_8)) {
             properties.load(componentListStream);
         } catch (FileNotFoundException e) {
             // No translation files for the passed locale
