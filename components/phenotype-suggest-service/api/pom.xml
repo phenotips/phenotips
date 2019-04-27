@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>phenotype-suggest-service</artifactId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.4.6</version>
   </parent>
   <artifactId>phenotype-suggest-service-api</artifactId>
   <name>PhenoTips - Phenotype suggest service - Java code</name>

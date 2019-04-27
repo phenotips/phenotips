@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>phenotips-pedigree</artifactId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.4.6</version>
   </parent>
   <artifactId>phenotips-pedigree-ui</artifactId>
   <name>PhenoTips - Pedigree - Application Documents</name>
