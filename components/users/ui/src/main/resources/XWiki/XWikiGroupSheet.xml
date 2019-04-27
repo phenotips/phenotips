@@ -72,7 +72,7 @@
   &lt;/$wrapperTag&gt;
 #end
 #set ($columnOptions = {
-  'member': {'type': 'text', 'html': true},
+  'member': {'type': 'text', 'html': false},
   'type': {'filterable': false, 'sortable': false},
   'scope': {'filterable': false, 'sortable': false},
   '_actions': {
