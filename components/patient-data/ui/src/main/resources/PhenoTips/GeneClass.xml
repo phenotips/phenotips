@@ -174,7 +174,7 @@ $!LABEL_MAP.get($!value).value
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <values>candidate=Candidate|candidate_novel_disease=Novel disease gene|candidate_novel_phen=Known disease gene with novel phenotype|umc=Uncertain molecular cause|umc_vus=Known disease gene with a variant of unknown significance|umc_msv=Known disease gene missing a second variant|rejectedcandidate=Rejected candidate|solved=Confirmed causal|carrier=Carrier|rejected=Tested negative</values>
+      <values>candidate=Candidate|candidate>novel_disease=Novel disease gene|candidate>novel_phen=Known disease gene with novel phenotype|umc=Uncertain molecular cause|umc>vus=Known disease gene with a variant of unknown significance|umc>msv=Known disease gene missing a second variant|rejected_candidate=Rejected candidate|solved=Confirmed causal|carrier=Carrier|rejected=Tested negative</values>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </status>
     <strategy>
