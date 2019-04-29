@@ -259,7 +259,7 @@ define([
               var rejectedCandidateGenes  = [];
               var carrierGenes   = [];
               nodeGenes.each( function(item) {
-                  if (candidateGeneSelected && (item.status == "candidate" || item.status == "candidate_novel_disease" || item.status == "candidate_novel_phen")) {
+                  if (candidateGeneSelected && (item.status == "candidate" || item.status.startsWith("candidate>")) {
                       candidateGenes.push(item.id);
                   }
                   if (causalGeneSelected && (item.status == "solved")) {
