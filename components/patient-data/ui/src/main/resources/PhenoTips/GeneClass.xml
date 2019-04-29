@@ -125,7 +125,7 @@
     #foreach ($v in $ALL_VALUES)
       #set ($descendents = [])
       #foreach ($v1 in $ALL_VALUES)
-        #if ($v1.startsWith("${v}_"))
+        #if ($v1.startsWith("${v}>"))
           #set ($discard = $descendents.add($v1))
         #end
       #end
