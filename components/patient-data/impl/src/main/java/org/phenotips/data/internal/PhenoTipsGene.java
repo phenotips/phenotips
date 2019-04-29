@@ -85,8 +85,8 @@ public class PhenoTipsGene implements Gene
     private String name;
 
     /**
-     * The gene status, one of possible values: "candidate" (default value), "rejectedcandidate", "rejected", "solved",
-     * "carrier", "candidate_novel_disease", "candidate_novel_phen", "umc", "umc_vus", "umc_msv".
+     * The gene status, one of possible values: "candidate" (default value), "rejected_candidate", "rejected", "solved",
+     * "carrier", "candidate>novel_disease", "candidate>novel_phen", "umc", "umc>vus", "umc>msv".
      *
      * @see #getStatus()
      */
@@ -116,8 +116,8 @@ public class PhenoTipsGene implements Gene
      *
      * @param id gene Ensembl ID
      * @param name gene HGNC vocabulary symbol
-     * @param status gene status, one of possible values: "candidate" (default value), "rejectedcandidate", "rejected",
-     *            "solved", "candidate_novel_disease", "candidate_novel_phen", "umc", "umc_vus", "umc_msv"
+     * @param status gene status, one of possible values: "candidate" (default value), "rejected_candidate", "rejected",
+     *            "solved", "candidate>novel_disease", "candidate>novel_phen", "umc", "umc>vus", "umc>msv"
      * @param strategy gene strategy
      * @param comment gene user inputed comment
      */

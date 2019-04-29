@@ -120,7 +120,7 @@ final class PatientDataAdapter
         private static final String REJECTED = "rejected";
 
         /** The internal {@link PatientData} label for rejected candidate genes. */
-        private static final String REJECTED_CANDIDATE = "rejectedcandidate";
+        private static final String REJECTED_CANDIDATE = "rejected_candidate";
 
         /** The hgnc vocabulary identifier. */
         private static final String HGNC = "hgnc";

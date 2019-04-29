@@ -145,7 +145,7 @@ define([
                 'function' : 'setRejectedGenes' // not needed: read only for now
             },
             {
-                'name' : 'rejectedcandidate_genes',
+                'name' : 'rejected_candidate_genes',
                 'label' : 'Genotype: rejected candidate genes',
                 'type' : 'gene-picker',
                 'tab': 'Clinical',
@@ -160,14 +160,14 @@ define([
                 'function' : 'setCarrierGenes'
             },
             {
-                'name' : 'candidate_novel_disease_genes',
+                'name' : 'candidate>novel_disease_genes',
                 'label' : 'Genotype: candidate novel disease genes',
                 'type' : 'gene-picker',
                 'tab': 'Clinical',
                 'function' : 'setCandidateNovelDiseaseGenes' // not needed: read only for now
             },
             {
-                'name' : 'candidate_novel_phen_genes',
+                'name' : 'candidate>novel_phen_genes',
                 'label' : 'Genotype: known disease genes with novel phenotype',
                 'type' : 'gene-picker',
                 'tab': 'Clinical',
@@ -181,14 +181,14 @@ define([
                 'function' : 'setUmcGenes' // not needed: read only for now
             },
             {
-                'name' : 'umc_vus_genes',
+                'name' : 'umc>vus_genes',
                 'label' : 'Genotype: known disease genes with a variant of unknown significance',
                 'type' : 'gene-picker',
                 'tab': 'Clinical',
                 'function' : 'setUmcVusGenes' // not needed: read only for now
             },
             {
-                'name' : 'umc_msv_genes',
+                'name' : 'umc>msv_genes',
                 'label' : 'Genotype: known disease genes missing a second variant',
                 'type' : 'gene-picker',
                 'tab': 'Clinical',

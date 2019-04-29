@@ -268,7 +268,7 @@ define([
                   if (item.status == "rejected") {
                       negativeGenes.push(item.id);
                   }
-                  if (item.status == "rejectedcandidate") {
+                  if (item.status == "rejected_candidate") {
                       rejectedCandidateGenes.push(item.id);
                   }
                   if (carrierGeneSelected && (item.status == "carrier")) {
@@ -611,8 +611,8 @@ define([
              if (status == "0") {
                  // if BRCA1 and BRCA2 are among rejected genes set status to "N"
                  // TODO: what if only one is rejected and another untested?
-                 if (hasGeneWithOneOfStatuses("BRCA1", ["rejected","rejectedcandidate"]) &&
-                     hasGeneWithOneOfStatuses("BRCA2", ["rejected","rejectedcandidate"])) {
+                 if (hasGeneWithOneOfStatuses("BRCA1", ["rejected","rejected_candidate"]) &&
+                     hasGeneWithOneOfStatuses("BRCA2", ["rejected","rejected_candidate"])) {
                      status = "N";
                  }
              }

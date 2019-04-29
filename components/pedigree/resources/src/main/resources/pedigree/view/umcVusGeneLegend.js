@@ -10,7 +10,7 @@
 
         initialize: function($super) {
             $super('Known disease genes with a variant of unknown significance', 'genes',
-                   "umc_vus",
+                   "umc>vus",
                    [], // these are never displayed in a legend so don't need colours
                    "getUmcVusGenes",
                    "setUmcVusGenes", true); // operation

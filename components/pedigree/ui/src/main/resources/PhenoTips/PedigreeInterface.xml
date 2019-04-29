@@ -60,7 +60,7 @@
     "negative_phenotype" : ["hpo_negative"],
     "omim_id" : ["disorders"],
     "gestation" : ["gestation_age"],
-    "gene" : ["candidate_genes", "causal_genes", "carrier_genes", "rejected_genes", "rejectedcandidate_genes", "candidate_novel_disease_genes", "candidate_novel_phen_genes", "umc_genes", "umc_vus_genes", "umc_msv_genes"]
+    "gene" : ["candidate_genes", "causal_genes", "carrier_genes", "rejected_genes", "rejected_candidate_genes", "candidate>novel_disease_genes", "candidate>novel_phen_genes", "umc_genes", "umc>vus_genes", "umc>msv_genes"]
   })
   #set ($discard = $disabledFieldNames.retainAll($linkedFields.keySet()))
   #set ($disabled = [])

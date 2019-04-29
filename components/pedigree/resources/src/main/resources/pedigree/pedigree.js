@@ -648,19 +648,19 @@ define([
                 return this.getCausalGeneLegend();
             } else if (geneStatus == "rejected") {
                 return this.getRejectedGeneLegend();
-            } else if (geneStatus == "rejectedcandidate") {
+            } else if (geneStatus == "rejected_candidate") {
                 return this.getRejectedCandidateGeneLegend();
             } else if (geneStatus == "carrier") {
                 return this.getCarrierGeneLegend();
-            } else if (geneStatus == "candidate_novel_disease") {
+            } else if (geneStatus == "candidate>novel_disease") {
                 return this.getCandidateNovelDiseaseGeneLegend();
-            } else if (geneStatus == "candidate_novel_phen") {
+            } else if (geneStatus == "candidate>novel_phen") {
                 return this.getCandidateNovelPhenGeneLegend();
             } else if (geneStatus == "umc") {
                 return this.getUmcGeneLegend();
-            } else if (geneStatus == "umc_vus") {
+            } else if (geneStatus == "umc>vus") {
                 return this.getUmcVusGeneLegend();
-            } else if (geneStatus == "umc_msv") {
+            } else if (geneStatus == "umc>msv") {
                 return this.getUmcMsvGeneLegend();
             }
             return null;

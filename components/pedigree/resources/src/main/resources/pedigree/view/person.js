@@ -1006,7 +1006,7 @@ define([
          * @param {Array} genes List of gene names (as strings)
          */
         setRejectedCandidateGenes: function(genes) {
-            this._setGenes(genes, "rejectedcandidate");
+            this._setGenes(genes, "rejected_candidate");
         },
 
         /**
@@ -1030,43 +1030,43 @@ define([
         },
 
         /**
-         * Sets the list of umc_vus genes of this person to the given list
+         * Sets the list of umc>vus genes of this person to the given list
          *
          * @method setUmcVusGenes
          * @param {Array} genes List of gene names (as strings)
          */
         setUmcVusGenes: function(genes) {
-            this._setGenes(genes, "umc_vus");
+            this._setGenes(genes, "umc>vus");
         },
 
         /**
-         * Sets the list of umc_msv genes of this person to the given list
+         * Sets the list of umc>msv genes of this person to the given list
          *
          * @method setUmcMsvGenes
          * @param {Array} genes List of gene names (as strings)
          */
         setUmcMsvGenes: function(genes) {
-            this._setGenes(genes, "umc_msv");
+            this._setGenes(genes, "umc>msv");
         },
 
         /**
-         * Sets the list of candidate_novel_disease genes of this person to the given list
+         * Sets the list of candidate>novel_disease genes of this person to the given list
          *
          * @method setCandidateNovelDiseaseGenes
          * @param {Array} genes List of gene names (as strings)
          */
         setCandidateNovelDiseaseGenes: function(genes) {
-            this._setGenes(genes, "candidate_novel_disease");
+            this._setGenes(genes, "candidate>novel_disease");
         },
 
         /**
-         * Sets the list of candidate_novel_phen genes of this person to the given list
+         * Sets the list of candidate>novel_phen genes of this person to the given list
          *
          * @method setCandidateNovelDiseaseGenes
          * @param {Array} genes List of gene names (as strings)
          */
         setCandidateNovelPhenGenes: function(genes) {
-            this._setGenes(genes, "candidate_novel_phen");
+            this._setGenes(genes, "candidate>novel_phen");
         },
 
         // used by controller in conjunction with setCandidateGenes
@@ -1083,7 +1083,7 @@ define([
         },
 
         getRejectedCandidateGenes: function() {
-            return this._getGeneArray("rejectedcandidate");
+            return this._getGeneArray("rejected_candidate");
         },
 
         getCarrierGenes: function() {
@@ -1095,19 +1095,19 @@ define([
         },
 
         getUmcVusGenes: function() {
-            return this._getGeneArray("umc_vus");
+            return this._getGeneArray("umc>vus");
         },
 
         getUmcMsvGenes: function() {
-            return this._getGeneArray("umc_msv");
+            return this._getGeneArray("umc>msv");
         },
 
         getCandidateNovelDiseaseGenes: function() {
-            return this._getGeneArray("candidate_novel_disease");
+            return this._getGeneArray("candidate>novel_disease");
         },
 
         getCandidateNovelPhenGenes: function() {
-            return this._getGeneArray("candidate_novel_phen");
+            return this._getGeneArray("candidate>novel_phen");
         },
 
         // returns null if geneID is not present, or gene status if it is
@@ -1364,12 +1364,12 @@ define([
                 causal_genes:    {value : this.getCausalGenes(), disabled: false},
                 carrier_genes:   {value : this.getCarrierGenes(), disabled: false},
                 rejected_genes:  {value : rejectedGeneList, disabled: true, inactive: (rejectedGeneList.length == 0)},
-                rejectedcandidate_genes:  {value : rejectedCandidateGeneList, disabled: true, inactive: (rejectedCandidateGeneList.length == 0)},
+                rejected_candidate_genes:  {value : rejectedCandidateGeneList, disabled: true, inactive: (rejectedCandidateGeneList.length == 0)},
                 umc_genes:       {value : this.getUmcGenes(), disabled: true, inactive: (umcGeneList.length == 0)},
-                umc_vus_genes:   {value : this.getUmcVusGenes(), disabled: true, inactive: (umcVusGeneList.length == 0)},
-                umc_msv_genes:   {value : this.getUmcMsvGenes(), disabled: true, inactive: (umcMsvGeneList.length == 0)},
-                candidate_novel_disease_genes: {value : this.getCandidateNovelDiseaseGenes(), disabled: true, inactive: (candidateNovelDiseaseGeneList.length == 0)},
-                candidate_novel_phen_genes:    {value : this.getCandidateNovelPhenGenes(), disabled: true, inactive: (candidateNovelPhenGeneList.length == 0)},
+                umc>vus_genes:   {value : this.getUmcVusGenes(), disabled: true, inactive: (umcVusGeneList.length == 0)},
+                umc>msv_genes:   {value : this.getUmcMsvGenes(), disabled: true, inactive: (umcMsvGeneList.length == 0)},
+                candidate>novel_disease_genes: {value : this.getCandidateNovelDiseaseGenes(), disabled: true, inactive: (candidateNovelDiseaseGeneList.length == 0)},
+                candidate>novel_phen_genes:    {value : this.getCandidateNovelPhenGenes(), disabled: true, inactive: (candidateNovelPhenGeneList.length == 0)},
                 adopted:         {value : this.getAdopted(), inactive: cantChangeAdopted},
                 state:           {value : this.getLifeStatus(), inactive: inactiveStates, disabled: disabledStates},
                 aliveandwell:    {value : this.getAliveAndWell(), inactive: this.isFetus()},

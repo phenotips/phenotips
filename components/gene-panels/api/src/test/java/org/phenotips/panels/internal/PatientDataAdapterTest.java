@@ -80,14 +80,14 @@ public class PatientDataAdapterTest
 
     private static final String REJECTED_LABEL = "rejected";
 
-    private static final String REJECTED_CANDIDATE_LABEL = "rejectedcandidate";
+    private static final String REJECTED_CANDIDATE_LABEL = "rejected_candidate";
 
     private static final String STATUS_KEY = "status";
 
     private static final String STRATEGY_KEY = "strategy";
 
-    private static final List<String> STATUS_VALUES = Arrays.asList("candidate", "rejected", "rejectedcandidate",
-        "solved", "carrier");
+    private static final List<String> STATUS_VALUES = Arrays.asList("candidate", "rejected", "rejected_candidate",
+        "solved", "carrier", "candidate>novel_disease", "candidate>novel_phen", "umc", "umc>vus", "umc>msv");
 
     private static final List<String> STRATEGY_VALUES = Arrays.asList("sequencing", "deletion", "familial_mutation",
         "common_mutations");

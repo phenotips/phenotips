@@ -10,7 +10,7 @@
 
         initialize: function($super) {
             $super('Rejected Candidate Genes', 'genes',
-                   "rejectedcandidate",
+                   "rejected_candidate",
                    [], // these are never displayed in a legend so don't need colours
                    "getRejectedCandidateGenes",
                    "setRejectedCandidateGenes", true); // operation

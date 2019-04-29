@@ -272,7 +272,7 @@ td.gene ul  ul {
       <contentType>CSS</contentType>
     </property>
     <property>
-      <name>JSON import dialog</name>
+      <name>Gene status CSS</name>
     </property>
     <property>
       <parse>1</parse>

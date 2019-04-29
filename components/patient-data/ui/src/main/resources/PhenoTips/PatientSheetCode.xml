@@ -2467,7 +2467,7 @@ document.observe('xwiki:dom:loaded', function()
         this._builder.rejectedGeneIDsInput.value = '';
         for (var gene in this._builder.genes) {
           (this._builder.genes[gene].status == 'rejected') &amp;&amp; (_this._builder.rejectedGeneIDsInput.value += gene + ' ');
-          (this._builder.genes[gene].status == 'rejectedcandidate') &amp;&amp; (_this._builder.rejectedGeneIDsInput.value += gene + ' ');
+          (this._builder.genes[gene].status == 'rejected_candidate') &amp;&amp; (_this._builder.rejectedGeneIDsInput.value += gene + ' ');
         };
       }
 
@@ -2687,7 +2687,7 @@ document.observe('xwiki:dom:loaded', function()
       var geneList = [];
         parameters['rejected_gene'] = geneList;
         for (var g in this._builder.genes) {
-          if ('rejected' == this._builder.genes[g].status || 'rejectedcandidate' == this._builder.genes[g].status) {
+          if ('rejected' == this._builder.genes[g].status || 'rejected_candidate' == this._builder.genes[g].status) {
             geneList.push("HGNC:" + this._builder.genes[g].key);
           }
         }

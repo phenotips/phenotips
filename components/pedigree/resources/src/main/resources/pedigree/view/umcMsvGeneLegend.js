@@ -10,7 +10,7 @@
 
         initialize: function($super) {
             $super('Known disease genes missing a second variant', 'genes',
-                   "umc_msv",
+                   "umc>msv",
                    [], // these are never displayed in a legend so don't need colours
                    "getUmcMsvGenes",
                    "setUmcMsvGenes", true); // operation
