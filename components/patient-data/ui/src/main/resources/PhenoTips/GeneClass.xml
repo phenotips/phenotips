@@ -98,7 +98,67 @@
     </gene>
     <status>
       <cache>0</cache>
-      <customDisplay/>
+      <customDisplay>{{velocity output=false}}
+#set($sP = $object.xWikiClass.get($name))
+#set ($ALL_VALUES = $sP.listValues)
+#set ($LABEL_MAP = $sP.mapValues)
+#set ($GENE_STATUS_PARENTS = {})
+#set ($GENE_STATUS_FLATLIST = [])
+#set ($GENE_STATUS_SUBTYPES = {})
+
+#macro (getFlatCategoriesList)
+    #set ($levels = { "" : 0 })
+    #foreach ($s in $ALL_VALUES)
+      #set ($level = $mathtool.add($levels.get("$!GENE_STATUS_PARENTS.get($s)"), 1))
+      #set ($discard = $levels.put($s, $level))
+      #set ($item = {
+        "id" : $s,
+        "name" : "$!LABEL_MAP.get($s).value",
+        "categoryId" : "$!GENE_STATUS_PARENTS.get($s)",
+        "level" : $level
+      })
+      #set ($discard = $GENE_STATUS_FLATLIST.add($item))
+    #end
+#end
+
+#macro (extractStatusSubtypes)
+    #foreach ($v in $ALL_VALUES)
+      #set ($descendents = [])
+      #foreach ($v1 in $ALL_VALUES)
+        #if ($v1.startsWith("${v}>"))
+          #set ($discard = $descendents.add($v1))
+        #end
+      #end
+      #set ($discard = $GENE_STATUS_SUBTYPES.put($v, $descendents))
+    #end
+    #foreach ($s in $GENE_STATUS_SUBTYPES.keySet())
+      #foreach ($ss in $GENE_STATUS_SUBTYPES.get($s))
+        #set ($discard = $GENE_STATUS_PARENTS.put($ss, $s))
+      #end
+    #end
+    #getFlatCategoriesList()
+#end
+
+#macro (displayOption $i)
+#foreach ($l in [1..$i.level])*#end {{html clean="false"}}#if ($GENE_STATUS_SUBTYPES.get($i.id).size() &gt; 0)&lt;span class="expand-tool"&gt;▼&lt;/span&gt;#end &lt;label&gt;&lt;input type="radio" name="$prefix$name" id="$prefix$name$i.id" value="$i.id" #if ($i.id == $value) checked="checked" #end/>$i.name&lt;/label&gt;{{/html}}
+#end
+{{/velocity}}
+
+{{velocity}}
+#extractStatusSubtypes()
+##
+#if ($xcontext.action == 'edit')
+  #if ("$!value" == '')
+    #set ($value = $ALL_VALUES[0])
+  #end
+  #foreach ($i in $GENE_STATUS_FLATLIST)
+    #displayOption($i)
+  #end
+  {{html clean="false"}}&lt;input type="hidden" name="$prefix$name" id="${prefix}${name}" value="" /&gt;{{/html}}
+#else
+$!LABEL_MAP.get($!value).value
+#end
+{{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <displayType>select</displayType>
       <multiSelect>0</multiSelect>
