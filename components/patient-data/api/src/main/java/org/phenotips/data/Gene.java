@@ -60,7 +60,7 @@ public interface Gene extends VocabularyProperty
     /**
      * The status of this gene for the described patient.
      *
-     * @return one of {@code solved}, {@code candidate}, {@code carrier}, {@code rejected_candidate} or {@code rejected}
+     * @return one of the values listed in the {@code status} property of {@code PhenoTips.GeneClass}
      */
     String getStatus();
 

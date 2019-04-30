@@ -85,8 +85,7 @@ public class PhenoTipsGene implements Gene
     private String name;
 
     /**
-     * The gene status, one of possible values: "candidate" (default value), "rejected_candidate", "rejected", "solved",
-     * "carrier".
+     * The gene status, one of the values listed in the {@code status} property of {@code PhenoTips.GeneClass}.
      *
      * @see #getStatus()
      */
@@ -116,8 +115,7 @@ public class PhenoTipsGene implements Gene
      *
      * @param id gene Ensembl ID
      * @param name gene HGNC vocabulary symbol
-     * @param status gene status, one of possible values: "candidate" (default value), "rejected_candidate", "rejected",
-     *            "solved"
+     * @param status gene status, one of the values listed in the {@code status} property of {@code PhenoTips.GeneClass}
      * @param strategy gene strategy
      * @param comment gene user inputed comment
      */
