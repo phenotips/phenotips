@@ -91,8 +91,7 @@ public class SolrPatientIndexerTest
 {
     private static final String STATUS_KEY = "status";
 
-    private static final List<String> STATUS_VALUES = Arrays.asList("candidate", "rejected", "rejected_candidate",
-        "solved", "carrier");
+    private static final List<String> STATUS_VALUES = Arrays.asList("status1", "status2", "status3");
 
     @Rule
     public MockitoComponentMockingRule<PatientIndexer> mocker =
@@ -253,11 +252,9 @@ public class SolrPatientIndexerTest
         doReturn(Collections.EMPTY_SET).when(this.patient).getFeatures();
 
         List<Gene> fakeGenes = new LinkedList<>();
-        fakeGenes.add(mockGene("CANDIDATE1", "candidate"));
-        fakeGenes.add(mockGene("REJECTED1", "rejected"));
-        fakeGenes.add(mockGene("REJECTEDC1", "rejected_candidate"));
-        fakeGenes.add(mockGene("CARRIER1", "carrier"));
-        fakeGenes.add(mockGene("SOLVED1", "solved"));
+        fakeGenes.add(mockGene("GENE1", "status1"));
+        fakeGenes.add(mockGene("GENE2", "status2"));
+        fakeGenes.add(mockGene("GENE3", "status3"));
 
         PatientData<Gene> fakeGeneData =
             new IndexedPatientData<>("genes", fakeGenes);
@@ -271,25 +268,17 @@ public class SolrPatientIndexerTest
         verify(this.server).add(inputDoc);
 
         Collection<Object> indexedGenes;
-        indexedGenes = inputDoc.getFieldValues("candidate_genes");
+        indexedGenes = inputDoc.getFieldValues("status1_genes");
         Assert.assertEquals(1, indexedGenes.size());
-        Assert.assertEquals("CANDIDATE1", indexedGenes.iterator().next());
+        Assert.assertEquals("GENE1", indexedGenes.iterator().next());
 
-        indexedGenes = inputDoc.getFieldValues("solved_genes");
+        indexedGenes = inputDoc.getFieldValues("status2_genes");
         Assert.assertEquals(1, indexedGenes.size());
-        Assert.assertEquals("SOLVED1", indexedGenes.iterator().next());
+        Assert.assertEquals("GENE2", indexedGenes.iterator().next());
 
-        indexedGenes = inputDoc.getFieldValues("rejected_genes");
+        indexedGenes = inputDoc.getFieldValues("status3_genes");
         Assert.assertEquals(1, indexedGenes.size());
-        Assert.assertEquals("REJECTED1", indexedGenes.iterator().next());
-
-        indexedGenes = inputDoc.getFieldValues("rejected_candidate_genes");
-        Assert.assertEquals(1, indexedGenes.size());
-        Assert.assertEquals("REJECTEDC1", indexedGenes.iterator().next());
-
-        indexedGenes = inputDoc.getFieldValues("carrier_genes");
-        Assert.assertEquals(1, indexedGenes.size());
-        Assert.assertEquals("CARRIER1", indexedGenes.iterator().next());
+        Assert.assertEquals("GENE3", indexedGenes.iterator().next());
     }
 
     @Test
