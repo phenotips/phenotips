@@ -25,6 +25,7 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientData;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.indexing.PatientIndexer;
+import org.phenotips.data.internal.PhenoTipsGene;
 import org.phenotips.data.permissions.EntityAccess;
 import org.phenotips.data.permissions.EntityPermissionsManager;
 import org.phenotips.data.permissions.Visibility;
@@ -91,7 +92,7 @@ public class SolrPatientIndexerTest
 {
     private static final String STATUS_KEY = "status";
 
-    private static final List<String> STATUS_VALUES = Arrays.asList("status1", "status2", "status3");
+    private static final List<String> STATUS_VALUES = Arrays.asList("status1", "status>2", "status>3>1");
 
     @Rule
     public MockitoComponentMockingRule<PatientIndexer> mocker =
@@ -252,9 +253,9 @@ public class SolrPatientIndexerTest
         doReturn(Collections.EMPTY_SET).when(this.patient).getFeatures();
 
         List<Gene> fakeGenes = new LinkedList<>();
-        fakeGenes.add(mockGene("GENE1", "status1"));
-        fakeGenes.add(mockGene("GENE2", "status2"));
-        fakeGenes.add(mockGene("GENE3", "status3"));
+        fakeGenes.add(new PhenoTipsGene(null, "GENE1", "status1", null, null));
+        fakeGenes.add(new PhenoTipsGene(null, "GENE2", "status>2", null, null));
+        fakeGenes.add(new PhenoTipsGene(null, "GENE3", "status>3>1", null, null));
 
         PatientData<Gene> fakeGeneData =
             new IndexedPatientData<>("genes", fakeGenes);
@@ -272,11 +273,11 @@ public class SolrPatientIndexerTest
         Assert.assertEquals(1, indexedGenes.size());
         Assert.assertEquals("GENE1", indexedGenes.iterator().next());
 
-        indexedGenes = inputDoc.getFieldValues("status2_genes");
+        indexedGenes = inputDoc.getFieldValues("status>2_genes");
         Assert.assertEquals(1, indexedGenes.size());
         Assert.assertEquals("GENE2", indexedGenes.iterator().next());
 
-        indexedGenes = inputDoc.getFieldValues("status3_genes");
+        indexedGenes = inputDoc.getFieldValues("status>3>1_genes");
         Assert.assertEquals(1, indexedGenes.size());
         Assert.assertEquals("GENE3", indexedGenes.iterator().next());
     }
@@ -474,13 +475,5 @@ public class SolrPatientIndexerTest
         this.patientIndexer.reindex();
 
         verify(this.logger).warn("Failed to search patients for reindexing: {}", "createQuery failed");
-    }
-
-    private Gene mockGene(String id, String status)
-    {
-        Gene result = mock(Gene.class);
-        when(result.getId()).thenReturn(id);
-        when(result.getStatus()).thenReturn(status);
-        return result;
     }
 }

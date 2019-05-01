@@ -40,6 +40,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>patient-data-default-impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>entity-access-rules-api</artifactId>
       <version>${project.version}</version>
     </dependency>
