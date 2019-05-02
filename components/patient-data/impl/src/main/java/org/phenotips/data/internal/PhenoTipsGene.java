@@ -108,7 +108,29 @@ public class PhenoTipsGene implements Gene
 
     private Vocabulary hgnc;
 
-    private XWikiContext context;
+    static {
+        try {
+            Provider<XWikiContext> xcontextProvider =
+                ComponentManagerRegistry.getContextComponentManager().getInstance(XWikiContext.TYPE_PROVIDER);
+            XWikiContext context = xcontextProvider.get();
+            XWikiDocument doc = context.getWiki().getDocument(Gene.GENE_CLASS, context);
+            if (doc != null && !doc.isNew()) {
+                BaseClass gene = doc.getXClass();
+                if (gene != null) {
+                    StaticListClass statusProp = (StaticListClass) gene.get(STATUS_KEY);
+                    StaticListClass stategyProp = (StaticListClass) gene.get(STRATEGY_KEY);
+                    if (statusProp != null) {
+                        PhenoTipsGene.statusValues = statusProp.getList(context);
+                    }
+                    if (stategyProp != null) {
+                        PhenoTipsGene.strategyValues = stategyProp.getList(context);
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 
     /**
      * Constructor that receives all the needed data as parameters.
@@ -123,9 +145,6 @@ public class PhenoTipsGene implements Gene
     {
         if (StringUtils.isBlank(id) && StringUtils.isBlank(name)) {
             throw new IllegalArgumentException();
-        }
-        if (statusValues.size() == 0 || strategyValues.size() == 0) {
-            getProperties();
         }
         // gene ID is either the "id" field, or, if missing, the "gene" field
         String geneName = StringUtils.isNotBlank(id) ? id : name;
@@ -152,6 +171,16 @@ public class PhenoTipsGene implements Gene
             strategyArray.forEach(item -> strategies.add(item.toString()));
             this.setStrategy(strategies);
         }
+    }
+
+    /**
+     * Returns the values listed in the {@code status} property of {@code PhenoTips.GeneClass}.
+     *
+     * @return strategies values
+     */
+    public static List<String> getStatusValues()
+    {
+        return statusValues;
     }
 
     @Override
@@ -318,39 +347,5 @@ public class PhenoTipsGene implements Gene
             this.logger.error("Error loading component [{}]", ex.getMessage(), ex);
         }
         return null;
-    }
-
-    private void getProperties()
-    {
-        XWikiDocument doc = getGeneXClassDoc();
-        if (doc == null || doc.isNew()) {
-            // Inaccessible or deleted document
-            return;
-        }
-        BaseClass gene = doc.getXClass();
-        if (gene == null) {
-            return;
-        }
-        StaticListClass statusProp = (StaticListClass) gene.get(STATUS_KEY);
-        StaticListClass stategyProp = (StaticListClass) gene.get(STRATEGY_KEY);
-        if (statusProp != null) {
-            statusValues = statusProp.getList(this.context);
-        }
-        if (stategyProp != null) {
-            strategyValues = stategyProp.getList(this.context);
-        }
-    }
-
-    private XWikiDocument getGeneXClassDoc()
-    {
-        Provider<XWikiContext> xcontextProvider = null;
-        try {
-            xcontextProvider =
-                ComponentManagerRegistry.getContextComponentManager().getInstance(XWikiContext.TYPE_PROVIDER);
-            this.context = xcontextProvider.get();
-            return this.context.getWiki().getDocument(Gene.GENE_CLASS, this.context);
-        } catch (Exception ex) {
-            return null;
-        }
     }
 }
