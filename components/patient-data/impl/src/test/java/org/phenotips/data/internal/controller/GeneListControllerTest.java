@@ -218,7 +218,7 @@ public class GeneListControllerTest
 
             StringListProperty strategyString = mock(StringListProperty.class);
             doReturn(STRATEGY_VALUES.get(i)).when(strategyString).getTextValue();
-            doReturn(Arrays.asList("strategy" + i)).when(strategyString).getList();
+            doReturn(Arrays.asList(STRATEGY_VALUES.get(i))).when(strategyString).getList();
             doReturn(strategyString).when(gene).getField(STRATEGY_KEY);
 
             BaseStringProperty commentString = mock(BaseStringProperty.class);
@@ -236,8 +236,8 @@ public class GeneListControllerTest
             Gene item = result.get(i);
             Assert.assertEquals("gene" + i, item.getName());
             Assert.assertEquals(STATUS_VALUES.get(i), item.getStatus());
-            Assert.assertTrue(
-                CollectionUtils.isEqualCollection(Collections.singletonList("strategy" + i), item.getStrategy()));
+            Assert.assertTrue(CollectionUtils.isEqualCollection(Collections.singletonList(STRATEGY_VALUES.get(i)),
+                item.getStrategy()));
             Assert.assertEquals("comment" + i, item.getComment());
         }
     }

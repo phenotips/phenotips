@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Provider;
 
@@ -284,7 +285,12 @@ public class PhenoTipsGene implements Gene
      */
     public void setStrategy(Collection<String> strategies)
     {
-        this.strategy = strategies == null ? Collections.emptyList() : Collections.unmodifiableCollection(strategies);
+        this.strategy = strategies == null ? Collections.emptyList()
+            : Collections.unmodifiableCollection(strategies
+                .stream()
+                .map(item -> item.trim().toLowerCase())
+                .filter(item -> strategyValues.contains(item))
+                .collect(Collectors.toList()));
     }
 
     /**
