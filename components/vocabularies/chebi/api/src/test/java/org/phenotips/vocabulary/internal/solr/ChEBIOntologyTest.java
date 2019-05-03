@@ -45,7 +45,6 @@ import org.mockito.Mockito;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
 /**
  * Tests for the ChEBI implementation of the {@link org.phenotips.vocabulary.Vocabulary},
  * {@link org.phenotips.vocabulary.internal.solr.ChEBIOntology}.
@@ -88,7 +87,7 @@ public class ChEBIOntologyTest
         Mockito.verify(this.server, Mockito.atLeast(1)).commit();
         Mockito.verify(this.server, Mockito.atLeast(1)).add(Matchers.anyCollectionOf(SolrInputDocument.class));
         Mockito.verify(this.cache, Mockito.atLeast(1)).removeAll();
-        Mockito.verifyNoMoreInteractions(this.cache, this.server);
+        Mockito.verifyNoMoreInteractions(this.cache);
         Assert.assertTrue(this.ontologyServiceResult == 0);
     }
 
