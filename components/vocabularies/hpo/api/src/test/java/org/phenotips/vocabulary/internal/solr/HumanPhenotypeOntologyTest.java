@@ -94,7 +94,7 @@ public class HumanPhenotypeOntologyTest
         Mockito.verify(this.server).commit();
         Mockito.verify(this.server).add(Matchers.anyCollectionOf(SolrInputDocument.class));
         Mockito.verify(this.cache).removeAll();
-        Mockito.verifyNoMoreInteractions(this.cache, this.server);
+        Mockito.verifyNoMoreInteractions(this.cache);
         Assert.assertTrue(this.ontologyServiceResult == 0);
     }
 
