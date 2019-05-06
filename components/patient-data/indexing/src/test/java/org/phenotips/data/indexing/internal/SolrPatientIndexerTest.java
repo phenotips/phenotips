@@ -487,10 +487,10 @@ public class SolrPatientIndexerTest
         verify(this.logger).warn("Failed to search patients for reindexing: {}", "createQuery failed");
     }
 
-    private Gene mockGene(String name, String status)
+    private Gene mockGene(String id, String status)
     {
         Gene result = mock(Gene.class);
-        when(result.getName()).thenReturn(name);
+        when(result.getId()).thenReturn(id);
         when(result.getStatus()).thenReturn(status);
         return result;
     }
