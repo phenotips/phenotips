@@ -30,6 +30,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.slf4j.Logger;
 
+import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.objects.DBStringListProperty;
 import com.xpn.xwiki.store.XWikiHibernateBaseStore.HibernateCallback;
@@ -54,6 +55,8 @@ public class R71493PhenoTips2504DataMigration extends AbstractHibernateDataMigra
     @Inject
     private Logger logger;
 
+    private XWikiContext context;
+
     @Override
     public String getDescription()
     {
@@ -75,6 +78,7 @@ public class R71493PhenoTips2504DataMigration extends AbstractHibernateDataMigra
     @Override
     public Object doInHibernate(Session session) throws HibernateException, XWikiException
     {
+        this.context = getXWikiContext();
         Query q =
             session.createQuery("select p from " + DBStringListProperty.class.getName() + " as p, BaseObject as o"
                 + " where o.className='PhenoTips.StudyClass' and p.id.id=o.id"
@@ -89,7 +93,7 @@ public class R71493PhenoTips2504DataMigration extends AbstractHibernateDataMigra
             values.remove("org.phenotips.patientSheet.field.rejected_genes");
             session.update(property);
         }
-
+        this.context.getWiki().flushCache(this.context);
         return null;
     }
 }

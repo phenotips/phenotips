@@ -30,6 +30,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.slf4j.Logger;
 
+import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.objects.DBStringListProperty;
 import com.xpn.xwiki.objects.StringListProperty;
@@ -92,6 +93,8 @@ public class R71492PhenoTips2592DataMigration extends AbstractHibernateDataMigra
             session.save(newValue);
         }
 
+        XWikiContext context = getXWikiContext();
+        context.getWiki().flushCache(context);
         return null;
     }
 }

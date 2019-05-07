@@ -34,6 +34,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.slf4j.Logger;
 
+import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.objects.DBStringListProperty;
 import com.xpn.xwiki.objects.StringProperty;
@@ -120,6 +121,9 @@ public class R54693PhenoTips1500DataMigration extends AbstractHibernateDataMigra
                         .warn("Failed to update a global mode of inheritance property: {}", e.getMessage());
                 }
             }
+
+            XWikiContext context = getXWikiContext();
+            context.getWiki().flushCache(context);
             return null;
         }
     }

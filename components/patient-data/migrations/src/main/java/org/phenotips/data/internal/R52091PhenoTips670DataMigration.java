@@ -117,6 +117,8 @@ public class R52091PhenoTips670DataMigration extends AbstractHibernateDataMigrat
                 session.save(newValue);
             }
 
+            XWikiContext context = getXWikiContext();
+            context.getWiki().flushCache(context);
             return null;
         }
     }
