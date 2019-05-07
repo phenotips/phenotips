@@ -74,8 +74,6 @@ public class R74692PhenoTips3930DataMigration extends AbstractHibernateDataMigra
     @Named("current")
     private DocumentReferenceResolver<String> resolver;
 
-    private XWikiContext context;
-
     @Override
     public String getDescription()
     {
@@ -100,8 +98,6 @@ public class R74692PhenoTips3930DataMigration extends AbstractHibernateDataMigra
     @Override
     public Object doInHibernate(Session session) throws HibernateException, XWikiException
     {
-        this.context = getXWikiContext();
-
         Query q =
             session.createQuery("select distinct p from BaseObject o, " + DBStringListProperty.class.getName()
                 + " p where o.className = '" + this.serializer.serialize(Patient.CLASS_REFERENCE)
@@ -124,7 +120,9 @@ public class R74692PhenoTips3930DataMigration extends AbstractHibernateDataMigra
                 this.logger.warn("Failed to update a pubmed id property: {}", e.getMessage());
             }
         }
-        this.context.getWiki().flushCache(this.context);
+
+        XWikiContext context = getXWikiContext();
+        context.getWiki().flushCache(context);
         return null;
     }
 
