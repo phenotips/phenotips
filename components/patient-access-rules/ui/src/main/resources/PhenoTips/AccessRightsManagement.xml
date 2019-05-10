@@ -1327,17 +1327,13 @@ document.observe("xwiki:dom:loaded", function() {
 }
 
 #users-access-rights-table .xTooltip {
+  width: 30%;
+  white-space: normal;
   text-align: left;
 }
 
 .table-filters {
   margin-top : 10px;
-}
-
-.xTooltip {
-  width: 30%;
-  white-space: normal;
-  text-align: left;
 }
 
 .fa.fa-user {
