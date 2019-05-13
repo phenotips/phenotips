@@ -39,7 +39,7 @@
   <hidden>true</hidden>
   <content/>
   <object>
-    <name>UIX_Field__phenotype_suggestions</name>
+    <name>PhenoTips.UIX_Field__phenotype_suggestions</name>
     <number>0</number>
     <className>XWiki.UIExtensionClass</className>
     <guid>04c45346-b203-4fd8-a60f-1b32e0cd73ff</guid>
@@ -136,7 +136,7 @@
 {{/velocity}}</content>
     </property>
     <property>
-      <extensionPointId>org.phenotips.patientSheet.section.phenotype</extensionPointId>
+      <extensionPointId>org.phenotips.patientSheet.section.phenotype-info</extensionPointId>
     </property>
     <property>
       <name>org.phenotips.patientSheet.field.phenotype_suggestions</name>
