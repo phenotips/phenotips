@@ -917,7 +917,7 @@
           <!-- Lock down plugin version for build reproducibility -->
           <version>2.5.3</version>
           <configuration>
-            <arguments>-Pquick</arguments>
+            <arguments>-Pquick -Dlicense.skip=false</arguments>
             <!-- Avoid site generation during the release:perform to speed up release process -->
             <goals>deploy</goals>
             <mavenExecutorId>forked-path</mavenExecutorId>
