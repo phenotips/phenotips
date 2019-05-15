@@ -79,7 +79,7 @@ public class R74695PhenoTips4004DataMigration extends AbstractHibernateDataMigra
     {
         try {
             this.indexer.reindex();
-        } catch (final IndexOutOfBoundsException e) {
+        } catch (final Exception e) {
             this.logger.error("Error while reindexing patients: [{}]", e);
         }
         return null;
