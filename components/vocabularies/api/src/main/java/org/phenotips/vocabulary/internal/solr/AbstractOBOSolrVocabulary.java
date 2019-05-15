@@ -23,16 +23,22 @@ import org.phenotips.vocabulary.VocabularyTerm;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.request.schema.SchemaRequest;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.client.solrj.response.schema.SchemaResponse.FieldsResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrException;
@@ -99,6 +105,7 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
      *         specified URL is invalid
      */
     @Override
+    @SuppressWarnings({ "checkstyle:CyclomaticComplexity" })
     protected int index(String sourceUrl)
     {
         String url = StringUtils.defaultIfBlank(sourceUrl, getDefaultSourceLocation());
@@ -108,6 +115,8 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
             return 2;
         }
         try {
+            Set<String> singleValuedFields = getSingleValuedFields();
+
             Collection<SolrInputDocument> termBatch = new HashSet<>();
             Iterator<Map.Entry<String, TermData>> dataIterator = data.entrySet().iterator();
             int batchCounter = 0;
@@ -118,12 +127,19 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
                     termBatch = new HashSet<>();
                     batchCounter = 0;
                 }
+                Set<String> addedFields = new HashSet<>();
                 Map.Entry<String, TermData> item = dataIterator.next();
                 SolrInputDocument doc = new SolrInputDocument();
+
                 for (Map.Entry<String, Collection<String>> property : item.getValue().entrySet()) {
                     String name = property.getKey();
                     for (String value : property.getValue()) {
+                        // check if property is single value type and has been already added
+                        if (singleValuedFields.contains(name) && addedFields.contains(name)) {
+                            break;
+                        }
                         doc.addField(name, value);
+                        addedFields.add(name);
                     }
                 }
                 extendTerm(new SolrVocabularyInputTerm(doc, this));
@@ -183,5 +199,29 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
             this.logger.warn("Failed to query vocabulary version: {}", ex.getMessage());
         }
         return null;
+    }
+
+    /**
+     * Returns list of single-valued schema field names .
+     *
+     * @return list of names
+     */
+    private Set<String> getSingleValuedFields()
+    {
+        try {
+            SolrClient client = this.externalServicesAccess.getSolrConnection(this);
+            FieldsResponse fieldsExists = new SchemaRequest.Fields().process(client);
+            if (fieldsExists.getFields() != null) {
+                Set<String> fields = fieldsExists.getFields().stream()
+                    .filter(fieldDefinition -> fieldDefinition.get("multiValued") == null
+                        || !(Boolean) fieldDefinition.get("multiValued"))
+                    .map(fieldDefinition -> (String) fieldDefinition.get("name"))
+                    .collect(Collectors.toSet());
+                return fields;
+            }
+        } catch (Exception ex) {
+            this.logger.warn("Exception while parsing vocabulary schema: {}", ex.getMessage());
+        }
+        return Collections.emptySet();
     }
 }
