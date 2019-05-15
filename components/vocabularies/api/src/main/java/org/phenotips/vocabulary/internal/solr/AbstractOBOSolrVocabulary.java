@@ -115,7 +115,7 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
             return 2;
         }
         try {
-            Set<String> singleValuedFileds = getSingleValuedFields();
+            Set<String> singleValuedFields = getSingleValuedFields();
 
             Collection<SolrInputDocument> termBatch = new HashSet<>();
             Iterator<Map.Entry<String, TermData>> dataIterator = data.entrySet().iterator();
@@ -135,8 +135,7 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
                     String name = property.getKey();
                     for (String value : property.getValue()) {
                         // check if property is single value type and has been already added
-                        if (singleValuedFileds.contains(name) && addedFields.contains(name))
-                        {
+                        if (singleValuedFields.contains(name) && addedFields.contains(name)) {
                             break;
                         }
                         doc.addField(name, value);
@@ -203,7 +202,7 @@ public abstract class AbstractOBOSolrVocabulary extends AbstractSolrVocabulary
     }
 
     /**
-     * Returns list of single-valued schema filed names .
+     * Returns list of single-valued schema field names .
      *
      * @return list of names
      */
