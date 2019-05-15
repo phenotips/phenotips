@@ -21,4 +21,3 @@ org.phenotips.data.internal.R71507PhenoTips3335DataMigration
 org.phenotips.data.internal.R74690PhenoTips3663DataMigration
 org.phenotips.data.internal.R74692PhenoTips3930DataMigration
 org.phenotips.data.internal.R74694PhenoTips3947DataMigration
-org.phenotips.data.internal.R74695PhenoTips4004DataMigration

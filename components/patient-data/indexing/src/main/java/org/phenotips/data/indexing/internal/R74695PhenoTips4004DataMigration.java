@@ -16,7 +16,7 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 
-package org.phenotips.data.internal;
+package org.phenotips.data.indexing.internal;
 
 import org.phenotips.data.indexing.PatientIndexer;
 

@@ -1,2 +1,3 @@
 org.phenotips.data.indexing.internal.PatientEventListener
 org.phenotips.data.indexing.internal.SolrPatientIndexer
+org.phenotips.data.indexing.internal.R74695PhenoTips4004DataMigration
