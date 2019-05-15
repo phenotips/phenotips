@@ -199,7 +199,7 @@ public class SolrPatientIndexer implements PatientIndexer, Initializable
             return;
         }
         for (Gene gene : data) {
-            String name = gene.getName();
+            String name = gene.getId();
             if (StringUtils.isBlank(name)) {
                 continue;
             }
