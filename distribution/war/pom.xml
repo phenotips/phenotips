@@ -1039,12 +1039,12 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>pingback-common</artifactId>
-      <version>1.4</version>
+      <version>1.5</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>pingback-client-api</artifactId>
-      <version>1.4</version>
+      <version>1.5</version>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
