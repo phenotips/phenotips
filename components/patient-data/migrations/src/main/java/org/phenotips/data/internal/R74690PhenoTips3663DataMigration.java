@@ -36,6 +36,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.slf4j.Logger;
 
+import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.objects.DBStringListProperty;
 import com.xpn.xwiki.objects.StringProperty;
@@ -125,6 +126,9 @@ public class R74690PhenoTips3663DataMigration extends AbstractHibernateDataMigra
                 this.logger.warn("Failed to update a pubmed id property: {}", e.getMessage());
             }
         }
+
+        XWikiContext context = getXWikiContext();
+        context.getWiki().flushCache(context);
         return null;
     }
 
