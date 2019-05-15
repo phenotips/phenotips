@@ -644,6 +644,7 @@
               <resourceBundles>
                 <resourceBundle>org.phenotips:phenotips-license-resources:${buildtools.version}</resourceBundle>
               </resourceBundles>
+              <skip>${license.skip}</skip>
             </configuration>
           </execution>
         </executions>
