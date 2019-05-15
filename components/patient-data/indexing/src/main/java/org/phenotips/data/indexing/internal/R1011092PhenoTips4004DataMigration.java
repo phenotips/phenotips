@@ -16,7 +16,7 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/
  */
 
-package org.phenotips.data.internal;
+package org.phenotips.data.indexing.internal;
 
 import org.phenotips.data.indexing.PatientIndexer;
 
@@ -79,7 +79,7 @@ public class R1011092PhenoTips4004DataMigration extends AbstractHibernateDataMig
     {
         try {
             this.indexer.reindex();
-        } catch (final IndexOutOfBoundsException e) {
+        } catch (final Exception e) {
             this.logger.error("Error while reindexing patients: [{}]", e);
         }
         return null;
