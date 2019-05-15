@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>phenotips-entities</artifactId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.4.7</version>
   </parent>
   <artifactId>phenotips-entities-api</artifactId>
   <name>PhenoTips - Entities - Java APIs</name>

@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>phenotips-pedigree</artifactId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.4.7</version>
   </parent>
   <artifactId>phenotips-pedigree-api</artifactId>
   <name>PhenoTips - Pedigree - Java APIs</name>

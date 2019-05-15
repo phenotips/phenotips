@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>vocabulary-hpo</artifactId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.4.7</version>
   </parent>
   <artifactId>vocabulary-hpo-translation-italian</artifactId>
   <name>PhenoTips - Vocabularies - Human Phenotype Ontology integration - Italian translation</name>
