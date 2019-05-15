@@ -29,6 +29,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
+import com.xpn.xwiki.XWikiContext;
 import com.xpn.xwiki.XWikiException;
 import com.xpn.xwiki.objects.FloatProperty;
 import com.xpn.xwiki.objects.IntegerProperty;
@@ -90,6 +91,9 @@ public class R54691PhenoTips1428DataMigration extends AbstractHibernateDataMigra
                 session.delete(oldAgeProperty);
                 session.save(newAgeProperty);
             }
+
+            XWikiContext context = getXWikiContext();
+            context.getWiki().flushCache(context);
             return null;
         }
     }
