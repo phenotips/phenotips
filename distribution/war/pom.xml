@@ -1096,6 +1096,19 @@
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-remote-resources-plugin</artifactId>
+        <executions>
+          <!-- We can't skip generating the license resources in here, since we need the META-INF directory in the war-plugin later -->
+          <execution>
+            <id>license-resources</id>
+            <configuration>
+              <skip>false</skip>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
           <webResources>
