@@ -663,7 +663,7 @@ define([
          if (warnBrcaTestMethod) {
              warnings.push("BOADICEA requires the testing method (search vs. direct) to be specified to" +
                            " estimate false negative rate. The testing method has been set to 'search' to" +
-                           " avoid overestimating risk, but you should review and correct this information in BOIDICEA.");
+                           " avoid overestimating risk, but you should review and correct this information in BOADICEA.");
          }
          if(warnings.length > 1) {
              warnings = warnings.map(function(v, i, a) { return (i + 1) + ") " + v; });
