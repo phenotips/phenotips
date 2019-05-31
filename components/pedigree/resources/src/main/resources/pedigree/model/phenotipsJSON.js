@@ -180,9 +180,7 @@ define([
         }
         if (patientJSON.hasOwnProperty("life_status")) {
             var lifeStatus = patientJSON["life_status"];
-            if (lifeStatus == "deceased" || lifeStatus == "alive") {
-                result.lifeStatus = lifeStatus;
-            }
+            result.lifeStatus = lifeStatus;
             if (lifeStatus != "alive") {
                 // if not removed, it will overwrite the life status to 'alive' and thus remove death date
                 delete result.aliveandwell;
