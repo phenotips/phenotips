@@ -822,10 +822,10 @@ define([
          */
         updateCommentsLabel: function() {
             this.getCommentsLabel() && this.getCommentsLabel().remove();
-            if (this.getNode().getComments() != "") {
-                // note: raphael positions text which starts with a new line in a strange way
-                //       also, blank lines are ignored unless replaced with a space
-                var text = this.getNode().getComments().replace(/^\s+|\s+$/g,'').replace(/\n\n/gi,'\n \n');
+            // note: raphael positions text which starts with a new line in a strange way
+            //       also, blank lines are ignored unless replaced with a space
+            var text = this.getNode().getComments().replace(/^\s+|\s+$/g,'').replace(/\n\n/gi,'\n \n');
+            if (text != "") {
                 this._commentsLabel = editor.getPaper().text(this.getX(), this.getY(), text).attr(PedigreeEditorParameters.attributes.commentLabel);
                 this._commentsLabel.node.setAttribute("class", "field-no-user-select");
                 this._commentsLabel.alignTop = true;
