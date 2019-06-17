@@ -612,8 +612,9 @@ define([
         _saveCursorPositionIfNecessary: function(field) {
             this.__lastSelectedField  = field.name;
             this.__lastNodeID         = this.targetNode;
-            // for text fields in all browsers, and textarea only in IE9
-            if (field.type == "text" || (document.selection && field.type == "textarea")) {
+            // for text fields in all browsers, and textarea only in IE
+            var isIE = navigator && navigator.appVersion.indexOf('Trident/') > -1;
+            if (field.type == "text" || (isIE && field.type == "textarea")) {
                 this.__lastCursorPosition = GraphicHelpers.getCaretPosition(field);
             }
         },
@@ -621,9 +622,10 @@ define([
         _restoreCursorPositionIfNecessary: function(field) {
             if (this.targetNode == this.__lastNodeID &&
                 field.name      == this.__lastSelectedField) {
-                // for text fields in all browsers, and textarea only in IE9
-                if (field.type == "text" || (document.selection && field.type == "textarea")) {
+                // for text fields in all browsers, and textarea only in IE
+                if (this.__lastCursorPosition !== undefined && (field.type == "text" || field.type == "textarea")) {
                     GraphicHelpers.setCaretPosition(field, this.__lastCursorPosition);
+                    this.__lastCursorPosition = undefined;
                 }
             }
         },
