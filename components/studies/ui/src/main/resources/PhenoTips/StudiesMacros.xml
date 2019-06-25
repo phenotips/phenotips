@@ -82,18 +82,18 @@
 ##
 ##
 ##
-#macro(__displayDefaultStudyPreference $entityType)
-  #if($xcontext.action == 'edit' &amp;&amp; $hasEdit)
+#macro(__displayDefaultStudyPreference $entityType $prefSourceDoc $viewOnly)
+  #set ($defaultStudyObject = $prefSourceDoc.getObject($configClassName, 'property', 'defaultStudy', false))
+  #if ($xcontext.action == 'edit' &amp;&amp; $hasEdit &amp;&amp; !$viewOnly)
     #set($c = 'platform.core.profile.category.dataEntry.' + ${entityType} + '.studyText')
     $services.localization.render($c)
     #__getStudies()
-    #if($studies.size() &gt; 0)
-      #set ($defaultStudyObject = $doc.getObject($configClassName, 'property', 'defaultStudy', false))
+    #if ($studies.size() &gt; 0)
       #if (!$defaultStudyObject)
-        #set ($defaultStudyObject = $doc.newObject($configClassName))
+        #set ($defaultStudyObject = $prefSourceDoc.newObject($configClassName))
         #set ($discard = $defaultStudyObject.set('property', 'defaultStudy'))
         #set ($discard = $defaultStudyObject.set('value', ''))
-        #set ($discard = $doc.save('Added a study reference configuration', true))
+        #set ($discard = $prefSourceDoc.save('Added a study reference configuration', true))
       #end
       #set ($defaultStudyPreference = $defaultStudyObject.getProperty('value').value)
       #set ($prefix = "${configClassName}_${defaultStudyObject.number}_value")
@@ -117,10 +117,9 @@
       &lt;p class="intro xHint"&gt;No studies are avaialble&lt;/p&gt;
     #end
   #else
-    #set ($defaultStudyObject = $doc.getObject($configClassName, 'property', 'defaultStudy', false))
     #if ($defaultStudyObject)
       #set ($defaultStudyPreference = $defaultStudyObject.getProperty('value').value)
-      #if("$!{defaultStudyPreference}" != '')
+      #if ("$!{defaultStudyPreference}" != '')
         #set ($s = $xwiki.getDocument("$!{defaultStudyPreference}"))
         #if (!$s.isNew())
           #set ($configTitle = '')

@@ -112,33 +112,32 @@
 #end
 ##
 ##
-#macro(__displayDefaultGroupPreference)
-  #if($xcontext.action == 'edit' &amp;&amp; $hasEdit)
+#macro(__displayPreferencesSelectList $defaultWorkgroupObject $defaultWorkgroupPreference)
+  #if ($xcontext.action == 'edit' &amp;&amp; $hasEdit)
+    #if (!$defaultWorkgroupObject)
+      #set ($defaultWorkgroupObject = $doc.newObject($configClassName))
+      #set ($discard = $defaultWorkgroupObject.set('property', 'defaultWorkgroup'))
+      #set ($discard = $defaultWorkgroupObject.set('value', ''))
+      #set ($discard = $doc.save('Added a workgroup reference configuration', true))
+    #end
+    #set ($prefix = "${configClassName}_${defaultWorkgroupObject.number}_value")
+    &lt;label class="group-settings" for="${prefix}_$group.reference"&gt;
+      &lt;input type="radio" name="${prefix}" value="" #if($defaultWorkgroupPreference == '') checked="checked"#end /&gt;
+        $services.localization.render('platform.core.profile.category.dataEntry.myPreferences')
+    &lt;/label&gt;
     #set ($userGroups = $services.groups.getGroupsForUser($services.users.getCurrentUser()))
-    #if($userGroups.size() &gt; 0)
-      #set ($defaultWorkgroupObject = $doc.getObject($configClassName, 'property', 'defaultWorkgroup', false))
-      #if (!$defaultWorkgroupObject)
-        #set ($defaultWorkgroupObject = $doc.newObject($configClassName))
-        #set ($discard = $defaultWorkgroupObject.set('property', 'defaultWorkgroup'))
-        #set ($discard = $defaultWorkgroupObject.set('value', ''))
-        #set ($discard = $doc.save('Added a workgroup reference configuration', true))
+    #if ($userGroups.size() &gt; 0)
+      #foreach ($group in $userGroups)
+        &lt;label class="group-settings" for="${prefix}_$group.reference"&gt;
+          &lt;input type="radio" name="${prefix}" #if($group.reference == $defaultWorkgroupPreference)checked="checked"#end value="$group.reference" /&gt;
+            &lt;span class="fa fa-group"&gt; &lt;/span&gt;
+            &lt;a href="$xwiki.getURL($group.reference)"&gt;$group.getReference().getName()&lt;/a&gt;
+        &lt;/label&gt;
       #end
-      #set ($defaultWorkgroupPreference = $defaultWorkgroupObject.getProperty('value').value)
-      #set ($prefix = "${configClassName}_${defaultWorkgroupObject.number}_value")
-      &lt;select id="group-suggest-input" name="${prefix}" size="1"&gt;
-        &lt;option #if($defaultWorkgroupPreference == '')selected="selected"#end value=""&gt;---&lt;/option&gt;
-        #foreach ($group in $userGroups)
-          &lt;option #if($group.reference == $defaultWorkgroupPreference)selected#end value="$group.reference"&gt;$group.getReference().getName()&lt;/option&gt;
-        #end
-      &lt;/select&gt;
-    #else
-      &lt;p class="intro xHint"&gt;$services.localization.render('platform.core.profile.category.dataEntry.noGroups')&lt;/p&gt;
     #end
   #else
-    #set ($defaultWorkgroupObject = $doc.getObject($configClassName, 'property', 'defaultWorkgroup', false))
     #if ($defaultWorkgroupObject)
-      #set ($defaultWorkgroupPreference = $defaultWorkgroupObject.getProperty('value').value)
-      #if("$!{defaultWorkgroupPreference}" != '')
+      #if ("$!{defaultWorkgroupPreference}" != '')
         #__displayEntity($defaultWorkgroupPreference)
       #end
     #end
@@ -146,48 +145,52 @@
 #end
 ##
 ##
-#macro(__displayDefaultOwnerPreference $entityType)
-  #if($xcontext.action == 'edit' &amp;&amp; $hasEdit)
+#macro(__displayDefaultOwnerPreference $entityType $prefSourceDoc $viewOnly)
+  #set ($defaultOwnerObject = $prefSourceDoc.getObject($configClassName, 'property', 'defaultOwner', false))
+  #if (!$defaultOwnerObject &amp;&amp; !$viewOnly)
+    #set ($defaultOwnerObject = $prefSourceDoc.newObject($configClassName))
+    #set ($discard = $defaultOwnerObject.set('property', 'defaultOwner'))
+    #if ($entityType == 'user')
+      #set ($defaultOwnerPreference = $prefSourceDoc.prefixedFullName)
+    #else
+      #set ($defaultOwnerPreference = '')
+    #end
+    #set ($discard = $defaultOwnerObject.set('value', $defaultOwnerPreference))
+    #set ($discard = $prefSourceDoc.save('Added a default owner preference configuration', true))
+  #else
+    #set ($defaultOwnerPreference = $defaultOwnerObject.getProperty('value').value)
+  #end
+  #if ($xcontext.action == 'edit' &amp;&amp; $hasEdit  &amp;&amp; !$viewOnly)
+    #if ("$!{defaultOwnerPreference}" != '')
+      #set ($defaultOwnerName = $services.model.resolveDocument($defaultOwnerPreference).getName())
+    #else
+      #set ($defaultOwnerName = '')
+    #end
     #set ($c = 'platform.core.profile.category.dataEntry.' + ${entityType} + '.ownerText')
     $services.localization.render($c)
-    #set ($defaultOwnerObject = $doc.getObject($configClassName, 'property', 'defaultOwner', false))
-    #if (!$defaultOwnerObject)
-      #set ($defaultOwnerObject = $doc.newObject($configClassName))
-      #set ($discard = $defaultOwnerObject.set('property', 'defaultOwner'))
-      #set ($defaultOwnerName = '')
-      #set ($discard = $defaultOwnerObject.set('value', $defaultOwnerName))
-      #set ($discard = $doc.save('Added a default owner preference configuration', true))
-    #else
-      #set ($defaultOwnerPreference = $defaultOwnerObject.getProperty('value').value)
-      #set ($defaultOwnerName = $services.model.resolveDocument($defaultOwnerPreference).getName())
-    #end
     #set ($prefix = "${configClassName}_${defaultOwnerObject.number}_value")
     &lt;input type="text" name="${prefix}" class="suggestUsersAndGroups" value="$defaultOwnerName"/&gt;
   #else
-    #set ($defaultOwnerObject = $doc.getObject($configClassName, 'property', 'defaultOwner', false))
-    #if ($defaultOwnerObject)
-      #set ($defaultOwnerPreference = $defaultOwnerObject.getProperty('value').value)
-      #if("$!{defaultOwnerPreference}" != '')
-        #__displayEntity($defaultOwnerPreference)
-      #end
-    #end
+    #__displayEntity($defaultOwnerPreference)
   #end
 #end
 ##
 ##
 ##
-#macro(__displayDefaultVisibilityPreference $entityType)
-  #if($xcontext.action == 'edit' &amp;&amp; $hasEdit)
+#macro(__displayDefaultVisibilityPreference $entityType $prefSourceDoc $viewOnly)
+  #set ($defaultVisibilityObject = $prefSourceDoc.getObject($configClassName, 'property', 'defaultVisibility', false))
+  #if (!$defaultVisibilityObject &amp;&amp; !$viewOnly)
+    #set ($defaultVisibilityObject = $prefSourceDoc.newObject($configClassName))
+    #set ($discard = $defaultVisibilityObject.set('property', 'defaultVisibility'))
+    #set ($discard = $defaultVisibilityObject.set('value', 'private'))
+    #set ($discard = $prefSourceDoc.save('Added a default private visibility preference configuration', true))
+    #set ($defaultVisibilityPreference = 'private')
+  #else
+    #set ($defaultVisibilityPreference = $defaultVisibilityObject.getProperty('value').value)
+  #end
+  #if($xcontext.action == 'edit' &amp;&amp; $hasEdit &amp;&amp; !$viewOnly)
     #set ($c = 'platform.core.profile.category.dataEntry.' + ${entityType} + '.visibilityText')
     $services.localization.render($c)
-    #set ($defaultVisibilityObject = $doc.getObject($configClassName, 'property', 'defaultVisibility', false))
-    #if (!$defaultVisibilityObject)
-      #set ($defaultVisibilityObject = $doc.newObject($configClassName))
-      #set ($discard = $defaultVisibilityObject.set('property', 'defaultVisibility'))
-      #set ($discard = $defaultVisibilityObject.set('value', ''))
-      #set ($discard = $doc.save('Added a default visibility preference configuration', true))
-    #end
-    #set ($defaultVisibilityPreference = $defaultVisibilityObject.getProperty('value').value)
     #set ($prefix = "${configClassName}_${defaultVisibilityObject.number}_value")
     &lt;table id="access-levels-table"&gt;
     #foreach ($option in $services.permissions.listVisibilityOptions())
@@ -206,22 +209,18 @@
     #end
     &lt;/table&gt;
   #else
-    #set ($defaultVisibilityObject = $doc.getObject($configClassName, 'property', 'defaultVisibility', false))
-    #if ($defaultVisibilityObject)
-      #set ($defaultVisibilityPreference = $defaultVisibilityObject.getProperty('value').value)
-      #__displayVisibility($defaultVisibilityPreference)
-    #end
+    #__displayVisibility($defaultVisibilityPreference)
   #end
 #end
 ##
 ##
 ##
-#macro(__displayDefaultCollaboratorPreference $entityType)
-  #if($xcontext.action == 'edit' &amp;&amp; $hasEdit)
+#macro(__displayDefaultCollaboratorPreference $entityType $prefSourceDoc $viewOnly)
+  #set ($defaultCollaboratorObjects = $prefSourceDoc.getObjects($configClassName, 'property', 'defaultCollaborator'))
+  #if ($xcontext.action == 'edit' &amp;&amp; $hasEdit &amp;&amp; !$viewOnly)
     #set ($c = 'platform.core.profile.category.dataEntry.' + ${entityType} + '.collaboratorsText')
     $services.localization.render($c)
     ## List all defaultCollaborators as hidden inputs to generate selected suggestions in edit mode
-    #set ($defaultCollaboratorObjects = $doc.getObjects($configClassName, 'property', 'defaultCollaborator'))
     #if ($defaultCollaboratorObjects &amp;&amp; !$defaultCollaboratorObjects.isEmpty())
       #foreach ($o in $defaultCollaboratorObjects)
         ## generate value as JSON string
@@ -237,16 +236,15 @@
     #end
     ##
     ## Save service URL with tocken
-    &lt;input type="hidden" id="service-url" value="$xwiki.getDocument('PhenoTips.UserProfileService').getURL('get', "config_classname=${configClassName}&amp;collab_namepropname=property&amp;collab_namepropvalue=defaultCollaborator&amp;form_token=$!{services.csrf.getToken()}&amp;page=$doc.fullName&amp;outputSyntax=plain")" /&gt;
+    &lt;input type="hidden" id="service-url" value="$xwiki.getDocument('PhenoTips.UserProfileService').getURL('get', "config_classname=${configClassName}&amp;collab_namepropname=property&amp;collab_namepropvalue=defaultCollaborator&amp;form_token=$!{services.csrf.getToken()}&amp;page=$prefSourceDoc.fullName&amp;outputSyntax=plain")" /&gt;
     ##
     &lt;div id="manage-collaborators"&gt;&lt;input id="collaborators-suggest-input" type="text" name="${configClassName}_NUMBER_value" class="suggestUsersAndGroups" value=""/&gt;&lt;/div&gt;
   #else
-    #set ($defaultCollaboratorObjects = $doc.getObjects($configClassName, 'property', 'defaultCollaborator'))
     #if ($defaultCollaboratorObjects &amp;&amp; !$defaultCollaboratorObjects.isEmpty())
       #foreach ($c in $defaultCollaboratorObjects)
         #set ($defaultCollaboratorPreference = $c.getProperty('value').value)
         #if ("$!{defaultCollaboratorPreference}" != '')
-          #set($collabSetting = $defaultCollaboratorPreference.split('\^'))
+          #set ($collabSetting = $defaultCollaboratorPreference.split('\^'))
           &lt;div&gt;
             #__displayEntity($collabSetting[0])
             #if ($collabSetting.size() &gt; 1)
@@ -259,6 +257,57 @@
       #end
     #end
   #end
+#end
+##
+##
+##
+#macro(__displayUserOrGroupPreferences $entityType $defaultWorkgroupPreference $prefSourceDoc $viewOnly)
+#if ($xcontext.action == 'edit')
+  #set ($hidden = true)
+  #if ("$!{defaultWorkgroupPreference}" != '' &amp;&amp; $prefSourceDoc.prefixedFullName == $defaultWorkgroupPreference || "$!{defaultWorkgroupPreference}" == '' &amp;&amp; $prefSourceDoc.prefixedFullName == $doc.prefixedFullName)
+    #set ($hidden = false)
+  #end
+&lt;div class="preferences half column xform #if($hidden)hidden#end" id="$prefSourceDoc.prefixedFullName"&gt;
+  &lt;div class="dataEntry"&gt;
+    &lt;dl&gt;
+#end
+      &lt;dt&gt;
+        &lt;h2&gt;$services.localization.render('platform.core.profile.category.dataEntry.defaultPermissions')&lt;/h2&gt;
+      &lt;/dt&gt;
+###### Owner preferences
+      &lt;dt class="label"&gt;
+        &lt;label&gt;$services.localization.render('platform.core.profile.category.dataEntry.owner')&lt;/label&gt;
+        &lt;p class="intro xHint"&gt;$services.localization.render('phenotips.accessRightsManagement.modifyOwnershipBody')&lt;/p&gt;
+      &lt;/dt&gt;
+      &lt;dd&gt;
+        #__displayDefaultOwnerPreference($entityType $prefSourceDoc $viewOnly)
+      &lt;/dd&gt;
+###### Visibility preferences
+      &lt;dt class="label"&gt;
+        &lt;label&gt;$services.localization.render('platform.core.profile.category.dataEntry.visibility')&lt;/label&gt;
+        &lt;p class="intro xHint"&gt;$services.localization.render('phenotips.accessRightsManagement.modifyVisibilityBody')&lt;/p&gt;
+      &lt;/dt&gt;
+      &lt;dd&gt;
+        #__displayDefaultVisibilityPreference($entityType $prefSourceDoc $viewOnly)
+      &lt;/dd&gt;
+###### Collaborators preferences
+      &lt;dt class="label"&gt;
+        &lt;label&gt;$services.localization.render('platform.core.profile.category.dataEntry.collaborators')&lt;/label&gt;
+        &lt;p class="intro xHint"&gt;$services.localization.render('phenotips.accessRightsManagement.modifyCollaboratorsBody')&lt;/p&gt;
+      &lt;/dt&gt;
+      &lt;dd&gt;
+        #__displayDefaultCollaboratorPreference($entityType $prefSourceDoc $viewOnly)
+      &lt;/dd&gt;
+###### STUDY
+      &lt;dt&gt;
+        &lt;h2&gt;$services.localization.render('platform.core.profile.category.dataEntry.study')&lt;/h2&gt;
+      &lt;/dt&gt;
+      &lt;dd&gt;
+        #__displayDefaultStudyPreference($entityType $prefSourceDoc $viewOnly)
+      &lt;/dd&gt;
+    &lt;/dl&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
 #end
 {{/velocity}}
 </content>

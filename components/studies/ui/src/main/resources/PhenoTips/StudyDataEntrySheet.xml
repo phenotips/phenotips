@@ -74,7 +74,7 @@ $xwiki.ssx.use('XWiki.XWikiUserSheet')##
         &lt;p class="intro xHint"&gt;$services.localization.render('phenotips.accessRightsManagement.modifyVisibilityBody')&lt;/p&gt;
       &lt;/dt&gt;
       &lt;dd&gt;
-        #__displayDefaultVisibilityPreference($entityType)
+        #__displayDefaultVisibilityPreference($entityType $doc)
       &lt;/dd&gt;
 ###### Collaborators preferences
       &lt;dt class="label"&gt;
@@ -82,7 +82,7 @@ $xwiki.ssx.use('XWiki.XWikiUserSheet')##
         &lt;p class="intro xHint"&gt;$services.localization.render('phenotips.accessRightsManagement.modifyCollaboratorsBody')&lt;/p&gt;
       &lt;/dt&gt;
       &lt;dd&gt;
-        #__displayDefaultCollaboratorPreference($entityType)
+        #__displayDefaultCollaboratorPreference($entityType $doc)
       &lt;/dd&gt;
     &lt;/dl&gt;
   &lt;/div&gt;

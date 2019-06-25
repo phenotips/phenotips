@@ -42,96 +42,83 @@
 {{include reference="PhenoTips.StudiesMacros"/}}
 
 {{velocity}}
-$xwiki.ssfx.use('uicomponents/suggest/suggestPicker.css', true)##
-$xwiki.jsfx.use('uicomponents/suggest/suggestPicker.js', true)##
-$xwiki.ssfx.use('uicomponents/widgets/userpicker/userPicker.css', true)##
-$xwiki.jsfx.use('uicomponents/widgets/userpicker/userPicker.js', true)##
-$xwiki.ssfx.use('js/xwiki/usersandgroups/usersandgroups.css', true)##
-$xwiki.ssx.use('XWiki.XWikiUserDataEntrySheet')##
-$xwiki.jsx.use('XWiki.XWikiUserDataEntrySheet')##
-#set($entityType = 'user')
 #set($obj = $doc.getObject("XWiki.XWikiUsers"))
 #if(!$obj)
 {{info}}$services.localization.render('xe.admin.users.applyonusers'){{/info}}##
 #else
 $doc.use($obj)
+#if ($xcontext.action == 'edit')
+$xwiki.ssfx.use('uicomponents/suggest/suggestPicker.css', true)##
+$xwiki.jsfx.use('uicomponents/suggest/suggestPicker.js', true)##
+$xwiki.ssfx.use('uicomponents/widgets/userpicker/userPicker.css', true)##
+$xwiki.jsfx.use('uicomponents/widgets/userpicker/userPicker.js', true)##
+$xwiki.ssfx.use('js/xwiki/usersandgroups/usersandgroups.css', true)##
+#end
+$xwiki.ssx.use('XWiki.XWikiUserDataEntrySheet')##
+$xwiki.jsx.use('XWiki.XWikiUserDataEntrySheet')##
 $xwiki.ssx.use('XWiki.XWikiUserSheet')##
+#set ($entityType = 'user')
+#set ($defaultWorkgroupObject = $doc.getObject($configClassName, 'property', 'defaultWorkgroup', false))
+#set ($defaultWorkgroupPreference = '')
+#set ($prefSourceDoc = $doc)
+#if ($defaultWorkgroupObject)
+  #set ($defaultWorkgroupPreference = $defaultWorkgroupObject.getProperty('value').value)
+  #if ("$!{defaultWorkgroupPreference}" != '')
+    #set($groupDocRef = $services.model.resolveDocument($defaultWorkgroupPreference))
+    #set($prefSourceDoc = $xwiki.getDocument($groupDocRef))
+  #end
+#end
 {{html wiki="true"}}
 
-&lt;div class="#if($xcontext.action == 'view')half #{else}full #{end}column xform"&gt;
-  &lt;div class="dataEntry"&gt;
-    #if($xcontext.action == 'view' &amp;&amp; $hasEdit)
-      &lt;div class="editProfileCategory"&gt;&lt;a href="$doc.getURL('edit', 'category=dataEntry')"&gt;&lt;span class="hidden"&gt;$services.localization.render('platform.core.profile.category.dataEntry.edit')&lt;/span&gt;&lt;/a&gt;&lt;/div&gt;
-    #end
-    &lt;h3&gt;$services.localization.render('platform.core.profile.category.dataEntry.header')&lt;/h3&gt;
+&lt;div class="#if($xcontext.action == 'view') dataEntry half#else third#end column xform"&gt;
+  #if($xcontext.action == 'view' &amp;&amp; $hasEdit)
+    &lt;div class="editProfileCategory"&gt;&lt;a href="$doc.getURL('edit', 'category=dataEntry')"&gt;&lt;span class="hidden"&gt;$services.localization.render('platform.core.profile.category.dataEntry.edit')&lt;/span&gt;&lt;/a&gt;&lt;/div&gt;
+  #end
+  &lt;h3&gt;$services.localization.render('platform.core.profile.category.dataEntry.header')&lt;/h3&gt;
 #########################
-## Use my group's preferences
+## Use preferences
 #########################
-    &lt;dl&gt;
-      &lt;dt class="label"&gt;
-        &lt;h1&gt;
-        #if($xcontext.action == 'edit' &amp;&amp; $hasEdit)
-           $services.localization.render('platform.core.profile.category.dataEntry.groupsPreferences')
+  #if($xcontext.action == 'view') dataEntry#end
+  &lt;dl class="all-prefs"&gt;
+    &lt;dt class="label"&gt;
+      &lt;h1&gt;
+      #if ($xcontext.action == 'edit' &amp;&amp; $hasEdit)
+         $services.localization.render('platform.core.profile.category.dataEntry.usePreferences')
+      #else
+        #if ("$!{defaultWorkgroupPreference}" == '')
+          $services.localization.render('platform.core.profile.category.dataEntry.usedMinePreferences')
         #else
-          $services.localization.render('platform.core.profile.category.dataEntry.mygroupsPreferences')
+          $services.localization.render('platform.core.profile.category.dataEntry.usedPreferences')
         #end
-        &lt;/h1&gt;
-      &lt;/dt&gt;
-      &lt;dd&gt;
-        #__displayDefaultGroupPreference()
-      &lt;/dd&gt;
-    &lt;/dl&gt;
-#########################
-## Use my preferences
-#########################
-    &lt;dl class="user-prefs"&gt;
-      &lt;dt class="label"&gt;
-        &lt;h1"&gt;
-          #if($xcontext.action == 'edit' &amp;&amp; $hasEdit)
-            $services.localization.render('platform.core.profile.category.dataEntry.myPreferences')
-          #else
-            $services.localization.render('platform.core.profile.category.dataEntry.myMyPreferences')
-          #end
-        &lt;/h1&gt;
-      &lt;/dt&gt;
-      &lt;dt&gt;
-        &lt;h2&gt;$services.localization.render('platform.core.profile.category.dataEntry.defaultPermissions')&lt;/h2&gt;
-      &lt;/dt&gt;
-###### Owner preferences
-      &lt;dt class="label"&gt;
-        &lt;label&gt;$services.localization.render('platform.core.profile.category.dataEntry.owner')&lt;/label&gt;
-        &lt;p class="intro xHint"&gt;$services.localization.render('phenotips.accessRightsManagement.modifyOwnershipBody')&lt;/p&gt;
-      &lt;/dt&gt;
-      &lt;dd&gt;
-        #__displayDefaultOwnerPreference($entityType)
-      &lt;/dd&gt;
-###### Visibility preferences
-      &lt;dt class="label"&gt;
-        &lt;label&gt;$services.localization.render('platform.core.profile.category.dataEntry.visibility')&lt;/label&gt;
-        &lt;p class="intro xHint"&gt;$services.localization.render('phenotips.accessRightsManagement.modifyVisibilityBody')&lt;/p&gt;
-      &lt;/dt&gt;
-      &lt;dd&gt;
-        #__displayDefaultVisibilityPreference($entityType)
-      &lt;/dd&gt;
-###### Collaborators preferences
-      &lt;dt class="label"&gt;
-        &lt;label&gt;$services.localization.render('platform.core.profile.category.dataEntry.collaborators')&lt;/label&gt;
-        &lt;p class="intro xHint"&gt;$services.localization.render('phenotips.accessRightsManagement.modifyCollaboratorsBody')&lt;/p&gt;
-      &lt;/dt&gt;
-      &lt;dd&gt;
-        #__displayDefaultCollaboratorPreference($entityType)
-      &lt;/dd&gt;
-###### STUDY
-      &lt;dt&gt;
-        &lt;h2&gt;$services.localization.render('platform.core.profile.category.dataEntry.study')&lt;/h2&gt;
-      &lt;/dt&gt;
-      &lt;dd&gt;
-        #__displayDefaultStudyPreference($entityType)
-      &lt;/dd&gt;
-    &lt;/dl&gt;
-  &lt;/div&gt;
+      #end
+      &lt;/h1&gt;
+    &lt;/dt&gt;
+    &lt;dd&gt;
+      #__displayPreferencesSelectList($defaultWorkgroupObject $defaultWorkgroupPreference)
+    &lt;/dd&gt;
+#if($xcontext.action == 'edit')
+  &lt;/dl&gt;
 &lt;/div&gt;
-&lt;div class="clearfloats"&gt;&amp;nbsp;&lt;/div&gt;
+#end
+#########################
+## Preferences
+#########################
+#set ($viewOnly = false)
+#if ($xcontext.action == 'edit' &amp;&amp; $hasEdit)
+  #__displayUserOrGroupPreferences($entityType $defaultWorkgroupPreference $doc $viewOnly)
+  #set ($userGroups = $services.groups.getGroupsForUser($services.users.getCurrentUser()))
+  #if ($userGroups.size() &gt; 0)
+    #set ($viewOnly = true)
+    #foreach ($group in $userGroups)
+      #set ($entityType = 'group')
+      #set ($groupDocRef = $services.model.resolveDocument($group.reference))
+      #set ($prefSourceDoc = $xwiki.getDocument($groupDocRef))
+      #__displayUserOrGroupPreferences($entityType $defaultWorkgroupPreference $prefSourceDoc $viewOnly)
+    #end
+  #end
+#else
+  #__displayUserOrGroupPreferences($entityType $defaultWorkgroupPreference $prefSourceDoc $viewOnly)
+#end
 {{/html}}##
 #end
 {{/velocity}}</content>
@@ -239,11 +226,8 @@ $xwiki.ssx.use('XWiki.XWikiUserSheet')##
           addCollaborator(newCollaborator, true, true);
       });
 
-      // Disable/enable user preference section if default group preference is already selected
-      toggleUserPrefSection($('group-suggest-input'));
-
       // Disable user preference section if default group preference is selected
-      $('group-suggest-input') &amp;&amp; $('group-suggest-input').observe('change', function(event) {
+      $$('.group-settings input').invoke('observe', 'change', function(event) {
           toggleUserPrefSection(event.element());
       });
 
@@ -281,17 +265,14 @@ $xwiki.ssx.use('XWiki.XWikiUserSheet')##
       });
     }
 
-    // Disable user preference section if default group preference is selected
+    // Hide user preference section if default group preference is selected
     var toggleUserPrefSection = function (el) {
       var groupName = el &amp;&amp; el.value;
-      if (!groupName || groupName == '') {
-        $$('dl.user-prefs')[0] &amp;&amp; $$('dl.user-prefs')[0].removeClassName('disabled-section');
-        $$('dl.user-prefs input, dl.user-prefs select').each(function(el) { el.disabled = false; });
-        $$('dl.user-prefs span.delete-tool, dl.user-prefs span.delete.tool').each(function(el) { el.show(); });
+      $$('.preferences').each(function (el) { el.addClassName('hidden'); });
+      if (groupName &amp;&amp; groupName != ''){
+        $(groupName) &amp;&amp; $(groupName).removeClassName('hidden');
       } else {
-        $$('dl.user-prefs')[0] &amp;&amp; $$('dl.user-prefs')[0].addClassName('disabled-section');
-        $$('dl.user-prefs input, dl.user-prefs select').each(function(el) { el.disabled = true; });
-        $$('dl.user-prefs span.delete-tool, dl.user-prefs span.delete.tool').each(function(el) { el.hide(); });
+        $$('.preferences')[0] &amp;&amp; $$('.preferences')[0].removeClassName('hidden');
       }
     }
 
@@ -515,7 +496,10 @@ $xwiki.ssx.use('XWiki.XWikiUserSheet')##
   border: 0 none;
   text-align: left;
   vertical-align: top;
-  padding: 0;
+  padding: 0 .3em 0 0;
+}
+.fa.fa-lock {
+  padding-left: 2px;
 }
 #access-levels-table label {
   margin-right: 1em;
@@ -578,14 +562,15 @@ $xwiki.ssx.use('XWiki.XWikiUserSheet')##
 #manage-collaborators ul.accepted-suggestions {
   display: none;
 }
-.disabled-section {
-  opacity: .8;
-}
 #collaborators td:first-child {
   text-align: center;
 }
 #study-suggest-input {
   margin-top: 1em;
+}
+label.group-settings {
+  display: block;
+  padding: 0.3em;
 }</code>
     </property>
     <property>

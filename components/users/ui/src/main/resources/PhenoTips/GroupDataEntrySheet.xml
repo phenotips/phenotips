@@ -42,22 +42,24 @@
 {{include reference="PhenoTips.DefaultPermissionsMacros"/}}
 
 {{velocity}}
-$xwiki.ssfx.use('uicomponents/suggest/suggestPicker.css', true)##
-$xwiki.jsfx.use('uicomponents/suggest/suggestPicker.js', true)##
-$xwiki.ssfx.use('uicomponents/widgets/userpicker/userPicker.css', true)##
-$xwiki.jsfx.use('uicomponents/widgets/userpicker/userPicker.js', true)##
-$xwiki.ssfx.use('js/xwiki/usersandgroups/usersandgroups.css', true)##
-$xwiki.ssx.use('XWiki.XWikiUserDataEntrySheet')##
-$xwiki.jsx.use('XWiki.XWikiUserDataEntrySheet')##
-#set($entityType = 'group')
 #set($obj = $doc.getObject("XWiki.XWikiGroups"))
 #if(!$obj)
 {{info}}$services.localization.render('xe.admin.users.applyongroups'){{/info}}##
 #else
 $doc.use($obj)
+#if ($xcontext.action == 'edit')
+$xwiki.ssfx.use('uicomponents/suggest/suggestPicker.css', true)##
+$xwiki.jsfx.use('uicomponents/suggest/suggestPicker.js', true)##
+$xwiki.ssfx.use('uicomponents/widgets/userpicker/userPicker.css', true)##
+$xwiki.jsfx.use('uicomponents/widgets/userpicker/userPicker.js', true)##
+$xwiki.ssfx.use('js/xwiki/usersandgroups/usersandgroups.css', true)##
+#end
+$xwiki.ssx.use('XWiki.XWikiUserDataEntrySheet')##
+$xwiki.jsx.use('XWiki.XWikiUserDataEntrySheet')##
 $xwiki.ssx.use('XWiki.XWikiUserSheet')##
+#set ($entityType = 'group')
+#set ($viewOnly = false)
 {{html wiki="true"}}
-
 &lt;div class="#if($xcontext.action == 'view')half #{else}full #{end}column xform"&gt;
   &lt;div class="dataEntry"&gt;
     #if($xcontext.action == 'view' &amp;&amp; $hasEdit)
@@ -74,7 +76,7 @@ $xwiki.ssx.use('XWiki.XWikiUserSheet')##
         &lt;p class="intro xHint"&gt;$services.localization.render('phenotips.accessRightsManagement.modifyOwnershipBody')&lt;/p&gt;
       &lt;/dt&gt;
       &lt;dd&gt;
-        #__displayDefaultOwnerPreference($entityType)
+        #__displayDefaultOwnerPreference($entityType $doc $viewOnly)
       &lt;/dd&gt;
 ###### Visibility preferences
       &lt;dt class="label"&gt;
@@ -82,7 +84,7 @@ $xwiki.ssx.use('XWiki.XWikiUserSheet')##
         &lt;p class="intro xHint"&gt;$services.localization.render('phenotips.accessRightsManagement.modifyVisibilityBody')&lt;/p&gt;
       &lt;/dt&gt;
       &lt;dd&gt;
-        #__displayDefaultVisibilityPreference($entityType)
+        #__displayDefaultVisibilityPreference($entityType $doc $viewOnly)
       &lt;/dd&gt;
 ###### Collaborators preferences
       &lt;dt class="label"&gt;
@@ -90,14 +92,14 @@ $xwiki.ssx.use('XWiki.XWikiUserSheet')##
         &lt;p class="intro xHint"&gt;$services.localization.render('phenotips.accessRightsManagement.modifyCollaboratorsBody')&lt;/p&gt;
       &lt;/dt&gt;
       &lt;dd&gt;
-        #__displayDefaultCollaboratorPreference($entityType)
+        #__displayDefaultCollaboratorPreference($entityType $doc $viewOnly)
       &lt;/dd&gt;
 ###### STUDY
       &lt;dt&gt;
         &lt;h1&gt;$services.localization.render('platform.core.profile.category.dataEntry.study')&lt;/h1&gt;
       &lt;/dt&gt;
       &lt;dd&gt;
-        #__displayDefaultStudyPreference($entityType)
+        #__displayDefaultStudyPreference($entityType $doc $viewOnly)
       &lt;/dd&gt;
     &lt;/dl&gt;
   &lt;/div&gt;
