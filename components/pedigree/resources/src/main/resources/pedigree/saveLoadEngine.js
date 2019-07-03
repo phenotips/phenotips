@@ -411,7 +411,7 @@ define([
                 options,
                 continueMessage, null,
                 cancelMessage, editor.closePedigree,
-                toggleDetailsButtonText, toggleDetails, true);
+                toggleDetailsButtonText, toggleDetails);
         },
 
         _loadFromFamilyInfoJSON: function(responseJSON) {
