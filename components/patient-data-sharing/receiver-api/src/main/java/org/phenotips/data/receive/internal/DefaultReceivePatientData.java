@@ -25,6 +25,7 @@ import org.phenotips.data.Patient;
 import org.phenotips.data.PatientRepository;
 import org.phenotips.data.internal.PhenoTipsPatient;
 import org.phenotips.data.permissions.EntityPermissionsManager;
+import org.phenotips.data.permissions.EntityPermissionsPreferencesManager;
 import org.phenotips.data.receive.ReceivePatientData;
 import org.phenotips.data.securestorage.LocalLoginToken;
 import org.phenotips.data.securestorage.SecureStorageManager;
@@ -37,8 +38,10 @@ import org.xwiki.bridge.DocumentAccessBridge;
 import org.xwiki.component.annotation.Component;
 import org.xwiki.configuration.ConfigurationSource;
 import org.xwiki.context.Execution;
+import org.xwiki.model.EntityType;
 import org.xwiki.model.reference.DocumentReference;
 import org.xwiki.model.reference.DocumentReferenceResolver;
+import org.xwiki.model.reference.EntityReference;
 import org.xwiki.query.Query;
 import org.xwiki.query.QueryManager;
 import org.xwiki.security.authorization.Right;
@@ -157,6 +160,13 @@ public class DefaultReceivePatientData implements ReceivePatientData
     @Inject
     @Named("user/current")
     private DocumentReferenceResolver<String> userResolver;  // used to convert usernames from XWiki.user to plain user
+
+    @Inject
+    private EntityPermissionsPreferencesManager preferencesManager;
+
+    @Inject
+    @Named("userOrGroup")
+    private DocumentReferenceResolver<String> userOrGroupResolver;
 
     @Override
     public boolean isServerTrusted()
@@ -718,7 +728,8 @@ public class DefaultReceivePatientData implements ReceivePatientData
             }
 
             String userName = loginResult.getAuthorizedUsername();
-            Set<Group> userGroups = this.groupManager.getGroupsForUser(this.userManager.getUser(userName));
+            User user = this.userManager.getUser(userName);
+            Set<Group> userGroups = this.groupManager.getGroupsForUser(user);
             JSONArray groupList = new JSONArray();
             for (Group g : userGroups) {
                 groupList.put(g.getReference().getName());
@@ -733,6 +744,16 @@ public class DefaultReceivePatientData implements ReceivePatientData
             response.put(ShareProtocol.SERVER_JSON_GETINFO_KEY_NAME_UPDATESENABLED, true);
             response.put(ShareProtocol.SERVER_JSON_GETINFO_KEY_NAME_CONSENTS,
                 this.consentManager.toJSON(this.consentManager.getSystemConsents()));
+
+            DocumentReference userRef = user.getProfileDocument();
+            DocumentReference defaultOwnerDocRef = this.preferencesManager.getDefaultOwner(userRef);
+            if (defaultOwnerDocRef != null) {
+                EntityReference userOrGroup = this.userOrGroupResolver.resolve(defaultOwnerDocRef.toString(), EntityType.DOCUMENT);
+                JSONObject owner = new JSONObject();
+                owner.put("name", userOrGroup.getName());
+                owner.put("id", userOrGroup.toString());
+                response.put("default-owner", owner);
+            }
 
             BaseObject serverConfig = getSourceServerConfiguration(request.getRemoteAddr(), context); // TODO: make nice
             if (this.userTokensEnabled(serverConfig)) {
