@@ -113,7 +113,7 @@ public class AuditEventTest
         Assert.assertNotEquals(e1, e2);
         e2 = new AuditEvent(this.user, "ip", "action", "extra", new DocumentReference("wiki", "Space", "OtherPage"), c);
         Assert.assertNotEquals(e1, e2);
-        e2 = new AuditEvent(this.user, "ip", "action", "extra", this.doc, Calendar.getInstance());
+        e2 = new AuditEvent(this.user, "ip", "action", "extra", this.doc, SecurityTestUtils.getCalendar(10));
         Assert.assertNotEquals(e1, e2);
 
         Assert.assertNotEquals(new AuditEvent(), e1);
@@ -140,7 +140,7 @@ public class AuditEventTest
         Assert.assertNotEquals(e1.hashCode(), e2.hashCode());
         e2 = new AuditEvent(this.user, "ip", "action", "extra", new DocumentReference("wiki", "Space", "OtherPage"), c);
         Assert.assertNotEquals(e1.hashCode(), e2.hashCode());
-        e2 = new AuditEvent(this.user, "ip", "action", "extra", this.doc, Calendar.getInstance());
+        e2 = new AuditEvent(this.user, "ip", "action", "extra", this.doc, SecurityTestUtils.getCalendar(10));
         Assert.assertNotEquals(e1.hashCode(), e2.hashCode());
 
         Assert.assertNotEquals(new AuditEvent().hashCode(), e1.hashCode());

@@ -20,6 +20,7 @@ package org.phenotips.security.audit.script;
 import org.phenotips.Constants;
 import org.phenotips.security.audit.AuditEvent;
 import org.phenotips.security.audit.AuditStore;
+import org.phenotips.security.audit.SecurityTestUtils;
 import org.phenotips.security.audit.internal.HibernateAuditStore;
 import org.phenotips.security.authorization.AuthorizationService;
 
@@ -209,7 +210,7 @@ public class AuditScriptServiceTest
         Calendar from = Calendar.getInstance();
         from.clear();
         from.set(2010, 0, 1, 0, 0, 0);
-        Calendar to = Calendar.getInstance();
+        Calendar to = SecurityTestUtils.getCalendar(10);
         to.clear();
         to.set(2011, 0, 1, 0, 0, 0);
         AuditEvent template = new AuditEvent(this.user, "ip", "action", null, this.doc, null);
