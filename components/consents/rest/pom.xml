@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>phenotips-consents</artifactId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.4.8</version>
   </parent>
   <artifactId>phenotips-consents-rest</artifactId>
   <name>PhenoTips - Consents - REST Services</name>

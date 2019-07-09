@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>vocabulary-ordo</artifactId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.4.8</version>
   </parent>
   <artifactId>vocabulary-ordo-api</artifactId>
   <name>PhenoTips - Vocabularies - ORDO integration - APIs</name>
