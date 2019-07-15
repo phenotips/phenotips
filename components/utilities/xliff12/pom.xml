@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>phenotips-utilities</artifactId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.4.9</version>
   </parent>
   <artifactId>phenotips-xliff12-strict</artifactId>
   <name>PhenoTips - Utilities - XLIFF APIs</name>

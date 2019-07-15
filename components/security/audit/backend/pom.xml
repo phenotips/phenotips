@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>phenotips-audit</artifactId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.4.9</version>
   </parent>
   <artifactId>phenotips-audit-backend</artifactId>
   <name>PhenoTips - Security - Auditing support - Backend code</name>
