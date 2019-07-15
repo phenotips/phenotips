@@ -2041,7 +2041,7 @@ define([
 
                     // note: each "relationship" node is guaranteed to have exactly two "parent" nodes (validate() checks that)
 
-                    if (this.ranks[parent[0]] != this.ranks[parent[1]])
+                    if (this.ranks[parents[0]] != this.ranks[parents[1]])
                         throw "Assertion failed: edges betwen neighbouring ranks only";
 
                     var order1 = this.order.vOrder[parents[0]];
