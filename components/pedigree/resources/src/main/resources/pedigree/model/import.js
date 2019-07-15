@@ -1582,6 +1582,19 @@ define([
        }
 
        var relationshipTracker = new RelationshipTracker(newG);
+       
+       var createPersonNode = function(graph, attributes) {
+           return graph._addVertex( null, BaseGraph.TYPE.PERSON, attributes, null );
+       };
+
+       var lookupNodeByReference = function(reference) {
+           // FIXME: some applications produce a GEDCOM file where links have incorrect IDs,
+           //        where a correct reference "@Ixxx@" is replaced by "@xxx@". So as a quick fix an attempt is made to either look up
+           //        the proper ID, or the ID with an "I" pefix attached before the numeric part of the ID.
+           return externalIDToID.hasOwnProperty(reference)
+                      ? externalIDToID[reference]
+                      : externalIDToID[reference.replace(/^@(\d+)/,"@I$1")];
+       };
 
        // second pass (once all vertex IDs are known): process families & add edges
        for (var i = 0; i < gedcom.families.length; i++) {
@@ -1592,14 +1605,22 @@ define([
 
            // create a virtual parent in case one of the parents is missing
            if (fatherLink == null) {
-               var fatherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "M", "comments": "unknown"}, null );
+               var fatherID = createPersonNode(newG, {"gender": "M", "comments": "unknown"});
            } else {
-               var fatherID = externalIDToID[fatherLink];
+               var fatherID = lookupNodeByReference(fatherLink);
+
+               if (fatherID === undefined) {
+                   throw "Unable to import pedigree: father link does not point to an existing individual: [" + fatherLink + "]";
+               }
            }
            if (motherLink == null) {
-               var motherID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "F", "comments": "unknown"}, null );
+               var motherID = createPersonNode(newG, {"gender": "F", "comments": "unknown"});
            } else {
-               var motherID = externalIDToID[motherLink];
+               var motherID = lookupNodeByReference(motherLink);
+
+               if (motherID === undefined) {
+                   throw "Unable to import pedigree: mother link does not point to an existing individual: [" + motherLink + "]";
+               }
            }
 
            // both motherID and fatherID are now given and represent valid existing nodes in the pedigree
@@ -1612,7 +1633,7 @@ define([
 
            if (children == null) {
                // create a virtual child
-               var childID = newG._addVertex( null, BaseGraph.TYPE.PERSON, {"gender": "U", "placeholder": true}, null );
+               var childID = createPersonNode(newG, {"gender": "U", "placeholder": true});
                externalIDToID[childID] = childID;
                children = [{"value": childID}];
                // TODO: add "infertile by choice" property to the relationship
@@ -1620,10 +1641,9 @@ define([
 
            for (var j = 0; j < children.length; j++) {
                var externalID = children[j].value;
+               var childID = lookupNodeByReference(externalID);
 
-               var childID = externalIDToID.hasOwnProperty(externalID) ? externalIDToID[externalID] : null;
-
-               if (childID == null) {
+               if (childID === undefined) {
                    throw "Unable to import pedigree: child link does not point to an existing individual: [" + externalID + "]";
                }
 
