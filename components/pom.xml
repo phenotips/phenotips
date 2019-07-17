@@ -66,5 +66,6 @@
     <module>phenotype-suggest-service</module>
     <module>record-locking</module>
     <module>xwiki-locks</module>
+    <module>annotation-services</module>
   </modules>
 </project>

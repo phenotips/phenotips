@@ -260,6 +260,13 @@
     </init-param>
   </servlet>
 
+  <!-- NCR Servlet -->
+  <servlet>
+    <servlet-name>NCRServlet</servlet-name>
+    <servlet-class>org.phenotips.services.annotations.ncr.internal.NCRServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
   <!-- RESTful API Restlet servlet -->
   <servlet>
     <servlet-name>RestletServlet</servlet-name>
@@ -267,6 +274,12 @@
       org.xwiki.rest.internal.XWikiRestletServlet
     </servlet-class>
   </servlet>
+
+  <!-- NCR Servlet mapping -->
+  <servlet-mapping>
+    <servlet-name>NCRServlet</servlet-name>
+    <url-pattern>/ncr/annotations/entities</url-pattern>
+  </servlet-mapping>
 
   <!-- RESTful API mapping -->
   <servlet-mapping>

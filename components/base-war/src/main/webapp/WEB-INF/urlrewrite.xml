@@ -34,7 +34,7 @@
     <note>
       Ensure that URLs that must not be served by the Struts Servlet are not modified.
     </note>
-    <from>^/(bin|resources|skins|rest|webdav|xmlrpc|wiki|webjars)/(.*)$</from>
+    <from>^/(bin|resources|skins|rest|webdav|xmlrpc|wiki|webjars|ncr)/(.*)$</from>
     <to type="forward" last="true">-</to>
   </rule>
 

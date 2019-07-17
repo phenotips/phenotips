@@ -31,14 +31,17 @@
   <date>1401822196000</date>
   <contentUpdateDate>1401822196000</contentUpdateDate>
   <version>1.1</version>
-  <title>Home</title>
+  <title>PhenoTips services</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.0</syntaxId>
   <hidden>true</hidden>
-  <content>{{velocity}}
-$response.sendRedirect($xwiki.getURL('data.WebHome'))
-{{/velocity}}
+  <content>This site is a free provider of the following services:
+
+* [[Vocabulary search&gt;&gt;Vocabularies.WebHome]]
+* [[Text mining for HPO terms&gt;&gt;TextMining.WebHome]]
+* [[Diagnosis suggestions&gt;&gt;Diagnosis.WebHome]]
+* [[Differential phenotype suggestions&gt;&gt;Differential.WebHome]]
 </content>
   <object>
     <name>Main.WebHome</name>

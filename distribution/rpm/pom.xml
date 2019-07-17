@@ -115,7 +115,7 @@
                 <xwikiDbDialect>org.hibernate.dialect.HSQLDialect</xwikiDbDialect>
                 <xwikiDbHbmXwiki>xwiki.hbm.xml</xwikiDbHbmXwiki>
                 <xwikiDbHbmFeeds>feeds.hbm.xml</xwikiDbHbmFeeds>
-                <xwikiDbHbmCommonExtraMappings>instance.hbm.xml,mailsender.hbm.xml</xwikiDbHbmCommonExtraMappings>
+                <xwikiDbHbmCommonExtraMappings></xwikiDbHbmCommonExtraMappings>
                 <xwikiCfgPlugins>\
   com.xpn.xwiki.monitor.api.MonitorPlugin,\
   com.xpn.xwiki.plugin.skinx.JsSkinExtensionPlugin,\
@@ -133,8 +133,7 @@
   com.xpn.xwiki.plugin.zipexplorer.ZipExplorerPlugin,\
   com.xpn.xwiki.plugin.diff.DiffPlugin,\
   com.xpn.xwiki.plugin.rightsmanager.RightsManagerPlugin,\
-  com.xpn.xwiki.plugin.jodatime.JodaTimePlugin,\
-  com.xpn.xwiki.plugin.mailsender.MailSenderPlugin</xwikiCfgPlugins>
+  com.xpn.xwiki.plugin.jodatime.JodaTimePlugin</xwikiCfgPlugins>
                 <xwikiCfgVirtual>0</xwikiCfgVirtual>
                 <xwikiCfgVirtualUsepath>0</xwikiCfgVirtualUsepath>
                 <xwikiCfgEditCommentMandatory>0</xwikiCfgEditCommentMandatory>
@@ -148,7 +147,6 @@ xwiki.authentication.rightsclass=org.phenotips.security.authorization.ModularRig
 xwiki.section.edit=0
 xwiki.backlinks=0
 xwiki.showviewaction=0
-xwiki.defaultweb=data
 xwiki.usedefaultweb=1
 xwiki.usedefaultaction=0
 xwiki.monitor=0
@@ -158,13 +156,10 @@ xwiki.store.attachment.recyclebin.hint=file
                 </xwikiCfgAdditionalProperties>
                 <xwikiPropertiesEnvironmentPermanentDirectory>/var/lib/phenotips/data/</xwikiPropertiesEnvironmentPermanentDirectory>
                 <xwikiPropertiesAdditionalProperties>
-model.reference.default.space=data
 extension.repositories=maven-central:maven:https://nexus.phenotips.org/nexus/content/groups/public/
 extension.repositories=maven-phenotips:maven:https://nexus.phenotips.org/nexus/content/repositories/releases/
 extension.repositories=phenotips.org:xwiki:https://phenotips.org/rest/
 rendering.transformations=macro
-activeinstalls.pingURL=https://stats.phenotips.org
-activeinstalls.ipFetchURL=https://phenotips.org/get/Stats/Id
                 </xwikiPropertiesAdditionalProperties>
               </properties>
             </configuration>
@@ -243,7 +238,7 @@ In addition to data collection, PhenoTips automatically analyzes a wide range of
               <sources>
                 <source>
                   <location>${project.build.outputDirectory}/context.xml</location>
-                  <destination>phenotips.xml</destination>
+                  <destination>ROOT.xml</destination>
                 </source>
               </sources>
             </mapping>
