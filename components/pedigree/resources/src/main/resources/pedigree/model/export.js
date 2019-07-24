@@ -415,6 +415,7 @@ define([
      var alertUnknownGenderFound = false; // BOADICEA does not support unknown genders
      var warnAboutMissingDOB     = false; // BOADICEA seem to require all individuals with cancer to have some age specified
      var warnMissingDOBUnaff     = false; // BOADICEA recommends age information for unaffected individuals
+     var warnBrcaTestMethod      = false; // BOADICEA needs a gene testing method to estimate FN rate for negative results, but this isn't currently able to be specified in the pedigree
 
      for (var i = 0; i <= pedigree.GG.getMaxRealVertexId(); i++) {
          if (!pedigree.GG.isPerson(i)) continue;
@@ -547,8 +548,7 @@ define([
              } else {
                  is_affected = true;
 
-                 // TODO: in case of multiple occurences, should the first or the last be reported? Add this question as an export option?
-                 // find the earliest age the cancer was diagnosed
+                 // In case of multiple occurences, the first will be reported
                  var age = "AU";
                  var minAge = Infinity;
                  cancerData.qualifiers.forEach(function(qualifier){
@@ -580,9 +580,8 @@ define([
             warnMissingDOBUnaff = warnMissingDOBUnaff || !is_affected;
          }
 
-         output += "0\t"; // TODO: Genetic test status
-
          // BRCA1/BRCA2 mutations
+         var mutationStatus = "0";  // untested
          if (pedigree.GG.properties[i].hasOwnProperty("genes")) {
              var genes = pedigree.GG.properties[i].genes;
 
@@ -597,29 +596,34 @@ define([
                  return false;
              };
 
-             var status = "0";
              if (hasGeneWithOneOfStatuses("BRCA1", ["candidate","solved"])) {
-                 status = "1";
+                 mutationStatus = "1";  // brca1
              }
              if (hasGeneWithOneOfStatuses("BRCA2", ["candidate","solved"])) {
-                 if (status == "1") {
-                     status = "3";
+                 if (mutationStatus == "1") {
+                     mutationStatus = "3";  // brca1 + 2
                  } else {
-                     status = "2";
+                     mutationStatus = "2";  // brca2
                  }
              }
-             if (status == "0") {
-                 // if BRCA1 and BRCA2 are among rejected genes set status to "N"
+             if (mutationStatus == "0") {
+                 // if BRCA1 and BRCA2 are among rejected genes set mutationStatus to "N"
                  // TODO: what if only one is rejected and another untested?
                  if (hasGeneWithOneOfStatuses("BRCA1", ["rejected","rejected_candidate"]) &&
                      hasGeneWithOneOfStatuses("BRCA2", ["rejected","rejected_candidate"])) {
-                     status = "N";
+                     mutationStatus = "N";  // both tested negative
                  }
              }
-             output += status + "\t";
-         } else {
-             output += "0\t";
          }
+
+         var testingMethod = "0";  // untested
+         if (mutationStatus !== "0") {
+             warnBrcaTestMethod = true;
+             // TODO: add support for collecting genetic testing method (search vs. direct) on pedigree
+             testingMethod = "S";  // assume testing by search (e.g., exome) rather than direct testing
+         }
+         output += testingMethod + "\t";
+         output += mutationStatus + "\t";
 
          var ashkenazi = "0";
          if (pedigree.GG.properties[i].hasOwnProperty("ethnicities")) {
@@ -638,7 +642,7 @@ define([
          output += "\n";
      }
 
-     if (alertUnknownGenderFound || warnAboutMissingDOB || warnMissingDOBUnaff) {
+     if (alertUnknownGenderFound || warnAboutMissingDOB || warnMissingDOBUnaff || warnBrcaTestMethod) {
          var warningText = "Pedigree can be exported, but there are warnings:\n\n\n";
          var warnings = [];
          if (alertUnknownGenderFound) {
@@ -655,6 +659,11 @@ define([
              warnings.push("BOADICEA recommends that all unaffected individuals have their year of birth and" +
                            " year of death, if applicable, specified or estimated." +
                            " Not doing so may lead to an overestimation of risk.");
+         }
+         if (warnBrcaTestMethod) {
+             warnings.push("BOADICEA requires the testing method (search vs. direct) to be specified to" +
+                           " estimate false negative rate. The testing method has been set to 'search' to" +
+                           " avoid overestimating risk, but you should review and correct this information in BOADICEA.");
          }
          if(warnings.length > 1) {
              warnings = warnings.map(function(v, i, a) { return (i + 1) + ") " + v; });
