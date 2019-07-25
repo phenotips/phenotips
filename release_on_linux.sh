@@ -49,19 +49,62 @@ while true; do
     esac
 done
 
+PT_TAG="${PROJECT}-${PT_VERSION}"
+
+if [ "$(git tag --list "${PT_TAG}")" ]; then
+    while true; do
+
+        printf "\nTag [${PT_TAG}] already exists, delete? [(y)es/(n)o]: "
+
+        read -r yn
+        case "${yn}" in
+        [Yy]*)
+          git tag -d "${PT_TAG}"
+          break
+          ;;
+        [Nn]*)
+          exit 0
+          break
+          ;;
+        *) echo "Please answer y (yes) or n (no) " ;;
+        esac
+    done
+fi
+
+RELEASE_BRANCH="release-${PT_VERSION}"
+
+if [ "$(git branch --list "${RELEASE_BRANCH}")" ]; then
+    while true; do
+
+        printf "\nBranch [${RELEASE_BRANCH}] already exists, delete? [(y)es/(n)o]: "
+
+        read -r yn
+        case "${yn}" in
+        [Yy]*)
+          git branch -D "${RELEASE_BRANCH}"
+          break
+          ;;
+        [Nn]*)
+          exit 0
+          break
+          ;;
+        *) echo "Please answer y (yes) or n (no) " ;;
+        esac
+    done
+fi
 
 git clean -dxf
 mvn clean
-git checkout -b "release-${PT_VERSION}"
+git checkout -b "${RELEASE_BRANCH}"
 sed -i -r -e "s/<phenotips.version>(.*)<\/phenotips.version>/<phenotips.version>${PT_VERSION}<\/phenotips.version>/" pom.xml
 git add pom.xml
 git commit -m '[release] Set the phenotips.version to the right value'
 mvn release:prepare -DreleaseVersion="${PT_VERSION}" \
                     -DdevelopmentVersion="${SNAPSHOT_VERSION}" \
-                    -Dtag="${PROJECT}-${PT_VERSION}" \
+                    -Dtag="${PT_TAG}" \
                     -Pfunctional-tests && \
-                    git checkout "${PROJECT}-${PT_VERSION}" && \
-                    git tag -d "${PROJECT}-${PT_VERSION}" && \
-                    git tag -s -m "Tagging ${PROJECT}-${PT_VERSION}" "${PROJECT}-${PT_VERSION}" && \
-                    git push -f origin "${PROJECT}-${PT_VERSION}" && \
+                    git checkout "${PT_TAG}" && \
+                    git tag -d "${PT_TAG}" && \
+                    git tag -s -m "Tagging ${PT_TAG}" "${PT_TAG}" && \
+                    git push -f origin "${PT_TAG}" && \
                     mvn release:perform
