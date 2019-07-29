@@ -108,3 +108,4 @@ mvn release:prepare -DreleaseVersion="${PT_VERSION}" \
                     git tag -s -m "Tagging ${PT_TAG}" "${PT_TAG}" && \
                     git push -f origin "${PT_TAG}" && \
                     mvn release:perform
+mvn release:clean -Pfunctional-tests
