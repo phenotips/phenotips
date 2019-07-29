@@ -39,16 +39,17 @@ define([
 
                 var legendData = editor.getView().getSettings();
 
-                var generateSection = function(colors, names, sectionName) {
+                var generateSection = function(abnormalityItems, sectionName) {
                     var count  = 0;
                     var height = 30;
                     var html   = "<div class='legend-section'><h3 class='section-title'>" + sectionName + "</h3>"+
                                  "<ul class='abnormality-list'>";
-                    for (var id in colors) {
-                        if (colors.hasOwnProperty(id)) {
+                    for (var abnormalityItemId in abnormalityItems) {
+                        var abnormalityItem = abnormalityItems[abnormalityItemId];
+                        if (abnormalityItem.hasOwnProperty('properties') && abnormalityItem.properties.enabled) {
                             count++;
-                            var color = colors[id];
-                            var name  = (names && names.hasOwnProperty(id)) ? names[id] : id;
+                            var color = abnormalityItem.color;
+                            var name = abnormalityItem.name ? abnormalityItem.name : abnormalityItemId;
                             html += "<li class='abnormality'>";
                             html += "<span class='abnormality-color'><svg height='13' width='13' style='display: inline-block;'><rect x='0' y='0' rx='6' ry='6' width='13' height='13' fill='" + color + "'></rect></svg></span>";
                             html += "<span class='legend-item-name'>" + name + "</span>";
@@ -62,18 +63,21 @@ define([
                         return {"html": "", "heightInPixels": 0};
                     }
                 }
-                var sections = [];
-                if (legendData.hasOwnProperty("colors")) {
-                    legendData["colors"].hasOwnProperty("disorders")  && sections.push(generateSection(legendData["colors"]["disorders"], legendData["names"]["disorders"], "Disorders"));
-                    legendData["colors"].hasOwnProperty("candidateGenes") && sections.push(generateSection(legendData["colors"]["candidateGenes"], legendData["names"]["candidateGenes"], "Candidate genes"));
-                    legendData["colors"].hasOwnProperty("causalGenes") && sections.push(generateSection(legendData["colors"]["causalGenes"], legendData["names"]["causalGenes"], "Causal genes"));
-                    legendData["colors"].hasOwnProperty("phenotypes") && sections.push(generateSection(legendData["colors"]["phenotypes"], null, "Phenotypes"));
-                    legendData["colors"].hasOwnProperty("cancers")    && sections.push(generateSection(legendData["colors"]["cancers"], null, "Cancers"));
-                }
 
-                for (var i = 0; i < sections.length; i++) {
-                    totalLegendHeight += sections[i].heightInPixels;
-                    legendHTML        += sections[i].html;
+                var abnormalities = legendData.legendSettings.abnormalities;
+                // Define order of categories in the legend and mapping between key and label
+                // The order is the same as the editor's legend
+                var categoryKeys = ["disorders", "candidateGenes", "causalGenes", "carrierGenes", "phenotypes", "cancers"];
+                var categoryLabels = ["Final Diagnosis", "Candidate Genes", "Confirmed Causal Genes", "Carrier Genes", "Phenotypes", "Cancers"];
+
+                for (var i = 0; i < categoryKeys.length; i++) {
+                    if (!abnormalities.hasOwnProperty(categoryKeys[i])) {
+                        continue;
+                    }
+
+                    var section = generateSection(abnormalities[categoryKeys[i]], categoryLabels[i]);
+                    totalLegendHeight += section.heightInPixels;
+                    legendHTML += section.html;
                 }
             } // if includeLegend
 
