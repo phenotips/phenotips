@@ -179,12 +179,12 @@
       #set ($divstyle="margin-top: 0.6em; margin-left: 2em;")
     #end
     &lt;div class="pedigree-legend" style="$divstyle"&gt;
-    #__generateLegendSection("Disorders", $disordersPresent, $disorders, $circle, $listyle)
+    #__generateLegendSection("Final Diagnosis", $disordersPresent, $disorders, $circle, $listyle)
     #__generateLegendSection("Candidate Genes", $candidateGenesPresent, $candidateGenes, $circle, $listyle)
     #__generateLegendSection("Confirmed Causal Genes", $causalGenesPresent, $causalGenes, $circle, $listyle)
     #__generateLegendSection("Carrier Genes", $carrierGenesPresent, $carrierGenes, $circle, $listyle)
-    #__generateLegendSection("Cancers", $cancersPresent, $cancers, $circle, $listyle)
     #__generateLegendSection("Phenotypes", $hpoPresent, $hpo, $circle, $listyle)
+    #__generateLegendSection("Cancers", $cancersPresent, $cancers, $circle, $listyle)
     &lt;/div&gt;
   #end
 #end
