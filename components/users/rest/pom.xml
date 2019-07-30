@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>users</artifactId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.4.9</version>
   </parent>
   <artifactId>users-rest</artifactId>
   <name>PhenoTips - Users and Groups - REST</name>

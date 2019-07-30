@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>gene-panels</artifactId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.4.9</version>
   </parent>
   <artifactId>gene-panels-api</artifactId>
   <name>PhenoTips - Gene Panels - APIs</name>

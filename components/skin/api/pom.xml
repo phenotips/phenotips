@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>phenotips-skin</artifactId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.4.9</version>
   </parent>
   <artifactId>phenotips-skin-api</artifactId>
   <name>PhenoTips - Skin - Java APIs</name>

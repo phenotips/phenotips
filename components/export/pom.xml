@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.phenotips</groupId>
     <artifactId>phenotips-components</artifactId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.4.9</version>
   </parent>
   <artifactId>phenotips-data-export</artifactId>
   <packaging>pom</packaging>
