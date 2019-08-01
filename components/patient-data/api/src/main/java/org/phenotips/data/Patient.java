@@ -44,6 +44,10 @@ public interface Patient extends PrimaryEntity
     EntityReference CLASS_REFERENCE = new EntityReference("PatientClass", EntityType.DOCUMENT,
         Constants.CODE_SPACE_REFERENCE);
 
+    /** The XClass used for storing patient data. */
+    EntityReference CLASS_REFERENCE_INFO = new EntityReference("PatientContactInfo", EntityType.DOCUMENT,
+            Constants.CODE_SPACE_REFERENCE);
+
     /** The default space where patient data is stored. */
     EntityReference DEFAULT_DATA_SPACE = new EntityReference("data", EntityType.SPACE);
 

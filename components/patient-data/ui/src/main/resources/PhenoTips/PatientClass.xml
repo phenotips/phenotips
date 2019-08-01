@@ -1240,7 +1240,7 @@
       <picker>0</picker>
       <prettyName>Pubmed ID</prettyName>
       <relationalStorage>1</relationalStorage>
-      <separator></separator>
+      <separator/>
       <separators/>
       <size>1</size>
       <sort>none</sort>
