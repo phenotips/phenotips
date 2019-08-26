@@ -267,7 +267,7 @@ define([
             var keepProperties = [ 'lNameAtB', 'adoptedStatus', 'childlessStatus', 'childlessReason',
                                    'cancers', 'ethnicities', 'twinGroup', 'monozygotic', 'evaluated',
                                    'carrierStatus', 'lostContact', 'nodeNumber', 'comments', 'aliveandwell',
-                                   'deceasedAge', 'deceasedCause', 'placeholder','numPersons'];
+                                   'deceasedAge', 'deceasedCause', 'placeholder','numPersons', 'gestationAge'];
 
             var result = {};
             for (var i = 0; i < keepProperties.length; i++) {
