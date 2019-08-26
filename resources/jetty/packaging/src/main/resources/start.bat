@@ -59,7 +59,7 @@ set JAVA_PATH=%JAVAW_PATH:\javaw.exe=%\java.exe
 if "%JAVA_PATH%"=="" set JAVA_PATH=java
 
 REM Location where XWiki stores generated data and where database files are.
-set XWIKI_DATA_DIR="%AppData%\PhenoTips"
+set XWIKI_DATA_DIR="%JETTY_HOME%\data"
 set START_OPTS=%START_OPTS% -Dxwiki.data.dir=%XWIKI_DATA_DIR%
 
 REM Ensure the data directory exists so that XWiki can use it for storing permanent data.
