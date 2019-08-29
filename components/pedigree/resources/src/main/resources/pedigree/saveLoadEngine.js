@@ -384,6 +384,36 @@ define([
             });
         },
 
+        _showSensitiveDataWarning: function(showDetails) {
+            var title = "Attention: sensitive information";
+            var message = "This pedigree contains sensitive information.";
+            var warningMessage = editor.getFamilyData().getWarningMessage();
+            var continueMessage = "Continue to pedigree";
+            var cancelMessage = editor.isFamilyPage() ? "Go to family record" : "Go to patient record";
+            var toggleDetailsButtonText = showDetails ? "Hide details" : "Show details";
+            var toggleDetails = this._showSensitiveDataWarning.bind(this, !showDetails);
+            var options = { "screenBackground": "opaque", "button1": { "keepBackgroundScreenWhenPressed": true } };
+
+            // Just append warning message to dialog mody if showing details
+            if (showDetails && warningMessage) {
+                message += "<br /><br />" + warningMessage;
+            }
+
+            // Don't display toggleDetails button if there are no details to display
+            if (!warningMessage) {
+                toggleDetailsButtonText = null;
+                toggleDetails = null;
+            }
+
+            editor.getOkCancelDialogue().showWithOptions(
+                message,
+                title,
+                options,
+                continueMessage, null,
+                cancelMessage, editor.closePedigree,
+                toggleDetailsButtonText, toggleDetails);
+        },
+
         _loadFromFamilyInfoJSON: function(responseJSON) {
             if (responseJSON) {
                 console.log("[LOAD] received JSON: " + Helpers.stringifyObject(responseJSON));
@@ -407,11 +437,7 @@ define([
 
                         // display a warning if there is "sensitive information" associated with the family
                         if (editor.getFamilyData().hasWarningMessage()) {
-                            editor.getOkCancelDialogue().showWithOptions(
-                                editor.getFamilyData().getWarningMessage(),
-                                "Attention: This pedigree contains sensitive information",
-                                { "screenBackground": "opaque", "button1": {"keepBackgroundScreenWhenPressed": true} },
-                                "Continue to pedigree", null, "Quit", function() { editor.closePedigree() });
+                            this._showSensitiveDataWarning(false);
                         }
 
                         return;
