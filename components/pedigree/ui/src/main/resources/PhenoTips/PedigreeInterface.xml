@@ -69,6 +69,48 @@
   #end
   $jsontool.serialize($disabled)##
 #end
+#macro (getFlatCategoriesList)
+    #set ($levels = { "" : 0 })
+    #foreach ($s in $ALL_VALUES)
+      #set ($level = $mathtool.add($levels.get("$!GENE_STATUS_PARENTS.get($s)"), 1))
+      #set ($discard = $levels.put($s, $level))
+      #set ($item = {
+        "id" : $s,
+        "name" : "$!LABEL_MAP.get($s).value",
+        "categoryId" : "$!GENE_STATUS_PARENTS.get($s)",
+        "level" : $level
+      })
+      #set ($discard = $GENE_STATUS_FLATLIST.add($item))
+    #end
+#end
+#macro (extractStatusSubtypes)
+    #foreach ($v in $ALL_VALUES)
+      #set ($descendents = [])
+      #foreach ($v1 in $ALL_VALUES)
+        #if ($v1.startsWith("${v}>"))
+          #set ($discard = $descendents.add($v1))
+        #end
+      #end
+      #set ($discard = $GENE_STATUS_SUBTYPES.put($v, $descendents))
+    #end
+    #foreach ($s in $GENE_STATUS_SUBTYPES.keySet())
+      #foreach ($ss in $GENE_STATUS_SUBTYPES.get($s))
+        #set ($discard = $GENE_STATUS_PARENTS.put($ss, $s))
+      #end
+    #end
+    #getFlatCategoriesList()
+#end
+#macro(__getGeneStatuses)
+  #set($geneClass = $xwiki.getDocument('PhenoTips.GeneClass').getxWikiClass())##
+  #set($sP = $geneClass.get('status'))##
+  #set ($ALL_VALUES = $sP.listValues)##
+  #set ($LABEL_MAP = $sP.mapValues)##
+  #set ($GENE_STATUS_PARENTS = {})
+  #set ($GENE_STATUS_FLATLIST = [])
+  #set ($GENE_STATUS_SUBTYPES = {})
+  #extractStatusSubtypes()
+  $jsontool.serialize($GENE_STATUS_FLATLIST)##
+#end
 #macro(__getRequiredFields)
   #set ($recordConfiguration = $services.recordConfiguration.getConfiguration("patient"))
   #set ($requiredFieldNames = [])
@@ -146,6 +188,7 @@ $response.setContentType('application/json')##
         "advancedUser": $isAdvancedUser
     },
     "global": {
+            "geneStatuses"                 : #__getGeneStatuses(),
             "disabledFields"               : #__getDisabledFields(),
             "requiredFields"               : #__getRequiredFields(),
             "replaceIdWithExternalID"      : #if ($configPT &amp;&amp; "$!{configPT.getProperty('hideInternalIds').value}" == '1')true#else false#end,
