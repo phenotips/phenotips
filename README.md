@@ -1,8 +1,18 @@
-# About #
+<p align="center">
+  <img src="https://repository-images.githubusercontent.com/2685841/e3982780-032e-11ea-8d50-149013256d78" width="600px" alt="Open Pedigree logo"/>
+</p>
 
-PhenoTips provides an **easy way to collect linked clinical phenotype, genetic, disease, and family history data** for patients with genetic diseases.
+<p align="center">
+  <a href="https://opensource.org/licenses/AGPL-3.0" target="_blank">
+    <img src="https://img.shields.io/badge/license-AGPL--3.0-blue.svg" alt="AGPL-3.0">
+  </a>
+  <img src="https://img.shields.io/badge/made%20in-canada-red.svg" alt="Made in Canada">
+</p>
 
-PhenoTips has a highly-customizable patient form, and includes sections to enter:
+
+## A customizable patient data platform for genomic medicine
+
+PhenoTips is a browser-based tool for recording linked clinical phenotype, genetic, disease, and family history data for patients with genetic diseases. PhenoTips includes a highly-customizable patient form, and includes sections to enter:
 * **clinical symptoms & physical findings** ([HPO](http://www.human-phenotype-ontology.org/))
 * family information and history (including **pedigree**)
 * **diagnosis** (mapped to [OMIM](http://omim.org/) or [Orphanet](http://www.orphadata.org/))
@@ -10,9 +20,9 @@ PhenoTips has a highly-customizable patient form, and includes sections to enter
 * measurements (with support for instant computation of percentiles and generation of growth charts)
 * demographic information (name, date of birth, ...)
 
-# Usage #
+## Usage ##
 
-You use PhenoTips directly through a web **browser**.
+You use PhenoTips directly through your **web browser**.
 
 * If you are running a standalone version of PhenoTips directly on your computer, you can usually find it at `localhost:8080`
 * If you are at a hospital or in a research group with your own PhenoTips instance, you should ask someone what URL to go to in order to access your instance
