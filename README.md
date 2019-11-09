@@ -20,14 +20,15 @@ PhenoTips is a browser-based tool for recording linked clinical phenotype, genet
 * measurements (with support for instant computation of percentiles and generation of growth charts)
 * demographic information (name, date of birth, ...)
 
-## Usage ##
+## Usage
 
 You use PhenoTips directly through your **web browser**.
 
 * If you are running a standalone version of PhenoTips directly on your computer, you can usually find it at `localhost:8080`
 * If you are at a hospital or in a research group with your own PhenoTips instance, you should ask someone what URL to go to in order to access your instance
+* To try it out, go to [phenotips.org](https://phenotips.org/)
 
-## Major tools and terminologies used by this project ##
+## Powered by
 * [HPO](http://www.human-phenotype-ontology.org/) - phenotype ontology
 * [OMIM](http://omim.org/) - disease terminology
 * [Orphanet](http://www.orphadata.org/) - disease ontology
@@ -35,7 +36,7 @@ You use PhenoTips directly through your **web browser**.
 * [Apache Solr](http://lucene.apache.org/solr/) - an enterprise search platform
 * [XWiki](http://xwiki.org) - an enterprise web application development framework
 
-# Building from source #
+## Building from source
 
 This project uses [Apache Maven](http://maven.apache.org/) for lifecycle management.
 
@@ -53,7 +54,7 @@ mvn install
 ```
 *Note: the first build may take a long time because all the dependencies are downloaded, but subsequent builds should only take a few minutes*
 
-# Running a custom built instance #
+## Running a custom built instance
 
 The project is split into several modules, among which `distribution/standalone` will result in a fully-working self-contained package ready to run. Running the application is as simple as:
 
