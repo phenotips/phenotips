@@ -29,7 +29,7 @@
   <parent>PhenoTips.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1575501400000</date>
+  <date>1575592683000</date>
   <contentUpdateDate>1575498941000</contentUpdateDate>
   <version>1.1</version>
   <title/>
@@ -49,31 +49,65 @@
     <validationScript/>
     <auth>
       <cache>0</cache>
-      <customDisplay/>
+      <classname>PhenoTips.OAuth2Server</classname>
+      <customDisplay>{{velocity}}
+
+
+#if ($type == 'edit')
+  #set($MyClass=$object.getxWikiClass())
+  #set($list=$MyClass.get($name).getListValues())
+  #set ($MySelectList="&lt;select id='" + "${prefix}${name}" + "' size='1' name='" + $prefix + ${name} + "'&gt;")
+  #set ($Selected="")
+  #if ($!value=='')
+    #set ($Selected=" selected='selected'")
+  #end
+  #set ($MySelectList=$MySelectList + "&lt;option value='Legacy' label='Legacy'&gt;Legacy&lt;/option&gt;")
+  #foreach($listitem in $list)
+    #if ($listitem==$value)
+      #set ($Selected=" selected='selected'")
+    #else
+      #set ($Selected="")
+    #end
+    #set ($MySelectList=$MySelectList + "&lt;option value='" + $listitem + "'" + $!Selected + " label='" + $listitem + "'&gt;" + $listitem + "&lt;/option&gt;")
+  #end
+  #set ($MySelectList=$MySelectList  + "&lt;/select&gt;")
+  #set ($MySelectList=$MySelectList  + "&lt;input type='hidden' value='' name='" + ${prefix} + ${name} +"'&gt;")
+   {{html clean=false}}
+  $MySelectList
+  {{/html}}
+#elseif (($type == 'view') &amp;&amp; ($!value!=''))
+   [[$value||rel="_blank"]]
+#else
+  $value
+#end
+
+{{/velocity}}</customDisplay>
       <disabled>0</disabled>
       <displayType>select</displayType>
+      <idField>name</idField>
       <multiSelect>0</multiSelect>
       <name>auth</name>
-      <number>1</number>
+      <number>2</number>
       <picker>0</picker>
       <prettyName>Authentication</prettyName>
-      <relationalStorage>0</relationalStorage>
+      <relationalStorage>1</relationalStorage>
       <separator> </separator>
-      <separators>|, </separators>
+      <separators/>
       <size>1</size>
       <sort>none</sort>
+      <sql/>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <values>Legacy|OAuth2.0</values>
-      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      <valueField>name</valueField>
+      <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
     </auth>
     <description>
       <customDisplay/>
       <disabled>0</disabled>
       <editor>---</editor>
       <name>description</name>
-      <number>5</number>
+      <number>6</number>
       <picker>0</picker>
       <prettyName>Description</prettyName>
       <rows>2</rows>
@@ -87,7 +121,7 @@
       <customDisplay/>
       <disabled>0</disabled>
       <name>name</name>
-      <number>2</number>
+      <number>3</number>
       <picker>0</picker>
       <prettyName>Server name</prettyName>
       <size>30</size>
@@ -100,7 +134,7 @@
       <customDisplay/>
       <disabled>0</disabled>
       <name>registration_url</name>
-      <number>4</number>
+      <number>5</number>
       <picker>0</picker>
       <prettyName>Registration URL</prettyName>
       <size>30</size>
@@ -113,7 +147,7 @@
       <customDisplay/>
       <disabled>0</disabled>
       <name>url</name>
-      <number>3</number>
+      <number>4</number>
       <picker>0</picker>
       <prettyName>Server URL</prettyName>
       <size>30</size>
