@@ -26,7 +26,7 @@ You use PhenoTips directly through your **web browser**.
 
 * If you are running a standalone version of PhenoTips directly on your computer, you can usually find it at `localhost:8080`
 * If you are at a hospital or in a research group with your own PhenoTips instance, you should ask someone what URL to go to in order to access your instance
-* To try it out, go to [phenotips.org](https://phenotips.org/)
+* To try it out, go to [phenotips.com](https://phenotips.com/)
 
 ## Powered by
 * [HPO](http://www.human-phenotype-ontology.org/) - phenotype ontology
@@ -77,7 +77,7 @@ In order to ensure that the licensing is clear and stays open, you'll be asked t
 
 This is free software! Create an issue in GitHub to ask others for help, or try fixing the issue yourself and then make a pull request to contribute it back to the core.
 
-For commercial support or for information about the paid Enterprise version, please contact [Gene42](https://gene42.com/).
+For information about the Enterprise version, please see [phenotips.com](https://phenotips.com/).
 
 
 ## License
@@ -89,4 +89,4 @@ You can ensure compliance with this license by:
 * including prominent notice of the use of PhenoTips in any software that uses it
 * retaining all copyright notices in the software
 
-For more information, please see the [PhenoTips Licensing page](https://phenotips.org/Licensing).
+For more information, please [Contact Us](https://phenotips.com/contact.html).
