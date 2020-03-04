@@ -145,7 +145,7 @@
     <poi.version>3.11</poi.version>
     <selenium.version>3.14.0</selenium.version>
     <jackson.codehaus.version>1.9.13</jackson.codehaus.version>
-    <jackson.fasterxml.version>2.9.7</jackson.fasterxml.version>
+    <jackson.fasterxml.version>2.10.3</jackson.fasterxml.version>
     <restlet.version>2.0.15</restlet.version>
     <buildtools.version>1.8</buildtools.version>
     <!-- <textAnalysis.version>1.0</textAnalysis.version>-->
