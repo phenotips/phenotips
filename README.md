@@ -1,12 +1,13 @@
 <p align="center">
-  <img src="https://repository-images.githubusercontent.com/2685841/e3982780-032e-11ea-8d50-149013256d78" width="600px" alt="Open Pedigree logo"/>
+  <img src="https://repository-images.githubusercontent.com/2685841/e3982780-032e-11ea-8d50-149013256d78" width="600px" alt="PhenoTips Open Source logo"/>
 </p>
 
 <p align="center">
+  <img src="https://github.com/phenotips/phenotips/workflows/Maven%20build/badge.svg" alt="Maven build">
   <a href="https://opensource.org/licenses/AGPL-3.0" target="_blank">
     <img src="https://img.shields.io/badge/license-AGPL--3.0-blue.svg" alt="AGPL-3.0">
   </a>
-  <img src="https://img.shields.io/badge/made%20in-canada-red.svg" alt="Made in Canada">
+  <img src="https://img.shields.io/badge/made%20in-Canada-red.svg" alt="Made in Canada">
 </p>
 
 
@@ -26,7 +27,7 @@ You use PhenoTips directly through your **web browser**.
 
 * If you are running a standalone version of PhenoTips directly on your computer, you can usually find it at `localhost:8080`
 * If you are at a hospital or in a research group with your own PhenoTips instance, you should ask someone what URL to go to in order to access your instance
-* To try it out, go to [phenotips.org](https://phenotips.org/)
+* To try it out, go to [phenotips.com](https://phenotips.com/)
 
 ## Powered by
 * [HPO](http://www.human-phenotype-ontology.org/) - phenotype ontology
@@ -77,7 +78,7 @@ In order to ensure that the licensing is clear and stays open, you'll be asked t
 
 This is free software! Create an issue in GitHub to ask others for help, or try fixing the issue yourself and then make a pull request to contribute it back to the core.
 
-For commercial support or for information about the paid Enterprise version, please contact [Gene42](https://gene42.com/).
+For information about the Enterprise version, please see [phenotips.com](https://phenotips.com/).
 
 
 ## License
@@ -89,4 +90,4 @@ You can ensure compliance with this license by:
 * including prominent notice of the use of PhenoTips in any software that uses it
 * retaining all copyright notices in the software
 
-For more information, please see the [PhenoTips Licensing page](https://phenotips.org/Licensing).
+For more information, please [Contact Us](https://phenotips.com/contact.html).
