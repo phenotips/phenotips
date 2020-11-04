@@ -1,12 +1,13 @@
 <p align="center">
-  <img src="https://repository-images.githubusercontent.com/2685841/e3982780-032e-11ea-8d50-149013256d78" width="600px" alt="Open Pedigree logo"/>
+  <img src="https://repository-images.githubusercontent.com/2685841/e3982780-032e-11ea-8d50-149013256d78" width="600px" alt="PhenoTips Open Source logo"/>
 </p>
 
 <p align="center">
+  <img src="https://github.com/phenotips/phenotips/workflows/Maven%20build/badge.svg" alt="Maven build">
   <a href="https://opensource.org/licenses/AGPL-3.0" target="_blank">
     <img src="https://img.shields.io/badge/license-AGPL--3.0-blue.svg" alt="AGPL-3.0">
   </a>
-  <img src="https://img.shields.io/badge/made%20in-canada-red.svg" alt="Made in Canada">
+  <img src="https://img.shields.io/badge/made%20in-Canada-red.svg" alt="Made in Canada">
 </p>
 
 
