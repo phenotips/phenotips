@@ -747,6 +747,19 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </health_card>
+    <health_status>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>health_status</name>
+      <number>58</number>
+      <picker>0</picker>
+      <prettyName>Health Status</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </health_status>
     <icsi>
       <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>
       <defaultValue/>
@@ -908,6 +921,19 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </multipleGestation>
+    <nationality>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>nationality</name>
+      <number>56</number>
+      <picker>0</picker>
+      <prettyName>Nationality</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </nationality>
     <negative_phenotype>
       <cache>0</cache>
       <classname/>
@@ -1049,6 +1075,32 @@
       <values/>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </paternal_ethnicity>
+      <patient_ethnicity>
+          <cache>0</cache>
+          <customDisplay>{{include reference="PhenoTips.PatientSheetMacros" /}}
+
+              {{velocity filter="indent"}}{{html wiki=true clean=false}}
+              #set ($suggest_script = $xwiki.getURL('PhenoTips.EthnicitySearch', 'get', 'outputSyntax=plain') + '&amp;json=true&amp;')
+              #__displayPropertyAsSelect($suggest_script)
+              {{/html}}{{/velocity}}</customDisplay>
+          <disabled>0</disabled>
+          <displayType>select</displayType>
+          <multiSelect>1</multiSelect>
+          <name>patient_ethnicity</name>
+          <number>57</number>
+          <picker>1</picker>
+          <prettyName>Ethnicity</prettyName>
+          <relationalStorage>1</relationalStorage>
+          <separator> ,</separator>
+          <separators/>
+          <size>1</size>
+          <sort>none</sort>
+          <unmodifiable>0</unmodifiable>
+          <validationMessage/>
+          <validationRegExp/>
+          <values/>
+          <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </patient_ethnicity>
     <pedigree>
       <cache>0</cache>
       <classname/>
@@ -1163,6 +1215,32 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </proband>
+    <referred_from>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>referred_from</name>
+      <number>59</number>
+      <picker>0</picker>
+      <prettyName>Referred From</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </referred_from>
+    <referring_phyisician>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <name>referring_phyisician</name>
+      <number>60</number>
+      <picker>0</picker>
+      <prettyName>Referring Phyisician:</prettyName>
+      <size>30</size>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+    </referring_phyisician>
     <reports_history>
       <cache>0</cache>
       <classname/>
