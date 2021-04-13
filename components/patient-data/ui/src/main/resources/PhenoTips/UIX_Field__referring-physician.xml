@@ -108,13 +108,13 @@
       </scope>
     </class>
     <property>
-      <content>{{include reference="PhenoTips.PatientSheetMacros" /}}&#xd;
-        &#xd;
-        {{velocity}}&#xd;
-        (% id="referring-physician-block" %)(((&#xd;
-        #__displayFormatted('2-col' 'referring_physician' '' '' '')&#xd;
-        )))&#xd;
-        {{/velocity}}</content>
+      <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
+
+{{velocity}}
+(% id="referring-physician-block" %)(((
+  #__displayFormatted('2-col' 'referring_physician' '' '' '')
+)))
+{{/velocity}}</content>
     </property>
     <property>
       <extensionPointId>org.phenotips.patientSheet.section.patient-info</extensionPointId>
@@ -123,12 +123,13 @@
       <name>org.phenotips.patientSheet.field.referring_physician</name>
     </property>
     <property>
-      <parameters>title=Referring physician&#xd;
-        enabled=true&#xd;
-        required=&#xd;
-        order=3&#xd;
-        fields=referring_physician&#xd;
-        contains_PII=true</parameters>
+      <parameters>title=Referring physician
+enabled=true
+required=
+order=3
+fields=referring_physician
+contains_PII=true
+      </parameters>
     </property>
     <property>
       <scope>wiki</scope>

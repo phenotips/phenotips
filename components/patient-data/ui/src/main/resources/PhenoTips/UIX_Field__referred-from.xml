@@ -108,12 +108,11 @@
       </scope>
     </class>
     <property>
-      <content>{{include reference="PhenoTips.PatientSheetMacros" /}}&#xd;
-&#xd;
-{{velocity}}&#xd;
-(% id="referred-from-block" %)(((&#xd;
-  #__displayFormatted('2-col' 'referred_from' '' '' '')&#xd;
-)))&#xd;
+      <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
+{{velocity}}
+(% id="referred-from-block" %)(((
+  #__displayFormatted('2-col' 'referred_from' '' '' '')
+)))
 {{/velocity}}</content>
     </property>
     <property>
@@ -123,11 +122,11 @@
       <name>org.phenotips.patientSheet.field.referred-from</name>
     </property>
     <property>
-      <parameters>title=Referred from&#xd;
-enabled=true&#xd;
-required=&#xd;
-order=3&#xd;
-fields=referred_from&#xd;
+      <parameters>title=Referred from
+enabled=true
+required=
+order=3
+fields=referred_from
 contains_PII=true</parameters>
     </property>
     <property>

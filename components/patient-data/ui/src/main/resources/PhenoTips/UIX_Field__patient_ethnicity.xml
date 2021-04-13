@@ -108,12 +108,11 @@
       </scope>
     </class>
     <property>
-      <content>{{include reference="PhenoTips.PatientSheetMacros" /}}&#xd;
-&#xd;
-{{velocity}}&#xd;
-(% id="patient-ethnicity-block" %)(((&#xd;
-  #__displayFormatted('2-col' 'patient_ethnicity' '' '' '')&#xd;
-)))&#xd;
+      <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
+{{velocity}}
+(% id="patient-ethnicity-block" %)(((
+  #__displayFormatted('2-col' 'patient_ethnicity' '' '' '')
+)))
 {{/velocity}}</content>
     </property>
     <property>
@@ -123,11 +122,11 @@
       <name>org.phenotips.patientSheet.field.patient_ethnicity</name>
     </property>
     <property>
-      <parameters>title=Ethnicity&#xd;
-enabled=true&#xd;
-required=&#xd;
-order=7&#xd;
-fields=patient_ethnicity&#xd;
+      <parameters>title=Ethnicity
+enabled=true
+required=
+order=11
+fields=patient_ethnicity
 contains_PII=true</parameters>
     </property>
     <property>

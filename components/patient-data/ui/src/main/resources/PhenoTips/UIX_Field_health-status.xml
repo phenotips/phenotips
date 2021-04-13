@@ -108,12 +108,12 @@
       </scope>
     </class>
     <property>
-      <content>{{include reference="PhenoTips.PatientSheetMacros" /}}&#xd;
-&#xd;
-{{velocity}}&#xd;
-(% id="health-status-block" %)(((&#xd;
-  #__displayFormatted('2-col' 'health_status' '' '' '')&#xd;
-)))&#xd;
+      <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
+
+{{velocity}}
+(% id="health-status-block" %)(((
+  #__displayFormatted('2-col' 'health_status' '' '' '')
+)))
 {{/velocity}}</content>
     </property>
     <property>
@@ -123,11 +123,11 @@
       <name>org.phenotips.patientSheet.field.health-status</name>
     </property>
     <property>
-      <parameters>title=Health Status&#xd;
-enabled=true&#xd;
-required=&#xd;
-order=10&#xd;
-fields=health_status&#xd;
+      <parameters>title=Health Status
+enabled=true
+required=
+order=7
+fields=health_status
 contains_PII=true</parameters>
     </property>
     <property>
