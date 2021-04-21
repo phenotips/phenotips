@@ -91,6 +91,10 @@ define([
             return this.vocabulariesService + "/ethnicity";
         },
 
+        getNationalitySearchURL: function() {
+            return this.vocabulariesService + "/nationality";
+        },
+
         getHGNCServiceURL: function() {
             return this.vocabulariesService + "/hgnc";
         },

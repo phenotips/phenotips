@@ -331,6 +331,13 @@ define([
                         resultValue : "name",
                         resultInfo : {}
                     },
+                    'nationality' : {
+                        script: editor.getExternalEndpoint().getNationalitySearchURL() + "/suggest?",
+                        noresults: "No matching terms",
+                        resultsParameter : "rows",
+                        resultValue : "name",
+                        resultInfo : {}
+                    },
                     'genes' : {
                         script: editor.getExternalEndpoint().getHGNCServiceURL() + "/suggest?",
                         noresults: "No matching terms",

@@ -39,7 +39,7 @@
   <hidden>false</hidden>
   <content/>
   <object>
-    <name>PhenoTips.UIX__Field_health_status</name>
+    <name>PhenoTips.UIX_Field_health_status</name>
     <number>0</number>
     <className>XWiki.UIExtensionClass</className>
     <guid>afdfb4af-2403-4d94-b7e9-7e576649ba0a</guid>

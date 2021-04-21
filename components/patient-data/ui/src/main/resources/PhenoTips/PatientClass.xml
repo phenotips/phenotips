@@ -929,19 +929,31 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </multipleGestation>
-    <nationality>
-      <customDisplay/>
+    <patient_nationality>
+      <cachse>0</cachse>
+      <customDisplay>{{include reference="PhenoTips.PatientSheetMacros" /}}
+
+        {{velocity filter="indent"}}{{html wiki=true clean=false}}
+        #set ($suggest_script = $xwiki.getURL('PhenoTips.NationalitySearch', 'get', 'outputSyntax=plain') + '&amp;json=true&amp;')
+        #__displayPropertyAsSelect($suggest_script)
+        {{/html}}{{/velocity}}</customDisplay>
       <disabled>0</disabled>
-      <name>nationality</name>
+      <displayType>select</displayType>
+      <multiSelect>1</multiSelect>
+      <name>patient_nationality</name>
       <number>56</number>
-      <picker>0</picker>
+      <picker>1</picker>
       <prettyName>Nationality</prettyName>
-      <size>30</size>
+      <relationalStorage>1</relationalStorage>
+      <separator> ,</separator>
+      <separators/>
+      <size>1</size>
+      <sort>none</sort>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
-    </nationality>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </patient_nationality>
     <negative_phenotype>
       <cache>0</cache>
       <classname/>
