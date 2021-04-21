@@ -748,17 +748,25 @@
       <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
     </health_card>
     <health_status>
+      <cache>0</cache>
       <customDisplay/>
       <disabled>0</disabled>
+      <displayType>select</displayType>
+      <multiSelect>0</multiSelect>
       <name>health_status</name>
       <number>58</number>
       <picker>0</picker>
       <prettyName>Health Status</prettyName>
-      <size>30</size>
+      <relationalStorage>0</relationalStorage>
+      <separator> </separator>
+      <separators> ,|</separators>
+      <size>1</size>
+      <sort>none</sort>
       <unmodifiable>0</unmodifiable>
       <validationMessage/>
       <validationRegExp/>
-      <classType>com.xpn.xwiki.objects.classes.StringClass</classType>
+      <values>Healthy|Affected|Unknown</values>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
     </health_status>
     <icsi>
       <customDisplay>{{include reference="PhenoTips.YesNoNAPicker" /}}</customDisplay>

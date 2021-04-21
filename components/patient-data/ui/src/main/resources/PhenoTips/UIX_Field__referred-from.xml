@@ -109,6 +109,7 @@
     </class>
     <property>
       <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
+
 {{velocity}}
 (% id="referred-from-block" %)(((
   #__displayFormatted('2-col' 'referred_from' '' '' '')
@@ -125,7 +126,7 @@
       <parameters>title=Referred from
 enabled=true
 required=
-order=3
+order=2
 fields=referred_from
 contains_PII=true</parameters>
     </property>
