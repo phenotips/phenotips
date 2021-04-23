@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -52,15 +53,18 @@ import org.apache.solr.common.params.SpellingParams;
 @Singleton
 public class Nationality extends AbstractSolrVocabulary
 {
+    /** For determining if a query is a an id. */
+    private static final Pattern ID_PATTERN = Pattern.compile("^NATION:\\w+$", Pattern.CASE_INSENSITIVE);
+
     /** The list of supported categories for this vocabulary. */
     private static final Collection<String> SUPPORTED_CATEGORIES = Collections.singletonList("nationality");
     /**
-     * @param input part of full ethnicity name
-     * @return set of strings that are full ethnicity names that match the partial string
+     * @param input part of full nationality name
+     * @return set of strings that are full nationality names that match the partial string
      * @deprecated since 1.2M4 use {@link #search(String, int, String, String)} instead
      */
     @Deprecated
-    public List<VocabularyTerm> getMatchingEthnicities(String input)
+    public List<VocabularyTerm> getMatchingNationalities(String input)
     {
         return search(input, 10, null, null);
     }
@@ -71,11 +75,14 @@ public class Nationality extends AbstractSolrVocabulary
         if (StringUtils.isBlank(input)) {
             return Collections.emptyList();
         }
+        boolean isId = this.isId(input);
         SolrQuery query = new SolrQuery();
         this.addGlobalQueryParameters(query);
-        this.addFieldQueryParameters(query);
+        if (!isId) {
+            this.addFieldQueryParameters(query);
+        }
         List<VocabularyTerm> result = new LinkedList<>();
-        for (SolrDocument doc : this.search(addDynamicQueryParameters(input, maxResults, sort, customFilter, false,
+        for (SolrDocument doc : this.search(addDynamicQueryParameters(input, maxResults, sort, customFilter, isId,
             query))) {
             result.add(new SolrVocabularyTerm(doc, this));
         }
@@ -142,7 +149,6 @@ public class Nationality extends AbstractSolrVocabulary
     {
         query.set(DisMaxParams.PF, "name^20 nameSpell^36 nameStub^10");
         query.set(DisMaxParams.QF, "name^10 nameSpell^18 nameStub^5");
-        query.set(DisMaxParams.BF, "log(popsize)^10");
         return query;
     }
 
@@ -164,6 +170,10 @@ public class Nationality extends AbstractSolrVocabulary
             }
         }
         return query;
+    }
+    private boolean isId(String query)
+    {
+        return ID_PATTERN.matcher(query).matches();
     }
 
     @Override

@@ -50,7 +50,7 @@
     #set ($discard = $finalResults.add($res.name))
     #set ($discard = $lowercaseResults.add($res.name.toLowerCase()))
   #end
-  #foreach($res in $services.query.hql('select distinct list from BaseObject as obj, DBStringListProperty as prop join prop.list list where obj.name &lt;&gt; ? and obj.className = ? and prop.id.id = obj.id and prop.id.name = ?) and lower(list) like ?').bindValues(['PhenoTips.PatientTemplate', 'PhenoTips.PatientClass', 'patient_nationality', "%${input}%"]).setLimit(10).execute())
+  #foreach($res in $services.query.hql('select distinct list from BaseObject as obj, DBStringListProperty as prop join prop.list list where obj.name &lt;&gt; ? and obj.className = ? and prop.id.id = obj.id and prop.id.name = ? and lower(list) like ?').bindValues(['PhenoTips.PatientTemplate', 'PhenoTips.PatientClass', 'nationality', "%${input}%"]).setLimit(10).execute())
     #if (!$lowercaseResults.contains($res.toLowerCase()))
       #set ($discard = $finalResults.add($res))
     #end

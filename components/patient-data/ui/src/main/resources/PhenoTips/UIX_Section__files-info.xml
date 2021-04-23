@@ -118,7 +118,7 @@
     </property>
     <property>
       <parameters>title=$services.localization.render('phenotips.UIXSection.filesInfo')
-enabled=false
+enabled=true
 required=
 order=11</parameters>
     </property>

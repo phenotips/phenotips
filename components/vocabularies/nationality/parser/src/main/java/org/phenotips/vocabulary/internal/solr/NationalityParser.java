@@ -82,7 +82,7 @@ public final class NationalityParser {
             for (CSVRecord record : csvParser)
             {
                 String nationality = record.get(0);
-                outputXml.println("<doc><field name=\"id\">NATION:"
+                outputXml.println("<doc boost=\"0\"><field name=\"id\">NATION:"
                         + URLEncoder.encode(nationality.toLowerCase(), "UTF-8").replaceAll("[^a-z]", "")
                         + "</field><field name=\"name\">" + nationality + "</field></doc>");
                 output.println(nationality);
