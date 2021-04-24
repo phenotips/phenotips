@@ -1032,6 +1032,32 @@
         <values/>
         <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
       </paternal_ethnicity>
+      <patient_ethnicity>
+        <cache>0</cache>
+        <customDisplay>{{include reference="PhenoTips.PatientSheetMacros" /}}
+
+          {{velocity filter="indent"}}{{html wiki=true clean=false}}
+          #set ($suggest_script = $xwiki.getURL('PhenoTips.NationalitySearch', 'get', 'outputSyntax=plain') + '&amp;json=true&amp;')
+          #__displayPropertyAsSelect($suggest_script)
+          {{/html}}{{/velocity}}</customDisplay>
+        <disabled>0</disabled>
+        <displayType>select</displayType>
+        <multiSelect>1</multiSelect>
+        <name>nationality</name>
+        <number>15</number>
+        <picker>1</picker>
+        <prettyName>Nationality</prettyName>
+        <relationalStorage>1</relationalStorage>
+        <separator>, </separator>
+        <separators/>
+        <size>1</size>
+        <sort>none</sort>
+        <unmodifiable>0</unmodifiable>
+        <validationMessage/>
+        <validationRegExp/>
+        <values/>
+        <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+      </patient_ethnicity>
       <pedigree>
         <cache>0</cache>
         <classname/>

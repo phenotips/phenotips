@@ -653,6 +653,11 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
+      <artifactId>vocabulary-nationality-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
       <artifactId>vocabulary-ordo-api</artifactId>
       <version>${project.version}</version>
     </dependency>

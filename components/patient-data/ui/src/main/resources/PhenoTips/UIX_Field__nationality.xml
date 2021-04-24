@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 
 <!--
  * See the NOTICE file distributed with this work for additional
@@ -18,31 +18,31 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
 
-<xwikidoc version="1.1">
+<xwikidoc version="1.2" reference="PhenoTips.UIX_Field__nationality" locale="">
   <web>PhenoTips</web>
-  <name>UIX_Section__files-info</name>
+  <name>UIX_Field__nationality</name>
   <language/>
-  <defaultLanguage/>
+  <defaultLanguage />
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <creationDate>1401822214000</creationDate>
+  <creationDate>1617670362000</creationDate>
   <parent>PhenoTips.PatientSheet</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1401822214000</date>
-  <contentUpdateDate>1401822214000</contentUpdateDate>
+  <date>1617694269000</date>
+  <contentUpdateDate>1617670362000</contentUpdateDate>
   <version>1.1</version>
-  <title>$services.localization.render('phenotips.UIXSection.filesInfo')</title>
+  <title>UIX_Field__nationality</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
-  <hidden>true</hidden>
+  <hidden>false</hidden>
   <content/>
   <object>
-    <name>PhenoTips.UIX_Section__files-info</name>
+    <name>PhenoTips.UIX_Field__nationality</name>
     <number>0</number>
     <className>XWiki.UIExtensionClass</className>
-    <guid>5411be4d-66a1-494a-8fc6-6d5921c15aad</guid>
+    <guid>4a4c7b3b-83d8-44c3-ab0b-35089974a580</guid>
     <class>
       <name>XWiki.UIExtensionClass</name>
       <customClass/>
@@ -108,19 +108,27 @@
       </scope>
     </class>
     <property>
-      <content/>
+      <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
+
+{{velocity}}
+(% id="nationality-block" %)(((
+  #__displayFormatted('2-col' 'nationality' '' '' '')
+)))
+{{/velocity}}</content>
     </property>
     <property>
-      <extensionPointId>org.phenotips.patientSheet.content</extensionPointId>
+      <extensionPointId>org.phenotips.patientSheet.section.patient-info</extensionPointId>
     </property>
     <property>
-      <name>org.phenotips.patientSheet.section.additional-files</name>
+      <name>org.phenotips.patientSheet.field.nationality</name>
     </property>
     <property>
-      <parameters>title=$services.localization.render('phenotips.UIXSection.filesInfo')
+      <parameters>title=Nationality
 enabled=true
 required=
-order=11</parameters>
+order=10
+fields=nationality
+contains_PII=true</parameters>
     </property>
     <property>
       <scope>wiki</scope>
