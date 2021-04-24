@@ -929,7 +929,7 @@
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.BooleanClass</classType>
     </multipleGestation>
-    <patient_nationality>
+    <nationality>
       <cachse>0</cachse>
       <customDisplay>{{include reference="PhenoTips.PatientSheetMacros" /}}
 
@@ -940,7 +940,7 @@
       <disabled>0</disabled>
       <displayType>select</displayType>
       <multiSelect>1</multiSelect>
-      <name>patient_nationality</name>
+      <name>nationality</name>
       <number>56</number>
       <picker>1</picker>
       <prettyName>Nationality</prettyName>
@@ -953,7 +953,7 @@
       <validationMessage/>
       <validationRegExp/>
       <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
-    </patient_nationality>
+    </nationality>
     <negative_phenotype>
       <cache>0</cache>
       <classname/>

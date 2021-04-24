@@ -1043,7 +1043,7 @@
         <disabled>0</disabled>
         <displayType>select</displayType>
         <multiSelect>1</multiSelect>
-        <name>patient_nationality</name>
+        <name>nationality</name>
         <number>15</number>
         <picker>1</picker>
         <prettyName>Nationality</prettyName>
