@@ -109,6 +109,7 @@
     </class>
     <property>
       <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
+
 {{velocity}}
 (% id="patient-ethnicity-block" %)(((
   #__displayFormatted('2-col' 'patient_ethnicity' '' '' '')

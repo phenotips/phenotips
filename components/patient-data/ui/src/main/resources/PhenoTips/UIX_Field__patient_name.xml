@@ -135,7 +135,7 @@
       <parameters>title=$services.localization.render('phenotips.UIXField.patientName')
 enabled=true
 required=
-order=4
+order=5
 fields=last_name,first_name
 contains_PII=true</parameters>
     </property>
