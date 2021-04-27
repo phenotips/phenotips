@@ -1069,6 +1069,27 @@
       <valueField/>
       <classType>com.xpn.xwiki.objects.classes.DBListClass</classType>
     </omim_id>
+    <parents_consanguinity>
+      <cache>0</cache>
+      <customDisplay/>
+      <disabled>0</disabled>
+      <displayType>radio</displayType>
+      <multiSelect>0</multiSelect>
+      <name>parents_consanguinity</name>
+      <number>61</number>
+      <picker>0</picker>
+      <prettyName>Consanguinity of parents</prettyName>
+      <relationalStorage>1</relationalStorage>
+      <separator> </separator>
+      <separators>|, </separators>
+      <size>3</size>
+      <sort>none</sort>
+      <unmodifiable>0</unmodifiable>
+      <validationMessage/>
+      <validationRegExp/>
+      <values>Yes|No|DK</values>
+      <classType>com.xpn.xwiki.objects.classes.StaticListClass</classType>
+    </parents_consanguinity>
     <paternal_ethnicity>
       <cache>0</cache>
       <customDisplay>{{include reference="PhenoTips.PatientSheetMacros" /}}

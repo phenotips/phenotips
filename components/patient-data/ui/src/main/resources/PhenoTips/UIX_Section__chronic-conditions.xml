@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 
 <!--
  * See the NOTICE file distributed with this work for additional
@@ -18,31 +18,31 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
 
-<xwikidoc version="1.2">
+<xwikidoc version="1.1">
   <web>PhenoTips</web>
-  <name>UIX_Field__patient_sample_data</name>
+  <name>UIX_Section__chronic-conditions</name>
   <language/>
-  <defaultLanguage/>
+  <defaultLanguage>en</defaultLanguage>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <creationDate>1619309019000</creationDate>
+  <creationDate>1619483236000</creationDate>
   <parent>PhenoTips.PatientSheet</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1619309498000</date>
-  <contentUpdateDate>1619309019000</contentUpdateDate>
+  <date>1619483509000</date>
+  <contentUpdateDate>1619483321000</contentUpdateDate>
   <version>1.1</version>
-  <title/>
+  <title>Chronic Conditions</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
   <content/>
   <object>
-    <name>PhenoTips.UIX_Field__patient_sample_data</name>
+    <name>PhenoTips.UIX_Section__chronic-conditions</name>
     <number>0</number>
     <className>XWiki.UIExtensionClass</className>
-    <guid>05703ea6-ae97-4766-845d-579eccd29818</guid>
+    <guid>b28ac669-2c8b-471a-91c6-ddbb08e68a55</guid>
     <class>
       <name>XWiki.UIExtensionClass</name>
       <customClass/>
@@ -108,33 +108,19 @@
       </scope>
     </class>
     <property>
-      <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
-
-{{include reference="PhenoTips.TabelarDataMacros" /}}
-{{velocity}}
-
-{{html}}
-        &lt;p&gt; &lt;label class="section group-title">Patient sample information &lt;/label&gt; &lt;/p&gt;
-{{/html}}
-
-#set ($targetClassName = 'PhenoTips.PatientSampleDataClass')
-#if ($xcontext.action == 'edit' || $doc.getObject($targetClassName))
-  #__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false, 'mode' : $xcontext.action})
-#end
-{{/velocity}}</content>
+      <content></content>
     </property>
     <property>
-      <extensionPointId>org.phenotips.patientSheet.section.patient-info</extensionPointId>
+      <extensionPointId>org.phenotips.patientSheet.content</extensionPointId>
     </property>
     <property>
-      <name>org.phenotips.patientSheet.field.sample_data</name>
+      <name>org.phenotips.patientSheet.section.chronic-conditions</name>
     </property>
     <property>
-      <parameters>title=Patient Sample Data
+      <parameters>title=Chronic Conditions
 enabled=true
 required=
-order=13
-fields=</parameters>
+order=11</parameters>
     </property>
     <property>
       <scope>wiki</scope>

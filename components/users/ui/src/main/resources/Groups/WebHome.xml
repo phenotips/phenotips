@@ -247,7 +247,7 @@ $xwiki.ssx.use('PhenoTips.FontAwesomeIcons')##
   &lt;div class="rightmenu"&gt;
     &lt;div class="menu menu-horizontal"&gt;
     &lt;ul&gt;
-        <li> <a target="_blank" href="https://help.phenotips.com/hc/en-us"><span class="fa fa-info-circle"></span> User Guide </a></li>
+        &lt;li&gt; &lt;a target="_blank" href="https://help.phenotips.com/hc/en-us"&gt; &lt;span class="fa fa-info-circle"&gt; &lt;/span&gt; User Guide &lt;/a&gt; &lt;/li&gt;
       #set ($createEntries = [])
       #foreach ($e in $services.uix.getExtensions('phenotips.globalTools.create.entries', {'sortByParameter' : 'order'}))
         #set ($entryText = $services.rendering.render($e.execute(), 'xhtml/1.0').replaceAll('^&lt;p&gt;|&lt;/p&gt;$', ''))
