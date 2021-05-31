@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 
 <!--
  * See the NOTICE file distributed with this work for additional
@@ -18,31 +18,31 @@
  * along with this program.  If not, see http://www.gnu.org/licenses/
 -->
 
-<xwikidoc version="1.2">
+<xwikidoc version="1.1">
   <web>PhenoTips</web>
-  <name>UIX_Field__patient_sample_data</name>
+  <name>UIX_Field__family_information</name>
   <language/>
   <defaultLanguage/>
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
-  <creationDate>1619309019000</creationDate>
-  <parent>PhenoTips.PatientSheet</parent>
+  <creationDate>1619477117000</creationDate>
+  <parent>PhenoTips.WebHome</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
-  <date>1619309498000</date>
-  <contentUpdateDate>1619309019000</contentUpdateDate>
+  <date>1619482518000</date>
+  <contentUpdateDate/>
   <version>1.1</version>
-  <title/>
+  <title>UIX_Field__family_information</title>
   <comment/>
   <minorEdit>false</minorEdit>
   <syntaxId>xwiki/2.1</syntaxId>
   <hidden>false</hidden>
   <content/>
   <object>
-    <name>PhenoTips.UIX_Field__patient_sample_data</name>
+    <name>PhenoTips.UIX_Field__family_information</name>
     <number>0</number>
     <className>XWiki.UIExtensionClass</className>
-    <guid>05703ea6-ae97-4766-845d-579eccd29818</guid>
+    <guid>93c2f930-62dd-4f01-91f5-3164a1151c70</guid>
     <class>
       <name>XWiki.UIExtensionClass</name>
       <customClass/>
@@ -111,30 +111,37 @@
       <content>{{include reference="PhenoTips.PatientSheetMacros" /}}
 
 {{include reference="PhenoTips.TabelarDataMacros" /}}
+
 {{velocity}}
 
-{{html}}
-        &lt;p&gt; &lt;label class="section group-title">Patient sample information &lt;/label&gt; &lt;/p&gt;
+
+{{html clean="true"}}
+
+  &lt;p> &lt;h3 class="section group-title">Family information &lt;/h3> &lt;/p>&#xd;
+
 {{/html}}
 
-#set ($targetClassName = 'PhenoTips.PatientSampleDataClass')
+
+#set ($targetClassName = 'PhenoTips.FamilyInformationDataClass')
 #if ($xcontext.action == 'edit' || $doc.getObject($targetClassName))
+  #__displayFormatted('2-col' 'parents_consanguinity' 'Consanguinity of parents' '' '')
+  #__displayFormatted('half-width' '' '' 'group-title' '')
   #__extradata_displayTable($targetClassName, {'counter' : true, 'labels' : false, 'mode' : $xcontext.action})
 #end
 {{/velocity}}</content>
     </property>
     <property>
-      <extensionPointId>org.phenotips.patientSheet.section.patient-info</extensionPointId>
+      <extensionPointId>org.phenotips.patientSheet.section.family-info</extensionPointId>
     </property>
     <property>
-      <name>org.phenotips.patientSheet.field.sample_data</name>
+      <name>org.phenotips.patientSheet.field.family_info</name>
     </property>
     <property>
-      <parameters>title=Patient Sample Data
+      <parameters>title=Family Info
 enabled=true
 required=
-order=13
-fields=</parameters>
+order=12
+fields=cpr_no,full_name,dob,code,relationship_type,nationality,symptomatic,collection_date</parameters>
     </property>
     <property>
       <scope>wiki</scope>
