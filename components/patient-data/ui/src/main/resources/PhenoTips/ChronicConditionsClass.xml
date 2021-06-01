@@ -26,11 +26,12 @@
   <translation>0</translation>
   <creator>xwiki:XWiki.Admin</creator>
   <creationDate>1619483468000</creationDate>
+  <parent>PhenoTips.PatientClass</parent>
   <author>xwiki:XWiki.Admin</author>
   <contentAuthor>xwiki:XWiki.Admin</contentAuthor>
   <date>1619483518000</date>
   <contentUpdateDate>1619483468000</contentUpdateDate>
-  <version>1.0</version>
+  <version>1.1</version>
   <title/>
   <comment/>
   <minorEdit>false</minorEdit>
