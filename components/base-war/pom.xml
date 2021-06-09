@@ -248,6 +248,12 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.apache.struts</groupId>
+      <artifactId>struts-core</artifactId>
+      <version>1.3.10</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.apache.velocity</groupId>
       <artifactId>velocity</artifactId>
       <version>1.7</version>
@@ -412,8 +418,8 @@ extension.repositories=maven-central:maven:https://nexus.phenotips.org/nexus/con
 extension.repositories=maven-phenotips:maven:https://nexus.phenotips.org/nexus/content/repositories/releases/
 extension.repositories=phenotips.org:xwiki:https://phenotips.org/rest/
 rendering.transformations=macro
-activeinstalls.pingURL=https://stats.phenotips.org
-activeinstalls.ipFetchURL=https://phenotips.org/get/Stats/Id
+#activeinstalls.pingURL=https://stats.phenotips.org
+#activeinstalls.ipFetchURL=https://phenotips.org/get/Stats/Id
                 </xwikiPropertiesAdditionalProperties>
               </properties>
             </configuration>

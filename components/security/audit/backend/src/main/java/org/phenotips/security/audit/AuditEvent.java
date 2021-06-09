@@ -49,7 +49,8 @@ public class AuditEvent
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @Column(name = "uuid", columnDefinition = "BINARY(16)")
+    @Column(name = "uuid", length = 16)
+    @Type(type = "uuid-binary")
     private UUID uuid;
 
     @Type(type = "org.phenotips.security.audit.internal.UserType")
