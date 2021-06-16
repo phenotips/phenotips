@@ -56,3 +56,30 @@
 .container-columns .last-column {
   padding-right: 0;
 }
+/* Custom CSS */
+#company .company-logo {
+  display: inline-block;
+  margin: 1px 25px;
+}
+
+#company #right {
+  float: right;
+}
+
+#company #left {
+  float: left;
+}
+
+#company .company-logo .company-header {
+  display: inline-block;
+}
+
+#company .bahrain-logo {
+  display: inline-block;
+}
+
+#company .company-logo .company-header #custom-header {
+  text-transform: unset;
+  font-size: 42px;
+  position: unset;
+}
