@@ -15,32 +15,72 @@
 <div class="minwidthd"></div>
 #end
   <div id="company">
-  <div id="companylogo">
-    <a href="$!xwiki.getURL($services.model.resolveDocument('', 'default', $doc.documentReference.extractReference('WIKI')))" title="Home" rel="home">
-#if("$!{themeDocFullName}" == '')
-  #set($themeDocFullName = "$!xwiki.getUserPreference('colorTheme')")
-#end
-#if($themeDocFullName == '')
-  #set($themeDocFullName = 'ColorThemes.DefaultColorTheme')
-#end
-#set($themeDoc = $xwiki.getDocument($themeDocFullName))
-#set($themeObj = $themeDoc.getObject('ColorThemes.ColorThemeClass'))
-#set($logoname = $themeObj.getProperty('logoImage').value)
-#if("$!{logoname}" != '')
-  #set($logourl = $themeDoc.getAttachmentURL($logoname))
-#else
-  #set($logoname = $xwiki.getSkinPreference('logo', 'logo.png'))
-  #set($logo = $!prefdoc.getAttachment($logoname))
-  #if(!$logo)
-    #set($logourl = $xwiki.getSkinFile($logoname))
-  #else
-    #set($logourl = $prefdoc.getAttachmentURL($logo.filename))
-  #end
-#end
-    <img src="$!logourl" alt="Logo"/>
-    </a>
-  </div> ## companylogo
-  </div> ## company
+    <div id="left" class="company-logo">
+      <div class="bahrain-logo">
+        <a href="$!xwiki.getURL($services.model.resolveDocument('', 'default', $doc.documentReference.extractReference('WIKI')))"
+           title="Home" rel="home">
+        <img src="/xwiki/skin/PhenoTips/Skin/bahrain-logo.png" alt="Logo">
+        </a>
+      </div>
+      <div class="company-header">
+        <h1 id="custom-header">Clinical database</h1>
+      </div>
+    </div>
+    <div id="right" class="company-logo">
+      <a href="$!xwiki.getURL($services.model.resolveDocument('', 'default', $doc.documentReference.extractReference('WIKI')))"
+         title="Home" rel="home">
+        #if("$!{themeDocFullName}" == '')
+          #set($themeDocFullName = "$!xwiki.getUserPreference('colorTheme')")
+        #end
+        #if($themeDocFullName == '')
+          #set($themeDocFullName = 'ColorThemes.DefaultColorTheme')
+        #end
+        #set($themeDoc = $xwiki.getDocument($themeDocFullName))
+        #set($themeObj = $themeDoc.getObject('ColorThemes.ColorThemeClass'))
+        #set($logoname = $themeObj.getProperty('logoImage').value)
+        #if("$!{logoname}" != '')
+          #set($logourl = $themeDoc.getAttachmentURL($logoname))
+        #else
+          #set($logoname = $xwiki.getSkinPreference('logo', 'logo.png'))
+          #set($logo = $!prefdoc.getAttachment($logoname))
+          #if(!$logo)
+            #set($logourl = $xwiki.getSkinFile($logoname))
+          #else
+            #set($logourl = $prefdoc.getAttachmentURL($logo.filename))
+          #end
+        #end
+        <img src="$!logourl" alt="Logo" />
+      </a>
+    </div>
+  </div>
+  <style>
+    #company .company-logo {
+      display: inline-block;
+      margin: 1px 25px;
+    }
+
+    #company #right {
+      float: right;
+    }
+
+    #company #left {
+      float: left;
+    }
+
+    #company .company-logo .company-header {
+      display: inline-block;
+    }
+
+    #company .bahrain-logo {
+      display: inline-block;
+    }
+
+    #company .company-logo .company-header #custom-header {
+      text-transform: unset;
+      font-size: 42px;
+      position: unset;
+    }
+  </style>
   #template("language.vm")
   <div class="clearfloats"></div>
 #foreach ($uix in $services.uix.getExtensions('org.xwiki.platform.header.bottom'))
