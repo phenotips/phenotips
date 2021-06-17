@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+    phenotips-postgres:
+        container_name: phenotips-postgres
+        image: postgres:13.0-alpine
+        environment:
+            - POSTGRES_USER=xwiki
+            - POSTGRES_DB=xwiki
+            - POSTGRES_PASSWORD=
+        volumes:
+            - phenotips-postgres-data:/var/lib/postgresql/data
+        ports:
+            - 5002:5432
+        networks:
+            - phenotips
+
+volumes:
+    phenotips-postgres-data:
+
+networks:
+    phenotips: {}

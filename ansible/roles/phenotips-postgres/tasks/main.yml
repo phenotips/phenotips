@@ -1,0 +1,29 @@
+- name: Remove any docker-compose file
+  shell: |
+    rm -f docker-compose.yml
+
+- name: Copy docker-compose.yml file
+  copy:
+    src: "{{ file_name }}"
+    dest: "{{ compose_file_location }}/{{ file_name }}"
+    owner: ansible
+    group: ansible
+    mode: 0644
+
+- name: Set up phenotips-postgres container
+  docker_compose:
+    project_src: "{{ compose_file_location }}"
+    files:
+      - "{{ file_name }}"
+
+- name: Add git
+  shell: |
+    docker container exec {{ container_name }} bash -c "apk add git"
+
+- name: Clone phenotips repository
+  shell: |
+    docker container exec {{ container_name }} bash -c "cd home && git clone {{ phenotips_repository_url }}"
+
+- name: Run seed script
+  shell: |
+    docker container exec {{ container_name }} bash -c "cd /home/phenotips/_deploy && chmod +x db_seeder.sh && ./db_seeder.sh"

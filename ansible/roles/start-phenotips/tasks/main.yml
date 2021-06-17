@@ -1,0 +1,81 @@
+- name: Remove tomcat-phenotips container
+  docker_container:
+    name: "{{ container_name }}"
+    state: absent
+
+- name: Create tomcat-phenotips container
+  docker_container:
+    name: "{{ container_name }}"
+    image: "{{ container_image }}:{{ container_tag }}"
+    command: sleep infinity
+    state: present
+    ports:
+      - "{{ host_port }}:{{ phenotips_port }}"
+    networks:
+      - name: phenotips
+
+- name: Start tomcat-phenotips container
+  docker_container:
+    name: "{{ container_name }}"
+    state: started
+
+- name: Copy xwiki.war to webapps
+  shell: |
+    docker cp xwiki.war {{ container_name }}:{{ webapps_location }}/xwiki.war
+
+- name: Install wget
+  shell: |
+    docker container exec {{ container_name }} bash -c "yum install -y wget"
+
+- name: Start phenotips 
+  shell: |
+    docker container exec {{ container_name }} bash -c "cd {{ catalina_location }} && ./startup.sh" 
+  async: 5
+  poll: 0
+
+- name: Get postgres driver
+  shell: |
+    docker container exec {{ container_name }} bash -c "cd {{ lib_location }} && wget {{ postgres_driver_url }}"
+
+- name: Stop phenotips 
+  shell: |
+    docker container exec {{ container_name }} bash -c "cd {{ catalina_location }} && ./shutdown.sh" 
+  async: 5
+  poll: 0
+
+- name: Copy hibernate.cfg.xml to home
+  copy:
+    src: hibernate.cfg.xml
+    dest: /home/ansible/
+
+- name: Copy hibernate.cfg.xml to tomcat-phenotips container
+  shell: |
+    docker container cp hibernate.cfg.xml {{ container_name }}:{{ hibernate_cfg_location }}
+
+- name: Copy solr and storage
+  shell: |
+    docker container cp phenotips-standalone-1.4-SNAPSHOT/data/solr/ {{ container_name }}:/var/lib/phenotips
+    docker container cp phenotips-standalone-1.4-SNAPSHOT/data/storage/ {{ container_name }}:/var/lib/phenotips
+
+- name: Stop tomcat-phenotips container
+  docker_container:
+    name: "{{ container_name }}"
+    state: stopped
+
+- name: Start tomcat-phenotips container
+  docker_container:
+    name: "{{ container_name }}"
+    state: started
+
+- name: Start phenotips 
+  shell: |
+    docker container exec {{ container_name }} bash -c "cd {{ catalina_location }} && ./startup.sh" 
+  async: 5
+  poll: 0
+
+- name: Cleanup
+  shell: |
+    rm -f hibernate.cfg.xml
+    rm -rf phenotips-standalone-1.4-SNAPSHOT
+    rm -rf phenotips-standalone-1.4-SNAPSHOT.zip
+    rm -rf xwiki.war 

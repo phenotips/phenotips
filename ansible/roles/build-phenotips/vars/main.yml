@@ -1,0 +1,8 @@
+phenotips_repository_url: https://github.com/athegaul/phenotips
+
+container_name: build-phenotips
+container_image: maven
+container_image_tag: 3.8.1-amazoncorretto-8
+
+war_file_location: /home/phenotips/distribution/war/target
+zip_file_location: /home/phenotips/distribution/standalone/target

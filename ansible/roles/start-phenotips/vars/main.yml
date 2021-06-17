@@ -1,0 +1,13 @@
+container_name: tomcat-phenotips
+container_image: tomcat
+container_tag: 9.0.46-jdk8-corretto
+
+host_port: 9001
+phenotips_port: 8080
+
+webapps_location: /usr/local/tomcat/webapps
+catalina_location: /usr/local/tomcat/bin/
+lib_location: /usr/local/tomcat/webapps/xwiki/WEB-INF/lib
+hibernate_cfg_location: /usr/local/tomcat/webapps/xwiki/WEB-INF
+
+postgres_driver_url: https://jdbc.postgresql.org/download/postgresql-42.2.21.jar

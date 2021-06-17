@@ -1,0 +1,47 @@
+- name: Create build-phenotips container
+  docker_container:
+    name: "{{ container_name }}"
+    image: "{{ container_image }}:{{ container_image_tag }}"
+    state: present
+    command: sleep infinity
+
+- name: Start build-phenotips container
+  docker_container:
+    name: "{{ container_name }}"
+    state: started
+
+- name: Remove phenotips repository
+  shell: |
+    docker container exec {{ container_name }} bash -c "cd home && rm -rf phenotips"
+
+- name: Install git
+  shell: |
+    docker container exec {{ container_name }} bash -c "yum install -y git"
+
+- name: Clone phenotips repository
+  shell: |
+    docker container exec {{ container_name }} bash -c "cd home && git clone {{ phenotips_repository_url }}"
+
+- name: Build phenotips
+  environment: 
+  shell: |
+    docker container exec {{ container_name }} bash -c "export MAVEN_OPTS=\"-Xmx2g -XX:MaxPermSize=256m\" && cd home/phenotips && mvn install"
+  async: 1200 # Maximum allowed time to wait for build job = 20 minutes
+  poll: 5 # Pooling interval 5 seconds
+  register: build_result
+
+- name: Display build phenotips
+  debug: var=build_result.stdout_lines
+
+- name: Copy war build snapshot
+  shell: |
+    docker cp build-phenotips:{{ war_file_location }}/phenotips-war-1.4-SNAPSHOT.war .
+    mv phenotips-war-1.4-SNAPSHOT.war xwiki.war
+
+- name: Copy zip build snapshot
+  shell: |
+    docker cp build-phenotips:{{ zip_file_location }}/phenotips-standalone-1.4-SNAPSHOT.zip .
+
+- name: Unzip build snapshot
+  shell: |
+    unzip phenotips-standalone-1.4-SNAPSHOT.zip

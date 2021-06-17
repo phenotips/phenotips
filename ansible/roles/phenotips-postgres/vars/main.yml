@@ -1,0 +1,6 @@
+container_name: phenotips-postgres
+
+file_name: docker-compose.yml
+compose_file_location: /home/ansible/
+
+phenotips_repository_url: https://github.com/athegaul/phenotips.git
