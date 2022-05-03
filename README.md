@@ -11,12 +11,18 @@
 </p>
 
 
+## This repository is no longer maintained
+
+The open-source, XWiki version of the PhenoTips platform is no longer actively developed or maintained.
+
+PhenoTips development is now focused on the closed-source Enterprise solution available at [phenotips.com](https://phenotips.com/).
+
 ## A customizable patient data platform for genomic medicine
 
 PhenoTips is a browser-based tool for recording linked clinical phenotype, genetic, disease, and family history data for patients with genetic diseases. PhenoTips includes a highly-customizable patient form, and includes sections to enter:
-* **clinical symptoms & physical findings** ([HPO](http://www.human-phenotype-ontology.org/))
-* family information and history (including **pedigree**)
-* **diagnosis** (mapped to [OMIM](http://omim.org/) or [Orphanet](http://www.orphadata.org/))
+* clinical symptoms & physical findings ([HPO](http://www.human-phenotype-ontology.org/))
+* family information and history (including pedigree)
+* diagnosis (mapped to [OMIM](http://omim.org/) or [Orphanet](http://www.orphadata.org/))
 * genes and variants of interest
 * measurements (with support for instant computation of percentiles and generation of growth charts)
 * demographic information (name, date of birth, ...)
@@ -27,7 +33,6 @@ You use PhenoTips directly through your **web browser**.
 
 * If you are running a standalone version of PhenoTips directly on your computer, you can usually find it at `localhost:8080`
 * If you are at a hospital or in a research group with your own PhenoTips instance, you should ask someone what URL to go to in order to access your instance
-* To try it out, go to [phenotips.com](https://phenotips.com/)
 
 ## Powered by
 * [HPO](http://www.human-phenotype-ontology.org/) - phenotype ontology
@@ -66,24 +71,15 @@ The project is split into several modules, among which `distribution/standalone`
 * open a browser and go to [http://localhost:8080/](http://localhost:8080/)
 * this is a completely local version, not connected to any other PhenoTips instance or other software in your institution; a default user is provided, you can log in using User: `Admin` and Password: `admin` (case-sensitive)
 
-
-## Contributing
-
-Contributions welcome! Fork the repository and create a pull request to share your improvements with the community.
-
-In order to ensure that the licensing is clear and stays open, you'll be asked to sign a CLA with your first pull request.
-
-
 ## Support
 
-This is free software! Create an issue in GitHub to ask others for help, or try fixing the issue yourself and then make a pull request to contribute it back to the core.
+The open-source community version of PhenoTips is no longer maintained or supported.
 
 For information about the Enterprise version, please see [phenotips.com](https://phenotips.com/).
 
-
 ## License
 
-PhenoTips is distributed under the [AGPL version 3](http://www.gnu.org/licenses/agpl-3.0.html) (GNU Affero General Public License), a well known free software/open source license recognized both by the Free Software Foundation and the Open Source Initiative.
+This open-source version of PhenoTips was distributed under the [AGPL version 3](http://www.gnu.org/licenses/agpl-3.0.html) (GNU Affero General Public License), a well known free software/open source license recognized both by the Free Software Foundation and the Open Source Initiative.
 
 You can ensure compliance with this license by:
 * making sure every change made to the code is also be distributed under AGPL, and any works that integrate PhenoTips (even over APIs) use a compatible license
